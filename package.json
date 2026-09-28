@@ -1,0 +1,10 @@
+{
+  "name": "duel-arena",
+  "private": true,
+  "scripts": {
+    "start": "node web/server.js",
+    "dev": "node web/server.js",
+    "build": "npm run build --prefix web",
+    "lint": "echo 'OK'"
+  }
+}
