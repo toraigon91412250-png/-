@@ -6,6 +6,7 @@ import { BattleLogView } from './BattleLogView';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
 import arenaBg from '../assets/img_arena_bg.jpg';
+import battleScreenImg from '../assets/img_battle_screen.jpg';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
 interface BattleScreenProps {
@@ -93,6 +94,20 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           height: '100%',
           objectFit: 'cover',
           opacity: 0.22,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Battle Screen Image Overlay */}
+      <img
+        src={battleScreenImg}
+        alt="battle scene"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          opacity: 0.15,
           pointerEvents: 'none',
         }}
       />
