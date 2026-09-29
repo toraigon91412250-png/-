@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
+import geminiFeatherImg from '../assets/img_gemini_feather.jpg';
 
 interface VisualEffectOverlayProps {
   effect: VisualEffect | null;
@@ -308,6 +309,23 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
             inset: 0,
             backgroundColor: `rgba(255, 213, 79, ${critFlashAlpha})`,
             pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {/* Gemini Feather Image for Feather Attack */}
+      {effect.effectType === 'SPECIAL_FEATHER' && t < 0.45 && (
+        <img
+          src={geminiFeatherImg}
+          alt="feather attack"
+          style={{
+            position: 'absolute',
+            width: '80%',
+            height: '80%',
+            objectFit: 'contain',
+            opacity: Math.max(0, 1 - t / 0.45),
+            pointerEvents: 'none',
+            animation: `fadeInOut ${0.45}s ease-out`,
           }}
         />
       )}
