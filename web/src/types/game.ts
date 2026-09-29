@@ -60,6 +60,9 @@ export interface CharacterDef {
   ultimateSkillDamage: number;
   ultimateSlogan: string;
   imageSrc: string;
+  selectImageSrc?: string; // キャラ選択画面用（未指定なら imageSrc）
+  iconImageSrc?: string; // 戦闘中ミニアイコン用（未指定なら imageSrc）
+  specialCutInSrc?: string; // 特殊技カットイン用（未指定ならカットインなし）
   primaryColor: string;
   secondaryColor: string;
 }

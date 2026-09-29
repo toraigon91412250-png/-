@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CharacterDef, CpuDifficulty, OverallStats } from '../types/game';
 import { CHARACTERS } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
@@ -21,6 +21,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onSelectDifficulty,
   onStartBattle,
 }) => {
+  const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
   const cpuChar = CHARACTERS.find(c => c.id !== selectedPlayer.id) || CHARACTERS[1];
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
@@ -160,24 +161,48 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
                 <div
                   style={{
                     width: '100%',
-                    height: '140px',
+                    height: char.selectImageSrc ? '200px' : '140px',
                     borderRadius: '10px',
                     overflow: 'hidden',
                     border: `1px solid ${char.primaryColor}80`,
                     marginBottom: '8px',
                     backgroundColor: '#0a0d16',
+                    position: 'relative',
                   }}
                 >
                   <img
-                    src={char.imageSrc}
+                    src={char.selectImageSrc ?? char.imageSrc}
                     alt={char.name}
                     style={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
+                      objectPosition: char.selectImageSrc ? 'center 22%' : 'center',
                       display: 'block',
                     }}
                   />
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setViewingChar(char);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      right: '6px',
+                      bottom: '6px',
+                      backgroundColor: 'rgba(10, 13, 22, 0.75)',
+                      border: `1px solid ${char.primaryColor}`,
+                      color: '#FFFFFF',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      borderRadius: '6px',
+                      padding: '3px 8px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🔍 全身を見る
+                  </button>
                 </div>
 
                 {/* Name */}
@@ -337,9 +362,89 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           <span>バトル開始！</span>
         </button>
       </div>
+
+      {/* Full Art Viewer */}
+      {viewingChar && (
+        <ArtViewer char={viewingChar} onClose={() => setViewingChar(null)} />
+      )}
     </div>
   );
 };
+
+const VIEWER_FEATHERS = Array.from({ length: 10 }, (_, i) => ({
+  left: (i * 37 + 7) % 100,
+  delay: (i * 0.9) % 6,
+  duration: 6 + (i % 4) * 1.5,
+  size: 14 + (i % 3) * 6,
+}));
+
+const ArtViewer: React.FC<{ char: CharacterDef; onClose: () => void }> = ({ char, onClose }) => (
+  <div
+    onClick={onClose}
+    style={{
+      position: 'fixed',
+      inset: 0,
+      zIndex: 100,
+      backgroundColor: 'rgba(5, 6, 12, 0.88)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '20px',
+      overflow: 'hidden',
+      cursor: 'pointer',
+    }}
+  >
+    <style>{`
+      @keyframes viewerFeatherFall {
+        0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.9; }
+        100% { transform: translateY(110vh) rotate(360deg) translateX(40px); opacity: 0; }
+      }
+      @keyframes viewerPopIn {
+        0% { transform: scale(0.92); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    `}</style>
+    {VIEWER_FEATHERS.map((f, i) => (
+      <div
+        key={i}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: `${f.left}%`,
+          fontSize: `${f.size}px`,
+          opacity: 0,
+          pointerEvents: 'none',
+          filter: `drop-shadow(0 0 6px ${char.primaryColor})`,
+          animation: `viewerFeatherFall ${f.duration}s linear ${f.delay}s infinite`,
+        }}
+      >
+        🪶
+      </div>
+    ))}
+    <img
+      src={char.selectImageSrc ?? char.imageSrc}
+      alt={char.name}
+      style={{
+        maxWidth: '100%',
+        maxHeight: '78vh',
+        objectFit: 'contain',
+        borderRadius: '14px',
+        border: `2px solid ${char.primaryColor}`,
+        boxShadow: `0 0 40px ${char.primaryColor}80`,
+        animation: 'viewerPopIn 0.25s ease-out',
+        position: 'relative',
+      }}
+    />
+    <div style={{ marginTop: '12px', textAlign: 'center', position: 'relative' }}>
+      <div style={{ fontSize: '11px', fontWeight: 700, color: char.primaryColor }}>{char.title}</div>
+      <div style={{ fontSize: '22px', fontWeight: 900, color: '#FFFFFF' }}>{char.name}</div>
+      <div style={{ fontSize: '12px', color: '#FFD54F', marginTop: '2px' }}>「{char.ultimateSlogan}」</div>
+      <div style={{ fontSize: '10px', color: '#78909C', marginTop: '8px' }}>タップして閉じる</div>
+    </div>
+  </div>
+);
 
 const StatItem: React.FC<{ label: string; value: string; ratio: number; color: string }> = ({
   label,

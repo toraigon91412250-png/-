@@ -397,7 +397,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         )}
 
         {/* Visual FX Overlay */}
-        <VisualEffectOverlay effect={state.visualEffect} />
+        <VisualEffectOverlay effect={state.visualEffect} speedMultiplier={state.battleSpeedMultiplier} />
       </div>
 
       {/* Battle Finished Result Dialog */}
