@@ -26,7 +26,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     let cancelled = false;
     let revealTimer: ReturnType<typeof setTimeout> | undefined;
     const startedAt = Date.now();
-    const minimumDarkScreenMs = 500;
+    const minimumDarkScreenMs = 300;
     const sources = [battleBackground, irenaVictoryImage];
 
     const preloadImages = async () => {
