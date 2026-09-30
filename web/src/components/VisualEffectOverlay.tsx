@@ -137,14 +137,17 @@ const SpecialCutIn: React.FC<{ imageSrc: string; skillName: string; actorName: s
 export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastUiUpdateRef = useRef(0);
 
   useEffect(() => {
     if (!effect) {
       setProgress(0);
+      lastUiUpdateRef.current = 0;
       return;
     }
 
     setProgress(0);
+    lastUiUpdateRef.current = 0;
     const duration = effect.isUltimate ? 700 : 450;
     const startTime = performance.now();
     let animId: number;
@@ -152,7 +155,14 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
     const tick = (now: number) => {
       const elapsed = now - startTime;
       const t = Math.min(1, elapsed / duration);
-      setProgress(t);
+
+      // Keep the animation clock at 60fps, but update React-driven visuals at about 30fps.
+      // CSS cut-in animation remains smooth while reducing per-frame React/canvas work.
+      if (t >= 1 || now - lastUiUpdateRef.current >= 33) {
+        lastUiUpdateRef.current = now;
+        setProgress(t);
+      }
+
       if (t < 1) {
         animId = requestAnimationFrame(tick);
       }
