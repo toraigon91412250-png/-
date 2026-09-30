@@ -284,7 +284,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           </div>
         ) : (
           <>
-          /* Desktop / Wide Dual Pane Layout */
+          {/* Desktop / Wide Dual Pane Layout */}
           <div
             style={{
               flex: 1,
