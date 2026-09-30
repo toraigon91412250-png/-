@@ -2,7 +2,7 @@ import React from 'react';
 import { BattleUiState } from '../types/game';
 import { Skull, RotateCcw, ArrowLeft } from 'lucide-react';
 import battleBackground from '../assets/戦闘中背景.png';
-import irenaSelectImage from '../assets/img_irena_select.jpg';
+import irenaVictoryImage from '../assets/いれーな勝利演出.jpg';
 
 interface BattleResultModalProps {
   state: BattleUiState;
@@ -204,7 +204,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               }}
             >
               <img
-                src={irenaSelectImage}
+                src={irenaVictoryImage}
                 alt="いれーな"
                 style={{
                   width: '100%',
