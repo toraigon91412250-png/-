@@ -26,7 +26,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     let cancelled = false;
     let revealTimer: ReturnType<typeof setTimeout> | undefined;
     const startedAt = Date.now();
-    const minimumDarkScreenMs = 220;
+    const minimumDarkScreenMs = 900;
     const sources = [battleBackground, irenaVictoryImage];
 
     const preloadImages = async () => {
@@ -127,30 +127,6 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             box-shadow: 0 0 12px rgba(255, 224, 130, 0.95);
             animation: victoryDrift 2.4s ease-out infinite;
           }
-          .victory-particle:nth-child(1) { left: 10%; animation-delay: -0.2s; }
-          .victory-particle:nth-child(2) { left: 18%; animation-delay: -1.3s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(3) { left: 27%; animation-delay: -0.8s; }
-          .victory-particle:nth-child(4) { left: 36%; animation-delay: -1.8s; width: 6px; height: 6px; }
-          .victory-particle:nth-child(5) { left: 46%; animation-delay: -0.5s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(6) { left: 56%; animation-delay: -1.6s; }
-          .victory-particle:nth-child(7) { left: 66%; animation-delay: -1s; width: 6px; height: 6px; }
-          .victory-particle:nth-child(8) { left: 75%; animation-delay: -0.4s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(9) { left: 84%; animation-delay: -1.9s; }
-          .victory-particle:nth-child(10) { left: 92%; animation-delay: -1.1s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(11) { left: 14%; animation-delay: -2.1s; width: 3px; height: 3px; }
-          .victory-particle:nth-child(12) { left: 22%; animation-delay: -0.9s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(13) { left: 31%; animation-delay: -1.5s; width: 6px; height: 6px; }
-          .victory-particle:nth-child(14) { left: 40%; animation-delay: -0.1s; width: 3px; height: 3px; }
-          .victory-particle:nth-child(15) { left: 50%; animation-delay: -1.2s; width: 5px; height: 5px; }
-          .victory-particle:nth-child(16) { left: 60%; animation-delay: -2s; width: 3px; height: 3px; }
-          .victory-particle:nth-child(17) { left: 69%; animation-delay: -0.7s; width: 5px; height: 5px; }
-          .victory-particle:nth-child(18) { left: 78%; animation-delay: -1.7s; width: 3px; height: 3px; }
-          .victory-particle:nth-child(19) { left: 87%; animation-delay: -0.3s; width: 5px; height: 5px; }
-          .victory-particle:nth-child(20) { left: 95%; animation-delay: -1.4s; width: 3px; height: 3px; }
-          .victory-particle:nth-child(21) { left: 6%; animation-delay: -1.8s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(22) { left: 35%; animation-delay: -2.3s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(23) { left: 64%; animation-delay: -1s; width: 4px; height: 4px; }
-          .victory-particle:nth-child(24) { left: 82%; animation-delay: -2.5s; width: 4px; height: 4px; }
         `}</style>
 
         <img
@@ -200,9 +176,25 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             overflow: 'hidden',
           }}
         >
-          {Array.from({ length: 24 }, (_, index) => (
-            <span key={index} className="victory-particle" />
-          ))}
+          {Array.from({ length: 240 }, (_, index) => {
+            const left = (index * 41) % 98;
+            const bottom = 10 + ((index * 29) % 58);
+            const delayMs = (index * 137) % 2400;
+            const size = 3 + (index % 4);
+            return (
+              <span
+                key={index}
+                className="victory-particle"
+                style={{
+                  left: `${left}%`,
+                  bottom: `${bottom}%`,
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  animationDelay: `-${delayMs}ms`,
+                }}
+              />
+            );
+          })}
         </div>
 
         <div
