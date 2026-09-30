@@ -84,7 +84,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     >
       {/* Background Image & Vignette */}
       <img
-        src={arenaBg}
+        src={battleBackground}
         alt=""
         style={{
           position: 'absolute',
@@ -92,15 +92,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: 0.22,
           pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(180deg, rgba(10, 13, 22, 0.92) 0%, rgba(13, 16, 28, 0.8) 50%, rgba(10, 13, 22, 0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(10, 13, 22, 0.58) 0%, rgba(13, 16, 28, 0.38) 50%, rgba(10, 13, 22, 0.62) 100%)',
           pointerEvents: 'none',
         }}
       />
@@ -112,7 +112,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '8px 12px',
-          zIndex: 10,
+          zIndex: 5,
           borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           backgroundColor: 'rgba(10, 13, 22, 0.65)',
           backdropFilter: 'blur(8px)',
@@ -330,29 +330,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 </div>
               </div>
 
-              <div
-                style={{
-                  flex: 1,
-                  minHeight: 0,
-                  marginTop: '8px',
-                  marginBottom: '8px',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                }}
-              >
-                <img
-                  src={battleBackground}
-                  alt=""
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-              </div>
-
               <ActionDock
                 player={state.player}
                 enemy={state.enemy}
@@ -405,28 +382,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                     {state.visualEffect.bannerText}
                   </div>
                 )}
-              </div>
-
-              <div
-                style={{
-                  flex: 1,
-                  minHeight: 0,
-                  marginTop: '8px',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                }}
-              >
-                <img
-                  src={battleBackground}
-                  alt=""
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
               </div>
 
             </div>
