@@ -22,6 +22,19 @@ export const App: React.FC = () => {
     setCpuDifficulty,
   } = useBattleGame(playerChar, enemyChar, difficulty);
 
+  // Preload character special-skill cut-ins before the first battle action.
+  useEffect(() => {
+    CHARACTERS.forEach(character => {
+      if (!character.specialCutInSrc) return;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = character.specialCutInSrc;
+      if (typeof image.decode === 'function') {
+        image.decode().catch(() => {});
+      }
+    });
+  }, []);
+
   // Reload stats whenever battle is finished
   useEffect(() => {
     if (battleState.phase === 'BATTLE_FINISHED') {
