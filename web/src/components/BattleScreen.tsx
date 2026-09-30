@@ -329,12 +329,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 </div>
               </div>
 
-              <ActionDock
-                player={state.player}
-                enemy={state.enemy}
-                isEnabled={isActionEnabled}
-                onAction={onAction}
-              />
             </div>
 
             {/* Right Pane: Enemy Card + Clash Banner + Battle Background */}
@@ -384,6 +378,21 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               </div>
 
             </div>
+          </div>
+
+          {/* Full-width Command Dock */}
+          <div
+            style={{
+              width: '100%',
+              marginTop: '10px',
+            }}
+          >
+            <ActionDock
+              player={state.player}
+              enemy={state.enemy}
+              isEnabled={isActionEnabled}
+              onAction={onAction}
+            />
           </div>
         )}
 
