@@ -76,7 +76,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           .victory-particle:nth-child(8) { left: 75%; animation-delay: -0.4s; width: 4px; height: 4px; }
           .victory-particle:nth-child(9) { left: 84%; animation-delay: -1.9s; }
           .victory-particle:nth-child(10) { left: 92%; animation-delay: -1.1s; width: 4px; height: 4px; }
-        </style>
+        `}</style>
 
         <img
           src={battleBackground}
