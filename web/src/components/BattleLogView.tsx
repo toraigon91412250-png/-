@@ -33,14 +33,17 @@ const LOG_TYPE_STYLES: Record<LogType, { bg: string; text: string; icon: string 
   DEFEAT: { bg: '#B71C1C', text: '#FFCDD2', icon: '💀' },
 };
 
+const HIDDEN_LOG_TERMS = ['ダメージ', 'DMG', '出血', '重圧'];
+
 export const BattleLogView: React.FC<BattleLogViewProps> = ({ logs, height = '100%' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const visibleLogs = logs.filter(log => !HIDDEN_LOG_TERMS.some(term => log.text.includes(term)));
 
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
-  }, [logs.length]);
+  }, [visibleLogs.length]);
 
   return (
     <div
@@ -69,7 +72,7 @@ export const BattleLogView: React.FC<BattleLogViewProps> = ({ logs, height = '10
           📜 戦闘ログ
         </span>
         <span style={{ fontSize: '11px', color: '#94A3B8' }}>
-          計 {logs.length} 件
+          計 {visibleLogs.length} 件
         </span>
       </div>
 
@@ -84,7 +87,7 @@ export const BattleLogView: React.FC<BattleLogViewProps> = ({ logs, height = '10
           paddingRight: '4px',
         }}
       >
-        {logs.map(log => {
+        {visibleLogs.map(log => {
           const style = LOG_TYPE_STYLES[log.type] || { bg: '#1A1F2C', text: '#FFFFFF', icon: '▫️' };
           const isBold =
             log.type === 'VICTORY' ||
