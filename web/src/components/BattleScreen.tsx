@@ -194,7 +194,31 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         </div>
       </div>
 
+      <style>{`
+        @keyframes normalHitFlash {
+          0% { opacity: 0; transform: scale(0.92); }
+          35% { opacity: 0.78; transform: scale(1.02); }
+          100% { opacity: 0; transform: scale(1.08); }
+        }
+      `}</style>
+
       {/* Main Arena Container with Screen Shake */}
+      {state.visualEffect?.effectType === 'NORMAL_HIT' && state.visualEffect.damage > 0 && (
+        <div
+          key={state.visualEffect.effectId}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 6,
+            pointerEvents: 'none',
+            background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.22) 28%, rgba(255,255,255,0) 68%)',
+            mixBlendMode: 'screen',
+            animation: 'normalHitFlash 180ms ease-out forwards',
+          }}
+        />
+      )}
+
       <div
         style={{
           flex: 1,
