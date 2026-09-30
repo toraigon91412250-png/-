@@ -1,5 +1,8 @@
 import { CharacterDef } from '../types/game';
 import irenaImg from '../assets/img_irena.jpg';
+import irenaSelectImg from '../assets/img_irena_select.jpg';
+import irenaIconImg from '../assets/img_irena_icon.jpg';
+import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 import kaiserImg from '../assets/img_kaiser.jpg';
 
 export const IRENA: CharacterDef = {
@@ -21,6 +24,9 @@ export const IRENA: CharacterDef = {
   ultimateSkillDamage: 500,
   ultimateSlogan: '嵐の刃よ、敵を貫け！',
   imageSrc: irenaImg,
+  selectImageSrc: irenaSelectImg,
+  iconImageSrc: irenaIconImg,
+  specialCutInSrc: irenaCutInImg,
   primaryColor: '#26A69A',
   secondaryColor: '#AB47BC',
 };

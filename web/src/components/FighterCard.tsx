@@ -52,12 +52,13 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           }}
         >
           <img
-            src={fighter.character.imageSrc}
+            src={fighter.character.iconImageSrc ?? fighter.character.imageSrc}
             alt={fighter.character.name}
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: 'center 20%',
               display: 'block',
             }}
           />

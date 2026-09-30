@@ -69,6 +69,8 @@ export function useBattleGame(
   }, []);
 
   const nextLogId = useRef(2);
+  const nextVisualEffectId = useRef(0);
+
 
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
     const newLog: BattleLog = {
@@ -211,7 +213,7 @@ export function useBattleGame(
               skillName: '出血ダメージ',
               statusAilmentName: '出血',
               bannerText: `🩸 出血 -${dotDamage} DMG`,
-              effectId: Date.now(),
+              effectId: nextVisualEffectId.current++,
             },
           }
         : {
@@ -229,7 +231,7 @@ export function useBattleGame(
               skillName: '出血ダメージ',
               statusAilmentName: '出血',
               bannerText: `🩸 出血 -${dotDamage} DMG`,
-              effectId: Date.now(),
+              effectId: nextVisualEffectId.current++,
             },
           }
       ));
@@ -301,7 +303,7 @@ export function useBattleGame(
             skillName: '強化',
             statusAilmentName: '',
             bannerText: '⚡ 攻撃強化 (+50)！',
-            effectId: Date.now(),
+            effectId: nextVisualEffectId.current++,
           },
         }));
 
@@ -332,7 +334,7 @@ export function useBattleGame(
             skillName: '回避構え',
             statusAilmentName: '',
             bannerText: `回避の構え(${evadePercent}%)！`,
-            effectId: Date.now(),
+            effectId: nextVisualEffectId.current++,
           },
         }));
 
@@ -373,7 +375,7 @@ export function useBattleGame(
                 skillName: '回避成功',
                 statusAilmentName: '',
                 bannerText: '💨 回避成功！ 0 DMG',
-                effectId: Date.now(),
+                effectId: nextVisualEffectId.current++,
               },
             }));
 
@@ -456,7 +458,7 @@ export function useBattleGame(
             skillName: '通常攻撃',
             statusAilmentName: '',
             bannerText: isCritical ? `💥 クリティカル！ -${finalDamage} DMG` : `-${finalDamage} DMG`,
-            effectId: Date.now(),
+            effectId: nextVisualEffectId.current++,
           },
         }));
 
@@ -515,7 +517,7 @@ export function useBattleGame(
                 skillName: '回避成功',
                 statusAilmentName: '',
                 bannerText: '💨 回避成功！ 0 DMG',
-                effectId: Date.now(),
+                effectId: nextVisualEffectId.current++,
               },
             }));
 
@@ -568,7 +570,7 @@ export function useBattleGame(
             skillName,
             statusAilmentName: appliedAilmentName,
             bannerText: `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
-            effectId: Date.now(),
+            effectId: nextVisualEffectId.current++,
           },
         }));
 
@@ -626,7 +628,7 @@ export function useBattleGame(
                 skillName: '回避成功',
                 statusAilmentName: '',
                 bannerText: '💨 回避成功！ 0 DMG',
-                effectId: Date.now(),
+                effectId: nextVisualEffectId.current++,
               },
             }));
 
@@ -680,7 +682,7 @@ export function useBattleGame(
             skillName,
             statusAilmentName: '',
             bannerText: `🌟『${skillName}』-${finalDamage}!`,
-            effectId: Date.now(),
+            effectId: nextVisualEffectId.current++,
           },
         }));
 
