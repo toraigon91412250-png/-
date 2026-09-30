@@ -345,29 +345,77 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         ctx.fill();
       }
 
-      // 7. Normal Hit (Single Sharp Slash + Impact Spark)
+      // 7. Normal Hit (Full-Screen Slash + Particle Burst)
       else if (effect.effectType === 'NORMAL_HIT') {
-        const slashLen = 120 * t;
+        const screenScale = Math.max(w, h) / 800;
+        const slashLen = Math.max(w, h) * 0.34 * Math.min(1.25, 0.8 + t);
+        const slashRise = Math.max(w, h) * 0.14;
         const alpha = Math.max(0, 1 - t);
+        const impactRadius = Math.max(1, Math.max(w, h) * 0.035 * t);
+
+        // Main slash: scales with the actual viewport instead of a fixed pixel size.
+        ctx.save();
+        ctx.translate(targetCenter.x, targetCenter.y);
+        ctx.rotate(-0.28);
+
         ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-        ctx.lineWidth = 6;
         ctx.lineCap = 'round';
+        ctx.lineWidth = Math.max(5, 9 * screenScale);
         ctx.beginPath();
-        ctx.moveTo(targetCenter.x - slashLen, targetCenter.y - slashLen * 0.5);
-        ctx.lineTo(targetCenter.x + slashLen, targetCenter.y + slashLen * 0.5);
+        ctx.moveTo(-slashLen, -slashRise);
+        ctx.lineTo(slashLen, slashRise);
         ctx.stroke();
 
-        ctx.strokeStyle = `rgba(144, 202, 249, ${alpha})`;
-        ctx.lineWidth = 3;
+        // Bright cutting core.
+        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(1, alpha * 1.2)})`;
+        ctx.lineWidth = Math.max(2, 3.5 * screenScale);
         ctx.beginPath();
-        ctx.moveTo(targetCenter.x - slashLen * 0.8, targetCenter.y - slashLen * 0.4);
-        ctx.lineTo(targetCenter.x + slashLen * 0.8, targetCenter.y + slashLen * 0.4);
+        ctx.moveTo(-slashLen * 0.96, -slashRise * 0.96);
+        ctx.lineTo(slashLen * 0.96, slashRise * 0.96);
         ctx.stroke();
 
-        ctx.fillStyle = `rgba(226, 232, 240, ${alpha * 0.9})`;
+        // Secondary slash for a layered impact.
+        ctx.strokeStyle = `rgba(210, 230, 255, ${alpha * 0.75})`;
+        ctx.lineWidth = Math.max(2, 4 * screenScale);
         ctx.beginPath();
-        ctx.arc(targetCenter.x, targetCenter.y, Math.max(1, 20 * t), 0, Math.PI * 2);
+        ctx.moveTo(-slashLen * 0.78, -slashRise * 0.78 + 18 * screenScale);
+        ctx.lineTo(slashLen * 0.78, slashRise * 0.78 + 18 * screenScale);
+        ctx.stroke();
+        ctx.restore();
+
+        // Central impact flash.
+        const grad = ctx.createRadialGradient(
+          targetCenter.x,
+          targetCenter.y,
+          0,
+          targetCenter.x,
+          targetCenter.y,
+          impactRadius * 3.5
+        );
+        grad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+        grad.addColorStop(0.45, `rgba(224, 242, 255, ${alpha * 0.7})`);
+        grad.addColorStop(1, 'rgba(224, 242, 255, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(targetCenter.x, targetCenter.y, impactRadius * 3.5, 0, Math.PI * 2);
         ctx.fill();
+
+        // Deterministic particles radiating from the hit point.
+        for (let i = 0; i < 36; i++) {
+          const seed = (effect.effectId * 97 + i * 53) % 360;
+          const angle = (seed * Math.PI) / 180;
+          const speed = Math.max(w, h) * (0.00055 + (i % 6) * 0.00016);
+          const distance = speed * t * 900;
+          const px = targetCenter.x + Math.cos(angle) * distance;
+          const py = targetCenter.y + Math.sin(angle) * distance;
+          const particleSize = Math.max(2, screenScale * (2.5 + (i % 4)));
+          const particleAlpha = alpha * (0.55 + (i % 5) * 0.08);
+
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, particleAlpha)})`;
+          ctx.beginPath();
+          ctx.arc(px, py, particleSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
 
       ctx.restore();
