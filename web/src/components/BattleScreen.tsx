@@ -297,7 +297,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               overflow: 'hidden',
             }}
           >
-            {/* Left Pane: Player Card + PC Hints + Action Dock */}
+            {/* Left Pane: Player Card + Action Dock */}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
               <div>
                 <div style={{ fontSize: '12px', fontWeight: 800, color: '#90CAF9', marginBottom: '6px' }}>
@@ -309,25 +309,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                   visualEffect={state.visualEffect}
                 />
 
-                {/* PC Keyboard Shortcuts Help */}
-                <div
-                  style={{
-                    backgroundColor: '#141926',
-                    border: '1px solid #263248',
-                    borderRadius: '10px',
-                    padding: '8px 12px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: '12px',
-                    fontSize: '11px',
-                  }}
-                >
-                  <span style={{ color: '#B0BEC5' }}>⌨️ PCショートカット:</span>
-                  <span style={{ fontWeight: 800, color: '#64FFDA' }}>
-                    [1]攻撃 [2]回避 [3]強化 [4]特殊 [5]必殺
-                  </span>
-                </div>
               </div>
 
             </div>
