@@ -18,8 +18,60 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
   const loser = playerWon ? state.enemy : state.player;
+  const [victoryAssetsReady, setVictoryAssetsReady] = React.useState(!playerWon);
+
+  React.useEffect(() => {
+    if (!playerWon) return;
+
+    let cancelled = false;
+    let revealTimer: ReturnType<typeof setTimeout> | undefined;
+    const startedAt = Date.now();
+    const minimumDarkScreenMs = 220;
+    const sources = [battleBackground, irenaVictoryImage];
+
+    const preloadImages = async () => {
+      await Promise.all(
+        sources.map(
+          (src) =>
+            new Promise<void>((resolve) => {
+              const image = new Image();
+              image.onload = () => resolve();
+              image.onerror = () => resolve();
+              image.src = src;
+            }),
+        ),
+      );
+
+      if (cancelled) return;
+
+      const remainingMs = Math.max(0, minimumDarkScreenMs - (Date.now() - startedAt));
+      revealTimer = setTimeout(() => {
+        if (!cancelled) setVictoryAssetsReady(true);
+      }, remainingMs);
+    };
+
+    preloadImages();
+
+    return () => {
+      cancelled = true;
+      if (revealTimer) clearTimeout(revealTimer);
+    };
+  }, [playerWon]);
 
   if (playerWon) {
+    if (!victoryAssetsReady) {
+      return (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: '#000000',
+            zIndex: 100,
+          }}
+          aria-label="勝利画面を読み込み中"
+        />
+      );
+    }
     return (
       <div
         style={{
