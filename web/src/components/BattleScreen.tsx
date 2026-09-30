@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { BattleAction, BattleUiState } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
-import { BattleLogView } from './BattleLogView';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
 import arenaBg from '../assets/img_arena_bg.jpg';
@@ -266,11 +265,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               )}
             </div>
 
-            {/* 3. Battle Log View */}
-            <div style={{ flex: 1, minHeight: '110px', marginBottom: '8px', overflow: 'hidden' }}>
-              <BattleLogView logs={state.logs} />
-            </div>
-
             {/* 4. Player Card */}
             <div style={{ marginBottom: '8px' }}>
               <FighterCard
@@ -389,9 +383,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 )}
               </div>
 
-              <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-                <BattleLogView logs={state.logs} />
-              </div>
             </div>
           </div>
         )}
