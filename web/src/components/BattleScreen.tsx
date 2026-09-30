@@ -5,6 +5,7 @@ import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
 import arenaBg from '../assets/img_arena_bg.jpg';
+import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
 interface BattleScreenProps {
@@ -337,7 +338,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               />
             </div>
 
-            {/* Right Pane: Enemy Card + Clash Banner + Battle Log */}
+            {/* Right Pane: Enemy Card + Clash Banner + Battle Background */}
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
               <div style={{ fontSize: '12px', fontWeight: 800, color: '#FFCC80', marginBottom: '6px' }}>
                 🤖 CPU 対戦相手 ({state.cpuDifficulty === 'EXPERT' ? 'エキスパート' : 'ノーマル'})
@@ -381,6 +382,28 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                     {state.visualEffect.bannerText}
                   </div>
                 )}
+              </div>
+
+              <div
+                style={{
+                  flex: 1,
+                  minHeight: 0,
+                  marginTop: '8px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <img
+                  src={battleBackground}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
               </div>
 
             </div>
