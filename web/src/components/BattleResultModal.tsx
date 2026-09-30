@@ -244,8 +244,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           >
             <div
               style={{
-                width: 'clamp(230px, 58vw, 390px)',
-                height: 'clamp(270px, 52vh, 440px)',
+                width: 'clamp(345px, 87vw, 585px)',
+                height: 'clamp(405px, 78vh, 660px)',
                 borderRadius: '22px',
                 overflow: 'hidden',
                 border: '2px solid rgba(255, 224, 130, 0.92)',
