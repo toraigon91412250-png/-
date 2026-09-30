@@ -283,6 +283,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             />
           </div>
         ) : (
+          <>
           /* Desktop / Wide Dual Pane Layout */
           <div
             style={{
@@ -394,6 +395,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               onAction={onAction}
             />
           </div>
+          </>
         )}
 
         {/* Visual FX Overlay */}
