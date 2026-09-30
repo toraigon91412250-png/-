@@ -330,6 +330,29 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 </div>
               </div>
 
+              <div
+                style={{
+                  flex: 1,
+                  minHeight: 0,
+                  marginTop: '8px',
+                  marginBottom: '8px',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <img
+                  src={battleBackground}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+              </div>
+
               <ActionDock
                 player={state.player}
                 enemy={state.enemy}
