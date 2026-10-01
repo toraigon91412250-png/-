@@ -1,0 +1,6 @@
+{
+  "name": "神威権能",
+  "description": "全神の権能・破滅の権能などのゲーム必殺技VFXカットシーン演出シミュレーター",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
