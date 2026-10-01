@@ -42,6 +42,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [turn, setTurn] = useState(1);
   const [lastDamage, setLastDamage] = useState<number | null>(null);
   const [message, setMessage] = useState('戦闘準備中…');
+  const [isResolving, setIsResolving] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -62,6 +63,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setTurn(1);
     setLastDamage(null);
     setMessage('戦闘開始！');
+    setIsResolving(false);
     setMode('BATTLE');
   };
 
@@ -70,11 +72,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const finishDefeat = (reason: string) => {
     setPlayer(prev => ({ ...prev, hp: 0 }));
     setMessage(reason);
+    setIsResolving(false);
     setMode('RESULT');
   };
 
   const finishVictory = () => {
     setMessage('レイドボス討伐成功！');
+    setIsResolving(false);
     setMode('RESULT');
   };
 
@@ -102,11 +106,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         ? '第2形態の攻撃！'
         : 'ボスの反撃！'
     );
+    setIsResolving(false);
     return true;
   };
 
   const performAction = (type: 'NORMAL' | 'ICE' | 'HOLY' | 'GUARD' | 'ULTIMATE' | 'POTION') => {
-    if (mode !== 'BATTLE') return;
+    if (mode !== 'BATTLE' || isResolving) return;
+    setIsResolving(true);
 
     let damage = 0;
     let tpGain = 0;
@@ -120,6 +126,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     } else if (type === 'ICE') {
       mpCost = 25;
       if (player.mp < mpCost) {
+        setIsResolving(false);
         setMessage('MPが足りない！');
         return;
       }
@@ -137,6 +144,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setMessage('聖光天破断！');
     } else if (type === 'GUARD') {
       if (player.mp < 15) {
+        setIsResolving(false);
         setMessage('MPが足りない！');
         return;
       }
@@ -155,6 +163,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       return;
     } else if (type === 'POTION') {
       if (player.potions <= 0) {
+        setIsResolving(false);
         setMessage('ポーションがない！');
         return;
       }
@@ -172,6 +181,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       return;
     } else {
       if (!canUltimate) {
+        setIsResolving(false);
         setMessage('必殺技ゲージが足りない！');
         return;
       }
@@ -301,16 +311,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         <div style={styles.message}>{message}</div>
 
         <div style={styles.actions}>
-          <button type="button" onClick={() => performAction('NORMAL')} style={styles.actionButton}>通常攻撃</button>
-          <button type="button" onClick={() => performAction('ICE')} style={styles.actionButton}>氷スキル</button>
-          <button type="button" onClick={() => performAction('HOLY')} style={styles.actionButton}>聖スキル</button>
-          <button type="button" onClick={() => performAction('GUARD')} style={styles.actionButton}>防御</button>
-          <button type="button" onClick={() => performAction('POTION')} style={styles.actionButton}>ポーション</button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('NORMAL')} style={{ ...styles.actionButton, ...(isResolving ? styles.disabledButton : {}) }}>通常攻撃</button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('ICE')} style={{ ...styles.actionButton, ...(isResolving ? styles.disabledButton : {}) }}>氷スキル</button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('HOLY')} style={{ ...styles.actionButton, ...(isResolving ? styles.disabledButton : {}) }}>聖スキル</button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('GUARD')} style={{ ...styles.actionButton, ...(isResolving ? styles.disabledButton : {}) }}>防御</button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('POTION')} style={{ ...styles.actionButton, ...(isResolving ? styles.disabledButton : {}) }}>ポーション</button>
           <button
             type="button"
             onClick={() => performAction('ULTIMATE')}
-            disabled={!canUltimate}
-            style={{ ...styles.actionButton, ...(!canUltimate ? styles.disabledButton : styles.ultimateButton) }}
+            disabled={!canUltimate || isResolving}
+            style={{ ...styles.actionButton, ...(!canUltimate || isResolving ? styles.disabledButton : styles.ultimateButton) }}
           >
             必殺技 {player.tp >= 100 ? 'READY' : `TP ${player.tp}`}
           </button>
