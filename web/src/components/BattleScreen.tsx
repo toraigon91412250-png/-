@@ -26,6 +26,37 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 }) => {
   const [isWide, setIsWide] = useState(window.innerWidth >= 680);
   const [screenShake, setScreenShake] = useState(false);
+  const [irenaUltimateUses, setIrenaUltimateUses] = useState({
+    allGods: 0,
+    ruin: 0,
+  });
+
+  const handleIrenaUltimateAction = (variant: 'ALL_GODS' | 'RUIN') => {
+    if (
+      !isActionEnabled ||
+      state.player.character.id !== 'irena' ||
+      state.player.ultimateGauge < 3
+    ) {
+      return;
+    }
+
+    setIrenaUltimateUses(prev => {
+      if (variant === 'ALL_GODS') {
+        if (prev.allGods >= 1) return prev;
+        return { ...prev, allGods: 1 };
+      }
+
+      if (prev.ruin >= 1) return prev;
+      return { ...prev, ruin: 1 };
+    });
+
+    onAction('ULTIMATE');
+  };
+
+  const handleRestart = () => {
+    setIrenaUltimateUses({ allGods: 0, ruin: 0 });
+    onRestart();
+  };
 
   useEffect(() => {
     const handleResize = () => setIsWide(window.innerWidth >= 680);
@@ -55,17 +86,36 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       } else if (e.key === '4') {
         if (isEnabled && state.player.specialCooldownRemaining <= 0) onAction('SPECIAL');
       } else if (e.key === '5') {
-        if (isEnabled && state.player.ultimateGauge >= 3) onAction('ULTIMATE');
+        if (isEnabled && state.player.ultimateGauge >= 3) {
+          if (state.player.character.id === 'irena') {
+            if (irenaUltimateUses.allGods === 0) {
+              handleIrenaUltimateAction('ALL_GODS');
+            } else if (irenaUltimateUses.ruin === 0) {
+              handleIrenaUltimateAction('RUIN');
+            } else {
+              onAction('ULTIMATE');
+            }
+          } else {
+            onAction('ULTIMATE');
+          }
+        }
       } else if (e.key === 'r' || e.key === 'R') {
         if (state.phase === 'BATTLE_FINISHED') {
-          onRestart();
+          handleRestart();
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [state.phase, state.player.specialCooldownRemaining, state.player.ultimateGauge, onAction, onRestart]);
+  }, [
+    state.phase,
+    state.player.specialCooldownRemaining,
+    state.player.ultimateGauge,
+    state.player.character.id,
+    irenaUltimateUses,
+    onAction,
+  ]);
 
   const isActionEnabled = state.phase === 'SELECT_ACTION';
 
@@ -304,6 +354,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               enemy={state.enemy}
               isEnabled={isActionEnabled}
               onAction={onAction}
+              irenaUltimateUses={irenaUltimateUses}
+              onIrenaUltimateAction={handleIrenaUltimateAction}
             />
           </div>
         ) : (
@@ -398,6 +450,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               enemy={state.enemy}
               isEnabled={isActionEnabled}
               onAction={onAction}
+              irenaUltimateUses={irenaUltimateUses}
+              onIrenaUltimateAction={handleIrenaUltimateAction}
             />
           </div>
           </>
@@ -411,7 +465,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       {state.phase === 'BATTLE_FINISHED' && state.winnerIsPlayer !== null && (
         <BattleResultModal
           state={state}
-          onRematch={onRestart}
+          onRematch={handleRestart}
           onBackToSelect={onBackToSelect}
         />
       )}
