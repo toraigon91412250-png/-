@@ -627,6 +627,8 @@ export function useBattleGame(
             isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
             turn
           );
+          soundManager.playCritical();
+          soundManager.playFeatherShot();
           updateState(prev => ({
             ...prev,
             visualEffect: {
@@ -635,7 +637,7 @@ export function useBattleGame(
               effectType: 'ULTIMATE_BLAST',
               isCritical: false,
               isEvade: false,
-              isBuff: true,
+              isBuff: false,
               isUltimate: true,
               actorName: actor.character.name,
               skillName: '全神の権能',
