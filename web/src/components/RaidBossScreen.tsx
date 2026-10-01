@@ -219,6 +219,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   if (mode === 'LOADING') {
     return (
       <div style={styles.fullScreen}>
+        <style>{`
+          @keyframes raidLoadingBar {
+            0% { transform: scaleX(0); opacity: 0.4; }
+            20% { opacity: 1; }
+            100% { transform: scaleX(1); opacity: 1; }
+          }
+        `}</style>
         <div style={styles.loadingLabel}>RAID BOSS DEPLOYING...</div>
         <div style={styles.loadingTitle}>戦闘地点へ移動中</div>
         <div style={styles.loadingTrack}>
