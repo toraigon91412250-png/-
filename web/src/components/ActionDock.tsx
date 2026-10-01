@@ -32,6 +32,42 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
   const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
   const hasUnlockedOmnipotence = hasUsedAllGods && hasUsedRuin;
+  const [cinematicActive, setCinematicActive] = React.useState(false);
+  const [cinematicVariant, setCinematicVariant] = React.useState<'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE' | null>(null);
+  const cinematicActionTimer = React.useRef<number | null>(null);
+  const cinematicFinishTimer = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (cinematicActionTimer.current !== null) window.clearTimeout(cinematicActionTimer.current);
+      if (cinematicFinishTimer.current !== null) window.clearTimeout(cinematicFinishTimer.current);
+    };
+  }, []);
+
+  const triggerIrenaUltimate = (variant: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE') => {
+    if (cinematicActive || !isEnabled || !isUltimateReady) return;
+    if (variant === 'ALL_GODS' && hasUsedAllGods) return;
+    if (variant === 'RUIN' && hasUsedRuin) return;
+
+    if (cinematicActionTimer.current !== null) window.clearTimeout(cinematicActionTimer.current);
+    if (cinematicFinishTimer.current !== null) window.clearTimeout(cinematicFinishTimer.current);
+
+    setCinematicVariant(variant);
+    setCinematicActive(true);
+
+    cinematicActionTimer.current = window.setTimeout(() => {
+      if (variant === 'OMNIPOTENCE') {
+        onAction('ULTIMATE');
+      } else {
+        onIrenaUltimateAction?.(variant);
+      }
+    }, 260);
+
+    cinematicFinishTimer.current = window.setTimeout(() => {
+      setCinematicActive(false);
+      setCinematicVariant(null);
+    }, 1300);
+  };
   const ultimateDamagePreview = hasUnlockedOmnipotence
     ? 1500 + buffDamageBonus
     : player.character.ultimateSkillDamage + buffDamageBonus;
@@ -51,17 +87,43 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       <style>{`
         @keyframes irenaUltimatePulse {
           0%, 100% { transform: scale(1); filter: brightness(1); }
-          50% { transform: scale(1.015); filter: brightness(1.14); }
+          50% { transform: scale(1.02); filter: brightness(1.2); }
         }
         @keyframes irenaUltimateSweep {
-          0% { transform: translateX(-120%); opacity: 0; }
-          25% { opacity: 0.9; }
-          60% { opacity: 0.2; }
-          100% { transform: translateX(120%); opacity: 0; }
+          0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+          20% { opacity: 0.98; }
+          55% { opacity: 0.38; }
+          100% { transform: translateX(120%) skewX(-18deg); opacity: 0; }
         }
         @keyframes irenaUltimateCore {
-          0%, 100% { opacity: 0.72; transform: translate(-50%, -50%) scale(1); }
-          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.92); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.18); }
+        }
+        @keyframes irenaGodsPulse {
+          0%, 100% { filter: brightness(0.98) saturate(1); box-shadow: inset 0 0 30px rgba(255,255,255,0.12), 0 0 0 rgba(255,213,79,0); }
+          50% { filter: brightness(1.2) saturate(1.18); box-shadow: inset 0 0 42px rgba(255,255,255,0.2), 0 0 22px rgba(255,213,79,0.4), 0 0 44px rgba(255,170,0,0.16); }
+        }
+        @keyframes irenaRuinPulse {
+          0%, 100% { filter: brightness(0.96) saturate(1); box-shadow: inset 0 0 30px rgba(255,0,0,0.12), 0 0 0 rgba(255,0,0,0); }
+          50% { filter: brightness(1.28) saturate(1.3); box-shadow: inset 0 0 48px rgba(255,0,0,0.3), 0 0 24px rgba(255,30,30,0.38), 0 0 52px rgba(255,0,0,0.14); }
+        }
+        @keyframes irenaOmnipotencePulse {
+          0%, 100% { filter: brightness(0.98) saturate(1); box-shadow: inset 0 0 38px rgba(255,213,79,0.1), inset -18px 0 44px rgba(255,0,0,0.06), 0 0 8px rgba(255,213,79,0.12); }
+          50% { filter: brightness(1.24) saturate(1.22); box-shadow: inset 0 0 62px rgba(255,240,180,0.18), inset -22px 0 54px rgba(255,0,0,0.15), 0 0 30px rgba(255,213,79,0.42), 0 0 58px rgba(255,0,0,0.18); }
+        }
+        @keyframes irenaUltimateBlackout {
+          0% { opacity: 0; }
+          12% { opacity: 0.98; }
+          32% { opacity: 0.92; }
+          58% { opacity: 0.38; }
+          82% { opacity: 0.12; }
+          100% { opacity: 0; }
+        }
+        @keyframes irenaUltimateShockwave {
+          0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+          18% { opacity: 0.95; }
+          65% { opacity: 0.3; }
+          100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
         }
       `}</style>
 
@@ -253,12 +315,47 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             border: isEnabled && isUltimateReady ? '1.5px solid #FFE082' : '1px solid #3E2D30',
             borderRadius: '12px',
             overflow: 'hidden',
-            background: 'linear-gradient(112deg, #E7C65A 0%, #8E6E1A 29%, #151515 48%, #050505 55%, #5E1010 76%, #020202 100%)',
+            background: 'linear-gradient(112deg, #F5D96A 0%, #A77B16 24%, #241A05 42%, #050505 53%, #120000 64%, #751010 82%, #010101 100%)',
+            animation: isEnabled && isUltimateReady ? 'irenaOmnipotencePulse 1.6s ease-in-out infinite' : 'none',
             boxShadow: isEnabled && isUltimateReady
-              ? '0 0 18px rgba(255, 213, 79, 0.45), 0 0 34px rgba(255, 30, 30, 0.18)'
+              ? '0 0 18px rgba(255, 213, 79, 0.45), 0 0 34px rgba(255, 30, 30, 0.18), 0 0 58px rgba(255, 200, 60, 0.12)'
               : 'none',
           }}
         >
+          {cinematicActive && (
+            <div
+              aria-hidden="true"
+              data-irena-ultimate-cut-in-slot="ready"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 12,
+                pointerEvents: 'none',
+                background: cinematicVariant === 'OMNIPOTENCE'
+                  ? 'radial-gradient(circle at center, rgba(255,245,210,0.16) 0%, rgba(255,213,79,0.08) 18%, rgba(0,0,0,0.92) 58%, rgba(0,0,0,1) 100%)'
+                  : '#000000',
+                animation: 'irenaUltimateBlackout 1.3s ease-out forwards',
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: '58px',
+                  height: '58px',
+                  borderRadius: '50%',
+                  background: cinematicVariant === 'OMNIPOTENCE'
+                    ? 'radial-gradient(circle, #FFFFFF 0%, #FFE27A 16%, rgba(255,80,30,0.38) 42%, transparent 74%)'
+                    : 'radial-gradient(circle, #FFFFFF 0%, #FFD54F 20%, rgba(255,0,0,0.22) 48%, transparent 74%)',
+                  animation: 'irenaUltimateShockwave 1.05s cubic-bezier(0.14,0.78,0.2,1) forwards',
+                  pointerEvents: 'none',
+                  mixBlendMode: 'screen',
+                }}
+              />
+            </div>
+          )}
           <div
             aria-hidden="true"
             style={{
@@ -266,13 +363,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               inset: 0,
               background: 'linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.16) 45%, transparent 60%)',
               transform: 'translateX(-120%)',
-              animation: isEnabled && isUltimateReady ? 'irenaUltimateSweep 1.9s ease-in-out infinite' : 'none',
+              animation: isEnabled && isUltimateReady ? 'irenaUltimateSweep 1.45s ease-in-out infinite' : 'none',
               pointerEvents: 'none',
             }}
           />
           <button
-            onClick={() => onAction('ULTIMATE')}
-            disabled={!isEnabled || !isUltimateReady}
+            onClick={() => triggerIrenaUltimate('OMNIPOTENCE')}
+            disabled={!isEnabled || !isUltimateReady || cinematicActive}
             style={{
               position: 'relative',
               zIndex: 2,
@@ -368,10 +465,46 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             overflow: 'hidden',
             background: '#020202',
             boxShadow: isEnabled && isUltimateReady
-              ? '0 0 16px rgba(255, 213, 79, 0.42), 0 0 30px rgba(255, 0, 0, 0.12)'
+              ? '0 0 16px rgba(255, 213, 79, 0.42), 0 0 30px rgba(255, 0, 0, 0.12), 0 0 54px rgba(255, 196, 70, 0.1)'
               : 'none',
           }}
         >
+          {cinematicActive && (
+            <div
+              aria-hidden="true"
+              data-irena-ultimate-cut-in-slot="ready"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 10,
+                pointerEvents: 'none',
+                background: cinematicVariant === 'ALL_GODS'
+                  ? 'radial-gradient(circle at 32% 50%, rgba(255,234,153,0.18) 0%, rgba(255,213,79,0.08) 22%, rgba(0,0,0,0.9) 64%, rgba(0,0,0,1) 100%)'
+                  : cinematicVariant === 'RUIN'
+                    ? 'radial-gradient(circle at 68% 50%, rgba(255,30,30,0.18) 0%, rgba(80,0,0,0.1) 22%, rgba(0,0,0,0.92) 64%, rgba(0,0,0,1) 100%)'
+                    : '#000000',
+                animation: 'irenaUltimateBlackout 1.3s ease-out forwards',
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: cinematicVariant === 'ALL_GODS' ? '30%' : cinematicVariant === 'RUIN' ? '70%' : '50%',
+                  width: '50px',
+                  height: '50px',
+                  borderRadius: '50%',
+                  background: cinematicVariant === 'ALL_GODS'
+                    ? 'radial-gradient(circle, #FFFFFF 0%, #FFE082 18%, rgba(255,213,79,0.34) 44%, transparent 74%)'
+                    : 'radial-gradient(circle, #FFFFFF 0%, #FF4D4D 17%, rgba(255,0,0,0.28) 46%, transparent 74%)',
+                  animation: 'irenaUltimateShockwave 1.05s cubic-bezier(0.14,0.78,0.2,1) forwards',
+                  pointerEvents: 'none',
+                  mixBlendMode: 'screen',
+                }}
+              />
+            </div>
+          )}
           <div
             aria-hidden="true"
             style={{
@@ -395,8 +528,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           />
 
           <button
-            onClick={() => onIrenaUltimateAction('ALL_GODS')}
-            disabled={!isEnabled || !isUltimateReady || hasUsedAllGods}
+            onClick={() => triggerIrenaUltimate('ALL_GODS')}
+            disabled={!isEnabled || !isUltimateReady || hasUsedAllGods || cinematicActive}
             aria-label="全神の権能"
             style={{
               position: 'absolute',
@@ -417,7 +550,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               padding: '12px 44px 12px 16px',
               zIndex: 2,
               textAlign: 'left',
-              boxShadow: isEnabled && isUltimateReady && !hasUsedAllGods ? 'inset 0 0 28px rgba(255,255,255,0.12)' : 'none',
+              boxShadow: isEnabled && isUltimateReady && !hasUsedAllGods ? 'inset 0 0 28px rgba(255,255,255,0.12), 0 0 18px rgba(255,213,79,0.18)' : 'none',
+              animation: isEnabled && isUltimateReady && !hasUsedAllGods ? 'irenaGodsPulse 1.45s ease-in-out infinite' : 'none',
             }}
           >
             <span
@@ -449,8 +583,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           </button>
 
           <button
-            onClick={() => onIrenaUltimateAction('RUIN')}
-            disabled={!isEnabled || !isUltimateReady || hasUsedRuin}
+            onClick={() => triggerIrenaUltimate('RUIN')}
+            disabled={!isEnabled || !isUltimateReady || hasUsedRuin || cinematicActive}
             aria-label="破壊の権能"
             style={{
               position: 'absolute',
@@ -471,7 +605,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               padding: '12px 16px 12px 44px',
               zIndex: 2,
               textAlign: 'right',
-              boxShadow: isEnabled && isUltimateReady && !hasUsedRuin ? 'inset 0 0 30px rgba(255,0,0,0.12)' : 'none',
+              boxShadow: isEnabled && isUltimateReady && !hasUsedRuin ? 'inset 0 0 30px rgba(255,0,0,0.12), 0 0 18px rgba(255,30,30,0.16)' : 'none',
+              animation: isEnabled && isUltimateReady && !hasUsedRuin ? 'irenaRuinPulse 1.2s ease-in-out infinite' : 'none',
             }}
           >
             <span
@@ -525,12 +660,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               position: 'absolute',
               top: '50%',
               left: '50%',
-              width: '54px',
-              height: '54px',
+              width: '66px',
+              height: '66px',
               borderRadius: '50%',
               background: 'radial-gradient(circle, #FFFBEA 0%, #FFD54F 18%, rgba(255,213,79,0.28) 46%, rgba(255,0,0,0.12) 62%, transparent 72%)',
               transform: 'translate(-50%, -50%)',
-              animation: isEnabled && isUltimateReady ? 'irenaUltimateCore 1.6s ease-in-out infinite' : 'none',
+              animation: isEnabled && isUltimateReady ? 'irenaUltimateCore 1.25s ease-in-out infinite' : 'none',
+              boxShadow: isEnabled && isUltimateReady ? '0 0 24px rgba(255,213,79,0.24), 0 0 38px rgba(255,0,0,0.12)' : 'none',
               pointerEvents: 'none',
               zIndex: 4,
               mixBlendMode: 'screen',
