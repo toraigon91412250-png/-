@@ -474,6 +474,7 @@ export function useBattleGame(
 
       case 'SPECIAL': {
         const hadBuff = actor.isBuffed;
+        const buffDamageBonus = actor.buffDamageBonus || 50;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
