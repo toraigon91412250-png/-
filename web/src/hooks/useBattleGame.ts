@@ -632,7 +632,7 @@ export function useBattleGame(
           updateState(prev => ({
             ...prev,
             visualEffect: {
-              targetIsPlayer: !isActorPlayer,
+              targetIsPlayer: isActorPlayer,
               damage: 0,
               effectType: 'ULTIMATE_BLAST',
               isCritical: false,
