@@ -320,6 +320,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       const targetCenter = effect.targetIsPlayer ? { x: w * 0.5, y: h * 0.70 } : { x: w * 0.5, y: h * 0.28 };
       const actorCenter = effect.targetIsPlayer ? { x: w * 0.5, y: h * 0.28 } : { x: w * 0.5, y: h * 0.70 };
       const t = progress;
+      const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
 
       ctx.save();
 
@@ -380,7 +381,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
 
       // 3. Migrated 技一・全神の権能 VFX
       else if (isAllGods) {
-        drawAllGodsVfx(ctx, w, h, t, effect.effectId);
+        drawAllGodsVfx(ctx, w, h, t);
       }
 
       // 4. Ultimate Nova Blast
