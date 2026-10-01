@@ -1,0 +1,6 @@
+{
+  "name": "Raid Boss",
+  "description": "レイドボス戦闘試作アプリ。第1形態・第2形態への移行、スキル・必殺技、カットイン演出やエフェクトを備えた独立型バトルシステム。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
