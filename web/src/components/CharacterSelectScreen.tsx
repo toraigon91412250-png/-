@@ -11,6 +11,7 @@ interface CharacterSelectScreenProps {
   onSelectPlayer: (char: CharacterDef) => void;
   onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
+  onOpenRaidBoss: () => void;
 }
 
 export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
@@ -20,6 +21,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onSelectPlayer,
   onSelectDifficulty,
   onStartBattle,
+  onOpenRaidBoss,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
   const cpuChar = CHARACTERS.find(c => c.id !== selectedPlayer.id) || CHARACTERS[1];
@@ -360,6 +362,30 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
         >
           <Play size={22} fill="#FFFFFF" />
           <span>バトル開始！</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenRaidBoss}
+          style={{
+            width: '100%',
+            height: '50px',
+            marginTop: '8px',
+            backgroundColor: '#24173A',
+            color: '#FFD54F',
+            border: '1.5px solid #8E6BBE',
+            borderRadius: '14px',
+            fontSize: '16px',
+            fontWeight: 900,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+          }}
+        >
+          <span>👹</span>
+          <span>レイドボスに挑戦</span>
         </button>
       </div>
 
