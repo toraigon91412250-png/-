@@ -1,13 +1,14 @@
 package com.example.raidboss.ui
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,14 +22,17 @@ import androidx.compose.ui.unit.sp
 fun BattleDeployingScreen(
     modifier: Modifier = Modifier
 ) {
-    val progress by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(
-            durationMillis = 1100,
-            easing = FastOutSlowInEasing
-        ),
-        label = "battle_deploy_progress"
-    )
+    val progress = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = 1100,
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
 
     Box(
         modifier = modifier
