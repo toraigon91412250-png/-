@@ -11,6 +11,7 @@ interface CharacterSelectScreenProps {
   onSelectPlayer: (char: CharacterDef) => void;
   onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
+  onOpenRaidBoss: () => void;
 }
 
 export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
@@ -20,6 +21,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onSelectPlayer,
   onSelectDifficulty,
   onStartBattle,
+  onOpenRaidBoss,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
   const cpuChar = CHARACTERS.find(c => c.id !== selectedPlayer.id) || CHARACTERS[1];
