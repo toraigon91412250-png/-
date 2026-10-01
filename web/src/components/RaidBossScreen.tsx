@@ -212,7 +212,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (phase === 1 && nextBossHp <= MAX_BOSS_HP[1] * 0.5) {
       setPhase(2);
-      setBossHp(prev => Math.min(MAX_BOSS_HP[2], Math.round(MAX_BOSS_HP[2] * 0.7)));
+      setBossHp(() => Math.min(MAX_BOSS_HP[2], Math.round(MAX_BOSS_HP[2] * 0.7)));
       setMessage('🔥 第2形態へ移行！ 真・暴走覚醒');
     }
 
