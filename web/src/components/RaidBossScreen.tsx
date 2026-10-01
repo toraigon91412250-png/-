@@ -136,6 +136,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     } else if (type === 'HOLY') {
       mpCost = 30;
       if (player.mp < mpCost) {
+        setIsResolving(false);
         setMessage('MPが足りない！');
         return;
       }
