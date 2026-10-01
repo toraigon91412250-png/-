@@ -327,9 +327,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               aria-hidden="true"
               data-irena-ultimate-cut-in-slot="ready"
               style={{
-                position: 'absolute',
+                position: 'fixed',
                 inset: 0,
-                zIndex: 12,
+                zIndex: 9999,
                 pointerEvents: 'none',
                 background: cinematicVariant === 'OMNIPOTENCE'
                   ? 'radial-gradient(circle at center, rgba(255,245,210,0.16) 0%, rgba(255,213,79,0.08) 18%, rgba(0,0,0,0.92) 58%, rgba(0,0,0,1) 100%)'
@@ -474,9 +474,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               aria-hidden="true"
               data-irena-ultimate-cut-in-slot="ready"
               style={{
-                position: 'absolute',
+                position: 'fixed',
                 inset: 0,
-                zIndex: 10,
+                zIndex: 9999,
                 pointerEvents: 'none',
                 background: cinematicVariant === 'ALL_GODS'
                   ? 'radial-gradient(circle at 32% 50%, rgba(255,234,153,0.18) 0%, rgba(255,213,79,0.08) 22%, rgba(0,0,0,0.9) 64%, rgba(0,0,0,1) 100%)'
