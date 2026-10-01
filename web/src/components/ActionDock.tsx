@@ -27,7 +27,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
   const specialDamagePreview = player.character.specialSkillDamage + buffDamageBonus;
-  const ultimateDamagePreview = player.character.ultimateSkillDamage + buffDamageBonus;
+  const ultimateDamagePreview = hasUnlockedOmnipotence
+    ? 1500 + buffDamageBonus
+    : player.character.ultimateSkillDamage + buffDamageBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
