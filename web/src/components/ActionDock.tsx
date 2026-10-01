@@ -44,6 +44,24 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.5)',
       }}
     >
+
+      <style>{`
+        @keyframes irenaUltimatePulse {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.015); filter: brightness(1.14); }
+        }
+        @keyframes irenaUltimateSweep {
+          0% { transform: translateX(-120%); opacity: 0; }
+          25% { opacity: 0.9; }
+          60% { opacity: 0.2; }
+          100% { transform: translateX(120%); opacity: 0; }
+        }
+        @keyframes irenaUltimateCore {
+          0%, 100% { opacity: 0.72; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+        }
+      `}</style>
+
       {/* Header: Command title + Buff indicator + Ultimate gauge preview */}
       <div
         style={{
@@ -226,20 +244,37 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       {isIrenaUltimate && hasUnlockedOmnipotence && (
         <div
           style={{
+            position: 'relative',
             width: '100%',
-            border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
-            borderRadius: '10px',
-            backgroundColor: isEnabled && isUltimateReady ? '#D84315' : '#251A1C',
-            boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
+            minHeight: '86px',
+            border: isEnabled && isUltimateReady ? '1.5px solid #FFE082' : '1px solid #3E2D30',
+            borderRadius: '12px',
             overflow: 'hidden',
+            background: 'linear-gradient(112deg, #E7C65A 0%, #8E6E1A 29%, #151515 48%, #050505 55%, #5E1010 76%, #020202 100%)',
+            boxShadow: isEnabled && isUltimateReady
+              ? '0 0 18px rgba(255, 213, 79, 0.45), 0 0 34px rgba(255, 30, 30, 0.18)'
+              : 'none',
           }}
         >
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.16) 45%, transparent 60%)',
+              transform: 'translateX(-120%)',
+              animation: isEnabled && isUltimateReady ? 'irenaUltimateSweep 1.9s ease-in-out infinite' : 'none',
+              pointerEvents: 'none',
+            }}
+          />
           <button
             onClick={() => onAction('ULTIMATE')}
             disabled={!isEnabled || !isUltimateReady}
             style={{
+              position: 'relative',
+              zIndex: 2,
               width: '100%',
-              minHeight: '52px',
+              minHeight: '84px',
               background: 'transparent',
               color: isEnabled && isUltimateReady ? '#FFFFFF' : '#6B575A',
               border: 'none',
@@ -247,50 +282,75 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '6px 12px',
+              gap: '12px',
+              padding: '10px 14px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-              <Flame
-                size={18}
-                color={isEnabled && isUltimateReady ? '#FFD54F' : '#8D6E63'}
-                style={{ flexShrink: 0, filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 4px #FFD54F)' : 'none' }}
-              />
-              <span style={{ fontSize: '14px', fontWeight: 900, whiteSpace: 'nowrap' }}>全能の一撃</span>
+            <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  flexShrink: 0,
+                  display: 'grid',
+                  placeItems: 'center',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, #FFF8D6 0%, #D9AF35 42%, #241A04 72%, #050505 100%)',
+                  border: '1px solid rgba(255,255,255,0.55)',
+                  boxShadow: isEnabled && isUltimateReady ? '0 0 14px rgba(255, 225, 130, 0.65)' : 'none',
+                }}
+              >
+                <Flame
+                  size={19}
+                  color={isEnabled && isUltimateReady ? '#FFFFFF' : '#8D6E63'}
+                  style={{ filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 5px #FFD54F)' : 'none' }}
+                />
+              </div>
+              <div style={{ minWidth: 0, textAlign: 'left' }}>
+                <div
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 950,
+                    letterSpacing: '0.05em',
+                    color: isEnabled && isUltimateReady ? '#FFFFFF' : '#76686A',
+                    whiteSpace: 'nowrap',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+                  }}
+                >
+                  全能の一撃
+                </div>
+                <div
+                  style={{
+                    marginTop: '3px',
+                    fontSize: '10px',
+                    fontWeight: 900,
+                    letterSpacing: '0.12em',
+                    color: '#FFE082',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  全神の権能 1/1　×　破壊の権能 1/1　—　融合完了
+                </div>
+              </div>
             </div>
+
             <div
               style={{
+                flexShrink: 0,
+                padding: '6px 10px',
+                borderRadius: '8px',
+                background: 'rgba(0,0,0,0.58)',
+                border: isEnabled && isUltimateReady ? '1px solid #FFE082' : '1px solid #4A373A',
+                color: isEnabled && isUltimateReady ? '#FFFFFF' : '#B0BEC5',
                 fontSize: '11px',
-                fontWeight: 800,
-                padding: '3px 8px',
-                borderRadius: '6px',
-                backgroundColor: isEnabled && isUltimateReady ? '#FFD54F' : '#2B2124',
-                color: isEnabled && isUltimateReady ? '#210E04' : '#B0BEC5',
-                border: `1px solid ${isEnabled && isUltimateReady ? '#FFE082' : '#4A373A'}`,
+                fontWeight: 900,
                 whiteSpace: 'nowrap',
+                boxShadow: 'inset 0 0 14px rgba(0,0,0,0.35)',
               }}
             >
               {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
             </div>
           </button>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              minHeight: '24px',
-              padding: '0 8px 6px',
-              fontSize: '10px',
-              fontWeight: 800,
-              color: '#FFE082',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span>全神の権能 1/1</span>
-            <span>／</span>
-            <span>破壊の権能 1/1</span>
-          </div>
         </div>
       )}
 
@@ -299,89 +359,144 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           style={{
             position: 'relative',
             width: '100%',
-            minHeight: '112px',
-            border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
-            borderRadius: '10px',
+            minHeight: '138px',
+            border: isEnabled && isUltimateReady ? '1.5px solid #FFE082' : '1px solid #3E2D30',
+            borderRadius: '12px',
             overflow: 'hidden',
-            background: 'linear-gradient(135deg, #050505 0%, #0A0A0A 32%, #6E5818 47%, #FFD54F 50%, #6E5818 53%, #0A0A0A 68%, #050505 100%)',
-            boxShadow: isEnabled && isUltimateReady ? '0 0 14px rgba(255, 213, 79, 0.45)' : 'none',
+            background: '#020202',
+            boxShadow: isEnabled && isUltimateReady
+              ? '0 0 16px rgba(255, 213, 79, 0.42), 0 0 30px rgba(255, 0, 0, 0.12)'
+              : 'none',
           }}
         >
-          <button
-            onClick={() => onIrenaUltimateAction('ALL_GODS')}
-            disabled={!isEnabled || !isUltimateReady || hasUsedAllGods}
+          <div
+            aria-hidden="true"
             style={{
               position: 'absolute',
               inset: 0,
-              width: '100%',
-              clipPath: 'polygon(0 0, 59% 0, 41% 100%, 0 100%)',
+              background: 'linear-gradient(112deg, #B78B13 0%, #F7D66A 20%, #3C2B06 39%, #090909 50%, #120303 62%, #6D0808 80%, #000000 100%)',
+              opacity: isEnabled && isUltimateReady ? 1 : 0.42,
+              pointerEvents: 'none',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(112deg, transparent 0%, rgba(255,255,255,0.18) 44%, transparent 59%)',
+              transform: 'translateX(-120%)',
+              animation: isEnabled && isUltimateReady ? 'irenaUltimateSweep 2.2s ease-in-out infinite' : 'none',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <button
+            onClick={() => onIrenaUltimateAction('ALL_GODS')}
+            disabled={!isEnabled || !isUltimateReady || hasUsedAllGods}
+            aria-label="全神の権能"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '63%',
+              clipPath: 'polygon(0 0, 100% 0, 76% 100%, 0 100%)',
               background: isEnabled && isUltimateReady && !hasUsedAllGods
-                ? 'linear-gradient(135deg, #A67C00 0%, #E6C15A 48%, #8D6E63 100%)'
-                : 'linear-gradient(135deg, #5F4700 0%, #7E6A2E 48%, #4A373A 100%)',
+                ? 'linear-gradient(135deg, #F7D66A 0%, #C99C25 32%, #6D5010 78%, #2A210B 100%)'
+                : 'linear-gradient(135deg, #70550E 0%, #4D3B10 45%, #211C10 100%)',
               color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFFFFF' : '#A89B7A',
               border: 'none',
               cursor: isEnabled && isUltimateReady && !hasUsedAllGods ? 'pointer' : 'not-allowed',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'center',
-              gap: '7px',
-              padding: '8px 20px 8px 8px',
-              zIndex: 1,
+              gap: '8px',
+              padding: '12px 36px 12px 16px',
+              zIndex: 2,
+              textAlign: 'left',
+              boxShadow: isEnabled && isUltimateReady && !hasUsedAllGods ? 'inset 0 0 28px rgba(255,255,255,0.12)' : 'none',
             }}
           >
-            <span style={{ fontSize: '16px', fontWeight: 900, whiteSpace: 'nowrap', textShadow: '0 1px 3px rgba(0,0,0,0.45)' }}>
+            <span
+              style={{
+                fontSize: '19px',
+                fontWeight: 950,
+                letterSpacing: '0.06em',
+                whiteSpace: 'nowrap',
+                color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFFFFF' : '#A89B7A',
+                textShadow: '0 2px 10px rgba(0,0,0,0.75)',
+              }}
+            >
               全神の権能
             </span>
             <span
               style={{
-                fontSize: '12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                fontSize: '11px',
                 fontWeight: 900,
-                color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFFFFF' : '#A89B7A',
+                letterSpacing: '0.08em',
+                color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFF4C2' : '#8C7F61',
                 whiteSpace: 'nowrap',
-                textShadow: '0 1px 3px rgba(0,0,0,0.55)',
               }}
             >
-              使用回数 {irenaUltimateUses.allGods}/1
+              <span style={{ fontSize: '14px' }}>◆</span> 使用回数 {irenaUltimateUses.allGods}/1
             </span>
           </button>
 
           <button
             onClick={() => onIrenaUltimateAction('RUIN')}
             disabled={!isEnabled || !isUltimateReady || hasUsedRuin}
+            aria-label="破壊の権能"
             style={{
               position: 'absolute',
               inset: 0,
-              width: '100%',
-              clipPath: 'polygon(59% 0, 100% 0, 100% 100%, 41% 100%)',
+              left: '34%',
+              width: '66%',
+              clipPath: 'polygon(21% 0, 100% 0, 100% 100%, 0 100%)',
               background: isEnabled && isUltimateReady && !hasUsedRuin
-                ? 'linear-gradient(135deg, #121212 0%, #050505 62%, #000000 100%)'
-                : 'linear-gradient(135deg, #252525 0%, #111111 62%, #050505 100%)',
-              color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FF2D2D' : '#7E5858',
+                ? 'linear-gradient(135deg, #101010 0%, #050505 48%, #130000 73%, #320000 100%)'
+                : 'linear-gradient(135deg, #222222 0%, #0E0E0E 56%, #180606 100%)',
+              color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FF3838' : '#805050',
               border: 'none',
               cursor: isEnabled && isUltimateReady && !hasUsedRuin ? 'pointer' : 'not-allowed',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems: 'flex-end',
               justifyContent: 'center',
-              gap: '7px',
-              padding: '8px 8px 8px 20px',
-              zIndex: 1,
+              gap: '8px',
+              padding: '12px 16px 12px 40px',
+              zIndex: 2,
+              textAlign: 'right',
+              boxShadow: isEnabled && isUltimateReady && !hasUsedRuin ? 'inset 0 0 30px rgba(255,0,0,0.12)' : 'none',
             }}
           >
-            <span style={{ fontSize: '16px', fontWeight: 900, whiteSpace: 'nowrap', textShadow: '0 1px 3px rgba(255,0,0,0.3)' }}>
+            <span
+              style={{
+                fontSize: '19px',
+                fontWeight: 950,
+                letterSpacing: '0.06em',
+                whiteSpace: 'nowrap',
+                color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FF3838' : '#805050',
+                textShadow: '0 2px 10px rgba(0,0,0,0.9)',
+              }}
+            >
               破壊の権能
             </span>
             <span
               style={{
-                fontSize: '12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                fontSize: '11px',
                 fontWeight: 900,
-                color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FF2D2D' : '#7E5858',
+                letterSpacing: '0.08em',
+                color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FF8B8B' : '#795757',
                 whiteSpace: 'nowrap',
-                textShadow: '0 1px 3px rgba(0,0,0,0.8)',
               }}
             >
-              使用回数 {irenaUltimateUses.ruin}/1
+              使用回数 {irenaUltimateUses.ruin}/1 <span style={{ fontSize: '14px' }}>◆</span>
             </span>
           </button>
 
@@ -389,14 +504,33 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: 0,
-              bottom: 0,
-              left: '41%',
-              width: '18%',
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.96) 0%, rgba(93,73,18,0.9) 28%, rgba(255,213,79,0.94) 50%, rgba(93,73,18,0.9) 72%, rgba(0,0,0,0.96) 100%)',
+              top: '-6%',
+              bottom: '-6%',
+              left: '42%',
+              width: '17%',
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(255,215,92,0.55) 24%, rgba(255,255,255,0.96) 50%, rgba(255,0,0,0.34) 78%, rgba(0,0,0,0.95) 100%)',
               clipPath: 'polygon(50% 0, 100% 0, 50% 100%, 0 100%)',
+              transform: 'translateZ(0)',
               pointerEvents: 'none',
-              zIndex: 2,
+              zIndex: 3,
+              filter: 'blur(0.4px) drop-shadow(0 0 8px rgba(255,213,79,0.58)) drop-shadow(0 0 10px rgba(255,0,0,0.24))',
+              mixBlendMode: 'screen',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: '54px',
+              height: '54px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, #FFFBEA 0%, #FFD54F 18%, rgba(255,213,79,0.28) 46%, rgba(255,0,0,0.12) 62%, transparent 72%)',
+              transform: 'translate(-50%, -50%)',
+              animation: isEnabled && isUltimateReady ? 'irenaUltimateCore 1.6s ease-in-out infinite' : 'none',
+              pointerEvents: 'none',
+              zIndex: 4,
               mixBlendMode: 'screen',
             }}
           />
