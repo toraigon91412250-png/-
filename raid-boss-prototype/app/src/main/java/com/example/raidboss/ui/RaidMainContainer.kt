@@ -13,6 +13,7 @@ import com.example.raidboss.ui.result.BattleResultDialog
 
 enum class ScreenState {
     PRE_BATTLE,
+    BATTLE_LOADING,
     BATTLE
 }
 
@@ -29,6 +30,14 @@ fun RaidMainContainer(
     // バックボタン制御
     BackHandler(enabled = currentScreen == ScreenState.BATTLE) {
         currentScreen = ScreenState.PRE_BATTLE
+    }
+
+    // 戦闘開始ロード演出
+    LaunchedEffect(currentScreen) {
+        if (currentScreen == ScreenState.BATTLE_LOADING) {
+            kotlinx.coroutines.delay(1100)
+            currentScreen = ScreenState.BATTLE
+        }
     }
 
     AnimatedContent(
@@ -52,8 +61,13 @@ fun RaidMainContainer(
                         lastSelectedDifficulty = difficulty
                         lastStartAtPhase2 = startAtPhase2
                         battleEngine.startBattle(difficulty, startAtPhase2)
-                        currentScreen = ScreenState.BATTLE
+                        currentScreen = ScreenState.BATTLE_LOADING
                     }
+                )
+            }
+            ScreenState.BATTLE_LOADING -> {
+                BattleDeployingScreen(
+                    modifier = Modifier.fillMaxSize()
                 )
             }
             ScreenState.BATTLE -> {
