@@ -7,6 +7,11 @@ interface ActionDockProps {
   enemy: BattleFighter;
   isEnabled: boolean;
   onAction: (action: BattleAction) => void;
+  irenaUltimateUses?: {
+    allGods: number;
+    ruin: number;
+  };
+  onIrenaUltimateAction?: (variant: 'ALL_GODS' | 'RUIN') => void;
 }
 
 export const ActionDock: React.FC<ActionDockProps> = ({
@@ -14,6 +19,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   enemy,
   isEnabled,
   onAction,
+  irenaUltimateUses = { allGods: 0, ruin: 0 },
+  onIrenaUltimateAction,
 }) => {
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + (player.isBuffed ? 50 : 0);
   const isSpecialReady = player.specialCooldownRemaining <= 0;
@@ -21,6 +28,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const specialDamagePreview = player.character.specialSkillDamage + (player.isBuffed ? 50 : 0);
   const ultimateDamagePreview = player.character.ultimateSkillDamage + (player.isBuffed ? 50 : 0);
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
+  const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
+  const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
+  const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
+  const hasUnlockedOmnipotence = hasUsedAllGods && hasUsedRuin;
 
   return (
     <div
@@ -212,63 +223,251 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       </div>
 
       {/* Row 2: Prominent 必殺技 Command */}
-      <button
-        onClick={() => onAction('ULTIMATE')}
-        disabled={!isEnabled || !isUltimateReady}
-        style={{
-          width: '100%',
-          height: '50px',
-          backgroundColor: isEnabled && isUltimateReady ? '#D84315' : '#251A1C',
-          color: isEnabled && isUltimateReady ? '#FFFFFF' : '#6B575A',
-          border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
-          borderRadius: '10px',
-          cursor: isEnabled && isUltimateReady ? 'pointer' : 'not-allowed',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 12px',
-          boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
-          transition: 'transform 0.1s ease, filter 0.15s ease',
-        }}
-        onMouseDown={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(0.98)')}
-        onMouseUp={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(1)')}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Flame
-            size={18}
-            color={isEnabled && isUltimateReady ? '#FFD54F' : '#8D6E63'}
-            style={{ filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 4px #FFD54F)' : 'none' }}
-          />
-          <span style={{ fontSize: '14px', fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
-            必殺技
-          </span>
-          <span
+      {isIrenaUltimate ? (
+        hasUnlockedOmnipotence ? (
+          <div
             style={{
-              fontSize: '12px',
-              fontWeight: 700,
-              color: isEnabled && isUltimateReady ? '#FFE082' : '#B0BEC5',
+              width: '100%',
+              border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
+              borderRadius: '10px',
+              backgroundColor: isEnabled && isUltimateReady ? '#D84315' : '#251A1C',
+              boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
+              overflow: 'hidden',
+            }}
+          >
+            <button
+              onClick={() => onAction('ULTIMATE')}
+              disabled={!isEnabled || !isUltimateReady}
+              style={{
+                width: '100%',
+                minHeight: '52px',
+                background: 'transparent',
+                color: isEnabled && isUltimateReady ? '#FFFFFF' : '#6B575A',
+                border: 'none',
+                cursor: isEnabled && isUltimateReady ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '6px 12px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+                <Flame
+                  size={18}
+                  color={isEnabled && isUltimateReady ? '#FFD54F' : '#8D6E63'}
+                  style={{ flexShrink: 0, filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 4px #FFD54F)' : 'none' }}
+                />
+                <span style={{ fontSize: '14px', fontWeight: 900, whiteSpace: 'nowrap' }}>全能の一撃</span>
+              </div>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                  backgroundColor: isEnabled && isUltimateReady ? '#FFD54F' : '#2B2124',
+                  color: isEnabled && isUltimateReady ? '#210E04' : '#B0BEC5',
+                  border: `1px solid ${isEnabled && isUltimateReady ? '#FFE082' : '#4A373A'}`,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
+              </div>
+            </button>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                minHeight: '24px',
+                padding: '0 8px 6px',
+                fontSize: '10px',
+                fontWeight: 800,
+                color: '#FFE082',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span>全神の権能 1/1</span>
+              <span>／</span>
+              <span>破滅の権能 1/1</span>
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
+              borderRadius: '10px',
+              backgroundColor: '#251A1C',
+              overflow: 'hidden',
+              boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
+            }}
+          >
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1px 1fr',
+                minHeight: '70px',
+              }}
+            >
+              <button
+                onClick={() => onIrenaUltimateAction('ALL_GODS')}
+                disabled={!isEnabled || !isUltimateReady || hasUsedAllGods}
+                style={{
+                  minWidth: 0,
+                  backgroundColor: isEnabled && isUltimateReady && !hasUsedAllGods ? '#D84315' : '#251A1C',
+                  color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFFFFF' : '#6B575A',
+                  border: 'none',
+                  cursor: isEnabled && isUltimateReady && !hasUsedAllGods ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px',
+                  padding: '6px 4px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>全神の権能</span>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: isEnabled && isUltimateReady && !hasUsedAllGods ? '#FFE082' : '#7B686A' }}>
+                  使用回数 {irenaUltimateUses.allGods}/1
+                </span>
+              </button>
+
+              <div style={{ width: '1px', backgroundColor: '#8D6E63', alignSelf: 'stretch', position: 'relative' }}>
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: '15px',
+                    fontWeight: 900,
+                    color: '#FFE082',
+                    lineHeight: 1,
+                    backgroundColor: '#251A1C',
+                  }}
+                >
+                  ／
+                </span>
+              </div>
+
+              <button
+                onClick={() => onIrenaUltimateAction('RUIN')}
+                disabled={!isEnabled || !isUltimateReady || hasUsedRuin}
+                style={{
+                  minWidth: 0,
+                  backgroundColor: isEnabled && isUltimateReady && !hasUsedRuin ? '#D84315' : '#251A1C',
+                  color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FFFFFF' : '#6B575A',
+                  border: 'none',
+                  cursor: isEnabled && isUltimateReady && !hasUsedRuin ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '3px',
+                  padding: '6px 4px',
+                }}
+              >
+                <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>破滅の権能</span>
+                <span style={{ fontSize: '10px', fontWeight: 800, color: isEnabled && isUltimateReady && !hasUsedRuin ? '#FFE082' : '#7B686A' }}>
+                  使用回数 {irenaUltimateUses.ruin}/1
+                </span>
+              </button>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '8px',
+                minHeight: '28px',
+                padding: '0 10px 6px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  color: isUltimateReady ? '#FFE082' : '#B0BEC5',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                必殺技ゲージ {player.ultimateGauge}/3
+              </div>
+              <div
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  color: isUltimateReady ? '#FFE082' : '#94A3B8',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : 'ゲージ充填中'}
+              </div>
+            </div>
+          </div>
+        )
+      ) : (
+        <button
+          onClick={() => onAction('ULTIMATE')}
+          disabled={!isEnabled || !isUltimateReady}
+          style={{
+            width: '100%',
+            height: '50px',
+            backgroundColor: isEnabled && isUltimateReady ? '#D84315' : '#251A1C',
+            color: isEnabled && isUltimateReady ? '#FFFFFF' : '#6B575A',
+            border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
+            borderRadius: '10px',
+            cursor: isEnabled && isUltimateReady ? 'pointer' : 'not-allowed',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0 12px',
+            boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
+            transition: 'transform 0.1s ease, filter 0.15s ease',
+          }}
+          onMouseDown={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(0.98)')}
+          onMouseUp={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Flame
+              size={18}
+              color={isEnabled && isUltimateReady ? '#FFD54F' : '#8D6E63'}
+              style={{ filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 4px #FFD54F)' : 'none' }}
+            />
+            <span style={{ fontSize: '14px', fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
+              必殺技
+            </span>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                color: isEnabled && isUltimateReady ? '#FFE082' : '#B0BEC5',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              【{player.character.ultimateSkillName}】
+            </span>
+          </div>
+
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: 800,
+              padding: '3px 8px',
+              borderRadius: '6px',
+              backgroundColor: isEnabled && isUltimateReady ? '#FFD54F' : '#2B2124',
+              color: isEnabled && isUltimateReady ? '#210E04' : '#B0BEC5',
+              border: `1px solid ${isEnabled && isUltimateReady ? '#FFE082' : '#4A373A'}`,
               whiteSpace: 'nowrap',
             }}
           >
-            【{player.character.ultimateSkillName}】
-          </span>
-        </div>
-
-        <div
-          style={{
-            fontSize: '11px',
-            fontWeight: 800,
-            padding: '3px 8px',
-            borderRadius: '6px',
-            backgroundColor: isEnabled && isUltimateReady ? '#FFD54F' : '#2B2124',
-            color: isEnabled && isUltimateReady ? '#210E04' : '#B0BEC5',
-            border: `1px solid ${isEnabled && isUltimateReady ? '#FFE082' : '#4A373A'}`,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
-        </div>
-      </button>
+            {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
+          </div>
+        </button>
+      )}
     </div>
   );
 };
