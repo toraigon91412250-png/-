@@ -22,11 +22,12 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
 }) => {
-  const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + (player.isBuffed ? 50 : 0);
+  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 50) : 0;
+  const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
-  const specialDamagePreview = player.character.specialSkillDamage + (player.isBuffed ? 50 : 0);
-  const ultimateDamagePreview = player.character.ultimateSkillDamage + (player.isBuffed ? 50 : 0);
+  const specialDamagePreview = player.character.specialSkillDamage + buffDamageBonus;
+  const ultimateDamagePreview = player.character.ultimateSkillDamage + buffDamageBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
@@ -87,7 +88,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 borderRadius: '4px',
               }}
             >
-              ⚡【強化中】攻撃+50
+              ⚡【強化中】攻撃+{buffDamageBonus}
             </span>
           )}
         </div>
