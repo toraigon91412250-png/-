@@ -6,9 +6,10 @@ import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { loadOverallStats } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
+import { RaidBossScreen } from './components/RaidBossScreen';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS'>('SELECT');
   const [playerChar, setPlayerChar] = useState<CharacterDef>(IRENA);
   const [enemyChar, setEnemyChar] = useState<CharacterDef>(KAISER);
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
@@ -136,8 +137,9 @@ export const App: React.FC = () => {
           onSelectPlayer={setPlayerChar}
           onSelectDifficulty={setDifficulty}
           onStartBattle={handleStartBattle}
+          onOpenRaidBoss={() => setScreen('RAID_BOSS')}
         />
-      ) : (
+      ) : screen === 'BATTLE' ? (
         <BattleScreen
           state={battleState}
           onAction={onActionSelected}
@@ -146,6 +148,8 @@ export const App: React.FC = () => {
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />
+      ) : (
+        <RaidBossScreen onBack={() => setScreen('SELECT')} />
       )}
     </div>
   );
