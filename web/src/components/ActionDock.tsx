@@ -398,8 +398,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             style={{
               position: 'absolute',
               inset: 0,
-              width: '63%',
-              clipPath: 'polygon(0 0, 100% 0, 76% 100%, 0 100%)',
+              width: '100%',
+              clipPath: 'polygon(0 0, 60% 0, 40% 100%, 0 100%)',
               background: isEnabled && isUltimateReady && !hasUsedAllGods
                 ? 'linear-gradient(135deg, #F7D66A 0%, #C99C25 32%, #6D5010 78%, #2A210B 100%)'
                 : 'linear-gradient(135deg, #70550E 0%, #4D3B10 45%, #211C10 100%)',
@@ -411,7 +411,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               alignItems: 'flex-start',
               justifyContent: 'center',
               gap: '8px',
-              padding: '12px 36px 12px 16px',
+              padding: '12px 44px 12px 16px',
               zIndex: 2,
               textAlign: 'left',
               boxShadow: isEnabled && isUltimateReady && !hasUsedAllGods ? 'inset 0 0 28px rgba(255,255,255,0.12)' : 'none',
@@ -452,9 +452,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             style={{
               position: 'absolute',
               inset: 0,
-              left: '34%',
-              width: '66%',
-              clipPath: 'polygon(21% 0, 100% 0, 100% 100%, 0 100%)',
+              width: '100%',
+              clipPath: 'polygon(60% 0, 100% 0, 100% 100%, 40% 100%)',
               background: isEnabled && isUltimateReady && !hasUsedRuin
                 ? 'linear-gradient(135deg, #101010 0%, #050505 48%, #130000 73%, #320000 100%)'
                 : 'linear-gradient(135deg, #222222 0%, #0E0E0E 56%, #180606 100%)',
@@ -466,7 +465,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               alignItems: 'flex-end',
               justifyContent: 'center',
               gap: '8px',
-              padding: '12px 16px 12px 40px',
+              padding: '12px 16px 12px 44px',
               zIndex: 2,
               textAlign: 'right',
               boxShadow: isEnabled && isUltimateReady && !hasUsedRuin ? 'inset 0 0 30px rgba(255,0,0,0.12)' : 'none',
