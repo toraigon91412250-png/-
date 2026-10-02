@@ -18,7 +18,7 @@ export const IRENA: CharacterDef = {
   passiveDescription: '相手より先に行動するターン、通常攻撃ダメージ+20（クリティカル時は加算後に1.5倍）',
   specialSkillName: '羽弾',
   specialSkillDamage: 350,
-  specialSkillCooldown: 3,
+  specialSkillCooldown: 1,
   specialSkillDescription: '必殺ゲージ+1。350ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時50ダメージ、速度-20、防御-20）',
   ultimateSkillName: '羽嵐',
   ultimateSkillDamage: 500,
