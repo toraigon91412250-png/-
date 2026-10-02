@@ -10,7 +10,7 @@ import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
 interface BattleScreenProps {
   state: BattleUiState;
-  onAction: (action: BattleAction) => void;
+  onAction: (action: BattleAction, ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE') => void;
   onBackToSelect: () => void;
   onRestart: () => void;
   onToggleSound: () => void;
@@ -51,7 +51,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       return { ...prev, ruin: 1 };
     });
 
-    onAction('ULTIMATE');
+    onAction('ULTIMATE', variant);
   };
 
   const handleRestart = () => {
@@ -103,7 +103,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             } else if (irenaUltimateUses.ruin === 0) {
               handleIrenaUltimateAction('RUIN');
             } else {
-              onAction('ULTIMATE');
+              onAction('ULTIMATE', 'OMNIPOTENCE');
             }
           } else {
             onAction('ULTIMATE');
