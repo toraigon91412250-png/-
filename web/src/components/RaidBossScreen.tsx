@@ -567,7 +567,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               {actionFx === 'GUARD' && <div style={styles.guardFx}><Shield size={92} /><span style={styles.guardFxLabel}>GUARD</span></div>}
               {actionFx === 'POTION' && <div style={styles.potionFx}><Sparkles size={64} /><span style={styles.potionFxLabel}>RECOVER</span></div>}
               {actionFx === 'ULTIMATE' && <div style={styles.ultimateFx}><div style={styles.ultimateRing} /><div style={styles.ultimateCore}>必殺</div></div>}
-              {actionFx === 'BOSS' && <div style={styles.bossStrikeFx}><AlertTriangle size={78} /><span>BOSS STRIKE</span></div>}
+              {actionFx === 'BOSS' && <div style={styles.bossStrikeFx}><AlertTriangle size={78} /><span style={styles.bossStrikeLabel}>BOSS STRIKE</span></div>}
             </div>
           )}
           <div style={styles.bossVisualWrapLarge}>
@@ -837,7 +837,7 @@ const styles: Record<string, React.CSSProperties> = {
   ultimateRing: { position: 'absolute', inset: 0, borderRadius: '50%', border: '3px solid rgba(230,190,255,.92)', boxShadow: '0 0 46px rgba(190,110,255,.65), inset 0 0 42px rgba(190,110,255,.38)', animation: 'raidUltimateFx .82s ease-out forwards' },
   ultimateCore: { fontSize: 'clamp(34px, 8vw, 66px)', fontWeight: 1000, letterSpacing: '.12em', animation: 'raidActionFlash .82s ease-out forwards' },
   bossStrikeFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '160px', height: '160px', borderRadius: '50%', color: '#FF7A8A', border: '2px solid rgba(255,90,110,.8)', background: 'rgba(120,10,30,.12)', boxShadow: '0 0 44px rgba(255,50,80,.35)', animation: 'raidBossStrikeFx .68s ease-out forwards' },
-  bossStrikeFx span: { position: 'absolute', bottom: '16px', fontSize: '11px', fontWeight: 1000, letterSpacing: '.18em' },
+  bossStrikeLabel: { position: 'absolute', bottom: '16px', fontSize: '11px', fontWeight: 1000, letterSpacing: '.18em' },
 
 };
 
