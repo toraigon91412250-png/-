@@ -263,6 +263,262 @@ const drawAllGodsVfx=(ctx:CanvasRenderingContext2D,w:number,h:number,t:number)=>
   ctx.restore();
 };
 
+
+const RUIN_SEQUENCE_DURATION_MS = 5600;
+
+const RUIN_ASSETS = {
+  "feather": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_一本の巨大な黒い羽根、堕天使を連想させる不吉で神秘的な雰...毛、鋭く美...細な羽毛の質感、わずかな赤い光の反射、ダークファンタジー、ゲームの必殺技演 142180.png",
+  "cloud": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_漆黒の巨大な黒雲、重く渦巻く暗い雲、雲の内部に無数の細か...っている、...かな赤い光が見える、不吉で神秘的な雰囲気、堕天使を思わせるダークファンタジ 142180.png",
+  "intro": "https://raw.githubusercontent.com/toraigon91412250-png/-/b3e223fdbfa4c66e95bc47b6df0f07322795c36f/irena_ruin_intro.jpg",
+  "hand": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/1790944467835.jpg",
+  "cracks": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_現実の空間がガラスのように大きくひび割れ、中央部分から崩...ダークフ...ァ表現。_画面中央に大きな不規則な亀裂、その周囲にも細かな亀裂が広がっている 142180.png"
+};
+
+const ruinPhaseAlpha = (t: number, start: number, end: number, fade = 0.08) => {
+  if (t <= start || t >= end) return 0;
+  const fadeIn = Math.min(1, (t - start) / Math.max(0.0001, fade));
+  const fadeOut = Math.min(1, (end - t) / Math.max(0.0001, fade));
+  return Math.min(fadeIn, fadeOut, 1);
+};
+
+const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = ({ progress, effectDamage }) => {
+  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    (Object.entries(RUIN_ASSETS) as Array<[string, string]>).forEach(([key, src]) => {
+      const image = new Image();
+      image.onload = () => {
+        if (!cancelled) setLoaded(prev => ({ ...prev, [key]: true }));
+      };
+      image.onerror = () => {
+        if (!cancelled) setLoaded(prev => ({ ...prev, [key]: false }));
+      };
+      image.src = src;
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const t = progress;
+  const featherA = ruinPhaseAlpha(t, 0.08, 0.25, 0.08);
+  const cloudA = ruinPhaseAlpha(t, 0.20, 0.39, 0.10);
+  const introA = ruinPhaseAlpha(t, 0.29, 0.54, 0.06);
+  const handA = ruinPhaseAlpha(t, 0.52, 0.82, 0.06);
+  const crackA = ruinPhaseAlpha(t, 0.76, 0.94, 0.06);
+
+  const featherP = Math.min(1, Math.max(0, (t - 0.08) / 0.17));
+  const cloudP = Math.min(1, Math.max(0, (t - 0.20) / 0.19));
+  const introP = Math.min(1, Math.max(0, (t - 0.29) / 0.25));
+  const handP = Math.min(1, Math.max(0, (t - 0.52) / 0.30));
+  const crackP = Math.min(1, Math.max(0, (t - 0.76) / 0.18));
+
+  const collapseP = Math.min(1, Math.max(0, (t - 0.90) / 0.10));
+  const collapseEase = collapseP * collapseP * (3 - 2 * collapseP);
+  const endBlack = Math.min(1, Math.max(0, (t - 0.96) / 0.04));
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 2,
+        overflow: 'hidden',
+        background: '#000000',
+        pointerEvents: 'none',
+      }}
+      aria-hidden="true"
+    >
+      <style>{`
+        @keyframes ruinParticleDrift {
+          0% { transform: translate3d(0, 20px, 0) scale(0.6); opacity: 0; }
+          20% { opacity: 0.8; }
+          100% { transform: translate3d(30px, -160px, 0) scale(1.15); opacity: 0; }
+        }
+        @keyframes ruinDarkPulse {
+          0%, 100% { opacity: 0.15; }
+          50% { opacity: 0.42; }
+        }
+      `}</style>
+
+      <div style={{ position: 'absolute', inset: 0, background: '#000000', opacity: 0.96 }} />
+
+      {loaded.feather && featherA > 0 && (
+        <img
+          src={RUIN_ASSETS.feather}
+          alt=""
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '48%',
+            width: 'min(72vw, 720px)',
+            height: 'min(86vh, 860px)',
+            objectFit: 'contain',
+            transform: `translate(-50%, -50%) rotate(${-8 + featherP * 12}deg) scale(${0.62 + featherP * 0.45})`,
+            opacity: featherA * 0.98,
+            filter: 'drop-shadow(0 0 26px rgba(130,0,0,0.72)) contrast(1.12)',
+          }}
+        />
+      )}
+
+      {loaded.cloud && cloudA > 0 && (
+        <img
+          src={RUIN_ASSETS.cloud}
+          alt=""
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '40%',
+            width: '130%',
+            height: '78%',
+            objectFit: 'cover',
+            transform: `translate(-50%, -50%) scale(${1.06 + cloudP * 0.12}) translateX(${(cloudP - 0.5) * 2.5}%)`,
+            opacity: cloudA * 0.76,
+            filter: 'contrast(1.2) brightness(0.62) saturate(0.65)',
+          }}
+        />
+      )}
+
+      {cloudA > 0 && Array.from({ length: 18 }, (_, i) => (
+        <span
+          key={i}
+          style={{
+            position: 'absolute',
+            left: `${8 + ((i * 37) % 84)}%`,
+            top: `${48 + ((i * 53) % 42)}%`,
+            width: `${2 + (i % 3)}px`,
+            height: `${2 + (i % 3)}px`,
+            borderRadius: '50%',
+            background: i % 4 === 0 ? '#8b0000' : '#2a2a2a',
+            boxShadow: i % 4 === 0 ? '0 0 10px rgba(180,0,0,0.8)' : '0 0 8px rgba(0,0,0,0.9)',
+            animation: `ruinParticleDrift 1.3s ease-out ${(i * 0.05).toFixed(2)}s infinite`,
+            opacity: cloudA * 0.62,
+          }}
+        />
+      ))}
+
+      {loaded.intro && introA > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 42%, rgba(130,0,0,0.08), rgba(0,0,0,0.42) 58%, rgba(0,0,0,0.78) 100%)',
+            opacity: introA,
+          }}
+        >
+          <img
+            src={RUIN_ASSETS.intro}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              transform: `scale(${1.18 - introP * 0.06}) translate3d(${(0.5 - introP) * 1.5}%, 0, 0)`,
+              filter: 'contrast(1.08) saturate(0.88)',
+            }}
+          />
+        </div>
+      )}
+
+      {loaded.hand && handA > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 52% 40%, rgba(160,0,0,0.07), rgba(0,0,0,0.40) 60%, rgba(0,0,0,0.76) 100%)',
+            opacity: handA,
+          }}
+        >
+          <img
+            src={RUIN_ASSETS.hand}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              transform: `scale(${1.14 + handP * 0.07}) translate3d(0, ${-handP * 1.5}%, 0)`,
+              filter: 'contrast(1.08) saturate(0.86)',
+            }}
+          />
+        </div>
+      )}
+
+      {loaded.cracks && crackA > 0 && (
+        <img
+          src={RUIN_ASSETS.cracks}
+          alt=""
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            width: '112%',
+            height: '112%',
+            objectFit: 'cover',
+            transform: `translate(-50%, -50%) scale(${0.92 + crackP * 0.14})`,
+            opacity: crackA * 0.96,
+            filter: 'contrast(1.35) brightness(1.08)',
+          }}
+        />
+      )}
+
+      {crackA > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 50%, rgba(255,0,0,0.10), rgba(0,0,0,0.74) 52%, rgba(0,0,0,0.96) 100%)',
+            opacity: crackA,
+            animation: 'ruinDarkPulse 0.55s ease-in-out infinite',
+          }}
+        />
+      )}
+
+      {collapseP > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            width: `${10 + collapseEase * 120}vw`,
+            height: `${10 + collapseEase * 120}vh`,
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '50%',
+            background: '#000000',
+            boxShadow: '0 0 80px rgba(0,0,0,0.98), 0 0 0 3px rgba(80,0,0,0.72)',
+            opacity: 0.94 + collapseEase * 0.06,
+          }}
+        />
+      )}
+
+
+      {effectDamage > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            bottom: '13%',
+            transform: 'translateX(-50%)',
+            zIndex: 20,
+            color: '#FFFFFF',
+            fontSize: 'clamp(28px, 6vw, 64px)',
+            fontWeight: 950,
+            letterSpacing: '0.04em',
+            textShadow: '0 3px 0 #000, 0 0 14px rgba(255,40,40,0.95), 0 0 28px rgba(0,0,0,0.95)',
+            whiteSpace: 'nowrap',
+            opacity: Math.min(1, 0.25 + progress * 5),
+          }}
+        >
+          −{effectDamage} DMG
+        </div>
+      )}
+      <div style={{ position: 'absolute', inset: 0, background: '#000000', opacity: endBlack }} />
+    </div>
+  );
+};
+
 export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -278,7 +534,16 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
     setProgress(0);
     lastUiUpdateRef.current = 0;
     const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
-    const duration = effect.effectType === 'BLEED_TICK' ? 850 : isAllGods ? 1300 : effect.isUltimate ? 700 : 450;
+    const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
+    const duration = effect.effectType === 'BLEED_TICK'
+      ? 850
+      : isAllGods
+        ? 1300
+        : isRuin
+          ? RUIN_SEQUENCE_DURATION_MS / Math.max(0.1, speedMultiplier)
+          : effect.isUltimate
+            ? 700
+            : 450;
     const startTime = performance.now();
     let animId: number;
 
@@ -320,6 +585,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       const actorCenter = effect.targetIsPlayer ? { x: w * 0.5, y: h * 0.28 } : { x: w * 0.5, y: h * 0.70 };
       const t = progress;
       const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
+      const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
 
       ctx.save();
 
@@ -383,7 +649,12 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         drawAllGodsVfx(ctx, w, h, t);
       }
 
-      // 4. Irena Feather Projectiles & Burst (羽弾)
+      // 4. 破壊の権能は専用のレイヤー演出で描画する。
+      else if (isRuin) {
+        // Legacy ULTIMATE canvas effect is intentionally suppressed for this variant.
+      }
+
+      // 5. Irena Feather Projectiles & Burst (羽弾)
       else if (effect.effectType === 'SPECIAL_FEATHER') {
         if (t < 0.45) {
           const projT = t / 0.45;
@@ -417,7 +688,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         }
       }
 
-      // 5. Kaiser Seismic Smash (重撃)
+      // 6. Kaiser Seismic Smash (重撃)
       else if (effect.effectType === 'SPECIAL_SMASH') {
         const radius = Math.max(1, t * 140);
         const alpha = Math.max(0, 1 - t);
@@ -434,7 +705,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         ctx.stroke();
       }
 
-      // 6. Critical Hit (Dual Golden Slash + Spark Burst)
+      // 7. Critical Hit (Dual Golden Slash + Spark Burst)
       else if (effect.isCritical) {
         const slashLen = 160 * t;
         const alpha = Math.max(0, 1 - t * 0.8);
@@ -458,7 +729,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         ctx.fill();
       }
 
-      // 7. Normal Hit (Full-Screen Slash + Particle Burst)
+      // 8. Normal Hit (Full-Screen Slash + Particle Burst)
       else if (effect.effectType === 'NORMAL_HIT') {
         const screenScale = Math.max(w, h) / 800;
         const slashLen = Math.max(w, h) * 0.34 * Math.min(1.25, 0.8 + t);
@@ -540,6 +811,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
   if (!effect) return null;
 
   const t = progress;
+  const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
 
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
     ? (1 - Math.abs(t - 0.16) / 0.08) * 0.25
@@ -582,6 +854,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       )}
 
       {/* Particle Canvas */}
+      {isRuin && <RuinAuthorityVfx key={effect.effectId} progress={t} effectDamage={effect.damage} />}
       <canvas
         ref={canvasRef}
         width={typeof window !== 'undefined' ? window.innerWidth || 800 : 800}
@@ -660,7 +933,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       )}
 
       {/* Floating Damage Numbers */}
-      {effect.damage > 0 && (
+      {effect.damage > 0 && !isRuin && (
         <div
           style={{
             position: 'absolute',
