@@ -541,16 +541,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
 
   const t = progress;
 
-  // Ultimate Screen Dim: Only active during 0.05 < t < 0.75 of ULTIMATE skill
-  // Strictly guaranteed to be 0 otherwise, so it can never remain on screen!
-  const ultimateDimAlpha = effect.isUltimate && t >= 0.05 && t <= 0.75
-    ? (t < 0.25 ? ((t - 0.05) / 0.2) * 0.55 : ((0.75 - t) / 0.5) * 0.55)
-    : 0;
-
-  const ultimateFlashAlpha = effect.isUltimate && t >= 0.15 && t <= 0.35
-    ? (1 - Math.abs(t - 0.25) / 0.1) * 0.4
-    : 0;
-
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
     ? (1 - Math.abs(t - 0.16) / 0.08) * 0.25
     : 0;
@@ -579,30 +569,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         overflow: 'hidden',
       }}
     >
-      {/* Dim Overlay - strictly conditional and zero when animation finishes */}
-      {ultimateDimAlpha > 0.01 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: `rgba(0, 0, 0, ${ultimateDimAlpha})`,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
-
-      {/* Screen Flash */}
-      {ultimateFlashAlpha > 0.01 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: `rgba(255, 255, 255, ${ultimateFlashAlpha})`,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
-
       {/* Critical Flash */}
       {critFlashAlpha > 0.01 && (
         <div
@@ -639,47 +605,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
           isEnemy={effect.targetIsPlayer}
           durationMs={Math.round(820 / Math.max(0.1, speedMultiplier))}
         />
-      )}
-
-      {/* Grand Ultimate Cut-In Banner */}
-      {effect.isUltimate && t >= 0.05 && t <= 0.85 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '32%',
-            transform: `translateY(-50px) scale(${t < 0.25 ? 0.85 + t * 0.6 : 1.0})`,
-            opacity: t > 0.65 ? (0.85 - t) / 0.2 : 1,
-            backgroundColor: '#1E0E08',
-            border: '2px solid #FFD54F',
-            borderRadius: '14px',
-            padding: '12px 28px',
-            boxShadow: '0 0 24px rgba(255, 213, 79, 0.6)',
-            textAlign: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: 900,
-              color: '#FFD54F',
-              letterSpacing: '2px',
-              marginBottom: '4px',
-            }}
-          >
-            🌟 ULTIMATE SKILL 🌟
-          </div>
-          <div
-            style={{
-              fontSize: '24px',
-              fontWeight: 900,
-              color: '#FFFFFF',
-              textShadow: '0 0 10px #FF6F00',
-            }}
-          >
-            必殺技『{effect.skillName}』
-          </div>
-        </div>
       )}
 
       {/* Evade "MISS!" Badge */}
