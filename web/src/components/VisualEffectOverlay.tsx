@@ -267,11 +267,11 @@ const drawAllGodsVfx=(ctx:CanvasRenderingContext2D,w:number,h:number,t:number)=>
 const RUIN_SEQUENCE_DURATION_MS = 5600;
 
 const RUIN_ASSETS = {
-  "feather": "https://raw.githubusercontent.com/toraigon91412250-png/-/feature/ruin-authority-vfx/Firefly_一本の巨大な黒い羽根、堕天使を連想させる不吉で神秘的な雰...毛、鋭く美...細な羽毛の質感、わずかな赤い光の反射、ダークファンタジー、ゲームの必殺技演 142180.png",
-  "cloud": "https://raw.githubusercontent.com/toraigon91412250-png/-/feature/ruin-authority-vfx/Firefly_漆黒の巨大な黒雲、重く渦巻く暗い雲、雲の内部に無数の細か...っている、...かな赤い光が見える、不吉で神秘的な雰囲気、堕天使を思わせるダークファンタジ 142180.png",
+  "feather": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_一本の巨大な黒い羽根、堕天使を連想させる不吉で神秘的な雰...毛、鋭く美...細な羽毛の質感、わずかな赤い光の反射、ダークファンタジー、ゲームの必殺技演 142180.png",
+  "cloud": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_漆黒の巨大な黒雲、重く渦巻く暗い雲、雲の内部に無数の細か...っている、...かな赤い光が見える、不吉で神秘的な雰囲気、堕天使を思わせるダークファンタジ 142180.png",
   "intro": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/irena_ruin_intro.jpg",
   "hand": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/1790944467835.jpg",
-  "cracks": "https://raw.githubusercontent.com/toraigon91412250-png/-/feature/ruin-authority-vfx/Firefly_現実の空間がガラスのように大きくひび割れ、中央部分から崩...ダークフ...ァ表現。_画面中央に大きな不規則な亀裂、その周囲にも細かな亀裂が広がっている 142180.png"
+  "cracks": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_現実の空間がガラスのように大きくひび割れ、中央部分から崩...ダークフ...ァ表現。_画面中央に大きな不規則な亀裂、その周囲にも細かな亀裂が広がっている 142180.png"
 };
 
 const ruinPhaseAlpha = (t: number, start: number, end: number, fade = 0.08) => {
