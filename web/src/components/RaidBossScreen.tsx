@@ -303,6 +303,22 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       return;
     }
 
+    if (type === 'FOCUS') {
+      const nextPlayer = {
+        ...player,
+        mp: clamp(player.mp - mpCost, 0, PLAYER_MAX_MP),
+        tp: clamp(player.tp + actionTp, 0, PLAYER_MAX_TP),
+        guardNext: false,
+        focus: true,
+        featherCooldown: Math.max(0, player.featherCooldown - 1),
+      };
+      setPlayer(nextPlayer);
+      setLastDamage(null);
+      setMessage('風詠集中。次の攻撃が35%強化される！');
+      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
+      return;
+    }
+
     const comboBonus = combo >= 2 ? 1.08 : 1;
     const focusBonus = player.focus ? 1.35 : 1;
     const breakBonus = bossBroken ? 1.35 : 1;
