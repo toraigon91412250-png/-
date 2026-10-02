@@ -165,7 +165,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setMode('RESULT');
   };
 
-  const bossAttack = (currentPhase: Phase, currentPattern: BossPattern, currentPlayer: PlayerState) => {
+  const bossAttack = (currentPhase: Phase, currentPattern: BossPattern, currentPlayer: PlayerState, currentTurn: number) => {
     const info = PATTERN_INFO[currentPattern];
     let rawDamage = randomBetween(info.minDamage, info.maxDamage);
 
@@ -204,6 +204,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         : `${info.name}！ -${formatNumber(hpDamage)}${shieldText}`,
     );
 
+    setBossPattern(getNextPattern(currentPhase, currentTurn + 1));
     setTurn(prev => prev + 1);
     setIsResolving(false);
   };
@@ -279,7 +280,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setLastDamage(null);
       setCombo(0);
       setMessage(`防御構え。次の${nextIntent.name}を大幅軽減！`);
-      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer), 600);
+      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
       return;
     }
 
@@ -373,19 +374,15 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setBossBroken(false);
       setBossPattern('RAGE');
       setPhaseFlash(true);
-      setTurn(prev => prev + 1);
       setMessage('第2形態「深淵解放」――終焉衝動が来る！');
       window.setTimeout(() => {
         setPhaseFlash(false);
-        bossAttack(2, 'RAGE', nextPlayer);
+        bossAttack(2, 'RAGE', nextPlayer, turn);
       }, 1100);
       return;
     }
 
-    setTurn(prev => prev + 1);
-    const followingPattern = getNextPattern(phase, turn + 1);
-    setBossPattern(followingPattern);
-    window.setTimeout(() => bossAttack(phase, followingPattern, nextPlayer), 650);
+    window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 650);
   };
 
   const startBattle = () => resetBattle();
@@ -699,7 +696,6 @@ const styles: Record<string, React.CSSProperties> = {
   ruleGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px', marginTop: '14px' },
   ruleCard: { display: 'flex', alignItems: 'center', gap: '8px', minHeight: '48px', padding: '9px 10px', boxSizing: 'border-box', borderRadius: '11px', background: '#0F1626', border: '1px solid #273854', color: '#AAB8D2', fontSize: '11px', lineHeight: 1.4 },
   preStats: { display: 'flex', flexWrap: 'wrap', gap: '14px 22px', marginTop: '12px', color: '#7E8DAA', fontSize: '11px' },
-  preStats b: { color: '#DDE6F8', marginLeft: '4px' },
 
   primaryButton: { width: '100%', minHeight: '54px', marginTop: '18px', border: '1px solid #6BF6D8', borderRadius: '14px', background: 'linear-gradient(135deg, #0D6F60, #1D3D73)', color: '#FFFFFF', fontWeight: 1000, fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' },
   secondaryButton: { width: '100%', minHeight: '48px', marginTop: '8px', border: '1px solid #33445F', borderRadius: '12px', background: '#0E1523', color: '#C0CCE0', fontWeight: 800, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', cursor: 'pointer' },
@@ -717,7 +713,6 @@ const styles: Record<string, React.CSSProperties> = {
   topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 10px', borderRadius: '12px', border: '1px solid #283754', background: 'rgba(9,14,24,.92)', backdropFilter: 'blur(8px)' },
   backButton: { minHeight: '34px', padding: '0 10px', display: 'flex', alignItems: 'center', gap: '5px', border: '1px solid #34455F', borderRadius: '9px', color: '#D6E0F0', background: '#0E1523', cursor: 'pointer', fontWeight: 800 },
   topTitle: { display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', fontWeight: 900, letterSpacing: '0.08em' },
-  topTitle em: { color: '#7E8DAA', fontStyle: 'normal', fontWeight: 800 },
   targetBadge: { color: '#7CF7D4', fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em' },
 
   stage: { position: 'relative', overflow: 'hidden', minHeight: '430px', borderRadius: '18px', border: '1px solid #263551', background: 'linear-gradient(180deg, rgba(7,10,19,.82), rgba(10,9,22,.94))', padding: '20px 18px 16px', boxSizing: 'border-box' },
@@ -744,7 +739,6 @@ const styles: Record<string, React.CSSProperties> = {
   intentName: { marginTop: '4px', fontSize: '16px', fontWeight: 1000 },
   intentDetail: { marginTop: '2px', color: '#8E9CB6', fontSize: '11px' },
 
-  stage .bossVisualWrapLarge: {},
   bossVisualWrapLarge: { position: 'absolute', left: '50%', top: '74px', transform: 'translateX(-50%)', width: 'min(42vw, 330px)', height: 'min(42vw, 330px)', minWidth: '240px', minHeight: '240px', display: 'grid', placeItems: 'center', zIndex: 2 },
   floatingDamage: { position: 'absolute', left: '50%', top: '37%', zIndex: 8, color: '#FFFFFF', fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 1000, textShadow: '0 3px 0 #571A2B, 0 0 18px rgba(255,70,120,.75)', animation: 'raidDamagePop .72s ease-out forwards', pointerEvents: 'none' },
   breakBurst: { position: 'absolute', left: '50%', top: '51%', transform: 'translate(-50%,-50%)', zIndex: 9, color: '#FFF6A4', fontSize: 'clamp(24px, 6vw, 44px)', fontWeight: 1000, letterSpacing: '0.12em', textShadow: '0 0 22px rgba(255,242,140,.9)', pointerEvents: 'none' },
