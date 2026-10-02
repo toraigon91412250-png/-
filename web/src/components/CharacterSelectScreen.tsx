@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CharacterDef, CpuDifficulty, OverallStats } from '../types/game';
-import { CHARACTERS } from '../data/characters';
+import { CHARACTERS, CPU_CHARACTERS } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { Swords, Trophy, Play, CheckCircle, Sparkles } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onOpenRaidBoss,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
-  const cpuChar = CHARACTERS.find(c => c.id !== selectedPlayer.id) || CHARACTERS[1];
+  const cpuChar = CPU_CHARACTERS.find(c => c.id !== selectedPlayer.id) || CPU_CHARACTERS[1];
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;

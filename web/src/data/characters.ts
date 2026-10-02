@@ -19,7 +19,7 @@ export const IRENA: CharacterDef = {
   specialSkillName: '羽弾',
   specialSkillDamage: 350,
   specialSkillCooldown: 1,
-  specialSkillDescription: '必殺ゲージ+1。350ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時50ダメージ、速度-20、防御-20）',
+  specialSkillDescription: '必殺ゲージ+1。350ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時30ダメージ、速度-20、防御-20）',
   ultimateSkillName: '羽嵐',
   ultimateSkillDamage: 500,
   ultimateSlogan: '嵐の刃よ、敵を貫け！',

@@ -163,7 +163,7 @@ export function useBattleGame(
   const applySpecialStatusAilment = (attacker: BattleFighter, defenderIsPlayer: boolean, turn: number) => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
     const def = ailmentType === 'BLEED'
-      ? { type: 'BLEED' as const, defaultDuration: 3, description: '各ターン開始時50ダメージ、速度-20、防御-20' }
+      ? { type: 'BLEED' as const, defaultDuration: 3, description: '各ターン開始時30ダメージ、速度-20、防御-20' }
       : { type: 'PRESSURE' as const, defaultDuration: 2, description: '速度-25、攻撃力-25' };
 
     updateState(prev => {
@@ -191,11 +191,11 @@ export function useBattleGame(
     let actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
     let target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
 
-    // 1. Process Start-of-Turn DoT (Bleed: 50 damage)
+    // 1. Process Start-of-Turn DoT (Bleed: 30 damage)
     const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
     if (bleedAilment) {
       soundManager.playHeavyStrike();
-      const dotDamage = 50;
+      const dotDamage = 30;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
       const newHp = Math.max(0, actor.currentHp - dotDamage);
