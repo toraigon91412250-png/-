@@ -269,7 +269,7 @@ const RUIN_SEQUENCE_DURATION_MS = 5600;
 const RUIN_ASSETS = {
   "feather": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_一本の巨大な黒い羽根、堕天使を連想させる不吉で神秘的な雰...毛、鋭く美...細な羽毛の質感、わずかな赤い光の反射、ダークファンタジー、ゲームの必殺技演 142180.png",
   "cloud": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_漆黒の巨大な黒雲、重く渦巻く暗い雲、雲の内部に無数の細か...っている、...かな赤い光が見える、不吉で神秘的な雰囲気、堕天使を思わせるダークファンタジ 142180.png",
-  "intro": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/irena_ruin_intro.jpg",
+  "intro": "https://raw.githubusercontent.com/toraigon91412250-png/-/b3e223fdbfa4c66e95bc47b6df0f07322795c36f/irena_ruin_intro.jpg",
   "hand": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/1790944467835.jpg",
   "cracks": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_現実の空間がガラスのように大きくひび割れ、中央部分から崩...ダークフ...ァ表現。_画面中央に大きな不規則な亀裂、その周囲にも細かな亀裂が広がっている 142180.png"
 };
@@ -281,7 +281,7 @@ const ruinPhaseAlpha = (t: number, start: number, end: number, fade = 0.08) => {
   return Math.min(fadeIn, fadeOut, 1);
 };
 
-const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
+const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = ({ progress, effectDamage }) => {
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -304,14 +304,14 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
   const t = progress;
   const featherA = ruinPhaseAlpha(t, 0.08, 0.25, 0.08);
   const cloudA = ruinPhaseAlpha(t, 0.20, 0.39, 0.10);
-  const introA = ruinPhaseAlpha(t, 0.31, 0.52, 0.09);
-  const handA = ruinPhaseAlpha(t, 0.55, 0.80, 0.08);
+  const introA = ruinPhaseAlpha(t, 0.29, 0.54, 0.06);
+  const handA = ruinPhaseAlpha(t, 0.52, 0.82, 0.06);
   const crackA = ruinPhaseAlpha(t, 0.76, 0.94, 0.06);
 
   const featherP = Math.min(1, Math.max(0, (t - 0.08) / 0.17));
   const cloudP = Math.min(1, Math.max(0, (t - 0.20) / 0.19));
-  const introP = Math.min(1, Math.max(0, (t - 0.31) / 0.21));
-  const handP = Math.min(1, Math.max(0, (t - 0.55) / 0.25));
+  const introP = Math.min(1, Math.max(0, (t - 0.29) / 0.25));
+  const handP = Math.min(1, Math.max(0, (t - 0.52) / 0.30));
   const crackP = Math.min(1, Math.max(0, (t - 0.76) / 0.18));
 
   const collapseP = Math.min(1, Math.max(0, (t - 0.90) / 0.10));
@@ -403,7 +403,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 50% 42%, rgba(130,0,0,0.20), rgba(0,0,0,0.78) 58%, rgba(0,0,0,0.98) 100%)',
+            background: 'radial-gradient(circle at 50% 42%, rgba(130,0,0,0.08), rgba(0,0,0,0.42) 58%, rgba(0,0,0,0.78) 100%)',
             opacity: introA,
           }}
         >
@@ -415,7 +415,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
               height: '100%',
               objectFit: 'contain',
               display: 'block',
-              transform: `scale(${1.12 - introP * 0.08}) translate3d(${(0.5 - introP) * 1.5}%, 0, 0)`,
+              transform: `scale(${1.18 - introP * 0.06}) translate3d(${(0.5 - introP) * 1.5}%, 0, 0)`,
               filter: 'contrast(1.08) saturate(0.88)',
             }}
           />
@@ -427,7 +427,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 52% 40%, rgba(160,0,0,0.13), rgba(0,0,0,0.82) 60%, rgba(0,0,0,0.98) 100%)',
+            background: 'radial-gradient(circle at 52% 40%, rgba(160,0,0,0.07), rgba(0,0,0,0.40) 60%, rgba(0,0,0,0.76) 100%)',
             opacity: handA,
           }}
         >
@@ -439,7 +439,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
               height: '100%',
               objectFit: 'contain',
               display: 'block',
-              transform: `scale(${1.08 + handP * 0.06}) translate3d(0, ${-handP * 1.5}%, 0)`,
+              transform: `scale(${1.14 + handP * 0.07}) translate3d(0, ${-handP * 1.5}%, 0)`,
               filter: 'contrast(1.08) saturate(0.86)',
             }}
           />
@@ -493,6 +493,27 @@ const RuinAuthorityVfx: React.FC<{ progress: number }> = ({ progress }) => {
         />
       )}
 
+
+      {effectDamage > 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            bottom: '13%',
+            transform: 'translateX(-50%)',
+            zIndex: 20,
+            color: '#FFFFFF',
+            fontSize: 'clamp(28px, 6vw, 64px)',
+            fontWeight: 950,
+            letterSpacing: '0.04em',
+            textShadow: '0 3px 0 #000, 0 0 14px rgba(255,40,40,0.95), 0 0 28px rgba(0,0,0,0.95)',
+            whiteSpace: 'nowrap',
+            opacity: Math.min(1, 0.25 + progress * 5),
+          }}
+        >
+          −{effectDamage} DMG
+        </div>
+      )}
       <div style={{ position: 'absolute', inset: 0, background: '#000000', opacity: endBlack }} />
     </div>
   );
@@ -833,7 +854,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       )}
 
       {/* Particle Canvas */}
-      {isRuin && <RuinAuthorityVfx key={effect.effectId} progress={t} />}
+      {isRuin && <RuinAuthorityVfx key={effect.effectId} progress={t} effectDamage={effect.damage} />}
       <canvas
         ref={canvasRef}
         width={typeof window !== 'undefined' ? window.innerWidth || 800 : 800}
