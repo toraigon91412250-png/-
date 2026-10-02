@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
-import { CHARACTERS } from '../data/characters';
 
 interface VisualEffectOverlayProps {
   effect: VisualEffect | null;
