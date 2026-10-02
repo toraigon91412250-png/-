@@ -195,7 +195,7 @@ export function useBattleGame(
     const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
     if (bleedAilment) {
       soundManager.playHeavyStrike();
-      const dotDamage = 50;
+      const dotDamage = 30;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
       const newHp = Math.max(0, actor.currentHp - dotDamage);
