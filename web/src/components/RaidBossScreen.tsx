@@ -726,7 +726,6 @@ const styles: Record<string, React.CSSProperties> = {
   hpInnerBoss: { height: '100%', background: 'linear-gradient(90deg, #7D1A4B, #F23F69, #FF884A)', transition: 'width .25s ease', boxShadow: '0 0 16px rgba(242,63,105,.35)' },
   breakArea: { position: 'relative', zIndex: 4, marginTop: '10px' },
   breakLabel: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#91A0BA', fontWeight: 900, letterSpacing: '0.12em' },
-  breakLabel b: { color: '#FFF1A4' },
   breakTrack: { height: '7px', marginTop: '4px', borderRadius: '999px', overflow: 'hidden', background: '#201C13', border: '1px solid #514425' },
   breakFill: { height: '100%', background: 'linear-gradient(90deg, #8D7D26, #FFF1A4)', transition: 'width .25s ease' },
 
@@ -735,7 +734,6 @@ const styles: Record<string, React.CSSProperties> = {
   dangerHigh: { borderColor: '#7C5A2E', boxShadow: '0 0 20px rgba(255,196,80,.07)' },
   dangerExtreme: { borderColor: '#8A3143', boxShadow: '0 0 24px rgba(255,75,95,.10)' },
   intentTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#9DAAC2', fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em' },
-  intentTop strong: { color: '#FF7D8E' },
   intentName: { marginTop: '4px', fontSize: '16px', fontWeight: 1000 },
   intentDetail: { marginTop: '2px', color: '#8E9CB6', fontSize: '11px' },
 
