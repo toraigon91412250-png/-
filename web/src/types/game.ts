@@ -73,6 +73,7 @@ export interface BattleFighter {
   specialCooldownRemaining: number;
   ultimateGauge: number; // 0..3
   isBuffed: boolean;
+  buffDamageBonus: number; // 0 when not buffed; default buff is 50
   isEvading: boolean;
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];
