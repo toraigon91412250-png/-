@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ArrowLeft, Crosshair, RotateCcw, Shield, Skull, Sparkles, Swords, Zap } from 'lucide-react';
 import irenaImg from '../assets/img_irena.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
+import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 
 type Phase = 1 | 2;
 type BossPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE';
@@ -18,8 +19,8 @@ type PlayerState = {
 };
 
 const BOSS_MAX_HP: Record<Phase, number> = {
-  1: 100000,
-  2: 120000,
+  1: 45000,
+  2: 55000,
 };
 
 const PLAYER_MAX_HP = 8000;
@@ -29,6 +30,8 @@ const PLAYER_MAX_TP = 100;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const formatNumber = (value: number) => Math.max(0, Math.round(value)).toLocaleString('ja-JP');
 const randomBetween = (min: number, max: number) => Math.round(min + Math.random() * (max - min));
+
+type ActionFx = 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'POTION' | 'ULTIMATE' | 'BOSS';
 
 const PATTERN_INFO: Record<BossPattern, { name: string; detail: string; minDamage: number; maxDamage: number; danger: 'NORMAL' | 'HIGH' | 'EXTREME' }> = {
   SWEEP: {
@@ -72,6 +75,13 @@ const raidCss = [
   '@keyframes raidPhaseFlash { 0%,100% { opacity: 0; } 20% { opacity: .95; } 45% { opacity: .25; } 70% { opacity: .8; } }',
   '@keyframes raidLoading { from { transform: scaleX(0); } to { transform: scaleX(1); } }',
   '@keyframes raidIrenaGlow { 0%,100% { box-shadow: 0 0 0 rgba(118,255,210,0); } 50% { box-shadow: 0 0 34px rgba(118,255,210,.28); } }',
+  '@keyframes raidActionFlash { 0% { opacity: 0; transform: scale(.86); } 16% { opacity: 1; } 100% { opacity: 0; transform: scale(1.08); } }',
+  '@keyframes raidSlashFx { 0% { transform: translate(-80%, 30%) rotate(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(80%, -10%) rotate(-18deg); opacity: 0; } }',
+  '@keyframes raidFeatherCutIn { 0% { transform: translateX(-110%); opacity: 0; } 18% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(110%); opacity: 0; } }',
+  '@keyframes raidFeatherRain { 0% { transform: translateY(-60%) rotate(-8deg); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(40%) rotate(12deg); opacity: 0; } }',
+  '@keyframes raidGuardFx { 0% { transform: scale(.55); opacity: 0; } 30% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.18); opacity: 0; } }',
+  '@keyframes raidUltimateFx { 0% { transform: scale(.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }',
+  '@keyframes raidBossStrikeFx { 0% { transform: scale(.65); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1.15); opacity: 0; } }',
   '@media (max-width: 680px) { .raid-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .raid-stage { min-height: 250px !important; } }',
 ].join('\n');
 
@@ -113,6 +123,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [bestHit, setBestHit] = useState(0);
   const [totalDamage, setTotalDamage] = useState(0);
   const [breakCount, setBreakCount] = useState(0);
+  const [actionFx, setActionFx] = useState<ActionFx | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setMode('PRE_BATTLE'), 900);
@@ -147,6 +158,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setBestHit(0);
     setTotalDamage(0);
     setBreakCount(0);
+    setActionFx(null);
     setMode('BATTLE');
   };
 
@@ -166,6 +178,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   };
 
   const bossAttack = (currentPhase: Phase, currentPattern: BossPattern, currentPlayer: PlayerState, currentTurn: number) => {
+    setActionFx('BOSS');
+    window.setTimeout(() => setActionFx(null), 700);
     const info = PATTERN_INFO[currentPattern];
     let rawDamage = randomBetween(info.minDamage, info.maxDamage);
 
@@ -243,10 +257,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       return;
     }
 
+    setActionFx(type);
+    window.setTimeout(() => setActionFx(null), type === 'FEATHER' ? 1050 : type === 'ULTIMATE' ? 850 : 650);
+
     const baseDamage =
-      type === 'NORMAL' ? randomBetween(3000, 3600) :
-      type === 'FEATHER' ? randomBetween(5400, 6300) :
-      type === 'ULTIMATE' ? randomBetween(17500, 19500) :
+      type === 'NORMAL' ? randomBetween(4700, 5600) :
+      type === 'FEATHER' ? randomBetween(8200, 9500) :
+      type === 'ULTIMATE' ? randomBetween(26000, 30000) :
       0;
 
     const actionTp =
@@ -320,7 +337,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     const comboBonus = combo >= 2 ? 1.08 : 1;
-    const focusBonus = player.focus ? 1.35 : 1;
+    const focusBonus = player.focus ? 1.30 : 1;
     const breakBonus = bossBroken ? 1.35 : 1;
     const finalDamage = Math.round(baseDamage * comboBonus * focusBonus * breakBonus);
     const actualDamage = Math.min(bossHp, finalDamage);
@@ -464,8 +481,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           </div>
 
           <div style={styles.preStats}>
-            <span>PHASE I <b>100,000 HP</b></span>
-            <span>PHASE II <b>120,000 HP</b></span>
+            <span>PHASE I <b>45,000 HP</b></span>
+            <span>PHASE II <b>55,000 HP</b></span>
             <span>報酬判定 <b>討伐 / 敗北</b></span>
           </div>
 
@@ -534,6 +551,25 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
         <div style={styles.stage}>
           <div style={styles.stageAtmosphere} />
+          {actionFx && (
+            <div style={styles.fxLayer} aria-hidden="true">
+              {actionFx === 'NORMAL' && <>
+                <div style={styles.normalFlash} />
+                <div style={styles.slashFxOne} />
+                <div style={styles.slashFxTwo} />
+              </>}
+              {actionFx === 'FEATHER' && <>
+                <div style={styles.featherBackdrop} />
+                <img src={irenaCutInImg} alt="" style={styles.featherCutIn} />
+                <div style={styles.featherRain}>羽弾</div>
+              </>}
+              {actionFx === 'FOCUS' && <div style={styles.focusFx}><div style={styles.focusCore} /><span>集中</span></div>}
+              {actionFx === 'GUARD' && <div style={styles.guardFx}><Shield size={92} /><span>GUARD</span></div>}
+              {actionFx === 'POTION' && <div style={styles.potionFx}><Sparkles size={64} /><span>RECOVER</span></div>}
+              {actionFx === 'ULTIMATE' && <div style={styles.ultimateFx}><div style={styles.ultimateRing} /><div style={styles.ultimateCore}>必殺</div></div>}
+              {actionFx === 'BOSS' && <div style={styles.bossStrikeFx}><AlertTriangle size={78} /><span>BOSS STRIKE</span></div>}
+            </div>
+          )}
           <div style={styles.bossVisualWrapLarge}>
             <div style={{ ...styles.bossHalo, ...(phase === 2 ? styles.bossHaloRage : {}) }} />
             <div style={{ ...styles.bossRingOuter, ...(bossBroken ? styles.bossRingBroken : {}) }} />
@@ -626,19 +662,19 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" onClick={() => performAction('NORMAL')} disabled={isResolving} style={styles.actionButton}>
             <Crosshair size={18} />
             <span>通常射撃</span>
-            <small>DMG 3,000–3,600 · TP +20</small>
+            <small>DMG 4,700–5,600 · TP +20</small>
           </button>
 
           <button type="button" onClick={() => performAction('FEATHER')} disabled={isResolving || player.featherCooldown > 0 || player.mp < 18} style={styles.actionButton}>
             <Sparkles size={18} />
             <span>羽弾 {player.featherCooldown > 0 ? `· CD ${player.featherCooldown}` : ''}</span>
-            <small>DMG 5,400–6,300 · MP 18 · BREAK +22</small>
+            <small>DMG 8,200–9,500 · MP 18 · BREAK +22</small>
           </button>
 
           <button type="button" onClick={() => performAction('FOCUS')} disabled={isResolving || player.mp < 12} style={styles.actionButton}>
             <Zap size={18} />
             <span>風詠集中</span>
-            <small>次の攻撃 ×1.35 · MP 12 · TP +15</small>
+            <small>次の攻撃 ×1.30 · MP 12 · TP +15</small>
           </button>
 
           <button type="button" onClick={() => performAction('GUARD')} disabled={isResolving || player.mp < 10} style={styles.actionButton}>
@@ -656,7 +692,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" onClick={() => performAction('ULTIMATE')} disabled={isResolving || !canUltimate} style={{ ...styles.actionButton, ...styles.ultimateButton, ...(canUltimate ? styles.ultimateReady : {}) }}>
             <Swords size={19} />
             <span>必殺・終天羽星穿ち</span>
-            <small>{canUltimate ? 'READY · DMG 17,500–19,500' : `TP ${player.tp}/100`}</small>
+            <small>{canUltimate ? 'READY · DMG 26,000–30,000' : `TP ${player.tp}/100`}</small>
           </button>
         </div>
       </div>
@@ -783,6 +819,26 @@ const styles: Record<string, React.CSSProperties> = {
   actionButtonSmall: {},
   disabledButton: { opacity: 0.4, cursor: 'not-allowed' },
   phaseFlash: { position: 'fixed', inset: 0, zIndex: 50, pointerEvents: 'none', background: 'radial-gradient(circle, rgba(255,56,80,.72), rgba(0,0,0,.94) 72%)', animation: 'raidPhaseFlash 1.1s ease-out forwards' },
+
+  fxLayer: { position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none', overflow: 'hidden', display: 'grid', placeItems: 'center' },
+  normalFlash: { position: 'absolute', width: '52%', height: '52%', borderRadius: '50%', border: '2px solid rgba(255,255,255,.85)', boxShadow: '0 0 38px rgba(160,220,255,.55)', animation: 'raidActionFlash .55s ease-out forwards' },
+  slashFxOne: { position: 'absolute', width: '78%', height: '10px', borderRadius: '999px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent)', boxShadow: '0 0 18px rgba(180,230,255,.7)', animation: 'raidSlashFx .5s ease-out forwards' },
+  slashFxTwo: { position: 'absolute', width: '58%', height: '6px', borderRadius: '999px', background: 'linear-gradient(90deg, transparent, rgba(120,255,220,.95), transparent)', animation: 'raidSlashFx .56s .04s ease-out forwards' },
+  featherBackdrop: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 46%, rgba(176,112,255,.32), rgba(8,10,20,0) 60%)', animation: 'raidActionFlash 1.0s ease-out forwards' },
+  featherCutIn: { position: 'absolute', left: 0, top: '12%', width: '48%', maxWidth: '420px', maxHeight: '76%', objectFit: 'cover', objectPosition: 'center', borderRadius: '0 16px 16px 0', border: '1px solid rgba(255,255,255,.35)', boxShadow: '0 0 32px rgba(171,71,188,.34)', animation: 'raidFeatherCutIn 1.05s ease-out forwards' },
+  featherRain: { position: 'absolute', right: '10%', top: '18%', color: '#FFFFFF', fontSize: 'clamp(26px, 6vw, 52px)', fontWeight: 1000, letterSpacing: '.16em', textShadow: '0 0 20px rgba(210,180,255,.95)', animation: 'raidFeatherRain 1.05s ease-out forwards' },
+  focusFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '140px', height: '140px', borderRadius: '50%', color: '#A9FFE9', fontWeight: 1000, textShadow: '0 0 16px rgba(118,255,210,.9)', animation: 'raidActionFlash .7s ease-out forwards' },
+  focusCore: { position: 'absolute', width: '76px', height: '76px', borderRadius: '50%', border: '2px solid #7CF7D4', boxShadow: '0 0 28px rgba(124,247,212,.6)' },
+  guardFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '150px', height: '150px', borderRadius: '50%', color: '#7CF7D4', border: '2px solid rgba(124,247,212,.8)', background: 'rgba(40,180,160,.08)', boxShadow: '0 0 46px rgba(70,240,200,.32)', animation: 'raidGuardFx .78s ease-out forwards' },
+  guardFx span: { position: 'absolute', bottom: '18px', fontSize: '12px', letterSpacing: '.2em' },
+  potionFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '130px', height: '130px', borderRadius: '50%', color: '#9DFF9B', textShadow: '0 0 16px rgba(120,255,120,.8)', animation: 'raidGuardFx .78s ease-out forwards' },
+  potionFx span: { position: 'absolute', bottom: '8px', fontSize: '11px', letterSpacing: '.18em' },
+  ultimateFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '180px', height: '180px', color: '#FFF2A8', textShadow: '0 0 20px rgba(255,242,168,.9)' },
+  ultimateRing: { position: 'absolute', inset: 0, borderRadius: '50%', border: '3px solid rgba(230,190,255,.92)', boxShadow: '0 0 46px rgba(190,110,255,.65), inset 0 0 42px rgba(190,110,255,.38)', animation: 'raidUltimateFx .82s ease-out forwards' },
+  ultimateCore: { fontSize: 'clamp(34px, 8vw, 66px)', fontWeight: 1000, letterSpacing: '.12em', animation: 'raidActionFlash .82s ease-out forwards' },
+  bossStrikeFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '160px', height: '160px', borderRadius: '50%', color: '#FF7A8A', border: '2px solid rgba(255,90,110,.8)', background: 'rgba(120,10,30,.12)', boxShadow: '0 0 44px rgba(255,50,80,.35)', animation: 'raidBossStrikeFx .68s ease-out forwards' },
+  bossStrikeFx span: { position: 'absolute', bottom: '16px', fontSize: '11px', fontWeight: 1000, letterSpacing: '.18em' },
+
 };
 
 export default RaidBossScreen;
