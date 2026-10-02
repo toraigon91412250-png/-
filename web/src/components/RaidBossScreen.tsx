@@ -299,7 +299,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setLastDamage(null);
       setCombo(0);
       setMessage('ポーションで体勢を立て直した。');
-      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer), 600);
+      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
       return;
     }
 
