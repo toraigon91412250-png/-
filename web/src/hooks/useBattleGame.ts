@@ -18,9 +18,17 @@ import { soundManager } from '../utils/audio';
 import { saveBattleResult } from '../utils/storage';
 
 export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
+  const battleCharacter = isPlayer
+    ? character
+    : {
+        ...character,
+        maxHp: character.maxHp * 2,
+        attack: character.attack * 1.5,
+      };
+
   return {
-    character,
-    currentHp: character.maxHp,
+    character: battleCharacter,
+    currentHp: battleCharacter.maxHp,
     specialCooldownRemaining: 0,
     ultimateGauge: 0,
     isBuffed: false,
