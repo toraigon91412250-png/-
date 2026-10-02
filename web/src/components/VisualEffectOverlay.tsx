@@ -135,7 +135,7 @@ const drawAllGodsVfx=(ctx:CanvasRenderingContext2D,w:number,h:number,t:number)=>
   ctx.restore();
 };
 
-export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
+export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastUiUpdateRef = useRef(0);
