@@ -592,9 +592,17 @@ export function useBattleGame(
           consumeBuff(isActorPlayer);
         }
 
-        const skillName = actor.character.ultimateSkillName;
         const isIrena = actor.character.id === 'irena';
         const appliedIrenaVariant = isIrena ? ultimateVariant : undefined;
+        const skillName = isIrena
+          ? appliedIrenaVariant === 'ALL_GODS'
+            ? '全神の権能'
+            : appliedIrenaVariant === 'RUIN'
+              ? '破壊の権能'
+              : appliedIrenaVariant === 'OMNIPOTENCE'
+                ? '全能の一撃'
+                : actor.character.ultimateSkillName
+          : actor.character.ultimateSkillName;
         let baseDamage =
           appliedIrenaVariant === 'ALL_GODS'
             ? 0
@@ -716,7 +724,13 @@ export function useBattleGame(
           soundManager.playHeavyStrike();
         }
 
-        const slogan = actor.character.ultimateSlogan;
+        const slogan = isIrena
+          ? appliedIrenaVariant === 'RUIN'
+            ? '破壊の権能を解放する一撃！'
+            : appliedIrenaVariant === 'OMNIPOTENCE'
+              ? '全ての権能を統合した一撃！'
+              : actor.character.ultimateSlogan
+          : actor.character.ultimateSlogan;
         addLog(
           `🌟🔥【必殺技】${actor.character.name}は${skillName}を放った！ ${slogan}`,
           isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
