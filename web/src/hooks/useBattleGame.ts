@@ -191,7 +191,7 @@ export function useBattleGame(
     let actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
     let target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
 
-    // 1. Process Start-of-Turn DoT (Bleed: 50 damage)
+    // 1. Process Start-of-Turn DoT (Bleed: 30 damage)
     const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
     if (bleedAilment) {
       soundManager.playHeavyStrike();
