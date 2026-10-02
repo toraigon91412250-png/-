@@ -163,7 +163,7 @@ export function useBattleGame(
   const applySpecialStatusAilment = (attacker: BattleFighter, defenderIsPlayer: boolean, turn: number) => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
     const def = ailmentType === 'BLEED'
-      ? { type: 'BLEED' as const, defaultDuration: 3, description: '各ターン開始時50ダメージ、速度-20、防御-20' }
+      ? { type: 'BLEED' as const, defaultDuration: 3, description: '各ターン開始時30ダメージ、速度-20、防御-20' }
       : { type: 'PRESSURE' as const, defaultDuration: 2, description: '速度-25、攻撃力-25' };
 
     updateState(prev => {
