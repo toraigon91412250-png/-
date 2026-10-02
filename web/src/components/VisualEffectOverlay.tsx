@@ -134,6 +134,135 @@ const SpecialCutIn: React.FC<{ imageSrc: string; skillName: string; actorName: s
   );
 };
 
+/* Standalone 神威権能「全神の権能」VFX migrated into the existing battle overlay. */
+const ALL_GODS_SWORDS = [
+  [0.15,0.12],[0.85,0.14],[0.23,0.18],[0.77,0.20],[0.31,0.24],[0.69,0.26],
+  [0.38,0.30],[0.62,0.32],[0.44,0.36],[0.56,0.38],[0.50,0.52]
+].map(([x,summon],i)=>({
+  x, summon, drop:summon+(i===10?0.12:0.07), duration:i===10?0.13:0.08,
+  len:i===10?260:145+(i%4)*12, width:i===10?36:20+(i%3)*2, boss:i===10,
+  portalY:i===10?0.12:0.10+((i%2)*0.03)
+}));
+
+const ALL_GODS_PARTICLES = Array.from({length:200},(_,i)=>({
+  x:((i*73)%997)/997,
+  y:((i*151)%991)/991,
+  size:1.8+(((i*37)%100)/100)*4.5,
+  speed:0.12+(((i*53)%100)/100)*0.40,
+  phase:(((i*97)%360)/180)*Math.PI,
+  golden:i%7!==0
+}));
+
+const drawAllGodsLine=(ctx:CanvasRenderingContext2D,x1:number,y1:number,x2:number,y2:number,color:string,width:number)=>{
+  ctx.strokeStyle=color; ctx.lineWidth=width; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+};
+
+const drawAllGodsPortal=(ctx:CanvasRenderingContext2D,x:number,y: number,age:number,boss:boolean)=>{
+  if(age<0||age>0.70)return;
+  const alpha=age<0.06?age/0.06:age>0.55?(0.70-age)/0.15:1;
+  const r=(boss?65:34)*(0.8+0.2*Math.min(1,age/0.06));
+  ctx.save(); ctx.translate(x,y); ctx.globalAlpha=alpha; ctx.shadowBlur=boss?28:16; ctx.shadowColor='#FFD700';
+  [[1,boss?3.5:2.2,'#FFDF00'],[0.88,boss?2.2:1.5,'#FFFFFF'],[0.65,1.2,'#FFB300']].forEach(([mul,lw,c])=>{
+    ctx.strokeStyle=c as string; ctx.lineWidth=lw as number; ctx.beginPath(); ctx.arc(0,0,r*(mul as number),0,Math.PI*2); ctx.stroke();
+  });
+  ctx.rotate(age*(boss?Math.PI:Math.PI*2/3));
+  const rays=boss?12:8;
+  for(let i=0;i<rays;i++){const a=i*Math.PI*2/rays;drawAllGodsLine(ctx,0,0,Math.cos(a)*r,Math.sin(a)*r*0.45,'#FFF9C4',1.6);}
+  ctx.shadowBlur=22; ctx.fillStyle='#FFFFFF'; ctx.beginPath(); ctx.arc(0,0,r*(boss?0.45:0.35),0,Math.PI*2); ctx.fill();
+  ctx.restore();
+};
+
+const drawAllGodsSword=(ctx:CanvasRenderingContext2D,s:any,t:number,w:number,h:number)=>{
+  if(t<s.summon)return;
+  const px=s.x*w, py=s.portalY*h, gy=0.76*h;
+  drawAllGodsPortal(ctx,px,py,t-s.summon,s.boss);
+  if(t<s.drop)return;
+  const p=Math.min(1,Math.max(0,(t-s.drop)/s.duration));
+  const ease=p*p*p;
+  const tipY=py+(gy-py)*ease;
+  ctx.save(); ctx.translate(px,tipY); ctx.rotate((90-Math.atan2(gy-py,0)*180/Math.PI)*Math.PI/180);
+  if(p<1){
+    const trail=ctx.createLinearGradient(0,0,0,-s.len*2.5);
+    trail.addColorStop(0,'rgba(255,255,255,.98)'); trail.addColorStop(.38,'rgba(255,223,0,.80)');
+    trail.addColorStop(.72,'rgba(255,179,0,.30)'); trail.addColorStop(1,'rgba(255,179,0,0)');
+    ctx.fillStyle=trail; ctx.beginPath(); ctx.moveTo(-s.width*.5,0); ctx.lineTo(s.width*.5,0);
+    ctx.lineTo(s.width*2.2,-s.len*2.5); ctx.lineTo(-s.width*2.2,-s.len*2.5); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.95)'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.ellipse(0,-s.len*.18,s.width*1.8,s.width*.55,0,0,Math.PI*2); ctx.stroke();
+  }
+  ctx.shadowBlur=s.boss?30:18; ctx.shadowColor=s.boss?'rgba(255,245,157,.95)':'rgba(255,223,0,.55)';
+  drawAllGodsLine(ctx,0,0,0,-s.len,s.boss?'rgba(255,245,157,.93)':'rgba(255,223,0,.60)',s.width*2.2);
+  ctx.shadowBlur=0;
+  const g=ctx.createLinearGradient(-s.width*.5,0,s.width*.5,0); g.addColorStop(0,'#FFFFFF'); g.addColorStop(.55,'#FFF9C4'); g.addColorStop(1,s.boss?'#FFDF00':'#FFC107');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-s.width*.5,-s.len*.15); ctx.lineTo(-s.width*.5,-s.len); ctx.lineTo(0,-s.len); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#FFDF00'; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(s.width*.5,-s.len*.15); ctx.lineTo(s.width*.5,-s.len); ctx.lineTo(0,-s.len); ctx.closePath(); ctx.fill();
+  drawAllGodsLine(ctx,0,0,0,-s.len,'#FFFFFF',2);
+  const guard=-s.len, guardW=s.width*(s.boss?3.6:2.8), guardH=s.width*.35;
+  const gg=ctx.createLinearGradient(-guardW/2,0,guardW/2,0); gg.addColorStop(0,'#FFB300'); gg.addColorStop(.5,'#FFFFFF'); gg.addColorStop(1,'#FFB300');
+  ctx.fillStyle=gg; ctx.fillRect(-guardW/2,guard-guardH/2,guardW,guardH);
+  ctx.fillStyle=s.boss?'#FFD700':'#00E5FF'; ctx.beginPath(); ctx.arc(0,guard,s.width*(s.boss?.55:.42)*.7,0,Math.PI*2); ctx.fill();
+  drawAllGodsLine(ctx,0,guard,0,guard-s.len*.28,'#FFC107',s.width*.28);
+  ctx.fillStyle='#FFFFFF'; ctx.beginPath(); ctx.arc(0,guard-s.len*.28,s.width*.35,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#FFD54F'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(0,guard-s.len*.28,s.width*.55,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  if(p<1)return;
+  const post=t-s.drop-s.duration, pillar=s.boss?.95:.45;
+  if(post<pillar){
+    const q=post/pillar,a=(1-q)*(s.boss?1:.85),pw=(s.boss?130:48)*(1-q*.25), lg=ctx.createLinearGradient(px,0,px,gy);
+    lg.addColorStop(0,'rgba(255,255,255,0)'); lg.addColorStop(.55,'rgba(255,255,255,'+(a*.95)+')');
+    lg.addColorStop(.8,'rgba(255,223,0,'+a+')'); lg.addColorStop(1,'rgba(255,179,0,'+a+')');
+    ctx.fillStyle=lg; ctx.fillRect(px-pw/2,0,pw,gy); ctx.fillStyle='rgba(255,255,255,'+a+')'; ctx.beginPath(); ctx.arc(px,gy,pw*.75,0,Math.PI*2); ctx.fill();
+  }
+  const shock=s.boss?.65:.35;
+  if(post<shock){
+    const q=post/shock,r=(s.boss?w*.45:w*.22)*q,a=(1-q)*.95;
+    ctx.strokeStyle='rgba(255,255,255,'+a+')'; ctx.lineWidth=Math.max(1.5,6*(1-q)); ctx.beginPath(); ctx.arc(px,gy,r,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle='rgba(255,223,0,'+(a*.75)+')'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px,gy,r*.88,0,Math.PI*2); ctx.stroke();
+  }
+  if(post<.85){
+    const a=(1-post/.85)*.85, n=s.boss?8:4, len=(s.boss?80:40)*Math.min(1,post/.12);
+    for(let i=0;i<n;i++){const ang=(i*360/n+s.id*33)*Math.PI/180;drawAllGodsLine(ctx,px,gy,px+Math.cos(ang)*len,gy+Math.sin(ang)*len*.42,'rgba(255,241,118,'+a+')',2.5);}
+  }
+};
+
+const drawAllGodsVfx=(ctx:CanvasRenderingContext2D,w:number,h:number,t:number)=>{
+  ctx.save();
+  const bg=ctx.createLinearGradient(0,0,0,h); bg.addColorStop(0,'#0C101E'); bg.addColorStop(.52,'#261D07'); bg.addColorStop(1,'#020408');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+
+  const cx=w*.5, cy=h*.38, rr=w*.44;
+  if(t>=.08){
+    const a=t<.25?(t-.08)/.17:t<.85?1:Math.max(0,1-(t-.85)/.15);
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*Math.PI*.55); ctx.globalAlpha=a; ctx.shadowBlur=16; ctx.shadowColor='#FFD700';
+    ctx.strokeStyle='rgba(255,223,0,.80)'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(0,0,rr,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.65)'; ctx.lineWidth=1.8; ctx.beginPath(); ctx.arc(0,0,rr*.94,0,Math.PI*2); ctx.stroke();
+    for(let i=0;i<12;i++){const ang=i*Math.PI/6;drawAllGodsLine(ctx,Math.cos(ang)*rr*.65,Math.sin(ang)*rr*.65,Math.cos(ang)*rr*.94,Math.sin(ang)*rr*.94,'rgba(255,245,157,.75)',1.6);}
+    ctx.restore();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(-t*Math.PI*.8); ctx.globalAlpha=a*.78; ctx.strokeStyle='#FFCA28'; ctx.lineWidth=1.8; ctx.beginPath(); ctx.arc(0,0,rr*.62,0,Math.PI*2); ctx.stroke();
+    for(let k=0;k<2;k++){const off=k*Math.PI/3;ctx.beginPath();for(let i=0;i<=3;i++){const ang=off+i*Math.PI*2/3,px2=Math.cos(ang)*rr*.62,py2=Math.sin(ang)*rr*.62;if(i===0)ctx.moveTo(px2,py2);else ctx.lineTo(px2,py2);}ctx.closePath();ctx.strokeStyle='rgba(255,249,196,.60)';ctx.lineWidth=1.5;ctx.stroke();}ctx.restore();
+  }
+
+  const hy=h*.65; ctx.strokeStyle='rgba(255,223,0,.20)'; ctx.lineWidth=1.5;
+  for(let i=1;i<=7;i++){const q=(i/7)**2,y=hy+(h-hy)*q;ctx.globalAlpha=q;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  for(let k=-4;k<=4;k++){ctx.globalAlpha=.75;ctx.beginPath();ctx.moveTo(cx,hy);ctx.lineTo(cx+k*w*.16,h);ctx.stroke();}ctx.globalAlpha=1;
+
+  if(t>.18){const a=Math.min(1,(t-.18)/.30)*.45,g=ctx.createRadialGradient(cx,h*.75,0,cx,h*.75,w*.75);g.addColorStop(0,'rgba(255,223,0,'+a+')');g.addColorStop(.3,'rgba(255,160,0,'+(a*.3)+')');g.addColorStop(1,'rgba(255,160,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,h*.75,w*.75,0,Math.PI*2);ctx.fill();}
+  if(t>.20){const a=t<.45?(t-.20)/.25:t<.85?1:Math.max(0,1-(t-.85)/.15),fy=h*.76;ctx.save();ctx.translate(cx,fy);ctx.rotate(t*Math.PI*1.2);ctx.globalAlpha=a;ctx.strokeStyle='rgba(255,223,0,.85)';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(0,0,w*.40,w*.14,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.60)';ctx.lineWidth=1.6;ctx.beginPath();ctx.ellipse(0,0,w*.352,w*.123,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
+
+  for(const p of ALL_GODS_PARTICLES){if(t<.06)continue;const tt=t-.06,x=p.x*w+Math.sin(tt*6+p.phase)*p.speed*w*.10,y=((((p.y-tt*p.speed)%1)+1)%1)*h,tw=(Math.sin(tt*12+p.phase)+1)*.5,a=(.35+tw*.65);ctx.fillStyle=p.golden?'rgba(255,234,117,'+a+')':'rgba(255,255,255,'+a+')';ctx.beginPath();ctx.arc(x,y,p.size*(.7+tw*.6),0,Math.PI*2);ctx.fill();if(p.size>3.5){ctx.fillStyle='rgba(255,215,0,'+(a*.45)+')';ctx.beginPath();ctx.arc(x,y,p.size*2.5,0,Math.PI*2);ctx.fill();}}
+
+  /* 26 white divine feathers, with the same staged fall range as the Android source. */
+  for(let i=0;i<26;i++){const u=(i*17)%100/100,v=(i*29)%100/100,spawn=.06+((i*13)%100)/100*.35;if(t<spawn)continue;const life=(t-spawn)/(.60+((i*7)%100)/100*.35);if(life>1)continue;const fade=life<.08?life/.08:life>.8?(1-life)/.2:1,len=i<4?280+((i*11)%100)/100*60:i<14?200+((i*11)%100)/100*60:140+((i*11)%100)/100*40,px=(.12+u*.76)*w+Math.sin(life*(1.3+((i*5)%100)/100*1.1)*Math.PI*2+i)* (80+((i*7)%100)/100*150),py=(-.08+v*.35)*h+life*h*.8*(.5+((i*3)%100)/100*.4),rot=((i*37)%100-50)*.5;ctx.save();ctx.translate(px,py);ctx.rotate(rot*Math.PI/180);ctx.shadowBlur=len*.045;ctx.shadowColor='rgba(255,223,0,.35)';ctx.fillStyle='rgba(255,255,255,'+(fade*.97)+')';const mw=len*.26,lw=mw*.35,tw=mw*.65;ctx.beginPath();ctx.moveTo(0,len*.38);ctx.bezierCurveTo(-tw*.6,len*.30,-tw,len*.02,-tw,-len*.15);ctx.bezierCurveTo(-tw*.85,-len*.32,-tw*.25,-len*.44,0,-len*.52);ctx.bezierCurveTo(lw*.3,-len*.44,lw*.95,-len*.22,lw,.02*len);ctx.bezierCurveTo(lw*.7,len*.22,lw*.3,len*.36,0,len*.38);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='rgba(237,231,246,'+(fade*.65)+')';ctx.lineWidth=1.6;ctx.stroke();drawAllGodsLine(ctx,0,len*.38,0,-len*.52,'rgba(255,249,196,'+(fade*.95)+')',Math.max(2.5,Math.min(5,len*.024)));ctx.restore();}
+
+  const impacted=[]; for(const s of ALL_GODS_SWORDS){if(t>=s.drop+s.duration)impacted.push({x:s.x*w,y:h*.76});drawAllGodsSword(ctx,s,t,w,h);}
+  if(impacted.length>=4){const a=Math.min(1,Math.max(0,(t-.40)/.20))*.75;for(let i=0;i<impacted.length-1;i++){drawAllGodsLine(ctx,impacted[i].x,impacted[i].y,impacted[i+1].x,impacted[i+1].y,'rgba(255,223,0,'+a+')',1.6);drawAllGodsLine(ctx,impacted[i].x,impacted[i].y,impacted[i+1].x,impacted[i+1].y,'rgba(255,255,255,'+(a*.7)+')',.8);}}
+
+  const boss=ALL_GODS_SWORDS[10],bi=t-(boss.drop+boss.duration);
+  if(bi>0&&bi<=.90){const q=bi/.90,ease=1-(1-q)*(1-q),a=Math.max(0,1-q*.9),bx=boss.x*w,by=h*.76,r=Math.max(10,w*.85*ease);if(q<.1){ctx.fillStyle='rgba(255,255,255,'+((1-q/.1)*.95)+')';ctx.fillRect(0,0,w,h);}const g=ctx.createRadialGradient(bx,by,0,bx,by,r);g.addColorStop(0,'rgba(255,255,255,'+a+')');g.addColorStop(.25,'rgba(255,249,196,'+(a*.95)+')');g.addColorStop(.60,'rgba(255,223,0,'+(a*.85)+')');g.addColorStop(.82,'rgba(255,160,0,'+(a*.50)+')');g.addColorStop(1,'rgba(255,160,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.fill();for(let i=0;i<24;i++){const ang=(i*15+q*45)*Math.PI/180;drawAllGodsLine(ctx,bx,by,bx+Math.cos(ang)*r*1.25,by+Math.sin(ang)*r*1.25,'rgba(255,249,196,'+(a*.80)+')',Math.max(1.5,6*(1-q)));}}
+  ctx.restore();
+};
+
 export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -148,7 +277,8 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
 
     setProgress(0);
     lastUiUpdateRef.current = 0;
-    const duration = effect.isUltimate ? 700 : 450;
+    const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
+    const duration = isAllGods ? 1300 : effect.isUltimate ? 700 : 450;
     const startTime = performance.now();
     let animId: number;
 
@@ -189,6 +319,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
       const targetCenter = effect.targetIsPlayer ? { x: w * 0.5, y: h * 0.70 } : { x: w * 0.5, y: h * 0.28 };
       const actorCenter = effect.targetIsPlayer ? { x: w * 0.5, y: h * 0.28 } : { x: w * 0.5, y: h * 0.70 };
       const t = progress;
+      const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
 
       ctx.save();
 
@@ -247,27 +378,9 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         ctx.stroke();
       }
 
-      // 3. Ultimate Nova Blast
-      else if (effect.isUltimate) {
-        const radius = Math.max(1, t * w * 0.65);
-        const alpha = Math.max(0, 1 - t);
-        const grad = ctx.createRadialGradient(targetCenter.x, targetCenter.y, 0, targetCenter.x, targetCenter.y, radius);
-        grad.addColorStop(0, 'rgba(255, 249, 196, 0.95)');
-        grad.addColorStop(0.3, 'rgba(255, 111, 0, 0.8)');
-        grad.addColorStop(0.7, 'rgba(216, 67, 21, 0.5)');
-        grad.addColorStop(1, 'rgba(216, 67, 21, 0)');
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(targetCenter.x, targetCenter.y, radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Outer ring
-        ctx.strokeStyle = `rgba(255, 213, 79, ${alpha * 0.8})`;
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.arc(targetCenter.x, targetCenter.y, Math.max(1, radius * 0.9), 0, Math.PI * 2);
-        ctx.stroke();
+      // 3. Migrated 技一・全神の権能 VFX
+      else if (isAllGods) {
+        drawAllGodsVfx(ctx, w, h, t);
       }
 
       // 4. Irena Feather Projectiles & Burst (羽弾)
@@ -428,16 +541,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
 
   const t = progress;
 
-  // Ultimate Screen Dim: Only active during 0.05 < t < 0.75 of ULTIMATE skill
-  // Strictly guaranteed to be 0 otherwise, so it can never remain on screen!
-  const ultimateDimAlpha = effect.isUltimate && t >= 0.05 && t <= 0.75
-    ? (t < 0.25 ? ((t - 0.05) / 0.2) * 0.55 : ((0.75 - t) / 0.5) * 0.55)
-    : 0;
-
-  const ultimateFlashAlpha = effect.isUltimate && t >= 0.15 && t <= 0.35
-    ? (1 - Math.abs(t - 0.25) / 0.1) * 0.4
-    : 0;
-
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
     ? (1 - Math.abs(t - 0.16) / 0.08) * 0.25
     : 0;
@@ -450,7 +553,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
   const cutInSrc = effect.effectType === 'SPECIAL_FEATHER'
     ? CHARACTERS.find(c => c.name === effect.actorName)?.specialCutInSrc
     : undefined;
-
   return (
     <div
       style={{
@@ -467,30 +569,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         overflow: 'hidden',
       }}
     >
-      {/* Dim Overlay - strictly conditional and zero when animation finishes */}
-      {ultimateDimAlpha > 0.01 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: `rgba(0, 0, 0, ${ultimateDimAlpha})`,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
-
-      {/* Screen Flash */}
-      {ultimateFlashAlpha > 0.01 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: `rgba(255, 255, 255, ${ultimateFlashAlpha})`,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
-
       {/* Critical Flash */}
       {critFlashAlpha > 0.01 && (
         <div
@@ -527,47 +605,6 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
           isEnemy={effect.targetIsPlayer}
           durationMs={Math.round(820 / Math.max(0.1, speedMultiplier))}
         />
-      )}
-
-      {/* Grand Ultimate Cut-In Banner */}
-      {effect.isUltimate && t >= 0.05 && t <= 0.85 && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '32%',
-            transform: `translateY(-50px) scale(${t < 0.25 ? 0.85 + t * 0.6 : 1.0})`,
-            opacity: t > 0.65 ? (0.85 - t) / 0.2 : 1,
-            backgroundColor: '#1E0E08',
-            border: '2px solid #FFD54F',
-            borderRadius: '14px',
-            padding: '12px 28px',
-            boxShadow: '0 0 24px rgba(255, 213, 79, 0.6)',
-            textAlign: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: 900,
-              color: '#FFD54F',
-              letterSpacing: '2px',
-              marginBottom: '4px',
-            }}
-          >
-            🌟 ULTIMATE SKILL 🌟
-          </div>
-          <div
-            style={{
-              fontSize: '24px',
-              fontWeight: 900,
-              color: '#FFFFFF',
-              textShadow: '0 0 10px #FF6F00',
-            }}
-          >
-            必殺技『{effect.skillName}』
-          </div>
-        </div>
       )}
 
       {/* Evade "MISS!" Badge */}

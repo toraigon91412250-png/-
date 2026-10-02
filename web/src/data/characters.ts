@@ -55,3 +55,9 @@ export const KAISER: CharacterDef = {
 };
 
 export const CHARACTERS = [IRENA, KAISER];
+
+export const CPU_CHARACTERS = CHARACTERS.map(character => ({
+  ...character,
+  maxHp: character.maxHp * 2,
+  attack: character.attack * 1.5,
+}));

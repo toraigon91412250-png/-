@@ -24,6 +24,7 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
     specialCooldownRemaining: 0,
     ultimateGauge: 0,
     isBuffed: false,
+    buffDamageBonus: 0,
     isEvading: false,
     isPlayer,
     activeAilments: [],
@@ -153,8 +154,8 @@ export function useBattleGame(
   // Consume buff
   const consumeBuff = (isPlayer: boolean) => {
     updateState(prev => (isPlayer
-      ? { ...prev, player: { ...prev.player, isBuffed: false } }
-      : { ...prev, enemy: { ...prev.enemy, isBuffed: false } }
+      ? { ...prev, player: { ...prev.player, isBuffed: false, buffDamageBonus: 0 } }
+      : { ...prev, enemy: { ...prev.enemy, isBuffed: false, buffDamageBonus: 0 } }
     ));
   };
 
@@ -184,7 +185,8 @@ export function useBattleGame(
     action: BattleAction,
     isActingFirst: boolean,
     speed: number,
-    turn: number
+    turn: number,
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE'
   ): Promise<boolean> => {
     let actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
     let target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
@@ -272,8 +274,8 @@ export function useBattleGame(
       case 'BUFF': {
         if (!actor.isBuffed) {
           updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true } }
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: 50 } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: 50 } }
           ));
           soundManager.playAttack();
           addLog(
@@ -345,6 +347,7 @@ export function useBattleGame(
 
       case 'ATTACK': {
         const hadBuff = actor.isBuffed;
+        const buffDamageBonus = actor.buffDamageBonus || 50;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -404,8 +407,8 @@ export function useBattleGame(
 
         // Buff bonus (+50)
         if (hadBuff) {
-          baseDamage += 50;
-          addLog(`⚡【強化消費】強化の効果でダメージ+50！（基礎: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          baseDamage += buffDamageBonus;
+          addLog(`⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！（基礎: ${baseDamage}）`, 'BUFF_PLAYER', turn);
         }
 
         // Critical: 20% on normal attack only (1.5x after additions)
@@ -471,6 +474,7 @@ export function useBattleGame(
 
       case 'SPECIAL': {
         const hadBuff = actor.isBuffed;
+        const buffDamageBonus = actor.buffDamageBonus || 50;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -478,8 +482,8 @@ export function useBattleGame(
         const skillName = actor.character.specialSkillName;
         let baseDamage = actor.character.specialSkillDamage;
         if (hadBuff) {
-          baseDamage += 50;
-          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+50！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          baseDamage += buffDamageBonus;
+          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
         }
 
         // Special gives +1 ultimate gauge
@@ -583,15 +587,25 @@ export function useBattleGame(
 
       case 'ULTIMATE': {
         const hadBuff = actor.isBuffed;
+        const buffDamageBonus = actor.buffDamageBonus || 50;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
 
         const skillName = actor.character.ultimateSkillName;
-        let baseDamage = actor.character.ultimateSkillDamage;
+        const isIrena = actor.character.id === 'irena';
+        const appliedIrenaVariant = isIrena ? ultimateVariant : undefined;
+        let baseDamage =
+          appliedIrenaVariant === 'ALL_GODS'
+            ? 0
+            : appliedIrenaVariant === 'RUIN'
+              ? 900
+              : appliedIrenaVariant === 'OMNIPOTENCE'
+                ? 1500
+                : actor.character.ultimateSkillDamage;
         if (hadBuff) {
-          baseDamage += 50;
-          addLog(`⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+50！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          baseDamage += buffDamageBonus;
+          addLog(`⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
         }
 
         // Reset ultimate gauge to 0
@@ -601,6 +615,42 @@ export function useBattleGame(
         ));
 
         addLog(`🔥 ${actor.character.name}は必殺技ゲージを全て解放した！（ゲージ 0/3）`, 'GAUGE_CHANGE', turn);
+
+        // Irena authority effects use the same existing ultimate visual effect.
+        if (isIrena && appliedIrenaVariant === 'ALL_GODS') {
+          const strongBuff = 200;
+          updateState(prev => (isActorPlayer
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: strongBuff } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: strongBuff } }
+          ));
+          addLog(
+            `✨【全神の権能】${actor.character.name}は神性を極限まで高めた！ 次の攻撃系行動のダメージ+${strongBuff}！`,
+            isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
+            turn
+          );
+          soundManager.playCritical();
+          soundManager.playFeatherShot();
+          updateState(prev => ({
+            ...prev,
+            visualEffect: {
+              targetIsPlayer: isActorPlayer,
+              damage: 0,
+              effectType: 'ULTIMATE_BLAST',
+              isCritical: false,
+              isEvade: false,
+              isBuff: false,
+              isUltimate: true,
+              actorName: actor.character.name,
+              skillName: '全神の権能',
+              statusAilmentName: '',
+              bannerText: `✨『全神の権能』強化 +${strongBuff}！`,
+              effectId: nextVisualEffectId.current++,
+            },
+          }));
+          await sleep(1300 / speed);
+          updateState(prev => ({ ...prev, visualEffect: null }));
+          return true;
+        }
 
         // Check opponent evasion
         if (target.isEvading) {
@@ -645,6 +695,19 @@ export function useBattleGame(
         }
 
         const finalDamage = baseDamage;
+
+        if (isIrena && appliedIrenaVariant === 'OMNIPOTENCE') {
+          const superBuff = 500;
+          updateState(prev => (isActorPlayer
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: superBuff } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: superBuff } }
+          ));
+          addLog(
+            `👑【全能の一撃】${actor.character.name}は全ての権能を統合した！ 次の攻撃系行動のダメージ+${superBuff}！`,
+            isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
+            turn
+          );
+        }
 
         soundManager.playCritical();
         if (actor.character.id === 'irena') {
@@ -715,7 +778,10 @@ export function useBattleGame(
     }));
   };
 
-  const onActionSelected = useCallback(async (playerAction: BattleAction) => {
+  const onActionSelected = useCallback(async (
+    playerAction: BattleAction,
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE'
+  ) => {
     if (stateRef.current.phase !== 'SELECT_ACTION') return;
 
     // Check prerequisites
@@ -752,7 +818,14 @@ export function useBattleGame(
 
     try {
       // Step 1: First Battler Turn
-      const continue1 = await executeFighterTurn(firstIsPlayer, firstAction, true, speed, currentTurn);
+      const continue1 = await executeFighterTurn(
+        firstIsPlayer,
+        firstAction,
+        true,
+        speed,
+        currentTurn,
+        firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined
+      );
       if (!continue1) {
         const winner = stateRef.current.player.currentHp > 0;
         finalizeBattle(winner);
@@ -762,7 +835,14 @@ export function useBattleGame(
       await sleep(500 / speed);
 
       // Step 2: Second Battler Turn (if still alive)
-      const continue2 = await executeFighterTurn(!firstIsPlayer, secondAction, false, speed, currentTurn);
+      const continue2 = await executeFighterTurn(
+        !firstIsPlayer,
+        secondAction,
+        false,
+        speed,
+        currentTurn,
+        !firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined
+      );
       if (!continue2) {
         const winner = stateRef.current.player.currentHp > 0;
         finalizeBattle(winner);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CharacterDef, CpuDifficulty } from './types/game';
-import { CHARACTERS, IRENA, KAISER } from './data/characters';
+import { CHARACTERS, CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
@@ -46,7 +46,7 @@ export const App: React.FC = () => {
   }, [battleState.phase]);
 
   const handleStartBattle = () => {
-    const opp = CHARACTERS.find(c => c.id !== playerChar.id) || KAISER;
+    const opp = CPU_CHARACTERS.find(c => c.id !== playerChar.id) || CPU_CHARACTERS.find(c => c.id === KAISER.id) || KAISER;
     const sources = [
       battleBackground,
       playerChar.imageSrc,
