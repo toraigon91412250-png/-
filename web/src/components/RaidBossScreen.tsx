@@ -564,8 +564,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                 <div style={styles.featherRain}>羽弾</div>
               </>}
               {actionFx === 'FOCUS' && <div style={styles.focusFx}><div style={styles.focusCore} /><span>集中</span></div>}
-              {actionFx === 'GUARD' && <div style={styles.guardFx}><Shield size={92} /><span>GUARD</span></div>}
-              {actionFx === 'POTION' && <div style={styles.potionFx}><Sparkles size={64} /><span>RECOVER</span></div>}
+              {actionFx === 'GUARD' && <div style={styles.guardFx}><Shield size={92} /><span style={styles.guardFxLabel}>GUARD</span></div>}
+              {actionFx === 'POTION' && <div style={styles.potionFx}><Sparkles size={64} /><span style={styles.potionFxLabel}>RECOVER</span></div>}
               {actionFx === 'ULTIMATE' && <div style={styles.ultimateFx}><div style={styles.ultimateRing} /><div style={styles.ultimateCore}>必殺</div></div>}
               {actionFx === 'BOSS' && <div style={styles.bossStrikeFx}><AlertTriangle size={78} /><span>BOSS STRIKE</span></div>}
             </div>
@@ -830,9 +830,9 @@ const styles: Record<string, React.CSSProperties> = {
   focusFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '140px', height: '140px', borderRadius: '50%', color: '#A9FFE9', fontWeight: 1000, textShadow: '0 0 16px rgba(118,255,210,.9)', animation: 'raidActionFlash .7s ease-out forwards' },
   focusCore: { position: 'absolute', width: '76px', height: '76px', borderRadius: '50%', border: '2px solid #7CF7D4', boxShadow: '0 0 28px rgba(124,247,212,.6)' },
   guardFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '150px', height: '150px', borderRadius: '50%', color: '#7CF7D4', border: '2px solid rgba(124,247,212,.8)', background: 'rgba(40,180,160,.08)', boxShadow: '0 0 46px rgba(70,240,200,.32)', animation: 'raidGuardFx .78s ease-out forwards' },
-  guardFx span: { position: 'absolute', bottom: '18px', fontSize: '12px', letterSpacing: '.2em' },
+  guardFxLabel: { position: 'absolute', bottom: '18px', fontSize: '12px', letterSpacing: '.2em' },
   potionFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '130px', height: '130px', borderRadius: '50%', color: '#9DFF9B', textShadow: '0 0 16px rgba(120,255,120,.8)', animation: 'raidGuardFx .78s ease-out forwards' },
-  potionFx span: { position: 'absolute', bottom: '8px', fontSize: '11px', letterSpacing: '.18em' },
+  potionFxLabel: { position: 'absolute', bottom: '8px', fontSize: '11px', letterSpacing: '.18em' },
   ultimateFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '180px', height: '180px', color: '#FFF2A8', textShadow: '0 0 20px rgba(255,242,168,.9)' },
   ultimateRing: { position: 'absolute', inset: 0, borderRadius: '50%', border: '3px solid rgba(230,190,255,.92)', boxShadow: '0 0 46px rgba(190,110,255,.65), inset 0 0 42px rgba(190,110,255,.38)', animation: 'raidUltimateFx .82s ease-out forwards' },
   ultimateCore: { fontSize: 'clamp(34px, 8vw, 66px)', fontWeight: 1000, letterSpacing: '.12em', animation: 'raidActionFlash .82s ease-out forwards' },
