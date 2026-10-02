@@ -238,7 +238,7 @@ export function useBattleGame(
           }
       ));
 
-      await sleep(650 / speed);
+      await sleep(850 / speed);
       updateState(prev => ({ ...prev, visualEffect: null }));
 
       if (newHp <= 0) {

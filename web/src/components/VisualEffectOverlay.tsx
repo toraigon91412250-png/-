@@ -278,7 +278,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
     setProgress(0);
     lastUiUpdateRef.current = 0;
     const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
-    const duration = isAllGods ? 1300 : effect.isUltimate ? 700 : 450;
+    const duration = effect.effectType === 'BLEED_TICK' ? 850 : isAllGods ? 1300 : effect.isUltimate ? 700 : 450;
     const startTime = performance.now();
     let animId: number;
 
@@ -691,7 +691,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
             </div>
           )}
 
-          {effect.statusAilmentName && (
+          {effect.statusAilmentName && effect.effectType !== 'BLEED_TICK' && (
             <div
               style={{
                 backgroundColor: effect.statusAilmentName === '出血' ? '#B71C1C' : '#4A148C',
