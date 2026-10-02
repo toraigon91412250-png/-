@@ -693,7 +693,7 @@ const styles: Record<string, React.CSSProperties> = {
   preIcon: { width: '48px', height: '48px', display: 'grid', placeItems: 'center', borderRadius: '14px', color: '#FF5B6E', border: '1px solid #5A2D3A', background: '#1C0E16', flex: '0 0 auto' },
   preStage: { marginTop: '20px', minHeight: '240px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '18px', padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(17,24,39,.9), rgba(13,11,25,.88))', border: '1px solid #283652' },
   bossVisualWrap: { position: 'relative', width: '220px', height: '220px', margin: '0 auto', display: 'grid', placeItems: 'center' },
-  bossVisualWrapLarge: { position: 'relative', width: 'min(42vw, 300px)', height: 'min(42vw, 300px)', minWidth: '220px', minHeight: '220px', margin: '0 auto', display: 'grid', placeItems: 'center', zIndex: 2 },
+  bossVisualWrapPre: { position: 'relative', width: 'min(42vw, 300px)', height: 'min(42vw, 300px)', minWidth: '220px', minHeight: '220px', margin: '0 auto', display: 'grid', placeItems: 'center', zIndex: 2 },
   bossHalo: { position: 'absolute', width: '72%', height: '72%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(118, 69, 255, .26), rgba(7,9,16,0) 68%)', animation: 'raidBossPulse 2.4s ease-in-out infinite' },
   bossHaloRage: { background: 'radial-gradient(circle, rgba(255, 46, 83, .30), rgba(7,9,16,0) 68%)' },
   bossRingOuter: { position: 'absolute', width: '86%', height: '86%', borderRadius: '50%', border: '1px solid rgba(124,247,212,.26)', borderTopColor: '#7CF7D4', borderRightColor: '#9A7BFF', animation: 'raidBossRing 7s linear infinite' },
@@ -774,7 +774,7 @@ const styles: Record<string, React.CSSProperties> = {
   centerMessage: { minHeight: '132px', padding: '14px', boxSizing: 'border-box', borderRadius: '15px', border: '1px solid #303A53', background: '#0B111D', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' },
   messageTag: { color: '#7888A4', fontSize: '9px', fontWeight: 900, letterSpacing: '0.18em' },
   messageText: { marginTop: '7px', fontSize: '14px', fontWeight: 900, lineHeight: 1.45 },
-  chainText: { marginTop: '9px', color: combo >= 2 ? '#FFF0A2' : '#4A5871', fontSize: '11px', fontWeight: 1000, letterSpacing: '0.16em' },
+  chainText: { marginTop: '9px', color: '#FFF0A2', fontSize: '11px', fontWeight: 1000, letterSpacing: '0.16em' },
 
   actions: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' },
   actionButton: { minHeight: '78px', borderRadius: '13px', border: '1px solid #31435F', background: '#111A2A', color: '#EFF5FF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '8px', boxSizing: 'border-box', cursor: 'pointer', fontWeight: 900, transition: 'transform .12s ease, border-color .12s ease, background .12s ease' },
