@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BattleAction, BattleUiState } from '../types/game';
+import { CHARACTERS } from '../data/characters';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -9,7 +10,7 @@ import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
 interface BattleScreenProps {
   state: BattleUiState;
-  onAction: (action: BattleAction) => void;
+  onAction: (action: BattleAction, ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE') => void;
   onBackToSelect: () => void;
   onRestart: () => void;
   onToggleSound: () => void;
@@ -50,7 +51,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       return { ...prev, ruin: 1 };
     });
 
-    onAction('ULTIMATE');
+    onAction('ULTIMATE', variant);
   };
 
   const handleRestart = () => {
@@ -62,6 +63,15 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     const handleResize = () => setIsWide(window.innerWidth >= 680);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Preload Irena's feather-shot cut-in as soon as the battle screen opens.
+  useEffect(() => {
+    const irenaCutInSrc = CHARACTERS.find(character => character.id === 'irena')?.specialCutInSrc;
+    if (!irenaCutInSrc) return;
+
+    const image = new Image();
+    image.src = irenaCutInSrc;
   }, []);
 
   // Screen shake on impactful damage
@@ -93,7 +103,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             } else if (irenaUltimateUses.ruin === 0) {
               handleIrenaUltimateAction('RUIN');
             } else {
-              onAction('ULTIMATE');
+              onAction('ULTIMATE', 'OMNIPOTENCE');
             }
           } else {
             onAction('ULTIMATE');
