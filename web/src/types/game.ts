@@ -18,11 +18,11 @@ export const STATUS_AILMENTS: Record<StatusAilmentType, StatusAilmentDef> = {
     type: 'BLEED',
     displayName: '出血',
     defaultDuration: 3,
-    dotDamage: 50,
+    dotDamage: 30,
     speedMod: -20,
     defenseMod: -20,
     attackMod: 0,
-    description: '各ターン開始時に50ダメージ、速度-20、防御-20',
+    description: '各ターン開始時に30ダメージ、速度-20、防御-20',
   },
   PRESSURE: {
     type: 'PRESSURE',
