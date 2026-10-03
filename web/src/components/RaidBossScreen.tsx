@@ -846,11 +846,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             ? 'ボスが羽弾を学習。滅界砲の構えに入った。'
             : action === 'NORMAL'
               ? 'ボスが通常攻撃の流れを学習した。'
-              : action === 'FOCUS'
-                ? 'ボスが集中の隙を学習した。'
-                : action === 'GUARD'
-                  ? 'ボスが防御の癖を学習した。'
-                  : 'ボスが行動パターンを更新した。',
+              : 'ボスが行動パターンを更新した。',
         );
       }
 
