@@ -414,6 +414,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     previous: BossPattern,
     recentAction: PlayerAction | null,
     repeats: number,
+    currentAdaptationLevel: number,
   ): BossPattern => {
     const adaptationBias: Partial<Record<PlayerAction, Partial<Record<BossPattern, number>>>> = {
       NORMAL: { VOID: 3, CHARGE: 2 },
@@ -452,7 +453,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         if (currentPlayer.tp >= 80 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 1;
 
         if (currentPhase === 2 && pattern === 'RAGE') {
-          weight = currentPlayer.hp <= PLAYER_MAX_HP * 0.45 ? 4 : 1;
+          const pressure = currentPlayer.hp <= PLAYER_MAX_HP * 0.45 ? 4 : 1;
+          weight = pressure + currentAdaptationLevel;
         }
 
         return { pattern, weight };
@@ -572,8 +574,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setLog(player.featherCooldown > 0 ? '羽弾はまだ再使用できない。' : 'MPが足りない。');
       return;
     }
-    if (action === 'COUNTER' && player.mp < 10) {
-      setLog('MPが足りない。');
+    if (action === 'COUNTER' && (player.mp < 10 || broken)) {
+      setLog(broken ? 'BREAK中は迎撃できない。' : 'MPが足りない。');
       return;
     }
     if (action === 'FOCUS' && player.mp < 12) {
@@ -645,9 +647,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const responseMultiplier =
-      perfectCounter ? 1.22 :
-      featherInterrupt ? 1.12 :
-      sweepOpening ? 1.1 :
+      perfectCounter ? 1.15 :
+      featherInterrupt ? 1.08 :
+      sweepOpening ? 1.08 :
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
@@ -698,9 +700,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       action === 'NORMAL'
         ? contractBreakGain(sweepOpening ? 24 : 16)
         : action === 'FEATHER'
-          ? contractBreakGain(featherInterrupt ? 58 : 30)
+          ? contractBreakGain(featherInterrupt ? 52 : 30)
           : action === 'COUNTER'
-            ? contractBreakGain(perfectCounter ? 68 : 4)
+            ? contractBreakGain(perfectCounter ? 60 : 4)
             : action === 'ULTIMATE'
               ? contractBreakGain(46)
               : 0;
@@ -757,7 +759,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         ),
         mp: Math.min(PLAYER_MAX_MP, player.mp + 30),
         tp: clamp(
-          player.tp + (runContract === 'SUSTAIN' ? 6 : 8),
+          player.tp + (runContract === 'SUSTAIN' ? 7 : 8),
           0,
           PLAYER_MAX_TP,
         ),
@@ -790,7 +792,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         ...player,
         mp: clamp(player.mp - 12, 0, PLAYER_MAX_MP),
         tp: clamp(
-          player.tp + (runContract === 'SUSTAIN' ? 12 : 15),
+          player.tp + (runContract === 'SUSTAIN' ? 13 : 15),
           0,
           PLAYER_MAX_TP,
         ),
@@ -818,7 +820,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     if (action === 'GUARD') {
-      const perfectGuard = isHeavy;
+      const perfectGuard = isHeavy && currentBrokenTurns === 0;
       const nextPlayer: PlayerState = {
         ...player,
         hp: Math.min(PLAYER_MAX_HP, player.hp + (runContract === 'SUSTAIN' ? 540 : 450)),
@@ -836,9 +838,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setPlayer(nextPlayer);
       setCombo(0);
 
-      if (perfectGuard && currentBrokenTurns === 0) {
+      if (perfectGuard) {
         setBossBreak(prev => clamp(prev + 28, 0, BREAK_MAX));
-        setLog('PERFECT GUARD！大技を読み、BREAKを奪った。');
+        setPerfectResponses(prev => prev + 1);
+        setLog('PERFECT GUARD！大技を読み、BREAKと次の攻めを整えた。');
         sfx('guard');
       } else {
         setLog('防御構え。盾3,600を展開。');
@@ -852,7 +855,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
@@ -966,7 +969,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
       if (perfectCounter || featherInterrupt) {
         setBossPattern(
-          choosePattern(phase, nextPlayer, currentPattern, null, 0),
+          choosePattern(phase, nextPlayer, currentPattern, null, 0, nextAdaptationLevel),
         );
         schedule(() => setDamagePopup(null), 400);
         setIsResolving(false);
@@ -1042,11 +1045,40 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     if (fx === 'BOSS') {
+      const isHeavy = bossPattern === 'CHARGE' || bossPattern === 'RAGE';
+      const scanTransform =
+        bossPattern === 'VOID' ? 'rotate(14deg)' :
+        bossPattern === 'RAGE' ? 'rotate(-32deg)' :
+        'rotate(-18deg)';
       return (
         <div style={styles.fxOverlay}>
-          <div style={{ ...styles.telegraphRing, borderColor: intent.color }} />
-          <div style={{ ...styles.telegraphCore, borderColor: intent.color, boxShadow: '0 0 55px ' + intent.color }} />
-          <div style={{ ...styles.telegraphScan, background: 'linear-gradient(90deg,transparent,' + intent.color + ',transparent)' }} />
+          <div
+            style={{
+              ...styles.telegraphRing,
+              borderColor: intent.color,
+              borderStyle: bossPattern === 'VOID' ? 'dotted' : 'dashed',
+              animation: bossPattern === 'RAGE'
+                ? 'raidGlitch .34s steps(2,end) infinite'
+                : 'raidTelegraphRing .72s ease-out forwards',
+            }}
+          />
+          <div
+            style={{
+              ...styles.telegraphCore,
+              borderColor: intent.color,
+              boxShadow: '0 0 ' + (isHeavy ? 75 : 55) + 'px ' + intent.color,
+              animation: bossPattern === 'VOID'
+                ? 'raidTelegraph .42s ease-in-out infinite'
+                : 'raidTelegraph .6s ease-in-out infinite',
+            }}
+          />
+          <div
+            style={{
+              ...styles.telegraphScan,
+              background: 'linear-gradient(90deg,transparent,' + intent.color + ',transparent)',
+              transform: scanTransform,
+            }}
+          />
           <div style={{ ...styles.bossHit, borderColor: intent.color }} />
           <div style={{ ...styles.bossHitText, color: intent.color }}>{fxText}</div>
         </div>
@@ -1251,7 +1283,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
           <div style={styles.resultNote}>
             <div style={styles.kicker}>CORE LOOP</div>
-            <div style={styles.resultNoteText}>予告 → 判断 → 命中 → 反撃 → BREAK → BURST。第2形態では同じ手ほど読まれやすくなる。</div>
+            <div style={styles.resultNoteText}>予告 → 判断 → 行動 → 反撃 → BREAK → BURST。第2形態では同じ手ほど読まれやすくなる。</div>
           </div>
 
           <button type="button" onClick={resetBattle} style={styles.primaryButton}>
@@ -1423,21 +1455,19 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           </div>
 
           <div style={styles.tacticalPanel}>
-            <div style={styles.kicker}>TACTICAL READ · {contractInfo.name}</div>
-            <div style={styles.tacticalTitle}>
-              {broken ? 'バースト時間を使い切る' : intent.name + ' にどう対応する？'}
+            <div style={styles.kicker}>BATTLE STATE · {contractInfo.name}</div>
+            <div style={styles.tacticalTitle}>{broken ? 'BREAK BURST' : phase === 2 ? 'ADAPTIVE CORE' : 'CORE STABLE'}</div>
+            <div style={styles.tacticalRow}>
+              <span>ボス状態</span>
+              <b>{broken ? '露出 · 残り ' + brokenTurns + 'T' : phase === 2 ? '適応 LV ' + adaptationLevel + '/3' : '通常'}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>攻める</span>
-              <b>{broken ? '高火力を優先' : 'ダメージとTPを伸ばせる'}</b>
+              <span>次の脅威</span>
+              <b>{broken ? '攻撃なし' : intent.name}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>守る</span>
-              <b>{broken ? '準備を優先して次へ' : '被害を抑えやすい'}</b>
-            </div>
-            <div style={styles.tacticalRow}>
-              <span>読み</span>
-              <b>{phase === 2 ? '同じ行動を重ねると対応が強くなる' : '行動履歴はまだ学習されない'}</b>
+              <span>契約</span>
+              <b>{contractInfo.risk}</b>
             </div>
             <div style={styles.tacticalRow}>
               <span>直近</span>
@@ -1491,7 +1521,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" disabled={isResolving || broken || player.mp < 10} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
             <Crosshair size={19} />
             <span>迎撃</span>
-            <small>MP10 · 成功で攻めの流れを奪う</small>
+            <small>MP10 · 成功時は反撃を止める</small>
           </button>
 
           <button type="button" disabled={isResolving || player.potions <= 0} onClick={() => performAction('POTION')} style={styles.actionButton}>
