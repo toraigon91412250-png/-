@@ -106,6 +106,10 @@ const CSS = [
   '@keyframes raidWarn{0%,100%{opacity:.7}50%{opacity:1}}',
   '@keyframes raidBreak{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.14)}56%{opacity:1}100%{opacity:0;transform:scale(1.32)}}',
   '@keyframes raidPhase{0%{opacity:0}15%{opacity:1}100%{opacity:0}}',
+  '@keyframes raidTelegraph{0%,100%{transform:scale(.82);opacity:.34}50%{transform:scale(1.08);opacity:.9}}',
+  '@keyframes raidTelegraphRing{0%{transform:scale(.52) rotate(0deg);opacity:0}18%{opacity:1}100%{transform:scale(1.28) rotate(180deg);opacity:0}}',
+  '@keyframes raidGlitch{0%,100%{transform:translate(0,0);filter:blur(0)}20%{transform:translate(-3px,1px);filter:blur(.5px)}40%{transform:translate(4px,-1px);filter:blur(0)}60%{transform:translate(-2px,0);filter:blur(.8px)}}',
+  '@keyframes raidCoreBurst{0%{transform:scale(.25);opacity:0}18%{opacity:1}100%{transform:scale(1.35);opacity:0}}',
   '@keyframes raidLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
   '@keyframes raidBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
   '@media(max-width:760px){.raidBottom{grid-template-columns:1fr!important}.raidActions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.raidStage{min-height:470px!important}.raidCutinTitle{font-size:42px!important}.raidFooter{display:none!important}.raidPreGrid{grid-template-columns:1fr!important}}',
@@ -942,7 +946,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (fx === 'PHASE') {
       return (
         <div style={styles.phaseOverlay}>
-          <div style={styles.phaseText}>{fxText}</div>
+          <img src={raidBossArt} alt="" style={styles.phaseBossImage} />
+          <div style={styles.phaseBossFlash} />
+          <div style={{ ...styles.phaseText, animation: 'raidGlitch 1.05s ease-in-out infinite' }}>{fxText}</div>
           <div style={styles.phaseSub}>深淵解放</div>
         </div>
       );
@@ -951,6 +957,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (fx === 'BOSS') {
       return (
         <div style={styles.fxOverlay}>
+          <div style={{ ...styles.telegraphRing, borderColor: intent.color }} />
+          <div style={{ ...styles.telegraphCore, borderColor: intent.color, boxShadow: '0 0 55px ' + intent.color }} />
+          <div style={{ ...styles.telegraphScan, background: 'linear-gradient(90deg,transparent,' + intent.color + ',transparent)' }} />
           <div style={{ ...styles.bossHit, borderColor: intent.color }} />
           <div style={{ ...styles.bossHitText, color: intent.color }}>{fxText}</div>
         </div>
@@ -1197,6 +1206,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               </div>
               <div style={styles.intentName}>{intent.name}</div>
               <div style={styles.intentDetail}>{intent.detail}</div>
+              <div style={styles.intentMeta}>
+                基礎威力 {formatNumber(intent.minDamage)}–{formatNumber(intent.maxDamage)}
+                {bossPattern === 'VOID' ? ' · さらにMPへ干渉' : ''}
+              </div>
             </div>
           ) : (
             <div style={styles.breakWindow}>
@@ -1356,7 +1369,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" disabled={isResolving} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
             <Crosshair size={19} />
             <span>迎撃</span>
-            <small>大技なら超強力 · 外すと反撃強化</small>
+            <small>高リターンの読み · 外すと反撃強化</small>
           </button>
 
           <button type="button" disabled={isResolving || player.potions <= 0} onClick={() => performAction('POTION')} style={styles.actionButton}>
@@ -1472,6 +1485,7 @@ const styles: Record<string, React.CSSProperties> = {
   intentTop: { display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#8793aa', fontWeight: 900, letterSpacing: '.15em' },
   intentName: { marginTop: 4, fontSize: 18, fontWeight: 1000 },
   intentDetail: { marginTop: 2, color: '#94a0b5', fontSize: 10, lineHeight: 1.45 },
+  intentMeta: { marginTop: 5, color: '#c9c4de', fontSize: 9, fontWeight: 900, letterSpacing: '.03em' },
   breakWindow: { position: 'relative', zIndex: 5, width: 'min(100%,560px)', margin: '12px auto 0', padding: '11px 13px', borderRadius: 13, textAlign: 'center', background: 'rgba(45,35,11,.5)', border: '1px solid #f0d667' },
   breakKicker: { color: '#fff1a1', fontSize: 9, fontWeight: 1000, letterSpacing: '.22em' },
   breakTitle: { marginTop: 4, fontSize: 19, fontWeight: 1000 },
@@ -1501,10 +1515,15 @@ const styles: Record<string, React.CSSProperties> = {
   focusCircle: { width: 144, height: 144, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#d6ccff', border: '2px solid #c6b6ff', boxShadow: '0 0 44px rgba(160,125,255,.56)', animation: 'raidPop .72s ease-out forwards' },
   recoverCircle: { width: 140, height: 140, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#abffbe', border: '2px solid rgba(130,255,160,.82)', background: 'rgba(65,180,95,.08)', boxShadow: '0 0 38px rgba(110,255,140,.3)', animation: 'raidPop .8s ease-out forwards' },
   ultimateCircle: { width: '52%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ded4ff', boxShadow: '0 0 70px rgba(156,106,255,.84)', animation: 'raidFlash .86s ease-out forwards' },
+  telegraphRing: { position: 'absolute', width: '44%', aspectRatio: '1', borderRadius: '50%', border: '2px dashed #fff', boxShadow: '0 0 26px currentColor', animation: 'raidTelegraphRing .72s ease-out forwards' },
+  telegraphCore: { width: '16%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #fff', animation: 'raidTelegraph .6s ease-in-out infinite' },
+  telegraphScan: { position: 'absolute', width: '92%', height: 5, boxShadow: '0 0 26px currentColor', transform: 'rotate(-18deg)', animation: 'raidPop .65s ease-out forwards' },
   breakCircle: { width: '62%', aspectRatio: '1', borderRadius: '50%', border: '4px solid #fff0a4', boxShadow: '0 0 72px rgba(255,232,128,.86)', animation: 'raidBreak .95s ease-out forwards' },
   breakText: { position: 'relative', color: '#fff7be', fontSize: 'clamp(40px,9vw,92px)', fontWeight: 1000, letterSpacing: '.12em', textShadow: '0 0 34px rgba(255,233,120,.95)', animation: 'raidBreak .92s ease-out forwards' },
-  phaseOverlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'grid', placeItems: 'center', pointerEvents: 'none', background: 'radial-gradient(circle,rgba(255,54,88,.84),rgba(10,0,16,.97) 68%)', animation: 'raidPhase 1.1s ease-out forwards' },
-  phaseText: { color: '#fff', fontSize: 'clamp(52px,11vw,120px)', fontWeight: 1000, textShadow: '0 0 45px rgba(255,72,110,.95)' },
+  phaseOverlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'grid', placeItems: 'center', pointerEvents: 'none', overflow: 'hidden', background: 'radial-gradient(circle,rgba(255,54,88,.84),rgba(10,0,16,.97) 68%)', animation: 'raidPhase 1.1s ease-out forwards' },
+  phaseBossImage: { position: 'absolute', width: 'min(74vw,720px)', height: 'min(62vw,520px)', objectFit: 'cover', opacity: .19, mixBlendMode: 'screen', filter: 'saturate(1.7) contrast(1.28) brightness(1.18)', animation: 'raidCoreBurst 1.1s ease-out forwards' },
+  phaseBossFlash: { position: 'absolute', width: 'min(72vw,640px)', height: 'min(60vw,520px)', borderRadius: '50%', border: '3px solid rgba(255,183,194,.9)', boxShadow: '0 0 120px rgba(255,85,110,.72)', animation: 'raidCoreBurst 1.05s ease-out forwards' },
+  phaseText: { position: 'relative', zIndex: 2, color: '#fff', fontSize: 'clamp(52px,11vw,120px)', fontWeight: 1000, textShadow: '0 0 45px rgba(255,72,110,.95)' },
   phaseSub: { position: 'absolute', top: '61%', color: '#ffc8d4', fontSize: 16, fontWeight: 900, letterSpacing: '.35em' },
   bossHit: { width: '44%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ff6b86', boxShadow: '0 0 46px rgba(255,70,100,.72)', animation: 'raidFlash .68s ease-out forwards' },
   bossHitText: { position: 'relative', marginTop: 205, fontSize: 'clamp(24px,5vw,48px)', fontWeight: 1000, textShadow: '0 0 26px currentColor', animation: 'raidPop .65s ease-out forwards' },
