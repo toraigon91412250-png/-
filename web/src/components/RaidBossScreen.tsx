@@ -127,7 +127,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     focus: false,
     featherCooldown: 0,
   });
-  const [turn, setTurn] = useState(1);
+  const [turn, setTurn] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [bestHit, setBestHit] = useState(0);
@@ -298,7 +298,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       focus: false,
       featherCooldown: 0,
     });
-    setTurn(1);
+    setTurn(0);
     setCombo(0);
     setMaxCombo(0);
     setBestHit(0);
@@ -531,6 +531,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     setIsResolving(true);
+    setTurn(prev => prev + 1);
 
     const repeats = lastAction === action ? repeatCount + 1 : 1;
     const nextAdaptationLevel =
@@ -839,7 +840,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
         schedule(() => {
           setFx(null);
-          runBossAttack(2, 'RAGE', nextPlayer, action, repeats, 0);
+          runBossAttack(2, 'RAGE', nextPlayer, action, repeats, 0, 1);
         }, 1050);
         return;
       }
@@ -876,28 +877,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setBossPattern(
           choosePattern(phase, nextPlayer, currentPattern, action, repeats),
         );
-        setTurn(prev => prev + 1);
         schedule(() => setDamagePopup(null), 400);
         setIsResolving(false);
-        return;
-      }
-
-      if (phase === 1 && bossHp - actualDamage <= BOSS_HP[1] * 0.5) {
-        setPhase(2);
-        setBossHp(BOSS_HP[2]);
-        setBossBreak(0);
-        setBrokenTurns(0);
-        setBossPattern('RAGE');
-        setAdaptationLevel(0);
-        setFx('PHASE');
-        setFxText('PHASE II');
-        sfx('phase');
-        setLog('第2形態「深淵解放」。同じ行動を2回続けるとボスが対応する。');
-
-        schedule(() => {
-          setFx(null);
-          runBossAttack(2, 'RAGE', nextPlayer, action, repeats);
-        }, 1050);
         return;
       }
 
@@ -910,7 +891,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         );
       }
 
-      setTurn(prev => prev + 1);
       setIsResolving(false);
 
       schedule(() => setDamagePopup(null), 400);
@@ -1258,7 +1238,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             </div>
           )}
 
-          <div style={styles.turn}>TURN {turn}</div>
+          <div style={styles.turn}>TURN {Math.max(1, turn)}</div>
 
           <div style={styles.log}>
             <div style={styles.logTop}>
