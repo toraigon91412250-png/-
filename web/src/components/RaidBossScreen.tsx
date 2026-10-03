@@ -79,13 +79,13 @@ const CONTRACT_INFO: Record<
   FRACTURE: {
     name: 'FRACTURE',
     detail: 'BREAKを作りやすくする代わりに、通常時の火力を少し落とす。',
-    risk: 'BREAK獲得 +25% / 与ダメージ -8%',
+    risk: 'BREAK獲得 +20% / 与ダメージ -10%',
     reward: '契約ボーナス +8,000',
   },
   SUSTAIN: {
     name: 'SUSTAIN',
     detail: '回復と防御を厚くする代わりに、TPの伸びが鈍る。',
-    risk: '回復・盾 +20% / TP獲得 -20%',
+    risk: '回復・盾 +20% / TP獲得 -15%',
     reward: '契約ボーナス +8,000',
   },
 };
@@ -558,6 +558,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         currentPattern,
         activeAction,
         repeats,
+        currentAdaptationLevel,
       );
       setBossPattern(nextPattern);
       setIsResolving(false);
@@ -569,6 +570,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (action === 'FEATHER' && (player.featherCooldown > 0 || player.mp < 18)) {
       setLog(player.featherCooldown > 0 ? '羽弾はまだ再使用できない。' : 'MPが足りない。');
+      return;
+    }
+    if (action === 'COUNTER' && player.mp < 10) {
+      setLog('MPが足りない。');
       return;
     }
     if (action === 'FOCUS' && player.mp < 12) {
@@ -662,7 +667,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           ? randomBetween(9800, 11500)
           : action === 'COUNTER'
             ? perfectCounter
-              ? randomBetween(7600, 9000)
+              ? randomBetween(7400, 8600)
               : randomBetween(1800, 2600)
             : action === 'ULTIMATE'
               ? randomBetween(26000, 30000)
@@ -670,7 +675,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     const contractDamageMultiplier =
       runContract === 'OVERDRIVE' ? 1.08 :
-      runContract === 'FRACTURE' ? 0.92 :
+      runContract === 'FRACTURE' ? 0.9 :
       1;
 
     const finalDamage = Math.round(
@@ -686,7 +691,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     const actualDamage = Math.min(bossHp, finalDamage);
 
-    const contractBreakMultiplier = runContract === 'FRACTURE' ? 1.25 : 1;
+    const contractBreakMultiplier = runContract === 'FRACTURE' ? 1.2 : 1;
     const contractBreakGain = (value: number) => Math.round(value * contractBreakMultiplier);
 
     const breakGain =
@@ -710,7 +715,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (counterMiss) {
       setCombo(0);
-      setLog('迎撃失敗。次のボス攻撃が20%強化される！');
+      setLog('迎撃失敗。次のボス攻撃が15%強化される！');
       sfx('counter');
     } else if (perfectCounter) {
       setPerfectResponses(prev => prev + 1);
@@ -769,7 +774,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, null, 0),
+              choosePattern(phase, nextPlayer, currentPattern, null, 0, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
@@ -801,7 +806,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
@@ -863,7 +868,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     schedule(() => {
       const nextPlayer: PlayerState = {
         ...player,
-        mp: clamp(player.mp, 0, PLAYER_MAX_MP),
+        mp: clamp(player.mp - (action === 'COUNTER' ? 10 : 0), 0, PLAYER_MAX_MP),
         tp: action === 'ULTIMATE'
           ? 0
           : clamp(
@@ -1480,13 +1485,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" disabled={isResolving || player.mp < 10} onClick={() => performAction('GUARD')} style={styles.actionButton}>
             <Shield size={19} />
             <span>防御</span>
-            <small>盾3,600 · HP +450</small>
+            <small>盾3,600 · HP +450 · PERFECTでTP+</small>
           </button>
 
-          <button type="button" disabled={isResolving} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
+          <button type="button" disabled={isResolving || broken || player.mp < 10} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
             <Crosshair size={19} />
             <span>迎撃</span>
-            <small>高リターンの読み · 外すと反撃強化</small>
+            <small>MP10 · 成功で攻めの流れを奪う</small>
           </button>
 
           <button type="button" disabled={isResolving || player.potions <= 0} onClick={() => performAction('POTION')} style={styles.actionButton}>
