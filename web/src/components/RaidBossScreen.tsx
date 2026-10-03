@@ -151,6 +151,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [impactSource, setImpactSource] = useState<DamageSource | null>(null);
   const [victory, setVictory] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  const [bestScore, setBestScore] = useState(0);
 
   const audioRef = useRef<AudioContext | null>(null);
   const timersRef = useRef<number[]>([]);
@@ -316,7 +317,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     sfx('click');
   };
 
+  const recordScore = () => {
+    setBestScore(prev => Math.max(prev, score));
+  };
+
   const finishDefeat = (message: string) => {
+    recordScore();
     sfx('lose');
     setPlayer(prev => ({ ...prev, hp: 0 }));
     setLog(message);
@@ -328,6 +334,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   };
 
   const finishVictory = () => {
+    recordScore();
     sfx('win');
     setLog('深淵喰らい・アビスコアを討伐した！');
     setVictory(true);
@@ -850,16 +857,21 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         );
       }
 
-      setBossPattern(
-        choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+      const nextPattern = choosePattern(
+        phase,
+        nextPlayer,
+        currentPattern,
+        action,
+        repeats,
       );
+      setBossPattern(nextPattern);
       setTurn(prev => prev + 1);
       setIsResolving(false);
 
       schedule(() => setDamagePopup(null), 400);
       runBossAttack(
         phase,
-        choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+        nextPattern,
         nextPlayer,
         action,
         repeats,
@@ -1068,7 +1080,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <div style={styles.scoreBox}>
             <div style={styles.scoreKicker}>RUN SCORE</div>
             <div style={styles.score}>{formatNumber(score)}</div>
-            <div style={styles.scoreSub}>再挑戦するほど、ターン短縮・被弾減少・高COMBO・完璧迎撃が記録になる。</div>
+            <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScore, score))}</div>
+            <div style={styles.scoreSub}>ターン短縮・被弾減少・高COMBO・完璧迎撃が、次の自己ベストを作る。</div>
           </div>
 
           <div style={styles.resultGrid}>
@@ -1378,6 +1391,7 @@ const styles: Record<string, React.CSSProperties> = {
   scoreBox: { marginTop: 16, padding: 16, borderRadius: 15, background: 'linear-gradient(135deg,#171125,#101420)', border: '1px solid #44366c' },
   scoreKicker: { color: '#a99cff', fontSize: 9, fontWeight: 900, letterSpacing: '.22em' },
   score: { marginTop: 4, fontSize: 44, fontWeight: 1000, color: '#fff1bd', textShadow: '0 0 25px rgba(255,234,160,.25)' },
+  scoreBest: { marginTop: 2, color: '#fff1bd', fontSize: 10, fontWeight: 900, letterSpacing: '.12em' },
   scoreSub: { marginTop: 4, color: '#9aa5bb', fontSize: 10, lineHeight: 1.5 },
   resultGrid: { marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8 },
   resultItem: { padding: 11, borderRadius: 11, background: '#0d1320', border: '1px solid #232d43' },
