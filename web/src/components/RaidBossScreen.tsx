@@ -129,6 +129,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [bestHit, setBestHit] = useState(0);
   const [totalDamage, setTotalDamage] = useState(0);
   const [breakCount, setBreakCount] = useState(0);
+  const [perfectResponses, setPerfectResponses] = useState(0);
+  const [damageTaken, setDamageTaken] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
+  const [adaptationLevel, setAdaptationLevel] = useState(0);
   const [lastDamage, setLastDamage] = useState<number | null>(null);
   const [log, setLog] = useState('戦闘開始。ボスの予告を読む。');
   const [isResolving, setIsResolving] = useState(false);
@@ -138,6 +142,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [soundOn, setSoundOn] = useState(true);
   const [lastAction, setLastAction] = useState<PlayerAction | null>(null);
   const [repeatCount, setRepeatCount] = useState(0);
+  const [bossHitPulse, setBossHitPulse] = useState(false);
 
   const audioRef = useRef<AudioContext | null>(null);
   const timersRef = useRef<number[]>([]);
@@ -261,7 +266,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setBestHit(0);
     setTotalDamage(0);
     setBreakCount(0);
+    setPerfectResponses(0);
+    setDamageTaken(0);
+    setMaxCombo(0);
+    setAdaptationLevel(0);
     setLastDamage(null);
+    setBossHitPulse(false);
     setLog('戦闘開始。ボスの予告を読む。');
     setIsResolving(false);
     setFx(null);
@@ -345,6 +355,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     currentPlayer: PlayerState,
     activeRepeat: PlayerAction | null,
     activeRepeats: number,
+    incomingMultiplier = 1,
   ) => {
     if (brokenTurns > 0) {
       const remaining = brokenTurns - 1;
@@ -365,7 +376,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const mitigation = currentPlayer.guardNext
         ? (currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? .24 : .55)
         : 1;
-      const incoming = Math.round(raw * mitigation);
+      const incoming = Math.round(raw * mitigation * incomingMultiplier);
       const shieldDamage = Math.min(currentPlayer.shield, incoming);
       const hpDamage = Math.max(0, incoming - shieldDamage);
       const nextHp = Math.max(0, currentPlayer.hp - hpDamage);
@@ -378,8 +389,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       };
 
       setPlayer(nextPlayer);
+      setDamageTaken(prev => prev + hpDamage);
+      setBossHitPulse(true);
       setLastDamage(hpDamage);
       setFx(null);
+      schedule(() => setBossHitPulse(false), 260);
+      schedule(() => setLastDamage(null), 680);
       setLog(currentPattern === 'CHARGE' || currentPattern === 'RAGE'
         ? info.name + 'が直撃！ ' + formatNumber(hpDamage) + 'ダメージ'
         : info.name + '！ ' + formatNumber(hpDamage) + 'ダメージ');
@@ -433,6 +448,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const currentIntent = bossPattern;
     const currentBroken = brokenTurns;
     const perfectCounter = action === 'COUNTER' && (currentIntent === 'CHARGE' || currentIntent === 'RAGE');
+    const counterMiss = action === 'COUNTER' && !perfectCounter;
     const interrupt = action === 'FEATHER' && currentIntent === 'VOID';
     const pressure = action === 'NORMAL' && currentIntent === 'SWEEP';
 
@@ -450,7 +466,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const damageBase =
       action === 'NORMAL' ? randomBetween(6500, 7600) :
       action === 'FEATHER' ? randomBetween(9800, 11500) :
-      action === 'COUNTER' ? (perfectCounter ? randomBetween(7200, 8600) : randomBetween(3200, 4200)) :
+      action === 'COUNTER' ? (perfectCounter ? randomBetween(7200, 8600) : randomBetween(1800, 2600)) :
       action === 'ULTIMATE' ? randomBetween(26000, 30000) :
       0;
 
@@ -493,7 +509,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats, counterMiss ? 1.25 : 1);
       }, 520);
       return;
     }
@@ -522,7 +538,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats, counterMiss ? 1.25 : 1);
       }, 520);
       return;
     }
@@ -559,7 +575,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats, counterMiss ? 1.25 : 1);
       }, 620);
       return;
     }
@@ -568,17 +584,17 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (action === 'FEATHER') sfx('feather');
 
     const focusMul = player.focus ? 1.45 : 1;
-    const comboMul = combo >= 2 ? 1.08 : 1;
-    const breakMul = currentBroken > 0 ? 1.30 : 1;
-    const responseMul = perfectCounter ? 1.28 : interrupt ? 1.18 : pressure ? 1.14 : 1;
+    const comboMul = combo >= 2 ? 1 + Math.min(combo, 4) * 0.04 : 1;
+    const breakMul = currentBroken > 0 ? (currentBroken === 2 ? 1.50 : 1.25) : 1;
+    const responseMul = perfectCounter ? 1.32 : interrupt ? 1.18 : pressure ? 1.14 : 1;
     const finalDamage = Math.round(damageBase * focusMul * comboMul * breakMul * responseMul);
     const actualDamage = Math.min(bossHp, finalDamage);
 
     const breakGain =
       action === 'NORMAL' ? (pressure ? 24 : 16) :
       action === 'FEATHER' ? (interrupt ? 58 : 30) :
-      action === 'COUNTER' ? (perfectCounter ? 62 : 14) :
-      action === 'ULTIMATE' ? 42 :
+      action === 'COUNTER' ? (perfectCounter ? 68 : 4) :
+      action === 'ULTIMATE' ? 46 :
       0;
 
     const nextBreak = currentBroken > 0 ? 0 : clamp(bossBreak + breakGain, 0, BREAK_MAX);
@@ -593,7 +609,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       featherCooldown: action === 'FEATHER' ? 2 : Math.max(0, player.featherCooldown - 1),
     };
 
-    if (perfectCounter) setLog('迎撃成功！大技の隙を反転した。');
+    if (perfectCounter) {
+      setPerfectResponses(prev => prev + 1);
+      setLog('迎撃成功！大技の隙を反転した。');
+    } else if (counterMiss) {
+      setCombo(0);
+      setLog('迎撃失敗。ボスの反撃が重くなる！');
+    }
     else if (interrupt) setLog('羽弾が黒雷の詠唱を撃ち抜いた！');
     else if (pressure) setLog('薙ぎ払いの隙を突いて押し込む！');
     else if (action === 'ULTIMATE') setLog('いれーな「終天・羽星穿ち」！');
@@ -609,7 +631,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setLastDamage(actualDamage);
       setBestHit(prev => Math.max(prev, actualDamage));
       setTotalDamage(prev => prev + actualDamage);
-      setCombo(prev => prev + 1);
+      const nextCombo = combo + 1;
+      setCombo(nextCombo);
+      setMaxCombo(prev => Math.max(prev, nextCombo));
       setBossBreak(nextBreak);
 
       if (bossHp - actualDamage <= 0) {
@@ -676,6 +700,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setLog(
           action === 'FEATHER' ? 'ボスが羽弾を学習。滅界砲の構えに入った。' :
           action === 'NORMAL' ? 'ボスが通常攻撃の流れを学習した。' :
+          action === 'FOCUS' ? 'ボスが集中の隙を学習した。' :
+          action === 'GUARD' ? 'ボスが防御の癖を学習した。' :
           'ボスが行動パターンを更新した。',
         );
       }
