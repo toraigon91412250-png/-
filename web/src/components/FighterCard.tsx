@@ -198,7 +198,7 @@ export const FighterCard: React.FC<FighterCardProps> = ({
               }}
             >
               <Sparkles size={11} color="#FFD54F" />
-              <span>強化中(+50)</span>
+              <span>強化中(+125)</span>
             </div>
           )}
 
