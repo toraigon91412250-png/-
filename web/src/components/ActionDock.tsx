@@ -22,7 +22,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
 }) => {
-  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 50) : 0;
+  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 125) : 0;
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
@@ -266,7 +266,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         >
           <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>強化</span>
           <span style={{ fontSize: '10px', fontWeight: 700, color: isEnabled ? '#FFCC80' : '#6E5652', whiteSpace: 'nowrap' }}>
-            {player.isBuffed ? '付与中' : '攻+50'}
+            {player.isBuffed ? '付与中' : '攻+125'}
           </span>
         </button>
 

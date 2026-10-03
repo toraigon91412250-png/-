@@ -8,7 +8,7 @@ export const CpuAi = {
   ): BattleAction {
     const cpuUltimateReady = cpu.ultimateGauge >= 3;
     const cpuSpecialReady = cpu.specialCooldownRemaining <= 0;
-    const cpuBuffBonus = cpu.isBuffed ? 50 : 0;
+    const cpuBuffBonus = cpu.isBuffed ? 125 : 0;
     const cpuSpecialDmg = cpu.character.specialSkillDamage + cpuBuffBonus;
     const cpuUltimateDmg = cpu.character.ultimateSkillDamage + cpuBuffBonus;
     const cpuAtk = getEffectiveAttack(cpu);
