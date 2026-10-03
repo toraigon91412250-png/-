@@ -343,7 +343,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     currentPhase: Phase,
     currentPattern: BossPattern,
     currentPlayer: PlayerState,
-    currentTurn: number,
     activeRepeat: PlayerAction | null,
     activeRepeats: number,
   ) => {
@@ -494,7 +493,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
       }, 520);
       return;
     }
@@ -683,10 +682,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       if (phase === 2 && repeats >= 2) {
         setLog(
           action === 'FEATHER' ? 'ボスが羽弾を学習。滅界砲の構えに入った。' :
-          action === 'GUARD' ? 'ボスが盾を読んで、虚無落雷を選んだ。' :
-          action === 'NORMAL' ? 'ボスが通常攻撃の流れを読んだ。' :
-          action === 'FOCUS' ? 'ボスが集中の隙を狙っている！' :
-          'ボスの行動が変化した。',
+          action === 'NORMAL' ? 'ボスが通常攻撃の流れを学習した。' :
+          'ボスが行動パターンを更新した。',
         );
       }
     }, impactDelay);
