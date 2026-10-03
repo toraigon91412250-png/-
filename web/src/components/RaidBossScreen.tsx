@@ -501,7 +501,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     schedule(() => {
       const info = PATTERN_INFO[currentPattern];
       const phaseMultiplier =
-        currentPhase === 2 ? 1.04 + Math.min(currentAdaptationLevel, 3) * 0.035 : 1;
+        currentPhase === 2 ? 1.03 + Math.min(currentAdaptationLevel, 3) * 0.02 : 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
       const contractIncomingMultiplier = runContract === 'OVERDRIVE' ? 1.12 : 1;
       const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier);
@@ -656,9 +656,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const repeatedActionPenalty =
       phase === 2
         ? repeats === 3
-          ? 0.88
+          ? 0.92
           : repeats >= 4
-            ? 0.76
+            ? 0.84
             : 1
         : 1;
 
@@ -930,7 +930,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setFx('PHASE');
         setFxText('PHASE II');
         sfx('phase');
-        setLog('第2形態「深淵解放」。同じ行動を続けるほど、ボスの対応が鋭くなる。');
+        setLog('第2形態「深淵解放」。同じ行動を続けるほど、ボスの対応が鋭くなる。戦い方を変えれば適応が緩む。');
 
         schedule(() => {
           setFx(null);
@@ -977,7 +977,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       }
 
       if (phase === 2 && repeats >= 2) {
-        setAdaptationLevel(prev => Math.min(3, prev + 1));
         setLog(
           repeats >= 3
             ? 'ボスが同じ行動を深く学習した。攻め方を変えると対応が緩む。'
