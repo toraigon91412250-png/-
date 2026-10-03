@@ -481,7 +481,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setFx(null);
 
       if (currentPlayer.shield > 0 && shieldDamage >= incoming && hpDamage === 0) {
-        setLog(info.name + 'を盾だけで受け切った！');
+        setLog(
+          info.name + 'を盾だけで受け切った！' +
+          (mpDrain > 0 ? ' / MP -' + mpDrain : ''),
+        );
       } else {
         setLog(
           (currentPattern === 'CHARGE' || currentPattern === 'RAGE'
@@ -646,8 +649,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (counterMiss) {
       setCombo(0);
-      setLog('迎撃失敗。次のボス攻撃が25%強化される！');
-      sfx('guard');
+      setLog('迎撃失敗。次のボス攻撃が20%強化される！');
+      sfx('counter');
     } else if (perfectCounter) {
       setPerfectResponses(prev => prev + 1);
       setLog('迎撃成功！大技の隙を反転した。');
