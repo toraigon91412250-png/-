@@ -557,7 +557,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     const focusMultiplier = player.focus ? 1.55 : 1;
     const repeatedActionPenalty =
-      currentPhase === 2 && repeats >= 3 ? 0.72 : 1;
+      phase === 2 && repeats >= 3 ? 0.72 : 1;
 
     const damageBase =
       action === 'NORMAL'
