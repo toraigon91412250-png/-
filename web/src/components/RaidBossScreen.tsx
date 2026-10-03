@@ -592,16 +592,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setTurn(prev => prev + 1);
 
     const repeats = lastAction === action ? repeatCount + 1 : 1;
-    const nextAdaptationLevel =
-      phase === 2
-        ? repeats >= 2
-          ? Math.min(3, adaptationLevel + 1)
-          : Math.max(0, adaptationLevel - 1)
-        : 0;
-
-    setLastAction(action);
-    setRepeatCount(repeats);
-    setAdaptationLevel(nextAdaptationLevel);
 
     const currentPattern = bossPattern;
     const currentBrokenTurns = brokenTurns;
@@ -610,6 +600,17 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const counterMiss = action === 'COUNTER' && !perfectCounter;
     const featherInterrupt = action === 'FEATHER' && currentPattern === 'VOID';
     const sweepOpening = action === 'NORMAL' && currentPattern === 'SWEEP';
+    const bossWillRetaliate = currentBrokenTurns === 0 && !perfectCounter && !featherInterrupt;
+    const nextAdaptationLevel =
+      phase === 2 && bossWillRetaliate
+        ? repeats >= 2
+          ? Math.min(3, adaptationLevel + 1)
+          : Math.max(0, adaptationLevel - 1)
+        : adaptationLevel;
+
+    setLastAction(action);
+    setRepeatCount(repeats);
+    setAdaptationLevel(phase === 1 ? 0 : nextAdaptationLevel);
 
     setFx(action);
     setFxText(
@@ -768,7 +769,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, null, 0),
             );
           }
           setIsResolving(false);
@@ -960,7 +961,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
       if (perfectCounter || featherInterrupt) {
         setBossPattern(
-          choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+          choosePattern(phase, nextPlayer, currentPattern, null, 0),
         );
         schedule(() => setDamagePopup(null), 400);
         setIsResolving(false);
