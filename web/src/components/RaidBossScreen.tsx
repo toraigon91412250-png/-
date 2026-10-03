@@ -143,6 +143,7 @@ const CSS = [
   '@keyframes raidCoreBurst{0%{transform:scale(.25);opacity:0}18%{opacity:1}100%{transform:scale(1.35);opacity:0}}',
   '@keyframes raidLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
   '@keyframes raidBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+  '@media(max-width:900px){.contractGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}',
   '@media(max-width:760px){.raidBottom{grid-template-columns:1fr!important}.raidActions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.raidStage{min-height:470px!important}.raidCutinTitle{font-size:42px!important}.raidFooter{display:none!important}.raidPreGrid{grid-template-columns:1fr!important}}',
 ].join('\\n');
 
@@ -185,9 +186,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [soundOn, setSoundOn] = useState(true);
   const [bestScores, setBestScores] = useState<Record<RunContract, number>>(() => {
     try {
-      const stored = JSON.parse(
-        window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY) || '{}',
-      ) as Partial<Record<RunContract, unknown>>;
+      const rawStored = window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY);
+      const stored = JSON.parse(rawStored || '{}') as
+        | Partial<Record<RunContract, unknown>>
+        | number;
+      if (typeof stored === 'number') {
+        return { STANDARD: stored, OVERDRIVE: 0, FRACTURE: 0, SUSTAIN: 0 };
+      }
       return {
         STANDARD: typeof stored.STANDARD === 'number' ? stored.STANDARD : 0,
         OVERDRIVE: typeof stored.OVERDRIVE === 'number' ? stored.OVERDRIVE : 0,
@@ -1540,7 +1545,19 @@ const styles: Record<string, React.CSSProperties> = {
   preTitleBlock: { position: 'absolute', left: 26, right: 26, bottom: 24 },
   preTitle: { marginTop: 7, fontSize: 'clamp(28px,6vw,48px)', lineHeight: 1.05, fontWeight: 1000 },
   preSub: { marginTop: 6, color: '#b3bbcc', fontSize: 13 },
+  resultContract: { marginTop: 12, padding: '10px 12px', borderRadius: 12, background: '#0d111b', border: '1px solid #2a3042' },
+  resultContractName: { marginTop: 3, color: '#efeaff', fontSize: 17, fontWeight: 1000, letterSpacing: '.1em' },
+  resultContractText: { marginTop: 3, color: '#929eb3', fontSize: 9, lineHeight: 1.4 },
   preBody: { padding: 18 },
+  contractHeader: { marginBottom: 10, padding: '12px 13px', borderRadius: 13, background: '#0d111b', border: '1px solid #252c40' },
+  contractTitle: { marginTop: 5, fontSize: 18, fontWeight: 1000 },
+  contractSub: { marginTop: 4, color: '#8f9bb3', fontSize: 10, lineHeight: 1.45 },
+  contractGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8, marginBottom: 12 },
+  contractCard: { minHeight: 132, padding: 11, borderRadius: 13, border: '1px solid #29324b', background: '#0b101a', color: '#edf2ff', textAlign: 'left', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6, boxSizing: 'border-box' },
+  contractSelected: { borderColor: '#bba5ff', background: 'linear-gradient(145deg,#17142a,#111425)', boxShadow: '0 0 22px rgba(150,120,255,.12)' },
+  contractName: { fontSize: 13, fontWeight: 1000, letterSpacing: '.12em', color: '#e5ddff' },
+  contractDetail: { minHeight: 30, color: '#c0c8d9', fontSize: 10, lineHeight: 1.4 },
+  contractMeta: { color: '#8995aa', fontSize: 9, lineHeight: 1.35 },
   preRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
   preBox: { minHeight: 92, padding: 10, borderRadius: 16, background: '#0e1220', border: '1px solid #29324b', display: 'flex', alignItems: 'center', gap: 12, boxSizing: 'border-box' },
   preIrena: { width: 120, height: 74, borderRadius: 11, objectFit: 'cover', objectPosition: '18% center', border: '1px solid #8d7eff' },
