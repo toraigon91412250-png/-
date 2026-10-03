@@ -53,6 +53,7 @@ const PLAYER_MAX_HP = 10000;
 const PLAYER_MAX_MP = 100;
 const PLAYER_MAX_TP = 100;
 const BREAK_MAX = 100;
+const RAID_BEST_SCORE_STORAGE_KEY = 'raidBossBestScore';
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const randomBetween = (min: number, max: number) => Math.round(min + Math.random() * (max - min));
@@ -61,7 +62,7 @@ const formatNumber = (value: number) => Math.max(0, Math.round(value)).toLocaleS
 const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   SWEEP: {
     name: '黒爪薙ぎ',
-    detail: '大きな予備動作の後に横薙ぎ。直後は押し返しやすい。',
+    detail: '大きな予備動作の後に横薙ぎ。被害は比較的軽いが、流れを崩されやすい。',
     minDamage: 950,
     maxDamage: 1250,
     danger: 'NORMAL',
@@ -69,7 +70,7 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   },
   CHARGE: {
     name: '滅界砲',
-    detail: '核を圧縮して極大の一撃を準備する。迎撃できる。',
+    detail: '核を圧縮し、短い間合いから極大の一撃を放つ。',
     minDamage: 2100,
     maxDamage: 2800,
     danger: 'EXTREME',
@@ -77,7 +78,7 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   },
   VOID: {
     name: '虚無落雷',
-    detail: '黒雷を集め、羽弾なら詠唱を断てる。',
+    detail: '空間に黒いノイズが集まり、受けるとHPだけでなくMPも削られる。',
     minDamage: 1250,
     maxDamage: 1650,
     danger: 'HIGH',
@@ -85,7 +86,7 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   },
   RAGE: {
     name: '終焉衝動',
-    detail: '深淵解放後の必殺級攻撃。最も危険な読み合い。',
+    detail: '深淵解放後にのみ使う必殺級攻撃。高い威力で流れを一気に奪う。',
     minDamage: 2450,
     maxDamage: 3250,
     danger: 'EXTREME',
@@ -146,7 +147,14 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [impactSource, setImpactSource] = useState<DamageSource | null>(null);
   const [victory, setVictory] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
-  const [bestScore, setBestScore] = useState(0);
+  const [bestScore, setBestScore] = useState(() => {
+    try {
+      const stored = Number(window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY));
+      return Number.isFinite(stored) && stored > 0 ? stored : 0;
+    } catch {
+      return 0;
+    }
+  });
 
   const audioRef = useRef<AudioContext | null>(null);
   const timersRef = useRef<number[]>([]);
@@ -314,7 +322,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
   useEffect(() => {
     if (mode !== 'RESULT') return;
-    setBestScore(prev => Math.max(prev, score));
+
+    setBestScore(prev => {
+      const nextBest = Math.max(prev, score);
+      try {
+        window.localStorage.setItem(RAID_BEST_SCORE_STORAGE_KEY, String(nextBest));
+      } catch {
+        // ignore storage failures
+      }
+      return nextBest;
+    });
   }, [mode, score]);
 
   const finishDefeat = (message: string) => {
@@ -346,18 +363,19 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     recentAction: PlayerAction | null,
     repeats: number,
   ): BossPattern => {
-    if (currentPhase === 2 && repeats >= 2 && recentAction) {
-      const adaptations: Partial<Record<PlayerAction, BossPattern>> = {
-        NORMAL: 'VOID',
-        FEATHER: 'CHARGE',
-        FOCUS: 'RAGE',
-        GUARD: 'VOID',
-        COUNTER: 'SWEEP',
-        POTION: 'CHARGE',
-      };
-      const response = adaptations[recentAction];
-      if (response && response !== previous) return response;
-    }
+    const adaptationBias: Partial<Record<PlayerAction, Partial<Record<BossPattern, number>>>> = {
+      NORMAL: { VOID: 3, CHARGE: 2 },
+      FEATHER: { CHARGE: 3, SWEEP: 2 },
+      FOCUS: { RAGE: 3, VOID: 2 },
+      GUARD: { VOID: 3, SWEEP: 2 },
+      COUNTER: { SWEEP: 3, CHARGE: 2 },
+      POTION: { CHARGE: 3, RAGE: 1 },
+    };
+
+    const activeBias =
+      currentPhase === 2 && repeats >= 2 && recentAction
+        ? adaptationBias[recentAction] || {}
+        : {};
 
     const pool: BossPattern[] =
       currentPhase === 2
@@ -368,7 +386,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       .map(pattern => {
         if (pattern === previous) return { pattern, weight: 0 };
 
-        let weight = 2;
+        let weight = 2 + (activeBias[pattern] || 0);
 
         if (
           currentPlayer.hp <= PLAYER_MAX_HP * 0.45 &&
@@ -417,6 +435,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     currentPlayer: PlayerState,
     activeAction: PlayerAction | null,
     repeats: number,
+    currentAdaptationLevel: number,
     extraMultiplier = 1,
   ) => {
     setFx('BOSS');
@@ -428,9 +447,11 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     schedule(() => {
       const info = PATTERN_INFO[currentPattern];
       const phaseMultiplier =
-        currentPhase === 2 ? 1.04 + Math.min(adaptationLevel, 3) * 0.035 : 1;
+        currentPhase === 2 ? 1.04 + Math.min(currentAdaptationLevel, 3) * 0.035 : 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
       const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier);
+      const rawMpDrain = currentPattern === 'VOID' ? randomBetween(12, 20) : 0;
+      const mpDrain = Math.min(currentPlayer.mp, rawMpDrain);
 
       const guardMultiplier = currentPlayer.shield > 0
         ? (currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? 0.26 : 0.55)
@@ -443,6 +464,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const nextPlayer: PlayerState = {
         ...currentPlayer,
         hp: nextHp,
+        mp: Math.max(0, currentPlayer.mp - mpDrain),
         shield: Math.max(0, currentPlayer.shield - shieldDamage),
         focus: currentPlayer.focus,
         featherCooldown: Math.max(0, currentPlayer.featherCooldown - 1),
@@ -462,7 +484,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             ? info.name + 'が直撃！ '
             : info.name + '！ ') +
             formatNumber(hpDamage) +
-            'ダメージ',
+            'ダメージ' +
+            (mpDrain > 0 ? ' / MP -' + mpDrain : ''),
         );
       }
 
@@ -479,7 +502,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         repeats,
       );
       setBossPattern(nextPattern);
-      setTurn(prev => prev + 1);
       setIsResolving(false);
     }, 430);
   };
@@ -511,8 +533,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setIsResolving(true);
 
     const repeats = lastAction === action ? repeatCount + 1 : 1;
+    const nextAdaptationLevel =
+      phase === 2
+        ? repeats >= 2
+          ? Math.min(3, adaptationLevel + 1)
+          : Math.max(0, adaptationLevel - 1)
+        : 0;
+
     setLastAction(action);
     setRepeatCount(repeats);
+    setAdaptationLevel(nextAdaptationLevel);
 
     const currentPattern = bossPattern;
     const currentBrokenTurns = brokenTurns;
@@ -550,14 +580,20 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const responseMultiplier =
-      perfectCounter ? 1.32 :
-      featherInterrupt ? 1.18 :
-      sweepOpening ? 1.14 :
+      perfectCounter ? 1.22 :
+      featherInterrupt ? 1.12 :
+      sweepOpening ? 1.1 :
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
     const repeatedActionPenalty =
-      phase === 2 && repeats >= 3 ? 0.72 : 1;
+      phase === 2
+        ? repeats === 3
+          ? 0.88
+          : repeats >= 4
+            ? 0.76
+            : 1
+        : 1;
 
     const damageBase =
       action === 'NORMAL'
@@ -663,7 +699,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
@@ -691,7 +727,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
@@ -733,7 +769,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
@@ -783,6 +819,28 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setFx('BREAK');
         setFxText('RAID CLEAR');
         schedule(() => finishVictory(), 720);
+        return;
+      }
+
+      const entersPhaseTwo =
+        phase === 1 && bossHp - actualDamage <= BOSS_HP[1] * 0.5;
+
+      if (entersPhaseTwo) {
+        setPhase(2);
+        setBossHp(BOSS_HP[2]);
+        setBossBreak(0);
+        setBrokenTurns(0);
+        setBossPattern('RAGE');
+        setAdaptationLevel(0);
+        setFx('PHASE');
+        setFxText('PHASE II');
+        sfx('phase');
+        setLog('第2形態「深淵解放」。同じ行動を続けるほど、ボスの対応が鋭くなる。');
+
+        schedule(() => {
+          setFx(null);
+          runBossAttack(2, 'RAGE', nextPlayer, action, repeats, 0);
+        }, 1050);
         return;
       }
 
@@ -847,12 +905,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setAdaptationLevel(prev => Math.min(3, prev + 1));
         setLog(
           repeats >= 3
-            ? 'ボスが同じ行動を完全に読んだ。次の一手を変えよう。'
-            : action === 'FEATHER'
-              ? 'ボスが羽弾を学習。滅界砲の構えに入った。'
-              : action === 'NORMAL'
-                ? 'ボスが通常攻撃の流れを学習した。'
-                : 'ボスが行動パターンを更新した。',
+            ? 'ボスが同じ行動を深く学習した。攻め方を変えると対応が緩む。'
+            : 'ボスが行動パターンを学習し、次の展開を変えてきた。',
         );
       }
 
@@ -866,18 +920,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         nextPlayer,
         action,
         repeats,
-        counterMiss ? 1.25 : 1,
+        nextAdaptationLevel,
+        counterMiss ? 1.2 : 1,
       );
     }, impactDelay);
   };
 
   const actionHint = useMemo(() => {
     if (broken) return 'BREAK WINDOW：残りターン数と必殺ゲージを見て、火力と準備のどちらを優先するか決めよう。';
-    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。大ダメージを受けるリスクと、反撃で流れを変えるリターンが大きい。';
-    if (bossPattern === 'VOID') return '詠唱系の攻撃。資源を守るか、攻撃で押し切るか、技で割り込むかを選べる。';
-    return '薙ぎ払い系の予告。攻撃を続けて主導権を取るか、次の展開に備えるかを選べる。';
+    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。防御で被害を抑えるか、迎撃で大きく流れを変えるか、強気に攻めるか。';
+    if (bossPattern === 'VOID') return '資源にも干渉する攻撃。HP・MPの残量と、次の一手の価値をまとめて考えよう。';
+    return '比較的軽い薙ぎ払い。安定して削るか、次の展開に備えてリソースを整えるか。';
   }, [bossPattern, broken]);
-
   const fxView = () => {
     if (!fx) return null;
 
@@ -1006,7 +1060,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.preTitleBlock}>
               <div style={styles.kicker}>RAID OPERATION 02 · REWORK</div>
               <div style={styles.preTitle}>深淵喰らい・アビスコア</div>
-              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。次の一手で流れが変わる。</div>
+              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。通った手ほど、次は通りにくくなる。</div>
             </div>
           </div>
 
@@ -1032,7 +1086,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.ruleGrid}>
               <div style={styles.rule}>
                 <Crosshair size={18} />
-                <div><b>読み合い</b><span>大技にはリターンの大きい迎撃。失敗には代償。</span></div>
+                <div><b>読み合い</b><span>大技は守るか迎撃するか、あえて攻めるか。選択ごとに流れが変わる。</span></div>
               </div>
               <div style={styles.rule}>
                 <Gauge size={18} />
@@ -1072,7 +1126,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.scoreKicker}>RUN SCORE</div>
             <div style={styles.score}>{formatNumber(score)}</div>
             <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScore, score))}</div>
-            <div style={styles.scoreSub}>ターン短縮・被弾減少・高COMBO・完璧迎撃が、次の自己ベストを作る。</div>
+            <div style={styles.scoreSub}>短い手数・少ない被弾・高COMBO・完璧な読みが、次の自己ベストを作る。</div>
           </div>
 
           <div style={styles.resultGrid}>
@@ -1086,7 +1140,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
           <div style={styles.resultNote}>
             <div style={styles.kicker}>CORE LOOP</div>
-            <div style={styles.resultNoteText}>予告 → 判断 → 命中 → 反撃 → BREAK → BURST。第2形態では同じ手が通らなくなる。</div>
+            <div style={styles.resultNoteText}>予告 → 判断 → 命中 → 反撃 → BREAK → BURST。第2形態では同じ手ほど読まれやすくなる。</div>
           </div>
 
           <button type="button" onClick={resetBattle} style={styles.primaryButton}>
@@ -1168,7 +1222,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.breakWindow}>
               <div style={styles.breakKicker}>CORE EXPOSED</div>
               <div style={styles.breakTitle}>最大火力を叩き込め</div>
-              <div style={styles.breakSub}>1ターン目 ×1.50 / 2ターン目 ×1.25 / 必殺はさらに ×1.35</div>
+              <div style={styles.breakSub}>1ターン目 ×1.50 / 2ターン目 ×1.25 / 必殺はさらに ×1.35。準備も1ターン消費。</div>
             </div>
           )}
 
@@ -1269,6 +1323,22 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.tacticalRow}>
               <span>読み</span>
               <b>{phase === 2 ? '同じ行動を重ねると対応が強くなる' : '行動履歴はまだ学習されない'}</b>
+            </div>
+            <div style={styles.tacticalRow}>
+              <span>直近</span>
+              <b>
+                {lastAction
+                  ? ({
+                      NORMAL: '通常攻撃',
+                      FEATHER: '羽弾',
+                      FOCUS: '風詠集中',
+                      GUARD: '防御',
+                      COUNTER: '迎撃',
+                      POTION: 'ポーション',
+                      ULTIMATE: '必殺',
+                    } as Record<PlayerAction, string>)[lastAction] + (repeatCount > 1 ? ' ×' + repeatCount : '')
+                  : 'まだなし'}
+              </b>
             </div>
           </div>
         </section>
