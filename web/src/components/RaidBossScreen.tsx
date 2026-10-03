@@ -20,6 +20,7 @@ import raidIrenaCutIn from '../assets/raid_irena_cutin.svg';
 type Phase = 1 | 2;
 type BossPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE';
 type PlayerAction = 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'COUNTER' | 'POTION' | 'ULTIMATE';
+type RunContract = 'STANDARD' | 'OVERDRIVE' | 'FRACTURE' | 'SUSTAIN';
 type FxType = PlayerAction | 'BOSS' | 'BREAK' | 'PHASE' | null;
 type DamageSource = 'PLAYER' | 'BOSS';
 
@@ -58,6 +59,36 @@ const RAID_BEST_SCORE_STORAGE_KEY = 'raidBossBestScore';
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const randomBetween = (min: number, max: number) => Math.round(min + Math.random() * (max - min));
 const formatNumber = (value: number) => Math.max(0, Math.round(value)).toLocaleString('ja-JP');
+
+const CONTRACT_INFO: Record<
+  RunContract,
+  { name: string; detail: string; risk: string; reward: string }
+> = {
+  STANDARD: {
+    name: 'STANDARD',
+    detail: '基本ルールそのまま。',
+    risk: '追加条件なし',
+    reward: '標準スコア',
+  },
+  OVERDRIVE: {
+    name: 'OVERDRIVE',
+    detail: '火力を引き上げる代わりに、被害も増える。',
+    risk: '与ダメージ +8% / 被ダメージ +12%',
+    reward: '契約ボーナス +8,000',
+  },
+  FRACTURE: {
+    name: 'FRACTURE',
+    detail: 'BREAKを作りやすくする代わりに、通常時の火力を少し落とす。',
+    risk: 'BREAK獲得 +25% / 与ダメージ -8%',
+    reward: '契約ボーナス +8,000',
+  },
+  SUSTAIN: {
+    name: 'SUSTAIN',
+    detail: '回復と防御を厚くする代わりに、TPの伸びが鈍る。',
+    risk: '回復・盾 +20% / TP獲得 -20%',
+    reward: '契約ボーナス +8,000',
+  },
+};
 
 const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   SWEEP: {
@@ -118,6 +149,7 @@ const CSS = [
 export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [mode, setMode] = useState<'LOADING' | 'PRE_BATTLE' | 'BATTLE' | 'RESULT'>('LOADING');
   const [phase, setPhase] = useState<Phase>(1);
+  const [runContract, setRunContract] = useState<RunContract>('STANDARD');
   const [bossHp, setBossHp] = useState(BOSS_HP[1]);
   const [bossBreak, setBossBreak] = useState(0);
   const [brokenTurns, setBrokenTurns] = useState(0);
@@ -151,12 +183,19 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [impactSource, setImpactSource] = useState<DamageSource | null>(null);
   const [victory, setVictory] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
-  const [bestScore, setBestScore] = useState(() => {
+  const [bestScores, setBestScores] = useState<Record<RunContract, number>>(() => {
     try {
-      const stored = Number(window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY));
-      return Number.isFinite(stored) && stored > 0 ? stored : 0;
+      const stored = JSON.parse(
+        window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY) || '{}',
+      ) as Partial<Record<RunContract, unknown>>;
+      return {
+        STANDARD: typeof stored.STANDARD === 'number' ? stored.STANDARD : 0,
+        OVERDRIVE: typeof stored.OVERDRIVE === 'number' ? stored.OVERDRIVE : 0,
+        FRACTURE: typeof stored.FRACTURE === 'number' ? stored.FRACTURE : 0,
+        SUSTAIN: typeof stored.SUSTAIN === 'number' ? stored.SUSTAIN : 0,
+      };
     } catch {
-      return 0;
+      return { STANDARD: 0, OVERDRIVE: 0, FRACTURE: 0, SUSTAIN: 0 };
     }
   });
 
@@ -170,6 +209,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const broken = brokenTurns > 0;
   const ultimateReady = player.tp >= PLAYER_MAX_TP;
 
+  const contractInfo = CONTRACT_INFO[runContract];
+  const contractScoreBonus = runContract === 'STANDARD' ? 0 : 8000;
   const score = Math.max(
     0,
     Math.round(
@@ -178,7 +219,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         perfectResponses * 3500 +
         maxCombo * 1600 -
         damageTaken * 0.45 -
-        turn * 180,
+        turn * 180 +
+        contractScoreBonus,
     ),
   );
 
@@ -327,16 +369,17 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   useEffect(() => {
     if (mode !== 'RESULT') return;
 
-    setBestScore(prev => {
-      const nextBest = Math.max(prev, score);
+    setBestScores(prev => {
+      const nextBest = Math.max(prev[runContract], score);
+      const next = { ...prev, [runContract]: nextBest };
       try {
-        window.localStorage.setItem(RAID_BEST_SCORE_STORAGE_KEY, String(nextBest));
+        window.localStorage.setItem(RAID_BEST_SCORE_STORAGE_KEY, JSON.stringify(next));
       } catch {
         // ignore storage failures
       }
-      return nextBest;
+      return next;
     });
-  }, [mode, score]);
+  }, [mode, runContract, score]);
 
   const finishDefeat = (message: string) => {
     sfx('lose');
@@ -453,8 +496,11 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const phaseMultiplier =
         currentPhase === 2 ? 1.04 + Math.min(currentAdaptationLevel, 3) * 0.035 : 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
-      const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier);
-      const rawMpDrain = currentPattern === 'VOID' ? randomBetween(12, 20) : 0;
+      const contractIncomingMultiplier = runContract === 'OVERDRIVE' ? 1.12 : 1;
+      const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier);
+      const rawMpDrain = currentPattern === 'VOID'
+        ? randomBetween(12, 20) + (runContract === 'OVERDRIVE' ? 2 : 0)
+        : 0;
       const mpDrain = Math.min(currentPlayer.mp, rawMpDrain);
 
       const guardMultiplier = currentPlayer.shield > 0
@@ -616,8 +662,14 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               ? randomBetween(26000, 30000)
               : 0;
 
+    const contractDamageMultiplier =
+      runContract === 'OVERDRIVE' ? 1.08 :
+      runContract === 'FRACTURE' ? 0.92 :
+      1;
+
     const finalDamage = Math.round(
       damageBase *
+        contractDamageMultiplier *
         comboMultiplier *
         breakMultiplier *
         responseMultiplier *
@@ -628,15 +680,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     const actualDamage = Math.min(bossHp, finalDamage);
 
+    const contractBreakMultiplier = runContract === 'FRACTURE' ? 1.25 : 1;
+    const contractBreakGain = (value: number) => Math.round(value * contractBreakMultiplier);
+
     const breakGain =
       action === 'NORMAL'
-        ? sweepOpening ? 24 : 16
+        ? contractBreakGain(sweepOpening ? 24 : 16)
         : action === 'FEATHER'
-          ? featherInterrupt ? 58 : 30
+          ? contractBreakGain(featherInterrupt ? 58 : 30)
           : action === 'COUNTER'
-            ? perfectCounter ? 68 : 4
+            ? contractBreakGain(perfectCounter ? 68 : 4)
             : action === 'ULTIMATE'
-              ? 46
+              ? contractBreakGain(46)
               : 0;
 
     const nextBreak =
@@ -685,9 +740,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (action === 'POTION') {
       const nextPlayer: PlayerState = {
         ...player,
-        hp: Math.min(PLAYER_MAX_HP, player.hp + 2800),
+        hp: Math.min(
+          PLAYER_MAX_HP,
+          player.hp + (runContract === 'SUSTAIN' ? 3360 : 2800),
+        ),
         mp: Math.min(PLAYER_MAX_MP, player.mp + 30),
-        tp: clamp(player.tp + 8, 0, PLAYER_MAX_TP),
+        tp: clamp(
+          player.tp + (runContract === 'SUSTAIN' ? 6 : 8),
+          0,
+          PLAYER_MAX_TP,
+        ),
         potions: player.potions - 1,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
@@ -716,7 +778,11 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const nextPlayer: PlayerState = {
         ...player,
         mp: clamp(player.mp - 12, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + 15, 0, PLAYER_MAX_TP),
+        tp: clamp(
+          player.tp + (runContract === 'SUSTAIN' ? 12 : 15),
+          0,
+          PLAYER_MAX_TP,
+        ),
         focus: true,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -744,10 +810,14 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const perfectGuard = isHeavy;
       const nextPlayer: PlayerState = {
         ...player,
-        hp: Math.min(PLAYER_MAX_HP, player.hp + 450),
+        hp: Math.min(PLAYER_MAX_HP, player.hp + (runContract === 'SUSTAIN' ? 540 : 450)),
         mp: clamp(player.mp - 10, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + 14, 0, PLAYER_MAX_TP),
-        shield: 3600,
+        tp: clamp(
+          player.tp + (runContract === 'SUSTAIN' ? 11 : 14),
+          0,
+          PLAYER_MAX_TP,
+        ),
+        shield: runContract === 'SUSTAIN' ? 4320 : 3600,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -792,13 +862,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           ? 0
           : clamp(
               player.tp +
-                (action === 'NORMAL'
-                  ? 18
-                  : action === 'FEATHER'
-                    ? 24
-                    : action === 'COUNTER'
-                      ? perfectCounter ? 12 : 18
-                      : 0),
+                Math.round(
+                  (action === 'NORMAL'
+                    ? 18
+                    : action === 'FEATHER'
+                      ? 24
+                      : action === 'COUNTER'
+                        ? perfectCounter ? 12 : 18
+                        : 0) *
+                    (runContract === 'SUSTAIN' ? 0.8 : 1),
+                ),
               0,
               PLAYER_MAX_TP,
             ),
@@ -1057,6 +1130,35 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           </div>
 
           <div style={styles.preBody}>
+            <div style={styles.contractHeader}>
+              <div style={styles.kicker}>RUN CONTRACT</div>
+              <div style={styles.contractTitle}>今回の戦い方を1つ選ぶ</div>
+              <div style={styles.contractSub}>強さではなく、リスクと目的が変わる。STANDARDなら追加条件なし。</div>
+            </div>
+
+            <div style={styles.contractGrid}>
+              {(Object.keys(CONTRACT_INFO) as RunContract[]).map(contract => {
+                const info = CONTRACT_INFO[contract];
+                const selected = runContract === contract;
+                return (
+                  <button
+                    key={contract}
+                    type="button"
+                    onClick={() => setRunContract(contract)}
+                    style={{
+                      ...styles.contractCard,
+                      ...(selected ? styles.contractSelected : {}),
+                    }}
+                  >
+                    <span style={styles.contractName}>{info.name}</span>
+                    <span style={styles.contractDetail}>{info.detail}</span>
+                    <span style={styles.contractMeta}>条件：{info.risk}</span>
+                    <span style={styles.contractMeta}>報酬：{info.reward}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="raidPreGrid" style={styles.preRow}>
               <div style={styles.preBox}>
                 <img src={raidIrenaCutIn} alt="" style={styles.preIrena} />
@@ -1114,10 +1216,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <div style={styles.resultTitle}>{victory ? '討伐成功' : '戦闘終了'}</div>
           <div style={styles.resultText}>{log}</div>
 
+          <div style={styles.resultContract}>
+            <div style={styles.kicker}>CONTRACT</div>
+            <div style={styles.resultContractName}>{contractInfo.name}</div>
+            <div style={styles.resultContractText}>{contractInfo.risk} · {contractInfo.reward}</div>
+          </div>
+
           <div style={styles.scoreBox}>
             <div style={styles.scoreKicker}>RUN SCORE</div>
             <div style={styles.score}>{formatNumber(score)}</div>
-            <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScore, score))}</div>
+            <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScores[runContract], score))}</div>
             <div style={styles.scoreSub}>短い手数・少ない被弾・高COMBO・完璧な読みが、次の自己ベストを作る。</div>
           </div>
 
@@ -1304,7 +1412,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           </div>
 
           <div style={styles.tacticalPanel}>
-            <div style={styles.kicker}>TACTICAL READ</div>
+            <div style={styles.kicker}>TACTICAL READ · {contractInfo.name}</div>
             <div style={styles.tacticalTitle}>
               {broken ? 'バースト時間を使い切る' : intent.name + ' にどう対応する？'}
             </div>
