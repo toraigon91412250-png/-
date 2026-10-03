@@ -85,13 +85,57 @@ const raidCss = [
   '@media (max-width: 680px) { .raid-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .raid-stage { min-height: 250px !important; } }',
 ].join('\n');
 
-const getNextPattern = (currentPhase: Phase, currentTurn: number): BossPattern => {
-  if (currentPhase === 2) {
-    const sequence: BossPattern[] = ['VOID', 'CHARGE', 'SWEEP', 'RAGE'];
-    return sequence[(currentTurn - 1) % sequence.length];
+const getNextPattern = (
+  currentPhase: Phase,
+  currentTurn: number,
+  currentPlayer: PlayerState,
+  previousPattern: BossPattern,
+): BossPattern => {
+  const candidates: BossPattern[] = currentPhase === 2
+    ? ['SWEEP', 'CHARGE', 'VOID', 'RAGE']
+    : ['SWEEP', 'CHARGE', 'VOID'];
+
+  const weightedCandidates = candidates
+    .map(pattern => {
+      if (pattern === previousPattern) {
+        return { pattern, weight: 0 };
+      }
+
+      let weight = 2;
+
+      // ボスは「固定順」ではなく、いれーなの現在の状態に反応する。
+      if (currentPlayer.shield > 0 && pattern === 'VOID') weight += 4;
+      if (currentPlayer.hp <= PLAYER_MAX_HP * 0.45 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 2;
+      if (currentPlayer.tp >= 80 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 1;
+      if (currentPlayer.mp <= 25 && pattern === 'SWEEP') weight += 2;
+
+      // 第2形態のRAGEは常用せず、状況が悪化した時ほど出やすくする。
+      if (currentPhase === 2 && pattern === 'RAGE') {
+        weight = 1;
+        if (currentPlayer.hp <= PLAYER_MAX_HP * 0.45 || currentPlayer.tp >= 80) weight += 2;
+      }
+
+      // 同じ状況でも完全固定にならない程度の揺らぎを入れる。
+      if (currentTurn % 3 === 0 && pattern === 'CHARGE') weight += 1;
+      if (currentTurn % 4 === 0 && pattern === 'VOID') weight += 1;
+
+      return { pattern, weight };
+    })
+    .filter(entry => entry.weight > 0);
+
+  const totalWeight = weightedCandidates.reduce((sum, entry) => sum + entry.weight, 0);
+
+  if (totalWeight <= 0) {
+    return candidates.find(pattern => pattern !== previousPattern) ?? candidates[0];
   }
-  const sequence: BossPattern[] = ['SWEEP', 'CHARGE', 'VOID'];
-  return sequence[(currentTurn - 1) % sequence.length];
+
+  let roll = Math.random() * totalWeight;
+  for (const entry of weightedCandidates) {
+    roll -= entry.weight;
+    if (roll <= 0) return entry.pattern;
+  }
+
+  return weightedCandidates[weightedCandidates.length - 1].pattern;
 };
 
 const createInitialPlayer = (): PlayerState => ({
@@ -218,7 +262,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         : `${info.name}！ -${formatNumber(hpDamage)}${shieldText}`,
     );
 
-    setBossPattern(getNextPattern(currentPhase, currentTurn + 1));
+    setBossPattern(getNextPattern(currentPhase, currentTurn + 1, nextPlayer, currentPattern));
     setTurn(prev => prev + 1);
     setIsResolving(false);
   };
