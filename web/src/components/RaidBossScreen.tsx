@@ -317,12 +317,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     sfx('click');
   };
 
-  const recordScore = () => {
-    setBestScore(prev => Math.max(prev, score));
+  const recordScore = (finalScore: number) => {
+    setBestScore(prev => Math.max(prev, finalScore));
   };
 
-  const finishDefeat = (message: string) => {
-    recordScore();
+  const finishDefeat = (message: string, finalScore = score) => {
+    recordScore(finalScore);
     sfx('lose');
     setPlayer(prev => ({ ...prev, hp: 0 }));
     setLog(message);
@@ -333,8 +333,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setMode('RESULT');
   };
 
-  const finishVictory = () => {
-    recordScore();
+  const finishVictory = (finalScore = score) => {
+    recordScore(finalScore);
     sfx('win');
     setLog('深淵喰らい・アビスコアを討伐した！');
     setVictory(true);
@@ -785,7 +785,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       if (bossHp - actualDamage <= 0) {
         setFx('BREAK');
         setFxText('RAID CLEAR');
-        schedule(finishVictory, 720);
+        const finalScore = Math.max(
+          0,
+          Math.round(
+            (totalDamage + actualDamage) +
+              breakCount * 5000 +
+              perfectResponses * 3500 +
+              Math.max(maxCombo, combo + 1) * 1600 -
+              damageTaken * 0.45 -
+              turn * 180,
+          ),
+        );
+        schedule(() => finishVictory(finalScore), 720);
         return;
       }
 
@@ -857,21 +868,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         );
       }
 
-      const nextPattern = choosePattern(
-        phase,
-        nextPlayer,
-        currentPattern,
-        action,
-        repeats,
-      );
-      setBossPattern(nextPattern);
       setTurn(prev => prev + 1);
       setIsResolving(false);
 
       schedule(() => setDamagePopup(null), 400);
       runBossAttack(
         phase,
-        nextPattern,
+        currentPattern,
         nextPlayer,
         action,
         repeats,
