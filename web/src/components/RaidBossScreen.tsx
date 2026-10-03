@@ -821,12 +821,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (action === 'GUARD') {
       const perfectGuard = isHeavy && currentBrokenTurns === 0;
+      const guardTpGain = perfectGuard ? 22 : 14;
       const nextPlayer: PlayerState = {
         ...player,
         hp: Math.min(PLAYER_MAX_HP, player.hp + (runContract === 'SUSTAIN' ? 540 : 450)),
         mp: clamp(player.mp - 10, 0, PLAYER_MAX_MP),
         tp: clamp(
-          player.tp + (runContract === 'SUSTAIN' ? 11 : 14),
+          player.tp + Math.round(guardTpGain * (runContract === 'SUSTAIN' ? 0.85 : 1)),
           0,
           PLAYER_MAX_TP,
         ),
