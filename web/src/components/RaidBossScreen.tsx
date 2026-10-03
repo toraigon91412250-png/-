@@ -20,6 +20,7 @@ import raidIrenaCutIn from '../assets/raid_irena_cutin.svg';
 type Phase = 1 | 2;
 type BossPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE';
 type PlayerAction = 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'COUNTER' | 'POTION' | 'ULTIMATE';
+type RunContract = 'STANDARD' | 'OVERDRIVE' | 'FRACTURE' | 'SUSTAIN';
 type FxType = PlayerAction | 'BOSS' | 'BREAK' | 'PHASE' | null;
 type DamageSource = 'PLAYER' | 'BOSS';
 
@@ -40,7 +41,6 @@ type PatternInfo = {
   maxDamage: number;
   danger: 'NORMAL' | 'HIGH' | 'EXTREME';
   color: string;
-  bestResponse: string;
 };
 
 type DamagePopup = {
@@ -49,52 +49,79 @@ type DamagePopup = {
   key: number;
 };
 
-const BOSS_HP: Record<Phase, number> = { 1: 50000, 2: 60000 };
+const BOSS_HP: Record<Phase, number> = { 1: 50000, 2: 65000 };
 const PLAYER_MAX_HP = 10000;
 const PLAYER_MAX_MP = 100;
 const PLAYER_MAX_TP = 100;
 const BREAK_MAX = 100;
+const RAID_BEST_SCORE_STORAGE_KEY = 'raidBossBestScore';
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const randomBetween = (min: number, max: number) => Math.round(min + Math.random() * (max - min));
 const formatNumber = (value: number) => Math.max(0, Math.round(value)).toLocaleString('ja-JP');
 
+const CONTRACT_INFO: Record<
+  RunContract,
+  { name: string; detail: string; risk: string; reward: string }
+> = {
+  STANDARD: {
+    name: 'STANDARD',
+    detail: '基本ルールそのまま。',
+    risk: '追加条件なし',
+    reward: '標準スコア',
+  },
+  OVERDRIVE: {
+    name: 'OVERDRIVE',
+    detail: '火力を引き上げる代わりに、被害も増える。',
+    risk: '与ダメージ +8% / 被ダメージ +12%',
+    reward: '契約ボーナス +4,000',
+  },
+  FRACTURE: {
+    name: 'FRACTURE',
+    detail: 'BREAKを作りやすくする代わりに、通常時の火力を少し落とす。',
+    risk: 'BREAK獲得 +20% / 与ダメージ -10%',
+    reward: '契約ボーナス +4,000',
+  },
+  SUSTAIN: {
+    name: 'SUSTAIN',
+    detail: '回復と防御を厚くする代わりに、TPの伸びが鈍る。',
+    risk: '回復・盾 +20% / TP獲得 -15%',
+    reward: '契約ボーナス +4,000',
+  },
+};
+
 const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   SWEEP: {
     name: '黒爪薙ぎ',
-    detail: '大きな予備動作の後に横薙ぎ。直後は押し返しやすい。',
+    detail: '大きな予備動作の後に横薙ぎ。被害は比較的軽いが、流れを崩されやすい。',
     minDamage: 950,
     maxDamage: 1250,
     danger: 'NORMAL',
     color: '#c67cff',
-    bestResponse: '通常攻撃',
   },
   CHARGE: {
     name: '滅界砲',
-    detail: '核を圧縮して極大の一撃を準備する。迎撃できる。',
+    detail: '核を圧縮し、短い間合いから極大の一撃を放つ。',
     minDamage: 2100,
     maxDamage: 2800,
     danger: 'EXTREME',
     color: '#ff6d86',
-    bestResponse: '防御 / 迎撃',
   },
   VOID: {
     name: '虚無落雷',
-    detail: '黒雷を集め、羽弾なら詠唱を断てる。',
+    detail: '空間に黒いノイズが集まり、受けるとHPだけでなくMPも削られる。',
     minDamage: 1250,
     maxDamage: 1650,
     danger: 'HIGH',
     color: '#72a9ff',
-    bestResponse: '羽弾',
   },
   RAGE: {
     name: '終焉衝動',
-    detail: '深淵解放後の必殺級攻撃。最も危険な読み合い。',
+    detail: '深淵解放後にのみ使う必殺級攻撃。高い威力で流れを一気に奪う。',
     minDamage: 2450,
     maxDamage: 3250,
     danger: 'EXTREME',
     color: '#ff3f62',
-    bestResponse: '防御 / 迎撃',
   },
 };
 
@@ -110,14 +137,20 @@ const CSS = [
   '@keyframes raidWarn{0%,100%{opacity:.7}50%{opacity:1}}',
   '@keyframes raidBreak{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.14)}56%{opacity:1}100%{opacity:0;transform:scale(1.32)}}',
   '@keyframes raidPhase{0%{opacity:0}15%{opacity:1}100%{opacity:0}}',
+  '@keyframes raidTelegraph{0%,100%{transform:scale(.82);opacity:.34}50%{transform:scale(1.08);opacity:.9}}',
+  '@keyframes raidTelegraphRing{0%{transform:scale(.52) rotate(0deg);opacity:0}18%{opacity:1}100%{transform:scale(1.28) rotate(180deg);opacity:0}}',
+  '@keyframes raidGlitch{0%,100%{transform:translate(0,0);filter:blur(0)}20%{transform:translate(-3px,1px);filter:blur(.5px)}40%{transform:translate(4px,-1px);filter:blur(0)}60%{transform:translate(-2px,0);filter:blur(.8px)}}',
+  '@keyframes raidCoreBurst{0%{transform:scale(.25);opacity:0}18%{opacity:1}100%{transform:scale(1.35);opacity:0}}',
   '@keyframes raidLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
   '@keyframes raidBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+  '@media(max-width:900px){.contractGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}',
   '@media(max-width:760px){.raidBottom{grid-template-columns:1fr!important}.raidActions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.raidStage{min-height:470px!important}.raidCutinTitle{font-size:42px!important}.raidFooter{display:none!important}.raidPreGrid{grid-template-columns:1fr!important}}',
 ].join('\\n');
 
 export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [mode, setMode] = useState<'LOADING' | 'PRE_BATTLE' | 'BATTLE' | 'RESULT'>('LOADING');
   const [phase, setPhase] = useState<Phase>(1);
+  const [runContract, setRunContract] = useState<RunContract>('STANDARD');
   const [bossHp, setBossHp] = useState(BOSS_HP[1]);
   const [bossBreak, setBossBreak] = useState(0);
   const [brokenTurns, setBrokenTurns] = useState(0);
@@ -131,7 +164,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     focus: false,
     featherCooldown: 0,
   });
-  const [turn, setTurn] = useState(1);
+  const [turn, setTurn] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [bestHit, setBestHit] = useState(0);
@@ -151,7 +184,25 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [impactSource, setImpactSource] = useState<DamageSource | null>(null);
   const [victory, setVictory] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
-  const [bestScore, setBestScore] = useState(0);
+  const [bestScores, setBestScores] = useState<Record<RunContract, number>>(() => {
+    try {
+      const rawStored = window.localStorage.getItem(RAID_BEST_SCORE_STORAGE_KEY);
+      const stored = JSON.parse(rawStored || '{}') as
+        | Partial<Record<RunContract, unknown>>
+        | number;
+      if (typeof stored === 'number') {
+        return { STANDARD: stored, OVERDRIVE: 0, FRACTURE: 0, SUSTAIN: 0 };
+      }
+      return {
+        STANDARD: typeof stored.STANDARD === 'number' ? stored.STANDARD : 0,
+        OVERDRIVE: typeof stored.OVERDRIVE === 'number' ? stored.OVERDRIVE : 0,
+        FRACTURE: typeof stored.FRACTURE === 'number' ? stored.FRACTURE : 0,
+        SUSTAIN: typeof stored.SUSTAIN === 'number' ? stored.SUSTAIN : 0,
+      };
+    } catch {
+      return { STANDARD: 0, OVERDRIVE: 0, FRACTURE: 0, SUSTAIN: 0 };
+    }
+  });
 
   const audioRef = useRef<AudioContext | null>(null);
   const timersRef = useRef<number[]>([]);
@@ -163,6 +214,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const broken = brokenTurns > 0;
   const ultimateReady = player.tp >= PLAYER_MAX_TP;
 
+  const contractInfo = CONTRACT_INFO[runContract];
+  const contractScoreBonus = victory && runContract !== 'STANDARD' ? 4000 : 0;
   const score = Math.max(
     0,
     Math.round(
@@ -171,7 +224,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         perfectResponses * 3500 +
         maxCombo * 1600 -
         damageTaken * 0.45 -
-        turn * 180,
+        turn * 180 +
+        contractScoreBonus,
     ),
   );
 
@@ -295,7 +349,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       focus: false,
       featherCooldown: 0,
     });
-    setTurn(1);
+    setTurn(0);
     setCombo(0);
     setMaxCombo(0);
     setBestHit(0);
@@ -319,8 +373,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
   useEffect(() => {
     if (mode !== 'RESULT') return;
-    setBestScore(prev => Math.max(prev, score));
-  }, [mode, score]);
+
+    setBestScores(prev => {
+      const nextBest = Math.max(prev[runContract], score);
+      const next = { ...prev, [runContract]: nextBest };
+      try {
+        window.localStorage.setItem(RAID_BEST_SCORE_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // ignore storage failures
+      }
+      return next;
+    });
+  }, [mode, runContract, score]);
 
   const finishDefeat = (message: string) => {
     sfx('lose');
@@ -350,19 +414,21 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     previous: BossPattern,
     recentAction: PlayerAction | null,
     repeats: number,
+    currentAdaptationLevel: number,
   ): BossPattern => {
-    if (currentPhase === 2 && repeats >= 2 && recentAction) {
-      const adaptations: Partial<Record<PlayerAction, BossPattern>> = {
-        NORMAL: 'VOID',
-        FEATHER: 'CHARGE',
-        FOCUS: 'RAGE',
-        GUARD: 'VOID',
-        COUNTER: 'SWEEP',
-        POTION: 'CHARGE',
-      };
-      const response = adaptations[recentAction];
-      if (response && response !== previous) return response;
-    }
+    const adaptationBias: Partial<Record<PlayerAction, Partial<Record<BossPattern, number>>>> = {
+      NORMAL: { VOID: 3, CHARGE: 2 },
+      FEATHER: { CHARGE: 3, SWEEP: 2 },
+      FOCUS: { RAGE: 3, VOID: 2 },
+      GUARD: { VOID: 3, SWEEP: 2 },
+      COUNTER: { SWEEP: 3, CHARGE: 2 },
+      POTION: { CHARGE: 3, RAGE: 1 },
+    };
+
+    const activeBias =
+      currentPhase === 2 && repeats >= 2 && recentAction
+        ? adaptationBias[recentAction] || {}
+        : {};
 
     const pool: BossPattern[] =
       currentPhase === 2
@@ -373,7 +439,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       .map(pattern => {
         if (pattern === previous) return { pattern, weight: 0 };
 
-        let weight = 2;
+        const adaptationIntensity = 1 + Math.min(currentAdaptationLevel, 3) * 0.25;
+        let weight = 2 + (activeBias[pattern] || 0) * adaptationIntensity;
 
         if (
           currentPlayer.hp <= PLAYER_MAX_HP * 0.45 &&
@@ -387,7 +454,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         if (currentPlayer.tp >= 80 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 1;
 
         if (currentPhase === 2 && pattern === 'RAGE') {
-          weight = currentPlayer.hp <= PLAYER_MAX_HP * 0.45 ? 4 : 1;
+          const pressure = currentPlayer.hp <= PLAYER_MAX_HP * 0.45 ? 4 : 1;
+          weight = pressure + currentAdaptationLevel;
         }
 
         return { pattern, weight };
@@ -422,6 +490,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     currentPlayer: PlayerState,
     activeAction: PlayerAction | null,
     repeats: number,
+    currentAdaptationLevel: number,
     extraMultiplier = 1,
   ) => {
     setFx('BOSS');
@@ -432,10 +501,14 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     schedule(() => {
       const info = PATTERN_INFO[currentPattern];
-      const phaseMultiplier =
-        currentPhase === 2 ? 1.04 + Math.min(adaptationLevel, 3) * 0.035 : 1;
+      const phaseMultiplier = 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
-      const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier);
+      const contractIncomingMultiplier = runContract === 'OVERDRIVE' ? 1.12 : 1;
+      const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier);
+      const rawMpDrain = currentPattern === 'VOID'
+        ? randomBetween(12, 20) + (runContract === 'OVERDRIVE' ? 2 : 0)
+        : 0;
+      const mpDrain = Math.min(currentPlayer.mp, rawMpDrain);
 
       const guardMultiplier = currentPlayer.shield > 0
         ? (currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? 0.26 : 0.55)
@@ -448,6 +521,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const nextPlayer: PlayerState = {
         ...currentPlayer,
         hp: nextHp,
+        mp: Math.max(0, currentPlayer.mp - mpDrain),
         shield: Math.max(0, currentPlayer.shield - shieldDamage),
         focus: currentPlayer.focus,
         featherCooldown: Math.max(0, currentPlayer.featherCooldown - 1),
@@ -460,14 +534,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setFx(null);
 
       if (currentPlayer.shield > 0 && shieldDamage >= incoming && hpDamage === 0) {
-        setLog(info.name + 'を盾だけで受け切った！');
+        setLog(
+          info.name + 'を盾だけで受け切った！' +
+          (mpDrain > 0 ? ' / MP -' + mpDrain : ''),
+        );
       } else {
         setLog(
           (currentPattern === 'CHARGE' || currentPattern === 'RAGE'
             ? info.name + 'が直撃！ '
             : info.name + '！ ') +
             formatNumber(hpDamage) +
-            'ダメージ',
+            'ダメージ' +
+            (mpDrain > 0 ? ' / MP -' + mpDrain : ''),
         );
       }
 
@@ -482,9 +560,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         currentPattern,
         activeAction,
         repeats,
+        currentAdaptationLevel,
       );
       setBossPattern(nextPattern);
-      setTurn(prev => prev + 1);
       setIsResolving(false);
     }, 430);
   };
@@ -494,6 +572,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (action === 'FEATHER' && (player.featherCooldown > 0 || player.mp < 18)) {
       setLog(player.featherCooldown > 0 ? '羽弾はまだ再使用できない。' : 'MPが足りない。');
+      return;
+    }
+    if (action === 'COUNTER' && (player.mp < 10 || broken)) {
+      setLog(broken ? 'BREAK中は迎撃できない。' : 'MPが足りない。');
       return;
     }
     if (action === 'FOCUS' && player.mp < 12) {
@@ -514,10 +596,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     setIsResolving(true);
+    setTurn(prev => prev + 1);
 
     const repeats = lastAction === action ? repeatCount + 1 : 1;
-    setLastAction(action);
-    setRepeatCount(repeats);
 
     const currentPattern = bossPattern;
     const currentBrokenTurns = brokenTurns;
@@ -526,6 +607,17 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const counterMiss = action === 'COUNTER' && !perfectCounter;
     const featherInterrupt = action === 'FEATHER' && currentPattern === 'VOID';
     const sweepOpening = action === 'NORMAL' && currentPattern === 'SWEEP';
+    const bossWillRetaliate = currentBrokenTurns === 0 && !perfectCounter && !featherInterrupt;
+    const nextAdaptationLevel =
+      phase === 2 && bossWillRetaliate
+        ? repeats >= 2
+          ? Math.min(3, adaptationLevel + 1)
+          : Math.max(0, adaptationLevel - 1)
+        : adaptationLevel;
+
+    setLastAction(action);
+    setRepeatCount(repeats);
+    setAdaptationLevel(phase === 1 ? 0 : nextAdaptationLevel);
 
     setFx(action);
     setFxText(
@@ -555,13 +647,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const responseMultiplier =
-      perfectCounter ? 1.32 :
-      featherInterrupt ? 1.18 :
-      sweepOpening ? 1.14 :
+      perfectCounter ? 1.15 :
+      featherInterrupt ? 1.08 :
+      sweepOpening ? 1.08 :
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
-
     const damageBase =
       action === 'NORMAL'
         ? randomBetween(6500, 7600)
@@ -569,14 +660,20 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           ? randomBetween(9800, 11500)
           : action === 'COUNTER'
             ? perfectCounter
-              ? randomBetween(7600, 9000)
+              ? randomBetween(7400, 8600)
               : randomBetween(1800, 2600)
             : action === 'ULTIMATE'
               ? randomBetween(26000, 30000)
               : 0;
 
+    const contractDamageMultiplier =
+      runContract === 'OVERDRIVE' ? 1.08 :
+      runContract === 'FRACTURE' ? 0.9 :
+      1;
+
     const finalDamage = Math.round(
       damageBase *
+        contractDamageMultiplier *
         comboMultiplier *
         breakMultiplier *
         responseMultiplier *
@@ -586,15 +683,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     const actualDamage = Math.min(bossHp, finalDamage);
 
+    const contractBreakMultiplier = runContract === 'FRACTURE' ? 1.2 : 1;
+    const contractBreakGain = (value: number) => Math.round(value * contractBreakMultiplier);
+
     const breakGain =
       action === 'NORMAL'
-        ? sweepOpening ? 24 : 16
+        ? contractBreakGain(sweepOpening ? 24 : 16)
         : action === 'FEATHER'
-          ? featherInterrupt ? 58 : 30
+          ? contractBreakGain(featherInterrupt ? 52 : 30)
           : action === 'COUNTER'
-            ? perfectCounter ? 68 : 4
+            ? contractBreakGain(perfectCounter ? 60 : 4)
             : action === 'ULTIMATE'
-              ? 46
+              ? contractBreakGain(46)
               : 0;
 
     const nextBreak =
@@ -607,8 +707,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (counterMiss) {
       setCombo(0);
-      setLog('迎撃失敗。次のボス攻撃が25%強化される！');
-      sfx('guard');
+      setLog('迎撃失敗。次のボス攻撃が15%強化される！');
+      sfx('counter');
     } else if (perfectCounter) {
       setPerfectResponses(prev => prev + 1);
       setLog('迎撃成功！大技の隙を反転した。');
@@ -643,9 +743,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (action === 'POTION') {
       const nextPlayer: PlayerState = {
         ...player,
-        hp: Math.min(PLAYER_MAX_HP, player.hp + 2800),
+        hp: Math.min(
+          PLAYER_MAX_HP,
+          player.hp + (runContract === 'SUSTAIN' ? 3360 : 2800),
+        ),
         mp: Math.min(PLAYER_MAX_MP, player.mp + 30),
-        tp: clamp(player.tp + 8, 0, PLAYER_MAX_TP),
+        tp: clamp(
+          player.tp + Math.round(8 * (runContract === 'SUSTAIN' ? 0.85 : 1)),
+          0,
+          PLAYER_MAX_TP,
+        ),
         potions: player.potions - 1,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
@@ -659,13 +766,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, null, 0, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
@@ -674,7 +781,11 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const nextPlayer: PlayerState = {
         ...player,
         mp: clamp(player.mp - 12, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + 15, 0, PLAYER_MAX_TP),
+        tp: clamp(
+          player.tp + Math.round(15 * (runContract === 'SUSTAIN' ? 0.85 : 1)),
+          0,
+          PLAYER_MAX_TP,
+        ),
         focus: true,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -687,25 +798,30 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
 
     if (action === 'GUARD') {
-      const perfectGuard = isHeavy;
+      const perfectGuard = isHeavy && currentBrokenTurns === 0;
+      const guardTpGain = perfectGuard ? 22 : 14;
       const nextPlayer: PlayerState = {
         ...player,
-        hp: Math.min(PLAYER_MAX_HP, player.hp + 450),
+        hp: Math.min(PLAYER_MAX_HP, player.hp + (runContract === 'SUSTAIN' ? 540 : 450)),
         mp: clamp(player.mp - 10, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + 14, 0, PLAYER_MAX_TP),
-        shield: 3600,
+        tp: clamp(
+          player.tp + Math.round(guardTpGain * (runContract === 'SUSTAIN' ? 0.85 : 1)),
+          0,
+          PLAYER_MAX_TP,
+        ),
+        shield: runContract === 'SUSTAIN' ? 3360 : 2800,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -713,9 +829,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setPlayer(nextPlayer);
       setCombo(0);
 
-      if (perfectGuard && currentBrokenTurns === 0) {
+      if (perfectGuard) {
         setBossBreak(prev => clamp(prev + 28, 0, BREAK_MAX));
-        setLog('PERFECT GUARD！大技を読み、BREAKを奪った。');
+        setPerfectResponses(prev => prev + 1);
+        setLog('PERFECT GUARD！大技を読み、BREAKと次の攻めを整えた。');
         sfx('guard');
       } else {
         setLog('防御構え。盾3,600を展開。');
@@ -729,13 +846,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setBrokenTurns(remaining);
           if (remaining === 0) {
             setBossPattern(
-              choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+              choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
             );
           }
           setIsResolving(false);
           return;
         }
-        runBossAttack(phase, currentPattern, nextPlayer, action, repeats);
+        runBossAttack(phase, currentPattern, nextPlayer, action, repeats, nextAdaptationLevel);
       }, impactDelay);
       return;
     }
@@ -745,18 +862,21 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     schedule(() => {
       const nextPlayer: PlayerState = {
         ...player,
-        mp: clamp(player.mp, 0, PLAYER_MAX_MP),
+        mp: clamp(player.mp - (action === 'COUNTER' ? 10 : 0), 0, PLAYER_MAX_MP),
         tp: action === 'ULTIMATE'
           ? 0
           : clamp(
               player.tp +
-                (action === 'NORMAL'
-                  ? 18
-                  : action === 'FEATHER'
-                    ? 24
-                    : action === 'COUNTER'
-                      ? perfectCounter ? 12 : 18
-                      : 0),
+                Math.round(
+                  (action === 'NORMAL'
+                    ? 18
+                    : action === 'FEATHER'
+                      ? 24
+                      : action === 'COUNTER'
+                        ? perfectCounter ? 12 : 18
+                        : 0) *
+                    (runContract === 'SUSTAIN' ? 0.85 : 1),
+                ),
               0,
               PLAYER_MAX_TP,
             ),
@@ -788,6 +908,38 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         return;
       }
 
+      const entersPhaseTwo =
+        phase === 1 && bossHp - actualDamage <= BOSS_HP[1] * 0.5;
+
+      if (entersPhaseTwo) {
+        setPhase(2);
+        setBossHp(BOSS_HP[2]);
+        setBossBreak(0);
+        setBrokenTurns(0);
+        setBossPattern('RAGE');
+        setAdaptationLevel(0);
+        setFx('PHASE');
+        setFxText('PHASE II');
+        sfx('phase');
+        setLog('第2形態「深淵解放」。同じ行動を続けるほど、ボスの対応が鋭くなる。戦い方を変えれば適応が緩む。');
+
+        schedule(() => {
+          setFx(null);
+          if (perfectCounter || featherInterrupt) {
+            setBossPattern('RAGE');
+            setLog(
+              perfectCounter
+                ? '迎撃成功のまま第2形態へ。アビスコアの反撃を1手止めた。'
+                : '羽弾で詠唱を断ったまま第2形態へ。次の予告を読む。',
+            );
+            setIsResolving(false);
+            return;
+          }
+          runBossAttack(2, 'RAGE', nextPlayer, action, repeats, 0, 1);
+        }, 1050);
+        return;
+      }
+
       if (triggersBreak) {
         setBossBreak(0);
         setBrokenTurns(2);
@@ -808,7 +960,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setBrokenTurns(remaining);
         if (remaining === 0) {
           setBossPattern(
-            choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+            choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
           );
           setLog('BREAK終了。ボスが再起動する！');
         }
@@ -818,45 +970,21 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
       if (perfectCounter || featherInterrupt) {
         setBossPattern(
-          choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+          choosePattern(phase, nextPlayer, currentPattern, null, 0, nextAdaptationLevel),
         );
-        setTurn(prev => prev + 1);
         schedule(() => setDamagePopup(null), 400);
         setIsResolving(false);
         return;
       }
 
-      if (phase === 1 && bossHp - actualDamage <= BOSS_HP[1] * 0.5) {
-        setPhase(2);
-        setBossHp(BOSS_HP[2]);
-        setBossBreak(0);
-        setBrokenTurns(0);
-        setBossPattern('RAGE');
-        setAdaptationLevel(0);
-        setFx('PHASE');
-        setFxText('PHASE II');
-        sfx('phase');
-        setLog('第2形態「深淵解放」。同じ行動を2回続けるとボスが対応する。');
-
-        schedule(() => {
-          setFx(null);
-          runBossAttack(2, 'RAGE', nextPlayer, action, repeats);
-        }, 1050);
-        return;
-      }
-
       if (phase === 2 && repeats >= 2) {
-        setAdaptationLevel(prev => Math.min(3, prev + 1));
         setLog(
-          action === 'FEATHER'
-            ? 'ボスが羽弾を学習。滅界砲の構えに入った。'
-            : action === 'NORMAL'
-              ? 'ボスが通常攻撃の流れを学習した。'
-              : 'ボスが行動パターンを更新した。',
+          repeats >= 3
+            ? 'ボスの適応が深まり、次の狙いが変化した。'
+            : 'ボスが直前の行動を読み、次の狙いを変えた。',
         );
       }
 
-      setTurn(prev => prev + 1);
       setIsResolving(false);
 
       schedule(() => setDamagePopup(null), 400);
@@ -866,18 +994,18 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         nextPlayer,
         action,
         repeats,
-        counterMiss ? 1.25 : 1,
+        nextAdaptationLevel,
+        counterMiss ? 1.2 : 1,
       );
     }, impactDelay);
   };
 
   const actionHint = useMemo(() => {
-    if (broken) return 'BREAK WINDOW：1ターン目の攻撃が最も強い。必殺もここで大幅強化。';
-    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。防御なら安全、迎撃ならBREAKを大きく稼げる。';
-    if (bossPattern === 'VOID') return '羽弾なら詠唱中断＋大幅BREAK。外しても高火力だが反撃は受ける。';
-    return '黒爪薙ぎは通常攻撃で押し返せる。攻め続けるほどCOMBOが伸びる。';
+    if (broken) return 'BREAK WINDOW：残りターン数と必殺ゲージを見て、火力と準備のどちらを優先するか決めよう。';
+    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。防御で被害を抑えるか、迎撃で大きく流れを変えるか、強気に攻めるか。';
+    if (bossPattern === 'VOID') return '資源にも干渉する攻撃。HP・MPの残量と、次の一手の価値をまとめて考えよう。';
+    return '比較的軽い薙ぎ払い。安定して削るか、次の展開に備えてリソースを整えるか。';
   }, [bossPattern, broken]);
-
   const fxView = () => {
     if (!fx) return null;
 
@@ -908,15 +1036,49 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     if (fx === 'PHASE') {
       return (
         <div style={styles.phaseOverlay}>
-          <div style={styles.phaseText}>{fxText}</div>
+          <img src={raidBossArt} alt="" style={styles.phaseBossImage} />
+          <div style={styles.phaseBossFlash} />
+          <div style={{ ...styles.phaseText, animation: 'raidGlitch 1.05s ease-in-out infinite' }}>{fxText}</div>
           <div style={styles.phaseSub}>深淵解放</div>
         </div>
       );
     }
 
     if (fx === 'BOSS') {
+      const isHeavy = bossPattern === 'CHARGE' || bossPattern === 'RAGE';
+      const scanTransform =
+        bossPattern === 'VOID' ? 'rotate(14deg)' :
+        bossPattern === 'RAGE' ? 'rotate(-32deg)' :
+        'rotate(-18deg)';
       return (
         <div style={styles.fxOverlay}>
+          <div
+            style={{
+              ...styles.telegraphRing,
+              borderColor: intent.color,
+              borderStyle: bossPattern === 'VOID' ? 'dotted' : 'dashed',
+              animation: bossPattern === 'RAGE'
+                ? 'raidGlitch .34s steps(2,end) infinite'
+                : 'raidTelegraphRing .72s ease-out forwards',
+            }}
+          />
+          <div
+            style={{
+              ...styles.telegraphCore,
+              borderColor: intent.color,
+              boxShadow: '0 0 ' + (isHeavy ? 75 : 55) + 'px ' + intent.color,
+              animation: bossPattern === 'VOID'
+                ? 'raidTelegraph .42s ease-in-out infinite'
+                : 'raidTelegraph .6s ease-in-out infinite',
+            }}
+          />
+          <div
+            style={{
+              ...styles.telegraphScan,
+              background: 'linear-gradient(90deg,transparent,' + intent.color + ',transparent)',
+              transform: scanTransform,
+            }}
+          />
           <div style={{ ...styles.bossHit, borderColor: intent.color }} />
           <div style={{ ...styles.bossHitText, color: intent.color }}>{fxText}</div>
         </div>
@@ -1006,11 +1168,40 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.preTitleBlock}>
               <div style={styles.kicker}>RAID OPERATION 02 · REWORK</div>
               <div style={styles.preTitle}>深淵喰らい・アビスコア</div>
-              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。次の一手で流れが変わる。</div>
+              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。同じ手を重ねるほど、ボスの狙いが変わっていく。</div>
             </div>
           </div>
 
           <div style={styles.preBody}>
+            <div style={styles.contractHeader}>
+              <div style={styles.kicker}>RUN CONTRACT</div>
+              <div style={styles.contractTitle}>今回の戦い方を1つ選ぶ</div>
+              <div style={styles.contractSub}>強さではなく、リスクと目的が変わる。STANDARDなら追加条件なし。</div>
+            </div>
+
+            <div style={styles.contractGrid}>
+              {(Object.keys(CONTRACT_INFO) as RunContract[]).map(contract => {
+                const info = CONTRACT_INFO[contract];
+                const selected = runContract === contract;
+                return (
+                  <button
+                    key={contract}
+                    type="button"
+                    onClick={() => setRunContract(contract)}
+                    style={{
+                      ...styles.contractCard,
+                      ...(selected ? styles.contractSelected : {}),
+                    }}
+                  >
+                    <span style={styles.contractName}>{info.name}</span>
+                    <span style={styles.contractDetail}>{info.detail}</span>
+                    <span style={styles.contractMeta}>条件：{info.risk}</span>
+                    <span style={styles.contractMeta}>報酬：{info.reward}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="raidPreGrid" style={styles.preRow}>
               <div style={styles.preBox}>
                 <img src={raidIrenaCutIn} alt="" style={styles.preIrena} />
@@ -1024,7 +1215,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                 <div>
                   <div style={styles.kicker}>BOSS</div>
                   <div style={styles.preBoss}>ABYSS CORE</div>
-                  <div style={styles.small}>PHASE I 50,000 → PHASE II 60,000</div>
+                  <div style={styles.small}>PHASE I 50,000 → PHASE II 65,000</div>
                 </div>
               </div>
             </div>
@@ -1032,7 +1223,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.ruleGrid}>
               <div style={styles.rule}>
                 <Crosshair size={18} />
-                <div><b>読み合い</b><span>大技にはリターンの大きい迎撃。失敗には代償。</span></div>
+                <div><b>読み合い</b><span>大技は守るか迎撃するか、あえて攻めるか。選択ごとに流れが変わる。</span></div>
               </div>
               <div style={styles.rule}>
                 <Gauge size={18} />
@@ -1040,7 +1231,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               </div>
               <div style={styles.rule}>
                 <Eye size={18} />
-                <div><b>学習</b><span>第2形態は同じ行動を続けると本気で対応する。</span></div>
+                <div><b>学習</b><span>第2形態は同じ行動を続けるほど、ボスの狙いが変わる。</span></div>
               </div>
             </div>
 
@@ -1068,11 +1259,17 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <div style={styles.resultTitle}>{victory ? '討伐成功' : '戦闘終了'}</div>
           <div style={styles.resultText}>{log}</div>
 
+          <div style={styles.resultContract}>
+            <div style={styles.kicker}>CONTRACT</div>
+            <div style={styles.resultContractName}>{contractInfo.name}</div>
+            <div style={styles.resultContractText}>{contractInfo.risk} · {contractInfo.reward}</div>
+          </div>
+
           <div style={styles.scoreBox}>
             <div style={styles.scoreKicker}>RUN SCORE</div>
             <div style={styles.score}>{formatNumber(score)}</div>
-            <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScore, score))}</div>
-            <div style={styles.scoreSub}>ターン短縮・被弾減少・高COMBO・完璧迎撃が、次の自己ベストを作る。</div>
+            <div style={styles.scoreBest}>BEST {formatNumber(Math.max(bestScores[runContract], score))}</div>
+            <div style={styles.scoreSub}>短い手数・少ない被弾・高COMBO・完璧な読みが、次の自己ベストを作る。</div>
           </div>
 
           <div style={styles.resultGrid}>
@@ -1086,7 +1283,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
           <div style={styles.resultNote}>
             <div style={styles.kicker}>CORE LOOP</div>
-            <div style={styles.resultNoteText}>予告 → 判断 → 命中 → 反撃 → BREAK → BURST。第2形態では同じ手が通らなくなる。</div>
+            <div style={styles.resultNoteText}>予告 → 判断 → 行動 → 反撃 → BREAK → BURST。第2形態では戦い方に応じてボスの狙いが変化する。</div>
           </div>
 
           <button type="button" onClick={resetBattle} style={styles.primaryButton}>
@@ -1125,6 +1322,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div>
               <div style={styles.kicker}>ABYSS CORE // TARGET</div>
               <div style={styles.bossName}>深淵喰らい・アビスコア</div>
+              <div style={styles.bossState}>
+                {broken
+                  ? 'CORE EXPOSED'
+                  : phase === 2 && adaptationLevel > 0
+                    ? 'ADAPTIVE CORE // LV ' + adaptationLevel
+                    : 'CORE STABLE'}
+              </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={styles.hpText}>{formatNumber(bossHp)} / {formatNumber(bossMaxHp)}</div>
@@ -1156,13 +1360,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               </div>
               <div style={styles.intentName}>{intent.name}</div>
               <div style={styles.intentDetail}>{intent.detail}</div>
-              <div style={styles.intentCounter}>読み合いの軸：{intent.bestResponse}</div>
+              <div style={styles.intentMeta}>
+                基礎威力 {formatNumber(intent.minDamage)}–{formatNumber(intent.maxDamage)}
+                {bossPattern === 'VOID' ? ' · さらにMPへ干渉' : ''}
+              </div>
             </div>
           ) : (
             <div style={styles.breakWindow}>
               <div style={styles.breakKicker}>CORE EXPOSED</div>
               <div style={styles.breakTitle}>最大火力を叩き込め</div>
-              <div style={styles.breakSub}>1ターン目 ×1.50 / 2ターン目 ×1.25 / 必殺はさらに ×1.35</div>
+              <div style={styles.breakSub}>1ターン目 ×1.50 / 2ターン目 ×1.25 / 必殺はさらに ×1.35。準備も1ターン消費。</div>
             </div>
           )}
 
@@ -1179,8 +1386,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                     : impactSource === 'BOSS'
                       ? 'saturate(1.3) contrast(1.22) brightness(1.25)'
                       : phase === 2
-                        ? 'saturate(1.28) contrast(1.14) brightness(1.08)'
+                        ? 'saturate(' + (1.28 + adaptationLevel * 0.05) + ') contrast(' + (1.14 + adaptationLevel * 0.025) + ') brightness(' + (1.08 + adaptationLevel * 0.02) + ')'
                         : 'saturate(1.12) contrast(1.08)',
+                  opacity: broken ? .94 : phase === 2 ? .86 : .82,
               }}
             />
           </div>
@@ -1197,7 +1405,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             </div>
           )}
 
-          <div style={styles.turn}>TURN {turn}</div>
+          <div style={styles.turn}>TURN {Math.max(1, turn)}</div>
 
           <div style={styles.log}>
             <div style={styles.logTop}>
@@ -1247,21 +1455,35 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           </div>
 
           <div style={styles.tacticalPanel}>
-            <div style={styles.kicker}>TACTICAL READ</div>
-            <div style={styles.tacticalTitle}>
-              {broken ? 'バースト時間を使い切る' : intent.name + ' をどう返す？'}
+            <div style={styles.kicker}>BATTLE STATE · {contractInfo.name}</div>
+            <div style={styles.tacticalTitle}>{broken ? 'BREAK BURST' : phase === 2 ? 'ADAPTIVE CORE' : 'CORE STABLE'}</div>
+            <div style={styles.tacticalRow}>
+              <span>ボス状態</span>
+              <b>{broken ? '露出 · 残り ' + brokenTurns + 'T' : phase === 2 ? '適応 LV ' + adaptationLevel + '/3' : '通常'}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>高リターン</span>
-              <b>{broken ? '必殺 / 羽弾 / 通常連打' : intent.bestResponse}</b>
+              <span>次の脅威</span>
+              <b>{broken ? '攻撃なし' : intent.name}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>失敗時</span>
-              <b>{bossPattern === 'CHARGE' || bossPattern === 'RAGE' ? '迎撃ミス＝重い反撃' : '通常のボス攻撃'}</b>
+              <span>契約</span>
+              <b>{contractInfo.risk}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>第2形態</span>
-              <b>{phase === 2 ? '同じ手を続けると学習' : '次の形態で解禁'}</b>
+              <span>直近</span>
+              <b>
+                {lastAction
+                  ? ({
+                      NORMAL: '通常攻撃',
+                      FEATHER: '羽弾',
+                      FOCUS: '風詠集中',
+                      GUARD: '防御',
+                      COUNTER: '迎撃',
+                      POTION: 'ポーション',
+                      ULTIMATE: '必殺',
+                    } as Record<PlayerAction, string>)[lastAction] + (repeatCount > 1 ? ' ×' + repeatCount : '')
+                  : 'まだなし'}
+              </b>
             </div>
           </div>
         </section>
@@ -1293,13 +1515,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" disabled={isResolving || player.mp < 10} onClick={() => performAction('GUARD')} style={styles.actionButton}>
             <Shield size={19} />
             <span>防御</span>
-            <small>盾3,600 · HP +450</small>
+            <small>盾2,800 · HP +450 · PERFECTでTP+</small>
           </button>
 
-          <button type="button" disabled={isResolving} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
+          <button type="button" disabled={isResolving || broken || player.mp < 10} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
             <Crosshair size={19} />
             <span>迎撃</span>
-            <small>大技なら超強力 · 外すと反撃強化</small>
+            <small>MP10 · 成功時は反撃を止める</small>
           </button>
 
           <button type="button" disabled={isResolving || player.potions <= 0} onClick={() => performAction('POTION')} style={styles.actionButton}>
@@ -1359,7 +1581,19 @@ const styles: Record<string, React.CSSProperties> = {
   preTitleBlock: { position: 'absolute', left: 26, right: 26, bottom: 24 },
   preTitle: { marginTop: 7, fontSize: 'clamp(28px,6vw,48px)', lineHeight: 1.05, fontWeight: 1000 },
   preSub: { marginTop: 6, color: '#b3bbcc', fontSize: 13 },
+  resultContract: { marginTop: 12, padding: '10px 12px', borderRadius: 12, background: '#0d111b', border: '1px solid #2a3042' },
+  resultContractName: { marginTop: 3, color: '#efeaff', fontSize: 17, fontWeight: 1000, letterSpacing: '.1em' },
+  resultContractText: { marginTop: 3, color: '#929eb3', fontSize: 9, lineHeight: 1.4 },
   preBody: { padding: 18 },
+  contractHeader: { marginBottom: 10, padding: '12px 13px', borderRadius: 13, background: '#0d111b', border: '1px solid #252c40' },
+  contractTitle: { marginTop: 5, fontSize: 18, fontWeight: 1000 },
+  contractSub: { marginTop: 4, color: '#8f9bb3', fontSize: 10, lineHeight: 1.45 },
+  contractGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8, marginBottom: 12 },
+  contractCard: { minHeight: 132, padding: 11, borderRadius: 13, border: '1px solid #29324b', background: '#0b101a', color: '#edf2ff', textAlign: 'left', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6, boxSizing: 'border-box' },
+  contractSelected: { borderColor: '#bba5ff', background: 'linear-gradient(145deg,#17142a,#111425)', boxShadow: '0 0 22px rgba(150,120,255,.12)' },
+  contractName: { fontSize: 13, fontWeight: 1000, letterSpacing: '.12em', color: '#e5ddff' },
+  contractDetail: { minHeight: 30, color: '#c0c8d9', fontSize: 10, lineHeight: 1.4 },
+  contractMeta: { color: '#8995aa', fontSize: 9, lineHeight: 1.35 },
   preRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
   preBox: { minHeight: 92, padding: 10, borderRadius: 16, background: '#0e1220', border: '1px solid #29324b', display: 'flex', alignItems: 'center', gap: 12, boxSizing: 'border-box' },
   preIrena: { width: 120, height: 74, borderRadius: 11, objectFit: 'cover', objectPosition: '18% center', border: '1px solid #8d7eff' },
@@ -1402,6 +1636,7 @@ const styles: Record<string, React.CSSProperties> = {
   stageVignette: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 45%,transparent 0%,rgba(4,4,11,.16) 42%,rgba(3,3,9,.94) 100%)', pointerEvents: 'none' },
   bossHud: { position: 'relative', zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 },
   bossName: { marginTop: 3, fontSize: 'clamp(19px,3vw,26px)', fontWeight: 1000 },
+  bossState: { marginTop: 5, display: 'inline-block', padding: '3px 7px', borderRadius: 999, background: 'rgba(18,18,30,.8)', border: '1px solid #3a3b56', color: '#b5bfd5', fontSize: 8, fontWeight: 900, letterSpacing: '.14em' },
   hpText: { color: '#ffd6df', fontSize: 12, fontWeight: 900 },
   phaseBadge: { marginTop: 3, display: 'inline-block', padding: '3px 6px', borderRadius: 999, background: 'rgba(38,17,35,.76)', border: '1px solid #593147', color: '#ff9eaf', fontSize: 9, fontWeight: 900 },
   hpTrack: { position: 'relative', zIndex: 4, height: 15, marginTop: 7, borderRadius: 999, background: '#20131a', border: '1px solid #50303a', overflow: 'hidden' },
@@ -1414,7 +1649,7 @@ const styles: Record<string, React.CSSProperties> = {
   intentTop: { display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#8793aa', fontWeight: 900, letterSpacing: '.15em' },
   intentName: { marginTop: 4, fontSize: 18, fontWeight: 1000 },
   intentDetail: { marginTop: 2, color: '#94a0b5', fontSize: 10, lineHeight: 1.45 },
-  intentCounter: { marginTop: 5, color: '#d1c8ff', fontSize: 10, fontWeight: 900 },
+  intentMeta: { marginTop: 5, color: '#c9c4de', fontSize: 9, fontWeight: 900, letterSpacing: '.03em' },
   breakWindow: { position: 'relative', zIndex: 5, width: 'min(100%,560px)', margin: '12px auto 0', padding: '11px 13px', borderRadius: 13, textAlign: 'center', background: 'rgba(45,35,11,.5)', border: '1px solid #f0d667' },
   breakKicker: { color: '#fff1a1', fontSize: 9, fontWeight: 1000, letterSpacing: '.22em' },
   breakTitle: { marginTop: 4, fontSize: 19, fontWeight: 1000 },
@@ -1444,10 +1679,15 @@ const styles: Record<string, React.CSSProperties> = {
   focusCircle: { width: 144, height: 144, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#d6ccff', border: '2px solid #c6b6ff', boxShadow: '0 0 44px rgba(160,125,255,.56)', animation: 'raidPop .72s ease-out forwards' },
   recoverCircle: { width: 140, height: 140, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#abffbe', border: '2px solid rgba(130,255,160,.82)', background: 'rgba(65,180,95,.08)', boxShadow: '0 0 38px rgba(110,255,140,.3)', animation: 'raidPop .8s ease-out forwards' },
   ultimateCircle: { width: '52%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ded4ff', boxShadow: '0 0 70px rgba(156,106,255,.84)', animation: 'raidFlash .86s ease-out forwards' },
+  telegraphRing: { position: 'absolute', width: '44%', aspectRatio: '1', borderRadius: '50%', border: '2px dashed #fff', boxShadow: '0 0 26px currentColor', animation: 'raidTelegraphRing .72s ease-out forwards' },
+  telegraphCore: { width: '16%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #fff', animation: 'raidTelegraph .6s ease-in-out infinite' },
+  telegraphScan: { position: 'absolute', width: '92%', height: 5, boxShadow: '0 0 26px currentColor', transform: 'rotate(-18deg)', animation: 'raidPop .65s ease-out forwards' },
   breakCircle: { width: '62%', aspectRatio: '1', borderRadius: '50%', border: '4px solid #fff0a4', boxShadow: '0 0 72px rgba(255,232,128,.86)', animation: 'raidBreak .95s ease-out forwards' },
   breakText: { position: 'relative', color: '#fff7be', fontSize: 'clamp(40px,9vw,92px)', fontWeight: 1000, letterSpacing: '.12em', textShadow: '0 0 34px rgba(255,233,120,.95)', animation: 'raidBreak .92s ease-out forwards' },
-  phaseOverlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'grid', placeItems: 'center', pointerEvents: 'none', background: 'radial-gradient(circle,rgba(255,54,88,.84),rgba(10,0,16,.97) 68%)', animation: 'raidPhase 1.1s ease-out forwards' },
-  phaseText: { color: '#fff', fontSize: 'clamp(52px,11vw,120px)', fontWeight: 1000, textShadow: '0 0 45px rgba(255,72,110,.95)' },
+  phaseOverlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'grid', placeItems: 'center', pointerEvents: 'none', overflow: 'hidden', background: 'radial-gradient(circle,rgba(255,54,88,.84),rgba(10,0,16,.97) 68%)', animation: 'raidPhase 1.1s ease-out forwards' },
+  phaseBossImage: { position: 'absolute', width: 'min(74vw,720px)', height: 'min(62vw,520px)', objectFit: 'cover', opacity: .19, mixBlendMode: 'screen', filter: 'saturate(1.7) contrast(1.28) brightness(1.18)', animation: 'raidCoreBurst 1.1s ease-out forwards' },
+  phaseBossFlash: { position: 'absolute', width: 'min(72vw,640px)', height: 'min(60vw,520px)', borderRadius: '50%', border: '3px solid rgba(255,183,194,.9)', boxShadow: '0 0 120px rgba(255,85,110,.72)', animation: 'raidCoreBurst 1.05s ease-out forwards' },
+  phaseText: { position: 'relative', zIndex: 2, color: '#fff', fontSize: 'clamp(52px,11vw,120px)', fontWeight: 1000, textShadow: '0 0 45px rgba(255,72,110,.95)' },
   phaseSub: { position: 'absolute', top: '61%', color: '#ffc8d4', fontSize: 16, fontWeight: 900, letterSpacing: '.35em' },
   bossHit: { width: '44%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ff6b86', boxShadow: '0 0 46px rgba(255,70,100,.72)', animation: 'raidFlash .68s ease-out forwards' },
   bossHitText: { position: 'relative', marginTop: 205, fontSize: 'clamp(24px,5vw,48px)', fontWeight: 1000, textShadow: '0 0 26px currentColor', animation: 'raidPop .65s ease-out forwards' },
