@@ -1385,7 +1385,7 @@ const styles: Record<string, React.CSSProperties> = {
   scoreSub: { marginTop: 4, color: '#9aa5bb', fontSize: 10, lineHeight: 1.5 },
   resultGrid: { marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8 },
   resultItem: { padding: 11, borderRadius: 11, background: '#0d1320', border: '1px solid #232d43' },
-  resultItem span: { display: 'block', color: '#7f8aa0', fontSize: 8, letterSpacing: '.12em' },
+  'resultItem span': { display: 'block', color: '#7f8aa0', fontSize: 8, letterSpacing: '.12em' },
   resultNote: { marginTop: 14, padding: 13, borderRadius: 12, background: '#0b101a', border: '1px solid #1f293b', textAlign: 'left' },
   resultNoteText: { marginTop: 6, color: '#cbd6e9', fontSize: 12, lineHeight: 1.55 },
 
