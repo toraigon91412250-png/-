@@ -678,7 +678,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         breakMultiplier *
         responseMultiplier *
         focusMultiplier *
-        repeatedActionPenalty *
         (action === 'ULTIMATE' && currentBrokenTurns > 0 ? 1.35 : 1),
     );
 
