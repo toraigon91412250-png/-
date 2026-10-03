@@ -667,17 +667,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setLog('第2形態「深淵解放」。同じ行動を2回続けるとボスが対応する。');
         schedule(() => {
           setFx(null);
-          setIsResolving(false);
+          bossAttack(2, 'RAGE', nextPlayer, action, repeats);
         }, 1050);
         return;
       }
-
-      const nextPattern = choosePattern(phase, nextPlayer, currentIntent, action, repeats);
-      setBossPattern(nextPattern);
-      setTurn(prev => prev + 1);
-      setLastDamage(null);
-      setFx(null);
-      setIsResolving(false);
 
       if (phase === 2 && repeats >= 2) {
         setLog(
@@ -686,6 +679,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           'ボスが行動パターンを更新した。',
         );
       }
+
+      setFx(null);
+      bossAttack(phase, currentIntent, nextPlayer, action, repeats);
     }, impactDelay);
   };
 
