@@ -49,7 +49,7 @@ type DamagePopup = {
   key: number;
 };
 
-const BOSS_HP: Record<Phase, number> = { 1: 50000, 2: 60000 };
+const BOSS_HP: Record<Phase, number> = { 1: 50000, 2: 65000 };
 const PLAYER_MAX_HP = 10000;
 const PLAYER_MAX_MP = 100;
 const PLAYER_MAX_TP = 100;
@@ -86,7 +86,7 @@ const CONTRACT_INFO: Record<
     name: 'SUSTAIN',
     detail: '回復と防御を厚くする代わりに、TPの伸びが鈍る。',
     risk: '回復・盾 +20% / TP獲得 -15%',
-    reward: '契約ボーナス +8,000',
+    reward: '契約ボーナス +4,000',
   },
 };
 
@@ -821,7 +821,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           0,
           PLAYER_MAX_TP,
         ),
-        shield: runContract === 'SUSTAIN' ? 4320 : 3600,
+        shield: runContract === 'SUSTAIN' ? 3360 : 2800,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -1215,7 +1215,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                 <div>
                   <div style={styles.kicker}>BOSS</div>
                   <div style={styles.preBoss}>ABYSS CORE</div>
-                  <div style={styles.small}>PHASE I 50,000 → PHASE II 60,000</div>
+                  <div style={styles.small}>PHASE I 50,000 → PHASE II 65,000</div>
                 </div>
               </div>
             </div>
@@ -1515,7 +1515,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <button type="button" disabled={isResolving || player.mp < 10} onClick={() => performAction('GUARD')} style={styles.actionButton}>
             <Shield size={19} />
             <span>防御</span>
-            <small>盾3,600 · HP +450 · PERFECTでTP+</small>
+            <small>盾2,800 · HP +450 · PERFECTでTP+</small>
           </button>
 
           <button type="button" disabled={isResolving || broken || player.mp < 10} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}>
