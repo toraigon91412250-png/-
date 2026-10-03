@@ -522,7 +522,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
       }, 520);
       return;
     }
@@ -559,7 +559,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           setIsResolving(false);
           return;
         }
-        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+        bossAttack(phase, currentIntent, nextPlayer, action, repeats);
       }, 620);
       return;
     }
