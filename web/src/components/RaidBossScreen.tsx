@@ -80,7 +80,7 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   },
   VOID: {
     name: '虚無落雷',
-    detail: '黒雷を集め、MPを削る。羽弾なら詠唱を断てる。',
+    detail: '黒雷を集め、羽弾なら詠唱を断てる。',
     minDamage: 1250,
     maxDamage: 1650,
     danger: 'HIGH',
@@ -317,12 +317,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     sfx('click');
   };
 
-  const recordScore = (finalScore: number) => {
-    setBestScore(prev => Math.max(prev, finalScore));
-  };
+  useEffect(() => {
+    if (mode !== 'RESULT') return;
+    setBestScore(prev => Math.max(prev, score));
+  }, [mode, score]);
 
-  const finishDefeat = (message: string, finalScore = score) => {
-    recordScore(finalScore);
+  const finishDefeat = (message: string) => {
     sfx('lose');
     setPlayer(prev => ({ ...prev, hp: 0 }));
     setLog(message);
@@ -333,8 +333,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setMode('RESULT');
   };
 
-  const finishVictory = (finalScore = score) => {
-    recordScore(finalScore);
+  const finishVictory = () => {
     sfx('win');
     setLog('深淵喰らい・アビスコアを討伐した！');
     setVictory(true);
@@ -785,18 +784,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       if (bossHp - actualDamage <= 0) {
         setFx('BREAK');
         setFxText('RAID CLEAR');
-        const finalScore = Math.max(
-          0,
-          Math.round(
-            (totalDamage + actualDamage) +
-              breakCount * 5000 +
-              perfectResponses * 3500 +
-              Math.max(maxCombo, combo + 1) * 1600 -
-              damageTaken * 0.45 -
-              turn * 180,
-          ),
-        );
-        schedule(() => finishVictory(finalScore), 720);
+        schedule(() => finishVictory(), 720);
         return;
       }
 
