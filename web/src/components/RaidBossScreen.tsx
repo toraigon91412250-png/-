@@ -439,7 +439,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       .map(pattern => {
         if (pattern === previous) return { pattern, weight: 0 };
 
-        let weight = 2 + (activeBias[pattern] || 0);
+        const adaptationIntensity = 1 + Math.min(currentAdaptationLevel, 3) * 0.25;
+        let weight = 2 + (activeBias[pattern] || 0) * adaptationIntensity;
 
         if (
           currentPlayer.hp <= PLAYER_MAX_HP * 0.45 &&
@@ -500,8 +501,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     schedule(() => {
       const info = PATTERN_INFO[currentPattern];
-      const phaseMultiplier =
-        currentPhase === 2 ? 1.03 + Math.min(currentAdaptationLevel, 3) * 0.02 : 1;
+      const phaseMultiplier = 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
       const contractIncomingMultiplier = runContract === 'OVERDRIVE' ? 1.12 : 1;
       const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier);
@@ -653,15 +653,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
-    const repeatedActionPenalty =
-      phase === 2
-        ? repeats === 3
-          ? 0.92
-          : repeats >= 4
-            ? 0.84
-            : 1
-        : 1;
-
     const damageBase =
       action === 'NORMAL'
         ? randomBetween(6500, 7600)
@@ -990,8 +981,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       if (phase === 2 && repeats >= 2) {
         setLog(
           repeats >= 3
-            ? 'ボスが同じ行動を深く学習した。攻め方を変えると対応が緩む。'
-            : 'ボスが行動パターンを学習し、次の展開を変えてきた。',
+            ? 'ボスの適応が深まり、次の狙いが変化した。'
+            : 'ボスが直前の行動を読み、次の狙いを変えた。',
         );
       }
 
@@ -1178,7 +1169,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.preTitleBlock}>
               <div style={styles.kicker}>RAID OPERATION 02 · REWORK</div>
               <div style={styles.preTitle}>深淵喰らい・アビスコア</div>
-              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。通った手ほど、次は通りにくくなる。</div>
+              <div style={styles.preSub}>読む。賭ける。崩す。バーストする。同じ手を重ねるほど、ボスの狙いが変わっていく。</div>
             </div>
           </div>
 
@@ -1241,7 +1232,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               </div>
               <div style={styles.rule}>
                 <Eye size={18} />
-                <div><b>学習</b><span>第2形態は同じ行動を続けると本気で対応する。</span></div>
+                <div><b>学習</b><span>第2形態は同じ行動を続けるほど、ボスの狙いが変わる。</span></div>
               </div>
             </div>
 
@@ -1293,7 +1284,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
           <div style={styles.resultNote}>
             <div style={styles.kicker}>CORE LOOP</div>
-            <div style={styles.resultNoteText}>予告 → 判断 → 行動 → 反撃 → BREAK → BURST。第2形態では同じ手ほど読まれやすくなる。</div>
+            <div style={styles.resultNoteText}>予告 → 判断 → 行動 → 反撃 → BREAK → BURST。第2形態では戦い方に応じてボスの狙いが変化する。</div>
           </div>
 
           <button type="button" onClick={resetBattle} style={styles.primaryButton}>
