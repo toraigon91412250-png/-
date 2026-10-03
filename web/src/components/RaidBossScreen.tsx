@@ -392,7 +392,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
       setBossPattern(choosePattern(currentPhase, nextPlayer, currentPattern, activeRepeat || 'NORMAL', activeRepeats));
       setTurn(prev => prev + 1);
-      setLastDamage(null);
       setIsResolving(false);
     }, 420);
   };
@@ -959,7 +958,6 @@ const styles: Record<string, React.CSSProperties> = {
   resultText: { marginTop: 6, color: '#a5aec1', fontSize: 13, lineHeight: 1.55 },
   resultGrid: { marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8 },
   resultItem: { padding: 12, borderRadius: 11, background: '#0d1320', border: '1px solid #232d43' },
-  resultItem span: { display: 'block', color: '#7f8aa0', fontSize: 9, letterSpacing: '.16em' },
   resultNote: { marginTop: 14, padding: 13, borderRadius: 12, background: '#0b101a', border: '1px solid #1f293b', textAlign: 'left' },
   resultNoteText: { marginTop: 6, color: '#cbd6e9', fontSize: 13 },
 
