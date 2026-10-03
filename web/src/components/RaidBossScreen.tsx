@@ -215,7 +215,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const ultimateReady = player.tp >= PLAYER_MAX_TP;
 
   const contractInfo = CONTRACT_INFO[runContract];
-  const contractScoreBonus = runContract === 'STANDARD' ? 0 : 8000;
+  const contractScoreBonus = victory && runContract !== 'STANDARD' ? 8000 : 0;
   const score = Math.max(
     0,
     Math.round(
