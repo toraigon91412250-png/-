@@ -74,7 +74,7 @@ const CONTRACT_INFO: Record<
     name: 'OVERDRIVE',
     detail: '火力を引き上げる代わりに、被害も増える。',
     risk: '与ダメージ +8% / 被ダメージ +12%',
-    reward: '契約ボーナス +8,000',
+    reward: '契約ボーナス +4,000',
   },
   FRACTURE: {
     name: 'FRACTURE',
@@ -215,7 +215,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const ultimateReady = player.tp >= PLAYER_MAX_TP;
 
   const contractInfo = CONTRACT_INFO[runContract];
-  const contractScoreBonus = victory && runContract !== 'STANDARD' ? 8000 : 0;
+  const contractScoreBonus = victory && runContract !== 'STANDARD' ? 4000 : 0;
   const score = Math.max(
     0,
     Math.round(
@@ -935,6 +935,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
         schedule(() => {
           setFx(null);
+          if (perfectCounter || featherInterrupt) {
+            setBossPattern('RAGE');
+            setLog(
+              perfectCounter
+                ? '迎撃成功のまま第2形態へ。アビスコアの反撃を1手止めた。'
+                : '羽弾で詠唱を断ったまま第2形態へ。次の予告を読む。',
+            );
+            setIsResolving(false);
+            return;
+          }
           runBossAttack(2, 'RAGE', nextPlayer, action, repeats, 0, 1);
         }, 1050);
         return;
