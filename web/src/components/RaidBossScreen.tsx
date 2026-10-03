@@ -959,7 +959,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setBrokenTurns(remaining);
         if (remaining === 0) {
           setBossPattern(
-            choosePattern(phase, nextPlayer, currentPattern, action, repeats),
+            choosePattern(phase, nextPlayer, currentPattern, action, repeats, nextAdaptationLevel),
           );
           setLog('BREAK終了。ボスが再起動する！');
         }
