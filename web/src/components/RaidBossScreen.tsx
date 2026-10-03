@@ -80,7 +80,7 @@ const CONTRACT_INFO: Record<
     name: 'FRACTURE',
     detail: 'BREAKを作りやすくする代わりに、通常時の火力を少し落とす。',
     risk: 'BREAK獲得 +20% / 与ダメージ -10%',
-    reward: '契約ボーナス +8,000',
+    reward: '契約ボーナス +4,000',
   },
   SUSTAIN: {
     name: 'SUSTAIN',
@@ -749,7 +749,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         ),
         mp: Math.min(PLAYER_MAX_MP, player.mp + 30),
         tp: clamp(
-          player.tp + (runContract === 'SUSTAIN' ? 7 : 8),
+          player.tp + Math.round(8 * (runContract === 'SUSTAIN' ? 0.85 : 1)),
           0,
           PLAYER_MAX_TP,
         ),
@@ -782,7 +782,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         ...player,
         mp: clamp(player.mp - 12, 0, PLAYER_MAX_MP),
         tp: clamp(
-          player.tp + (runContract === 'SUSTAIN' ? 13 : 15),
+          player.tp + Math.round(15 * (runContract === 'SUSTAIN' ? 0.85 : 1)),
           0,
           PLAYER_MAX_TP,
         ),
@@ -875,7 +875,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                       : action === 'COUNTER'
                         ? perfectCounter ? 12 : 18
                         : 0) *
-                    (runContract === 'SUSTAIN' ? 0.8 : 1),
+                    (runContract === 'SUSTAIN' ? 0.85 : 1),
                 ),
               0,
               PLAYER_MAX_TP,
