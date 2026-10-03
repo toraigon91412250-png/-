@@ -274,12 +274,12 @@ export function useBattleGame(
       case 'BUFF': {
         if (!actor.isBuffed) {
           updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: 50 } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: 50 } }
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: 125 } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: 125 } }
           ));
           soundManager.playAttack();
           addLog(
-            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+50）`,
+            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+125）`,
             isActorPlayer ? 'BUFF_PLAYER' : 'BUFF_ENEMY',
             turn
           );
@@ -304,7 +304,7 @@ export function useBattleGame(
             actorName: actor.character.name,
             skillName: '強化',
             statusAilmentName: '',
-            bannerText: '⚡ 攻撃強化 (+50)！',
+            bannerText: '⚡ 攻撃強化 (+125)！',
             effectId: nextVisualEffectId.current++,
           },
         }));
@@ -347,7 +347,7 @@ export function useBattleGame(
 
       case 'ATTACK': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 50;
+        const buffDamageBonus = actor.buffDamageBonus || 125;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -474,7 +474,7 @@ export function useBattleGame(
 
       case 'SPECIAL': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 50;
+        const buffDamageBonus = actor.buffDamageBonus || 125;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -587,7 +587,7 @@ export function useBattleGame(
 
       case 'ULTIMATE': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 50;
+        const buffDamageBonus = actor.buffDamageBonus || 125;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
