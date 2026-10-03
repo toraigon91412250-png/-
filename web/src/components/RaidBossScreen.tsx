@@ -40,7 +40,6 @@ type PatternInfo = {
   maxDamage: number;
   danger: 'NORMAL' | 'HIGH' | 'EXTREME';
   color: string;
-  bestResponse: string;
 };
 
 type DamagePopup = {
@@ -67,7 +66,6 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
     maxDamage: 1250,
     danger: 'NORMAL',
     color: '#c67cff',
-    bestResponse: '通常攻撃',
   },
   CHARGE: {
     name: '滅界砲',
@@ -76,7 +74,6 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
     maxDamage: 2800,
     danger: 'EXTREME',
     color: '#ff6d86',
-    bestResponse: '防御 / 迎撃',
   },
   VOID: {
     name: '虚無落雷',
@@ -85,7 +82,6 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
     maxDamage: 1650,
     danger: 'HIGH',
     color: '#72a9ff',
-    bestResponse: '羽弾',
   },
   RAGE: {
     name: '終焉衝動',
@@ -94,7 +90,6 @@ const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
     maxDamage: 3250,
     danger: 'EXTREME',
     color: '#ff3f62',
-    bestResponse: '防御 / 迎撃',
   },
 };
 
@@ -561,6 +556,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
+    const repeatedActionPenalty =
+      currentPhase === 2 && repeats >= 3 ? 0.72 : 1;
 
     const damageBase =
       action === 'NORMAL'
@@ -581,6 +578,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         breakMultiplier *
         responseMultiplier *
         focusMultiplier *
+        repeatedActionPenalty *
         (action === 'ULTIMATE' && currentBrokenTurns > 0 ? 1.35 : 1),
     );
 
@@ -848,11 +846,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       if (phase === 2 && repeats >= 2) {
         setAdaptationLevel(prev => Math.min(3, prev + 1));
         setLog(
-          action === 'FEATHER'
-            ? 'ボスが羽弾を学習。滅界砲の構えに入った。'
-            : action === 'NORMAL'
-              ? 'ボスが通常攻撃の流れを学習した。'
-              : 'ボスが行動パターンを更新した。',
+          repeats >= 3
+            ? 'ボスが同じ行動を完全に読んだ。次の一手を変えよう。'
+            : action === 'FEATHER'
+              ? 'ボスが羽弾を学習。滅界砲の構えに入った。'
+              : action === 'NORMAL'
+                ? 'ボスが通常攻撃の流れを学習した。'
+                : 'ボスが行動パターンを更新した。',
         );
       }
 
@@ -872,10 +872,10 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   };
 
   const actionHint = useMemo(() => {
-    if (broken) return 'BREAK WINDOW：1ターン目の攻撃が最も強い。必殺もここで大幅強化。';
-    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。防御なら安全、迎撃ならBREAKを大きく稼げる。';
-    if (bossPattern === 'VOID') return '羽弾なら詠唱中断＋大幅BREAK。外しても高火力だが反撃は受ける。';
-    return '黒爪薙ぎは通常攻撃で押し返せる。攻め続けるほどCOMBOが伸びる。';
+    if (broken) return 'BREAK WINDOW：残りターン数と必殺ゲージを見て、火力と準備のどちらを優先するか決めよう。';
+    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。大ダメージを受けるリスクと、反撃で流れを変えるリターンが大きい。';
+    if (bossPattern === 'VOID') return '詠唱系の攻撃。資源を守るか、攻撃で押し切るか、技で割り込むかを選べる。';
+    return '薙ぎ払い系の予告。攻撃を続けて主導権を取るか、次の展開に備えるかを選べる。';
   }, [bossPattern, broken]);
 
   const fxView = () => {
@@ -1125,6 +1125,13 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div>
               <div style={styles.kicker}>ABYSS CORE // TARGET</div>
               <div style={styles.bossName}>深淵喰らい・アビスコア</div>
+              <div style={styles.bossState}>
+                {broken
+                  ? 'CORE EXPOSED'
+                  : phase === 2 && adaptationLevel > 0
+                    ? 'ADAPTIVE CORE // LV ' + adaptationLevel
+                    : 'CORE STABLE'}
+              </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={styles.hpText}>{formatNumber(bossHp)} / {formatNumber(bossMaxHp)}</div>
@@ -1156,7 +1163,6 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               </div>
               <div style={styles.intentName}>{intent.name}</div>
               <div style={styles.intentDetail}>{intent.detail}</div>
-              <div style={styles.intentCounter}>読み合いの軸：{intent.bestResponse}</div>
             </div>
           ) : (
             <div style={styles.breakWindow}>
@@ -1179,8 +1185,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                     : impactSource === 'BOSS'
                       ? 'saturate(1.3) contrast(1.22) brightness(1.25)'
                       : phase === 2
-                        ? 'saturate(1.28) contrast(1.14) brightness(1.08)'
+                        ? 'saturate(' + (1.28 + adaptationLevel * 0.05) + ') contrast(' + (1.14 + adaptationLevel * 0.025) + ') brightness(' + (1.08 + adaptationLevel * 0.02) + ')'
                         : 'saturate(1.12) contrast(1.08)',
+                  opacity: broken ? .94 : phase === 2 ? .86 : .82,
               }}
             />
           </div>
@@ -1249,19 +1256,19 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <div style={styles.tacticalPanel}>
             <div style={styles.kicker}>TACTICAL READ</div>
             <div style={styles.tacticalTitle}>
-              {broken ? 'バースト時間を使い切る' : intent.name + ' をどう返す？'}
+              {broken ? 'バースト時間を使い切る' : intent.name + ' にどう対応する？'}
             </div>
             <div style={styles.tacticalRow}>
-              <span>高リターン</span>
-              <b>{broken ? '必殺 / 羽弾 / 通常連打' : intent.bestResponse}</b>
+              <span>攻める</span>
+              <b>{broken ? '高火力を優先' : 'ダメージとTPを伸ばせる'}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>失敗時</span>
-              <b>{bossPattern === 'CHARGE' || bossPattern === 'RAGE' ? '迎撃ミス＝重い反撃' : '通常のボス攻撃'}</b>
+              <span>守る</span>
+              <b>{broken ? '準備を優先して次へ' : '被害を抑えやすい'}</b>
             </div>
             <div style={styles.tacticalRow}>
-              <span>第2形態</span>
-              <b>{phase === 2 ? '同じ手を続けると学習' : '次の形態で解禁'}</b>
+              <span>読み</span>
+              <b>{phase === 2 ? '同じ行動を重ねると対応が強くなる' : '行動履歴はまだ学習されない'}</b>
             </div>
           </div>
         </section>
@@ -1402,6 +1409,7 @@ const styles: Record<string, React.CSSProperties> = {
   stageVignette: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 45%,transparent 0%,rgba(4,4,11,.16) 42%,rgba(3,3,9,.94) 100%)', pointerEvents: 'none' },
   bossHud: { position: 'relative', zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 },
   bossName: { marginTop: 3, fontSize: 'clamp(19px,3vw,26px)', fontWeight: 1000 },
+  bossState: { marginTop: 5, display: 'inline-block', padding: '3px 7px', borderRadius: 999, background: 'rgba(18,18,30,.8)', border: '1px solid #3a3b56', color: '#b5bfd5', fontSize: 8, fontWeight: 900, letterSpacing: '.14em' },
   hpText: { color: '#ffd6df', fontSize: 12, fontWeight: 900 },
   phaseBadge: { marginTop: 3, display: 'inline-block', padding: '3px 6px', borderRadius: 999, background: 'rgba(38,17,35,.76)', border: '1px solid #593147', color: '#ff9eaf', fontSize: 9, fontWeight: 900 },
   hpTrack: { position: 'relative', zIndex: 4, height: 15, marginTop: 7, borderRadius: 999, background: '#20131a', border: '1px solid #50303a', overflow: 'hidden' },
@@ -1414,7 +1422,6 @@ const styles: Record<string, React.CSSProperties> = {
   intentTop: { display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#8793aa', fontWeight: 900, letterSpacing: '.15em' },
   intentName: { marginTop: 4, fontSize: 18, fontWeight: 1000 },
   intentDetail: { marginTop: 2, color: '#94a0b5', fontSize: 10, lineHeight: 1.45 },
-  intentCounter: { marginTop: 5, color: '#d1c8ff', fontSize: 10, fontWeight: 900 },
   breakWindow: { position: 'relative', zIndex: 5, width: 'min(100%,560px)', margin: '12px auto 0', padding: '11px 13px', borderRadius: 13, textAlign: 'center', background: 'rgba(45,35,11,.5)', border: '1px solid #f0d667' },
   breakKicker: { color: '#fff1a1', fontSize: 9, fontWeight: 1000, letterSpacing: '.22em' },
   breakTitle: { marginTop: 4, fontSize: 19, fontWeight: 1000 },
