@@ -1,11 +1,26 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ArrowLeft, Crosshair, RotateCcw, Shield, Skull, Sparkles, Swords, Zap } from 'lucide-react';
-import irenaImg from '../assets/img_irena.jpg';
-import battleBackground from '../assets/戦闘中背景.png';
-import irenaCutInImg from '../assets/img_irena_cutin.jpg';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ArrowLeft,
+  Crosshair,
+  Eye,
+  Gauge,
+  Heart,
+  RotateCcw,
+  Shield,
+  Skull,
+  Sparkles,
+  Swords,
+  Volume2,
+  VolumeX,
+  Zap,
+} from 'lucide-react';
+import raidBossArt from '../assets/raid_boss_art.svg';
+import raidIrenaCutIn from '../assets/raid_irena_cutin.svg';
 
 type Phase = 1 | 2;
 type BossPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE';
+type PlayerAction = 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'COUNTER' | 'POTION' | 'ULTIMATE';
+type FxType = PlayerAction | 'BOSS' | 'BREAK' | 'PHASE' | null;
 
 type PlayerState = {
   hp: number;
@@ -18,466 +33,734 @@ type PlayerState = {
   featherCooldown: number;
 };
 
-const BOSS_MAX_HP: Record<Phase, number> = {
-  1: 45000,
-  2: 55000,
+type PatternInfo = {
+  name: string;
+  detail: string;
+  minDamage: number;
+  maxDamage: number;
+  danger: 'NORMAL' | 'HIGH' | 'EXTREME';
+  color: string;
+  counter: string;
 };
 
-const PLAYER_MAX_HP = 8000;
+const BOSS_MAX_HP: Record<Phase, number> = { 1: 50000, 2: 60000 };
+const PLAYER_MAX_HP = 10000;
 const PLAYER_MAX_MP = 100;
 const PLAYER_MAX_TP = 100;
+const BREAK_MAX = 100;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const formatNumber = (value: number) => Math.max(0, Math.round(value)).toLocaleString('ja-JP');
 const randomBetween = (min: number, max: number) => Math.round(min + Math.random() * (max - min));
 
-type ActionFx = 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'POTION' | 'ULTIMATE' | 'BOSS';
-
-const PATTERN_INFO: Record<BossPattern, { name: string; detail: string; minDamage: number; maxDamage: number; danger: 'NORMAL' | 'HIGH' | 'EXTREME' }> = {
+const PATTERN_INFO: Record<BossPattern, PatternInfo> = {
   SWEEP: {
     name: '黒爪薙ぎ',
-    detail: '広範囲を薙ぎ払う中威力攻撃',
-    minDamage: 820,
-    maxDamage: 1050,
+    detail: '広い範囲を切り裂く。攻め返しやすい。',
+    minDamage: 950,
+    maxDamage: 1250,
     danger: 'NORMAL',
+    color: '#c67cff',
+    counter: '通常攻撃',
   },
   CHARGE: {
     name: '滅界砲',
-    detail: '力を溜めてから放つ大技。防御で大幅軽減',
-    minDamage: 1750,
-    maxDamage: 2200,
+    detail: '核が高速回転。次の一撃が非常に重い。',
+    minDamage: 2050,
+    maxDamage: 2750,
     danger: 'EXTREME',
+    color: '#ff6d86',
+    counter: '防御 / 迎撃',
   },
   VOID: {
     name: '虚無落雷',
-    detail: '黒雷が連続して落ちる。盾を多く削る',
-    minDamage: 1100,
-    maxDamage: 1450,
+    detail: 'MPを蝕む黒雷。羽弾なら詠唱ごと潰せる。',
+    minDamage: 1250,
+    maxDamage: 1650,
     danger: 'HIGH',
+    color: '#72a9ff',
+    counter: '羽弾',
   },
   RAGE: {
     name: '終焉衝動',
-    detail: '覚醒直後の強制怒涛攻撃',
-    minDamage: 2000,
-    maxDamage: 2450,
+    detail: '第2形態専用。最危険だが迎撃の好機。',
+    minDamage: 2400,
+    maxDamage: 3200,
     danger: 'EXTREME',
+    color: '#ff3f62',
+    counter: '防御 / 迎撃',
   },
 };
 
-const raidCss = [
-  '@keyframes raidBossFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.02); } }',
-  '@keyframes raidBossPulse { 0%,100% { opacity: .55; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.05); } }',
-  '@keyframes raidBossRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }',
-  '@keyframes raidDanger { 0%,100% { opacity: .6; } 50% { opacity: 1; } }',
-  '@keyframes raidDamagePop { 0% { transform: translate(-50%, 10px) scale(.72); opacity: 0; } 18% { transform: translate(-50%, 0) scale(1.12); opacity: 1; } 100% { transform: translate(-50%, -30px) scale(1); opacity: 0; } }',
-  '@keyframes raidSlash { 0% { transform: translateX(-120%) rotate(-18deg); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateX(120%) rotate(-18deg); opacity: 0; } }',
-  '@keyframes raidStagger { 0%,100% { transform: translateX(0) rotate(0); } 25% { transform: translateX(-8px) rotate(-1deg); } 75% { transform: translateX(8px) rotate(1deg); } }',
-  '@keyframes raidPhaseFlash { 0%,100% { opacity: 0; } 20% { opacity: .95; } 45% { opacity: .25; } 70% { opacity: .8; } }',
-  '@keyframes raidLoading { from { transform: scaleX(0); } to { transform: scaleX(1); } }',
-  '@keyframes raidIrenaGlow { 0%,100% { box-shadow: 0 0 0 rgba(118,255,210,0); } 50% { box-shadow: 0 0 34px rgba(118,255,210,.28); } }',
-  '@keyframes raidActionFlash { 0% { opacity: 0; transform: scale(.86); } 16% { opacity: 1; } 100% { opacity: 0; transform: scale(1.08); } }',
-  '@keyframes raidSlashFx { 0% { transform: translate(-80%, 30%) rotate(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(80%, -10%) rotate(-18deg); opacity: 0; } }',
-  '@keyframes raidFeatherCutIn { 0% { transform: translateX(-110%); opacity: 0; } 18% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(110%); opacity: 0; } }',
-  '@keyframes raidFeatherRain { 0% { transform: translateY(-60%) rotate(-8deg); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(40%) rotate(12deg); opacity: 0; } }',
-  '@keyframes raidGuardFx { 0% { transform: scale(.55); opacity: 0; } 30% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.18); opacity: 0; } }',
-  '@keyframes raidUltimateFx { 0% { transform: scale(.2); opacity: 0; } 18% { opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }',
-  '@keyframes raidBossStrikeFx { 0% { transform: scale(.65); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1.15); opacity: 0; } }',
-  '@media (max-width: 680px) { .raid-actions { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .raid-stage { min-height: 250px !important; } }',
-].join('\n');
-
-const getNextPattern = (
-  currentPhase: Phase,
-  currentTurn: number,
-  currentPlayer: PlayerState,
-  previousPattern: BossPattern,
-): BossPattern => {
-  const candidates: BossPattern[] = currentPhase === 2
-    ? ['SWEEP', 'CHARGE', 'VOID', 'RAGE']
-    : ['SWEEP', 'CHARGE', 'VOID'];
-
-  const weightedCandidates = candidates
-    .map(pattern => {
-      if (pattern === previousPattern) {
-        return { pattern, weight: 0 };
-      }
-
-      let weight = 2;
-
-      // ボスは「固定順」ではなく、いれーなの現在の状態に反応する。
-      if (currentPlayer.shield > 0 && pattern === 'VOID') weight += 4;
-      if (currentPlayer.hp <= PLAYER_MAX_HP * 0.45 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 2;
-      if (currentPlayer.tp >= 80 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 1;
-      if (currentPlayer.mp <= 25 && pattern === 'SWEEP') weight += 2;
-
-      // 第2形態のRAGEは常用せず、状況が悪化した時ほど出やすくする。
-      if (currentPhase === 2 && pattern === 'RAGE') {
-        weight = 1;
-        if (currentPlayer.hp <= PLAYER_MAX_HP * 0.45 || currentPlayer.tp >= 80) weight += 2;
-      }
-
-      // 同じ状況でも完全固定にならない程度の揺らぎを入れる。
-      if (currentTurn % 3 === 0 && pattern === 'CHARGE') weight += 1;
-      if (currentTurn % 4 === 0 && pattern === 'VOID') weight += 1;
-
-      return { pattern, weight };
-    })
-    .filter(entry => entry.weight > 0);
-
-  const totalWeight = weightedCandidates.reduce((sum, entry) => sum + entry.weight, 0);
-
-  if (totalWeight <= 0) {
-    return candidates.find(pattern => pattern !== previousPattern) ?? candidates[0];
-  }
-
-  let roll = Math.random() * totalWeight;
-  for (const entry of weightedCandidates) {
-    roll -= entry.weight;
-    if (roll <= 0) return entry.pattern;
-  }
-
-  return weightedCandidates[weightedCandidates.length - 1].pattern;
-};
-
-const createInitialPlayer = (): PlayerState => ({
-  hp: PLAYER_MAX_HP,
-  mp: PLAYER_MAX_MP,
-  tp: 0,
-  shield: 0,
-  potions: 2,
-  guardNext: false,
-  focus: false,
-  featherCooldown: 0,
-});
+const CSS = [
+  '@keyframes raidAmbient{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.035);opacity:1}}',
+  '@keyframes raidPulse{0%,100%{transform:scale(.98)}50%{transform:scale(1.04)}}',
+  '@keyframes raidFlash{0%{opacity:0;transform:scale(.55)}15%{opacity:1}100%{opacity:0;transform:scale(1.25)}}',
+  '@keyframes raidPop{0%{opacity:0;transform:scale(.7)}20%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.16)}}',
+  '@keyframes raidCut{0%{opacity:0;transform:scale(1.08)}15%{opacity:1;transform:scale(1.02)}80%{opacity:1}100%{opacity:0;transform:scale(.99)}}',
+  '@keyframes raidText{0%,15%{opacity:0;transform:translateX(30px)}35%{opacity:1;transform:translateX(0)}84%{opacity:1}100%{opacity:0}}',
+  '@keyframes raidBreak{0%{opacity:0;transform:scale(.45)}18%{opacity:1;transform:scale(1.15)}55%{opacity:1}100%{opacity:0;transform:scale(1.32)}}',
+  '@keyframes raidPhase{0%{opacity:0}18%{opacity:1}100%{opacity:0}}',
+  '@keyframes raidDamage{0%{opacity:0;transform:translate(-50%,12px) scale(.72)}18%{opacity:1;transform:translate(-50%,0) scale(1.08)}100%{opacity:0;transform:translate(-50%,-52px)}}',
+  '@keyframes raidWarn{0%,100%{opacity:.72}50%{opacity:1}}',
+  '@keyframes raidLoad{from{transform:scaleX(0)}to{transform:scaleX(1)}}',
+  '@media(max-width:760px){.raidActions{grid-template-columns:repeat(2,minmax(0,1fr))!important}.raidBottom{grid-template-columns:1fr!important}.raidStage{min-height:450px!important}.raidCutinTitle{font-size:40px!important}.raidFooter{display:none!important}}',
+].join('\\n');
 
 export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [mode, setMode] = useState<'LOADING' | 'PRE_BATTLE' | 'BATTLE' | 'RESULT'>('LOADING');
   const [phase, setPhase] = useState<Phase>(1);
   const [bossHp, setBossHp] = useState(BOSS_MAX_HP[1]);
   const [bossBreak, setBossBreak] = useState(0);
-  const [bossBroken, setBossBroken] = useState(false);
+  const [brokenTurns, setBrokenTurns] = useState(0);
   const [bossPattern, setBossPattern] = useState<BossPattern>('SWEEP');
-  const [player, setPlayer] = useState<PlayerState>(createInitialPlayer);
+  const [player, setPlayer] = useState<PlayerState>({
+    hp: PLAYER_MAX_HP,
+    mp: PLAYER_MAX_MP,
+    tp: 0,
+    shield: 0,
+    potions: 2,
+    guardNext: false,
+    focus: false,
+    featherCooldown: 0,
+  });
   const [turn, setTurn] = useState(1);
-  const [lastDamage, setLastDamage] = useState<number | null>(null);
-  const [message, setMessage] = useState('戦闘準備中…');
-  const [isResolving, setIsResolving] = useState(false);
-  const [phaseFlash, setPhaseFlash] = useState(false);
-  const [victory, setVictory] = useState(false);
   const [combo, setCombo] = useState(0);
   const [bestHit, setBestHit] = useState(0);
   const [totalDamage, setTotalDamage] = useState(0);
   const [breakCount, setBreakCount] = useState(0);
-  const [actionFx, setActionFx] = useState<ActionFx | null>(null);
+  const [lastDamage, setLastDamage] = useState<number | null>(null);
+  const [log, setLog] = useState('戦闘開始。ボスの予告を読む。');
+  const [isResolving, setIsResolving] = useState(false);
+  const [fx, setFx] = useState<FxType>(null);
+  const [fxText, setFxText] = useState('');
+  const [victory, setVictory] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const [lastAction, setLastAction] = useState<PlayerAction | null>(null);
+  const [repeatCount, setRepeatCount] = useState(0);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setMode('PRE_BATTLE'), 900);
-    return () => window.clearTimeout(timer);
-  }, []);
+  const audioRef = useRef<AudioContext | null>(null);
+  const timersRef = useRef<number[]>([]);
 
   const bossMaxHp = BOSS_MAX_HP[phase];
-  const bossHpPercent = clamp((bossHp / bossMaxHp) * 100, 0, 100);
-  const playerHpPercent = clamp((player.hp / PLAYER_MAX_HP) * 100, 0, 100);
+  const bossHpPct = clamp((bossHp / bossMaxHp) * 100, 0, 100);
+  const playerHpPct = clamp((player.hp / PLAYER_MAX_HP) * 100, 0, 100);
+  const intent = PATTERN_INFO[bossPattern];
+  const broken = brokenTurns > 0;
   const canUltimate = player.tp >= PLAYER_MAX_TP;
-  const nextIntent = PATTERN_INFO[bossPattern];
-  const dangerText = nextIntent.danger === 'EXTREME'
-    ? '危険'
-    : nextIntent.danger === 'HIGH'
-      ? '警戒'
-      : '通常';
+
+  const clearTimers = () => {
+    timersRef.current.forEach(window.clearTimeout);
+    timersRef.current = [];
+  };
+
+  const schedule = (fn: () => void, ms: number) => {
+    const id = window.setTimeout(() => {
+      timersRef.current = timersRef.current.filter(value => value !== id);
+      fn();
+    }, ms);
+    timersRef.current.push(id);
+  };
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setMode('PRE_BATTLE'), 650);
+    return () => {
+      window.clearTimeout(id);
+      clearTimers();
+      try {
+        audioRef.current?.close();
+      } catch {
+        // ignore
+      }
+    };
+  }, []);
+
+  const audio = () => {
+    if (!soundOn) return null;
+    try {
+      if (!audioRef.current) {
+        const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Ctx) return null;
+        audioRef.current = new Ctx();
+      }
+      if (audioRef.current.state === 'suspended') void audioRef.current.resume();
+      return audioRef.current;
+    } catch {
+      return null;
+    }
+  };
+
+  const sfx = (kind: 'click' | 'hit' | 'heavy' | 'guard' | 'counter' | 'feather' | 'break' | 'phase' | 'win' | 'lose') => {
+    const ctx = audio();
+    if (!ctx) return;
+    const table: Record<string, [OscillatorType, number, number, number, number]> = {
+      click: ['triangle', 520, 760, .06, .12],
+      hit: ['triangle', 180, 60, .18, .2],
+      heavy: ['sawtooth', 115, 36, .23, .28],
+      guard: ['sine', 280, 880, .14, .22],
+      counter: ['square', 500, 90, .15, .22],
+      feather: ['triangle', 900, 160, .18, .26],
+      break: ['sawtooth', 90, 980, .2, .3],
+      phase: ['sawtooth', 65, 430, .18, .3],
+      win: ['triangle', 520, 1040, .16, .34],
+      lose: ['sine', 320, 90, .14, .38],
+    };
+    try {
+      const [type, start, end, gainValue, duration] = table[kind];
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(start, now);
+      osc.frequency.exponentialRampToValueAtTime(Math.max(25, end), now + duration);
+      gain.gain.setValueAtTime(gainValue, now);
+      gain.gain.exponentialRampToValueAtTime(.008, now + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration + .01);
+      if (kind === 'win') {
+        [659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          const t = now + .08 + i * .1;
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(.08, t);
+          g.gain.exponentialRampToValueAtTime(.008, t + .24);
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.start(t);
+          o.stop(t + .26);
+        });
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   const resetBattle = () => {
+    clearTimers();
     setPhase(1);
     setBossHp(BOSS_MAX_HP[1]);
     setBossBreak(0);
-    setBossBroken(false);
+    setBrokenTurns(0);
     setBossPattern('SWEEP');
-    setPlayer(createInitialPlayer());
+    setPlayer({
+      hp: PLAYER_MAX_HP,
+      mp: PLAYER_MAX_MP,
+      tp: 0,
+      shield: 0,
+      potions: 2,
+      guardNext: false,
+      focus: false,
+      featherCooldown: 0,
+    });
     setTurn(1);
-    setLastDamage(null);
-    setMessage('戦闘開始！');
-    setIsResolving(false);
-    setPhaseFlash(false);
-    setVictory(false);
     setCombo(0);
     setBestHit(0);
     setTotalDamage(0);
     setBreakCount(0);
-    setActionFx(null);
+    setLastDamage(null);
+    setLog('戦闘開始。ボスの予告を読む。');
+    setIsResolving(false);
+    setFx(null);
+    setFxText('');
+    setVictory(false);
+    setLastAction(null);
+    setRepeatCount(0);
     setMode('BATTLE');
+    sfx('click');
   };
 
-  const finishDefeat = (reason: string) => {
+  const finishDefeat = (message: string) => {
+    sfx('lose');
     setPlayer(prev => ({ ...prev, hp: 0 }));
-    setMessage(reason);
+    setLog(message);
     setVictory(false);
     setIsResolving(false);
+    setFx(null);
     setMode('RESULT');
   };
 
   const finishVictory = () => {
-    setMessage('レイドボス討伐成功！');
+    sfx('win');
+    setLog('深淵喰らい・アビスコアを討伐した！');
     setVictory(true);
     setIsResolving(false);
+    setFx('BREAK');
+    setFxText('RAID CLEAR');
     setMode('RESULT');
   };
 
-  const bossAttack = (currentPhase: Phase, currentPattern: BossPattern, currentPlayer: PlayerState, currentTurn: number) => {
-    setActionFx('BOSS');
-    window.setTimeout(() => setActionFx(null), 700);
-    const info = PATTERN_INFO[currentPattern];
-    let rawDamage = randomBetween(info.minDamage, info.maxDamage);
-
-    if (currentPattern === 'RAGE') rawDamage = Math.round(rawDamage * (currentPhase === 2 ? 1.05 : 1));
-    if (currentPattern === 'VOID') rawDamage = Math.round(rawDamage * 1.05);
-
-    const mitigation = currentPlayer.guardNext
-      ? currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? 0.35 : 0.55
-      : 1;
-
-    const incoming = Math.round(rawDamage * mitigation);
-    const shieldDamage = Math.min(currentPlayer.shield, incoming);
-    const hpDamage = Math.max(0, incoming - shieldDamage);
-    const nextHp = Math.max(0, currentPlayer.hp - hpDamage);
-
-    const nextPlayer = {
-      ...currentPlayer,
-      hp: nextHp,
-      shield: Math.max(0, currentPlayer.shield - shieldDamage),
-      guardNext: false,
-      featherCooldown: Math.max(0, currentPlayer.featherCooldown - 1),
-    };
-
-    setPlayer(nextPlayer);
-    setLastDamage(null);
-
-    if (nextHp <= 0) {
-      finishDefeat('いれーなは力尽きた…');
-      return;
+  const choosePattern = (
+    currentPhase: Phase,
+    currentPlayer: PlayerState,
+    previous: BossPattern,
+    action: PlayerAction,
+    repeats: number,
+  ): BossPattern => {
+    if (currentPhase === 2 && repeats >= 2) {
+      const adaptation: Partial<Record<PlayerAction, BossPattern>> = {
+        NORMAL: 'VOID',
+        FEATHER: 'CHARGE',
+        FOCUS: 'RAGE',
+        GUARD: 'VOID',
+        COUNTER: 'SWEEP',
+        POTION: 'CHARGE',
+      };
+      const forced = adaptation[action];
+      if (forced && forced !== previous) return forced;
     }
 
-    const shieldText = shieldDamage > 0 ? ' 盾が受け止めた。' : '';
-    setMessage(
-      currentPattern === 'CHARGE' || currentPattern === 'RAGE'
-        ? `${info.name}が直撃！ -${formatNumber(hpDamage)}${shieldText}`
-        : `${info.name}！ -${formatNumber(hpDamage)}${shieldText}`,
-    );
+    const pool: BossPattern[] = currentPhase === 2
+      ? ['SWEEP', 'CHARGE', 'VOID', 'RAGE']
+      : ['SWEEP', 'CHARGE', 'VOID'];
 
-    setBossPattern(getNextPattern(currentPhase, currentTurn + 1, nextPlayer, currentPattern));
-    setTurn(prev => prev + 1);
-    setIsResolving(false);
+    const weighted = pool.map(pattern => {
+      if (pattern === previous) return { pattern, weight: 0 };
+      let weight = 2;
+      if (currentPlayer.hp < PLAYER_MAX_HP * .44 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 2;
+      if (currentPlayer.mp < 30 && pattern === 'SWEEP') weight += 2;
+      if (currentPlayer.shield > 0 && pattern === 'VOID') weight += 2;
+      if (currentPlayer.tp >= 80 && (pattern === 'CHARGE' || pattern === 'RAGE')) weight += 1;
+      if (currentPhase === 2 && pattern === 'RAGE') weight = currentPlayer.hp < PLAYER_MAX_HP * .45 ? 4 : 1;
+      return { pattern, weight };
+    }).filter(entry => entry.weight > 0);
+
+    const total = weighted.reduce((sum, entry) => sum + entry.weight, 0);
+    if (!total) return pool.find(pattern => pattern !== previous) || pool[0];
+
+    let roll = Math.random() * total;
+    for (const entry of weighted) {
+      roll -= entry.weight;
+      if (roll <= 0) return entry.pattern;
+    }
+    return weighted[weighted.length - 1].pattern;
   };
 
-  const performAction = (type: 'NORMAL' | 'FEATHER' | 'FOCUS' | 'GUARD' | 'POTION' | 'ULTIMATE') => {
+  const bossAttack = (
+    currentPhase: Phase,
+    currentPattern: BossPattern,
+    currentPlayer: PlayerState,
+    currentTurn: number,
+    activeRepeat: PlayerAction | null,
+    activeRepeats: number,
+  ) => {
+    if (brokenTurns > 0) {
+      const remaining = brokenTurns - 1;
+      setBrokenTurns(remaining);
+      setBossPattern(choosePattern(currentPhase, currentPlayer, currentPattern, activeRepeat || 'NORMAL', activeRepeats));
+      setLog(remaining > 0 ? 'BREAK継続。さらに一撃入れられる！' : 'BREAK終了。ボスが再起動する！');
+      setIsResolving(false);
+      return;
+    }
+
+    setFx('BOSS');
+    setFxText(PATTERN_INFO[currentPattern].name);
+    sfx(currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? 'heavy' : 'hit');
+
+    schedule(() => {
+      const info = PATTERN_INFO[currentPattern];
+      const raw = randomBetween(info.minDamage, info.maxDamage);
+      const mitigation = currentPlayer.guardNext
+        ? (currentPattern === 'CHARGE' || currentPattern === 'RAGE' ? .24 : .55)
+        : 1;
+      const incoming = Math.round(raw * mitigation);
+      const shieldDamage = Math.min(currentPlayer.shield, incoming);
+      const hpDamage = Math.max(0, incoming - shieldDamage);
+      const nextHp = Math.max(0, currentPlayer.hp - hpDamage);
+      const nextPlayer = {
+        ...currentPlayer,
+        hp: nextHp,
+        shield: Math.max(0, currentPlayer.shield - shieldDamage),
+        guardNext: false,
+        featherCooldown: Math.max(0, currentPlayer.featherCooldown - 1),
+      };
+
+      setPlayer(nextPlayer);
+      setLastDamage(hpDamage);
+      setFx(null);
+      setLog(currentPattern === 'CHARGE' || currentPattern === 'RAGE'
+        ? info.name + 'が直撃！ ' + formatNumber(hpDamage) + 'ダメージ'
+        : info.name + '！ ' + formatNumber(hpDamage) + 'ダメージ');
+
+      if (nextHp <= 0) {
+        finishDefeat('アビスコアに押し切られた。');
+        return;
+      }
+
+      setBossPattern(choosePattern(currentPhase, nextPlayer, currentPattern, activeRepeat || 'NORMAL', activeRepeats));
+      setTurn(prev => prev + 1);
+      setLastDamage(null);
+      setIsResolving(false);
+    }, 420);
+  };
+
+  const performAction = (action: PlayerAction) => {
     if (mode !== 'BATTLE' || isResolving) return;
+
+    if (action === 'ULTIMATE' && !canUltimate) {
+      setLog('必殺ゲージが100%必要。');
+      return;
+    }
+    if (action === 'FEATHER' && player.featherCooldown > 0) {
+      setLog('羽弾はまだ再使用できない。');
+      return;
+    }
+    if (action === 'FEATHER' && player.mp < 18) {
+      setLog('MPが足りない。');
+      return;
+    }
+    if (action === 'FOCUS' && player.mp < 12) {
+      setLog('MPが足りない。');
+      return;
+    }
+    if (action === 'GUARD' && player.mp < 10) {
+      setLog('MPが足りない。');
+      return;
+    }
+    if (action === 'POTION' && player.potions <= 0) {
+      setLog('ポーションを使い切った。');
+      return;
+    }
+
     setIsResolving(true);
+    setLastDamage(null);
 
-    if (type === 'ULTIMATE' && !canUltimate) {
-      setIsResolving(false);
-      setMessage('必殺ゲージが100%必要です。');
-      return;
-    }
+    const repeats = lastAction === action ? repeatCount + 1 : 1;
+    setLastAction(action);
+    setRepeatCount(repeats);
 
-    if (type === 'FEATHER' && player.featherCooldown > 0) {
-      setIsResolving(false);
-      setMessage(`羽弾はあと${player.featherCooldown}ターン。`);
-      return;
-    }
+    const currentIntent = bossPattern;
+    const currentBroken = brokenTurns;
+    const perfectCounter = action === 'COUNTER' && (currentIntent === 'CHARGE' || currentIntent === 'RAGE');
+    const interrupt = action === 'FEATHER' && currentIntent === 'VOID';
+    const pressure = action === 'NORMAL' && currentIntent === 'SWEEP';
 
-    if ((type === 'FEATHER' || type === 'FOCUS') && player.mp < (type === 'FEATHER' ? 18 : 12)) {
-      setIsResolving(false);
-      setMessage('MPが足りない！');
-      return;
-    }
+    setFx(action);
+    setFxText(
+      action === 'FEATHER' ? '羽弾' :
+      action === 'COUNTER' ? 'COUNTER!' :
+      action === 'FOCUS' ? '集中' :
+      action === 'GUARD' ? '防御' :
+      action === 'POTION' ? 'RECOVER' :
+      action === 'ULTIMATE' ? '終天羽星穿ち' :
+      '通常攻撃',
+    );
 
-    if (type === 'GUARD' && player.mp < 10) {
-      setIsResolving(false);
-      setMessage('防御に必要なMPが足りない！');
-      return;
-    }
-
-    if (type === 'POTION' && player.potions <= 0) {
-      setIsResolving(false);
-      setMessage('ポーションは残っていない！');
-      return;
-    }
-
-    setActionFx(type);
-    window.setTimeout(() => setActionFx(null), type === 'FEATHER' ? 1050 : type === 'ULTIMATE' ? 850 : 650);
-
-    const baseDamage =
-      type === 'NORMAL' ? randomBetween(4700, 5600) :
-      type === 'FEATHER' ? randomBetween(8200, 9500) :
-      type === 'ULTIMATE' ? randomBetween(26000, 30000) :
+    const damageBase =
+      action === 'NORMAL' ? randomBetween(6500, 7600) :
+      action === 'FEATHER' ? randomBetween(9800, 11500) :
+      action === 'COUNTER' ? (perfectCounter ? randomBetween(7200, 8600) : randomBetween(3200, 4200)) :
+      action === 'ULTIMATE' ? randomBetween(26000, 30000) :
       0;
 
-    const actionTp =
-      type === 'NORMAL' ? 20 :
-      type === 'FEATHER' ? 24 :
-      type === 'FOCUS' ? 15 :
-      type === 'GUARD' ? 15 :
-      type === 'POTION' ? 8 :
+    const tpGain =
+      action === 'NORMAL' ? 18 :
+      action === 'FEATHER' ? 24 :
+      action === 'COUNTER' ? (perfectCounter ? 12 : 18) :
+      action === 'FOCUS' ? 15 :
+      action === 'GUARD' ? 14 :
+      action === 'POTION' ? 8 :
       0;
 
     const mpCost =
-      type === 'FEATHER' ? 18 :
-      type === 'FOCUS' ? 12 :
-      type === 'GUARD' ? 10 :
+      action === 'FEATHER' ? 18 :
+      action === 'FOCUS' ? 12 :
+      action === 'GUARD' ? 10 :
       0;
 
-    if (type === 'GUARD') {
-      const shieldAmount = 2200;
-      const healedHp = Math.min(PLAYER_MAX_HP, player.hp + 350);
+    if (action === 'POTION') {
       const nextPlayer = {
         ...player,
-        hp: healedHp,
-        mp: clamp(player.mp - mpCost, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + actionTp, 0, PLAYER_MAX_TP),
-        shield: shieldAmount,
-        guardNext: true,
-        focus: false,
-        featherCooldown: Math.max(0, player.featherCooldown - 1),
-      };
-      setPlayer(nextPlayer);
-      setLastDamage(null);
-      setCombo(0);
-      setMessage(`防御構え。次の${nextIntent.name}を大幅軽減！`);
-      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
-      return;
-    }
-
-    if (type === 'POTION') {
-      const nextPlayer = {
-        ...player,
-        hp: Math.min(PLAYER_MAX_HP, player.hp + 2300),
-        mp: Math.min(PLAYER_MAX_MP, player.mp + 35),
-        tp: clamp(player.tp + actionTp, 0, PLAYER_MAX_TP),
+        hp: Math.min(PLAYER_MAX_HP, player.hp + 2800),
+        mp: Math.min(PLAYER_MAX_MP, player.mp + 30),
+        tp: clamp(player.tp + tpGain, 0, PLAYER_MAX_TP),
         potions: player.potions - 1,
         guardNext: false,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
       setPlayer(nextPlayer);
-      setLastDamage(null);
       setCombo(0);
-      setMessage('ポーションで体勢を立て直した。');
-      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
+      setLog('ポーションで立て直した。');
+
+      schedule(() => {
+        if (currentBroken > 0) {
+          const remaining = currentBroken - 1;
+          setBrokenTurns(remaining);
+          if (remaining === 0) setBossPattern(choosePattern(phase, nextPlayer, currentIntent, action, repeats));
+          setFx(null);
+          setIsResolving(false);
+          return;
+        }
+        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+      }, 520);
       return;
     }
 
-    if (type === 'FOCUS') {
+    if (action === 'FOCUS') {
       const nextPlayer = {
         ...player,
         mp: clamp(player.mp - mpCost, 0, PLAYER_MAX_MP),
-        tp: clamp(player.tp + actionTp, 0, PLAYER_MAX_TP),
-        guardNext: false,
+        tp: clamp(player.tp + tpGain, 0, PLAYER_MAX_TP),
         focus: true,
+        guardNext: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
       setPlayer(nextPlayer);
-      setLastDamage(null);
-      setMessage('風詠集中。次の攻撃が35%強化される！');
-      window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 600);
+      setCombo(0);
+      setLog(currentIntent === 'CHARGE' || currentIntent === 'RAGE'
+        ? '集中を仕込んだ。強攻撃を受ける覚悟が必要。'
+        : '集中を仕込んだ。次の一撃が強化される。');
+
+      schedule(() => {
+        if (currentBroken > 0) {
+          const remaining = currentBroken - 1;
+          setBrokenTurns(remaining);
+          if (remaining === 0) setBossPattern(choosePattern(phase, nextPlayer, currentIntent, action, repeats));
+          setFx(null);
+          setIsResolving(false);
+          return;
+        }
+        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+      }, 520);
       return;
     }
 
-    const comboBonus = combo >= 2 ? 1.08 : 1;
-    const focusBonus = player.focus ? 1.30 : 1;
-    const breakBonus = bossBroken ? 1.35 : 1;
-    const finalDamage = Math.round(baseDamage * comboBonus * focusBonus * breakBonus);
+    if (action === 'GUARD') {
+      const perfectGuard = currentIntent === 'CHARGE' || currentIntent === 'RAGE';
+      const nextPlayer = {
+        ...player,
+        hp: Math.min(PLAYER_MAX_HP, player.hp + 450),
+        mp: clamp(player.mp - mpCost, 0, PLAYER_MAX_MP),
+        tp: clamp(player.tp + tpGain, 0, PLAYER_MAX_TP),
+        shield: 3600,
+        guardNext: true,
+        focus: false,
+        featherCooldown: Math.max(0, player.featherCooldown - 1),
+      };
+      setPlayer(nextPlayer);
+      setCombo(0);
+      if (perfectGuard && currentBroken === 0) {
+        setBossBreak(prev => clamp(prev + 28, 0, BREAK_MAX));
+        setLog('PERFECT GUARD！大技を読み、BREAKを奪った。');
+        sfx('guard');
+      } else {
+        setLog('防御構え。盾3,600を展開。');
+        sfx('click');
+      }
+
+      schedule(() => {
+        if (currentBroken > 0) {
+          const remaining = currentBroken - 1;
+          setBrokenTurns(remaining);
+          if (remaining === 0) setBossPattern(choosePattern(phase, nextPlayer, currentIntent, action, repeats));
+          setFx(null);
+          setIsResolving(false);
+          return;
+        }
+        bossAttack(phase, currentIntent, nextPlayer, turn, action, repeats);
+      }, 620);
+      return;
+    }
+
+    if (action === 'COUNTER') sfx(perfectCounter ? 'counter' : 'guard');
+    if (action === 'FEATHER') sfx('feather');
+
+    const focusMul = player.focus ? 1.45 : 1;
+    const comboMul = combo >= 2 ? 1.08 : 1;
+    const breakMul = currentBroken > 0 ? 1.30 : 1;
+    const responseMul = perfectCounter ? 1.28 : interrupt ? 1.18 : pressure ? 1.14 : 1;
+    const finalDamage = Math.round(damageBase * focusMul * comboMul * breakMul * responseMul);
     const actualDamage = Math.min(bossHp, finalDamage);
-    const nextBossHp = Math.max(0, bossHp - actualDamage);
 
     const breakGain =
-      type === 'NORMAL' ? 14 :
-      type === 'FEATHER' ? 22 :
-      type === 'ULTIMATE' ? 30 :
+      action === 'NORMAL' ? (pressure ? 24 : 16) :
+      action === 'FEATHER' ? (interrupt ? 58 : 30) :
+      action === 'COUNTER' ? (perfectCounter ? 62 : 14) :
+      action === 'ULTIMATE' ? 42 :
       0;
 
-    const nextBreak = bossBroken ? 0 : clamp(bossBreak + breakGain, 0, 100);
-    const triggersBreak = !bossBroken && nextBreak >= 100;
+    const nextBreak = currentBroken > 0 ? 0 : clamp(bossBreak + breakGain, 0, BREAK_MAX);
+    const triggersBreak = currentBroken === 0 && nextBreak >= BREAK_MAX;
 
     const nextPlayer = {
       ...player,
       mp: clamp(player.mp - mpCost, 0, PLAYER_MAX_MP),
-      tp: type === 'ULTIMATE' ? 0 : clamp(player.tp + actionTp, 0, PLAYER_MAX_TP),
+      tp: action === 'ULTIMATE' ? 0 : clamp(player.tp + tpGain, 0, PLAYER_MAX_TP),
       focus: false,
-      featherCooldown: type === 'FEATHER'
-        ? 2
-        : Math.max(0, player.featherCooldown - 1),
       guardNext: false,
+      featherCooldown: action === 'FEATHER' ? 2 : Math.max(0, player.featherCooldown - 1),
     };
 
-    setPlayer(nextPlayer);
-    setBossHp(nextBossHp);
-    setLastDamage(actualDamage);
-    setBestHit(prev => Math.max(prev, actualDamage));
-    setTotalDamage(prev => prev + actualDamage);
-    setCombo(prev => prev + 1);
-    setBossBreak(nextBreak);
+    if (perfectCounter) setLog('迎撃成功！大技の隙を反転した。');
+    else if (interrupt) setLog('羽弾が黒雷の詠唱を撃ち抜いた！');
+    else if (pressure) setLog('薙ぎ払いの隙を突いて押し込む！');
+    else if (action === 'ULTIMATE') setLog('いれーな「終天・羽星穿ち」！');
+    else if (action === 'FEATHER') setLog('いれーな「羽弾」！');
+    else if (player.focus) setLog('集中した一撃！');
+    else setLog('通常攻撃！');
 
-    if (type === 'ULTIMATE') {
-      setMessage('いれーな「終天・羽星穿ち」！');
-    } else if (type === 'FEATHER') {
-      setMessage('いれーな「羽弾」！');
-    } else {
-      setMessage(player.focus ? '集中を乗せた一射！' : '通常射撃！');
-    }
+    const impactDelay = action === 'FEATHER' ? 760 : action === 'ULTIMATE' ? 900 : action === 'COUNTER' ? 520 : 360;
 
-    if (nextBossHp <= 0) {
-      window.setTimeout(finishVictory, 700);
-      return;
-    }
+    schedule(() => {
+      setPlayer(nextPlayer);
+      setBossHp(Math.max(0, bossHp - actualDamage));
+      setLastDamage(actualDamage);
+      setBestHit(prev => Math.max(prev, actualDamage));
+      setTotalDamage(prev => prev + actualDamage);
+      setCombo(prev => prev + 1);
+      setBossBreak(nextBreak);
 
-    if (triggersBreak) {
-      setBossBroken(true);
-      setBossBreak(0);
-      setBreakCount(prev => prev + 1);
-      setMessage('BREAK！ 深淵の核が露出した。次の攻撃が強化！');
-      window.setTimeout(() => {
+      if (bossHp - actualDamage <= 0) {
+        setFx('BREAK');
+        setFxText('RAID CLEAR');
+        schedule(finishVictory, 680);
+        return;
+      }
+
+      if (triggersBreak) {
+        setBossBreak(0);
+        setBrokenTurns(2);
+        setBreakCount(prev => prev + 1);
+        sfx('break');
+        setFx('BREAK');
+        setFxText('BREAK!');
+        setLog('深淵の核が崩壊！ 2ターンのバースト窓が開いた！');
+        schedule(() => {
+          setFx(null);
+          setIsResolving(false);
+        }, 720);
+        return;
+      }
+
+      if (currentBroken > 0) {
+        const remaining = currentBroken - 1;
+        setBrokenTurns(remaining);
+        if (remaining === 0) {
+          setBossPattern(choosePattern(phase, nextPlayer, currentIntent, action, repeats));
+          setLog('BREAK終了。ボスが再起動する！');
+        }
+        setFx(null);
         setIsResolving(false);
-      }, 700);
-      return;
-    }
+        return;
+      }
 
-    if (bossBroken) {
-      setBossBroken(false);
-      setBossBreak(0);
-    }
+      if (perfectCounter || interrupt) {
+        setBossPattern(choosePattern(phase, nextPlayer, currentIntent, action, repeats));
+        setTurn(prev => prev + 1);
+        setLastDamage(null);
+        setFx(null);
+        setIsResolving(false);
+        return;
+      }
 
-    if (phase === 1 && nextBossHp <= BOSS_MAX_HP[1] * 0.5) {
-      setPhase(2);
-      setBossHp(BOSS_MAX_HP[2]);
-      setBossBreak(0);
-      setBossBroken(false);
-      setBossPattern('RAGE');
-      setPhaseFlash(true);
-      setMessage('第2形態「深淵解放」――終焉衝動が来る！');
-      window.setTimeout(() => {
-        setPhaseFlash(false);
-        bossAttack(2, 'RAGE', nextPlayer, turn);
-      }, 1100);
-      return;
-    }
+      if (phase === 1 && bossHp - actualDamage <= BOSS_MAX_HP[1] * .5) {
+        setPhase(2);
+        setBossHp(BOSS_MAX_HP[2]);
+        setBossBreak(0);
+        setBrokenTurns(0);
+        setBossPattern('RAGE');
+        setFx('PHASE');
+        setFxText('PHASE II');
+        sfx('phase');
+        setLog('第2形態「深淵解放」。同じ行動を2回続けるとボスが対応する。');
+        schedule(() => {
+          setFx(null);
+          setIsResolving(false);
+        }, 1050);
+        return;
+      }
 
-    window.setTimeout(() => bossAttack(phase, bossPattern, nextPlayer, turn), 650);
+      const nextPattern = choosePattern(phase, nextPlayer, currentIntent, action, repeats);
+      setBossPattern(nextPattern);
+      setTurn(prev => prev + 1);
+      setLastDamage(null);
+      setFx(null);
+      setIsResolving(false);
+
+      if (phase === 2 && repeats >= 2) {
+        setLog(
+          action === 'FEATHER' ? 'ボスが羽弾を学習。滅界砲の構えに入った。' :
+          action === 'GUARD' ? 'ボスが盾を読んで、虚無落雷を選んだ。' :
+          action === 'NORMAL' ? 'ボスが通常攻撃の流れを読んだ。' :
+          action === 'FOCUS' ? 'ボスが集中の隙を狙っている！' :
+          'ボスの行動が変化した。',
+        );
+      }
+    }, impactDelay);
   };
 
-  const startBattle = () => resetBattle();
+  const fxView = () => {
+    if (!fx) return null;
 
-  const stageTitle = useMemo(
-    () => phase === 1 ? 'PHASE I · 封印核' : 'PHASE II · 深淵解放',
-    [phase],
-  );
+    if (fx === 'FEATHER') {
+      return (
+        <div style={styles.fxOverlay}>
+          <div style={styles.fxShade} />
+          <img src={raidIrenaCutIn} alt="" style={styles.cutinImage} />
+          <div style={styles.cutinSweep} />
+          <div style={styles.cutinText}>
+            <div style={styles.cutinSub}>IRENA · SIGNATURE ART</div>
+            <div className="raidCutinTitle" style={styles.cutinTitle}>『羽弾』</div>
+            <div style={styles.cutinHint}>VOID SHATTER</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (fx === 'NORMAL') {
+      return <div style={styles.fxOverlay}><div style={styles.hitCircle} /><div style={{ ...styles.hitLine, animation: 'raidPop .5s ease-out forwards' }} /></div>;
+    }
+
+    if (fx === 'COUNTER') {
+      return <div style={styles.fxOverlay}><div style={styles.counterCircle} /><div style={styles.giantText}>{fxText}</div></div>;
+    }
+
+    if (fx === 'GUARD') {
+      return <div style={styles.fxOverlay}><div style={styles.guardCircle}><Shield size={64} /></div><div style={styles.giantText}>{fxText}</div></div>;
+    }
+
+    if (fx === 'FOCUS') {
+      return <div style={styles.fxOverlay}><div style={styles.focusCircle}><Eye size={54} /></div><div style={styles.giantText}>{fxText}</div></div>;
+    }
+
+    if (fx === 'POTION') {
+      return <div style={styles.fxOverlay}><div style={styles.recoverCircle}><Heart size={54} /></div><div style={styles.giantText}>{fxText}</div></div>;
+    }
+
+    if (fx === 'ULTIMATE') {
+      return <div style={styles.fxOverlay}><div style={styles.ultimateCircle} /><div style={styles.giantText}>終天羽星穿ち</div></div>;
+    }
+
+    if (fx === 'BREAK') {
+      return <div style={styles.fxOverlay}><div style={styles.breakCircle} /><div style={styles.breakText}>{fxText}</div></div>;
+    }
+
+    if (fx === 'PHASE') {
+      return <div style={styles.phaseOverlay}><div style={styles.phaseText}>{fxText}</div><div style={styles.phaseSub}>深淵解放</div></div>;
+    }
+
+    if (fx === 'BOSS') {
+      return <div style={styles.fxOverlay}><div style={{ ...styles.bossHit, borderColor: intent.color }} /><div style={{ ...styles.bossHitText, color: intent.color }}>{fxText}</div></div>;
+    }
+
+    return null;
+  };
 
   if (mode === 'LOADING') {
     return (
       <div style={styles.fullScreen}>
-        <style>{raidCss}</style>
-        <Swords size={42} color="#7CF7D4" />
-        <div style={styles.loadingKicker}>RAID BATTLE</div>
-        <div style={styles.loadingTitle}>深淵反応を検知</div>
-        <div style={styles.loadingSub}>戦闘領域を展開しています</div>
-        <div style={styles.loadingTrack}><div style={styles.loadingBar} /></div>
+        <style>{CSS}</style>
+        <div style={styles.loading}>
+          <div style={styles.loadingIcon}><Skull size={34} /></div>
+          <div style={styles.kicker}>RAID // ABYSS CORE</div>
+          <div style={styles.loadingTitle}>深淵戦闘領域を展開</div>
+          <div style={styles.loadingSub}>専用アートと新規戦闘演出を読み込んでいます</div>
+          <div style={styles.loadingTrack}><div style={styles.loadingBar} /></div>
+        </div>
       </div>
     );
   }
@@ -485,57 +768,35 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   if (mode === 'PRE_BATTLE') {
     return (
       <div style={styles.fullScreen}>
-        <style>{raidCss}</style>
+        <style>{CSS}</style>
         <div style={styles.preCard}>
-          <div style={styles.preTop}>
-            <div>
+          <div style={styles.preArt}>
+            <img src={raidBossArt} alt="" style={styles.preArtImage} />
+            <div style={styles.preShade} />
+            <div style={styles.preTitleBlock}>
               <div style={styles.kicker}>RAID OPERATION 01</div>
-              <h1 style={styles.title}>深淵喰らい・アビスコア</h1>
-              <p style={styles.subtle}>いれーな単独で挑む二段階レイド。ボスの「次の行動」を読め。</p>
+              <div style={styles.preTitle}>深淵喰らい・アビスコア</div>
+              <div style={styles.preSub}>読む。選ぶ。崩す。最後は一気に仕留める。</div>
             </div>
-            <div style={styles.preIcon}><Skull size={28} /></div>
           </div>
-
-          <div style={styles.preStage}>
-            <div style={styles.bossVisualWrap}>
-              <div style={{ ...styles.bossHalo, ...(phase === 2 ? styles.bossHaloRage : {}) }} />
-              <div style={styles.bossRingOuter} />
-              <div style={styles.bossCore}>
-                <div style={styles.bossEye} />
+          <div style={styles.preBody}>
+            <div className="raidPreGrid" style={styles.preRow}>
+              <div style={styles.preBox}>
+                <img src={raidIrenaCutIn} alt="" style={styles.preIrena} />
+                <div><div style={styles.kicker}>SOLO RAID</div><div style={styles.preName}>いれーな</div><div style={styles.small}>HP 10,000 · MP 100 · TP 0</div></div>
               </div>
-              <div style={styles.bossLabel}>ABYSS CORE</div>
-            </div>
-
-            <div style={styles.vsBadge}>VS</div>
-
-            <div style={styles.irenaCard}>
-              <img src={irenaImg} alt="いれーな" style={styles.irenaPortrait} />
-              <div>
-                <div style={styles.kicker}>ALLY</div>
-                <div style={styles.irenaName}>いれーな</div>
-                <div style={styles.irenaMeta}>HP 8,000 · 羽弾 · 必殺技</div>
+              <div style={styles.preBox}>
+                <div><div style={styles.kicker}>BOSS</div><div style={styles.preBoss}>ABYSS CORE</div><div style={styles.small}>50,000 → 60,000 HP · 2 PHASES</div></div>
               </div>
             </div>
+            <div style={styles.ruleGrid}>
+              <div style={styles.rule}><Crosshair size={18} /><div><b>予告</b><span>次の攻撃は見える。固定順ではない。</span></div></div>
+              <div style={styles.rule}><Gauge size={18} /><div><b>BREAK</b><span>核を崩すと2ターンの攻撃窓。</span></div></div>
+              <div style={styles.rule}><Eye size={18} /><div><b>適応</b><span>第2形態は連打に対処する。</span></div></div>
+            </div>
+            <button type="button" onClick={resetBattle} style={styles.primaryButton}><Swords size={19} /> レイド開始</button>
+            <button type="button" onClick={onBack} style={styles.secondaryButton}><ArrowLeft size={17} /> 本体へ戻る</button>
           </div>
-
-          <div style={styles.ruleGrid}>
-            <div style={styles.ruleCard}><Crosshair size={17} /><span><strong>予告</strong> 次の攻撃が常に見える</span></div>
-            <div style={styles.ruleCard}><Zap size={17} /><span><strong>BREAK</strong> 核を崩すと次の一撃が強化</span></div>
-            <div style={styles.ruleCard}><Shield size={17} /><span><strong>防御</strong> 大技は防御で大幅軽減</span></div>
-          </div>
-
-          <div style={styles.preStats}>
-            <span>PHASE I <b>45,000 HP</b></span>
-            <span>PHASE II <b>55,000 HP</b></span>
-            <span>報酬判定 <b>討伐 / 敗北</b></span>
-          </div>
-
-          <button type="button" onClick={startBattle} style={styles.primaryButton}>
-            <Swords size={19} /> レイド開始
-          </button>
-          <button type="button" onClick={onBack} style={styles.secondaryButton}>
-            <ArrowLeft size={17} /> 本体へ戻る
-          </button>
         </div>
       </div>
     );
@@ -544,345 +805,254 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   if (mode === 'RESULT') {
     return (
       <div style={styles.fullScreen}>
-        <style>{raidCss}</style>
+        <style>{CSS}</style>
         <div style={styles.resultCard}>
           <div style={styles.kicker}>RAID RESULT</div>
-          <div style={{ ...styles.resultIcon, ...(victory ? styles.resultIconWin : styles.resultIconLoss) }}>
-            {victory ? <Sparkles size={44} /> : <Skull size={44} />}
+          <div style={{ ...styles.resultIcon, ...(victory ? styles.resultWin : styles.resultLoss) }}>{victory ? <Sparkles size={44} /> : <Skull size={44} />}</div>
+          <div style={styles.resultTitle}>{victory ? '討伐成功' : '戦闘終了'}</div>
+          <div style={styles.resultText}>{log}</div>
+          <div className="raidStatGrid" style={styles.resultGrid}>
+            <div style={styles.resultItem}><span>TURN</span><b>{turn}</b></div>
+            <div style={styles.resultItem}><span>MAX HIT</span><b>{formatNumber(bestHit)}</b></div>
+            <div style={styles.resultItem}><span>TOTAL DMG</span><b>{formatNumber(totalDamage)}</b></div>
+            <div style={styles.resultItem}><span>BREAK</span><b>{breakCount}</b></div>
           </div>
-          <h1 style={styles.resultTitle}>{victory ? '討伐成功' : '戦闘終了'}</h1>
-          <p style={styles.resultMessage}>{message}</p>
-
-          <div style={styles.resultGrid}>
-            <div><span>TURN</span><b>{turn}</b></div>
-            <div><span>MAX HIT</span><b>{formatNumber(bestHit)}</b></div>
-            <div><span>TOTAL DMG</span><b>{formatNumber(totalDamage)}</b></div>
-            <div><span>BREAK</span><b>{breakCount}回</b></div>
-          </div>
-
-          <button type="button" onClick={resetBattle} style={styles.primaryButton}>
-            <RotateCcw size={18} /> もう一度挑戦
-          </button>
-          <button type="button" onClick={onBack} style={styles.secondaryButton}>
-            <ArrowLeft size={17} /> 本体へ戻る
-          </button>
+          <div style={styles.resultNote}><div style={styles.kicker}>COMBAT LOOP</div><div style={styles.resultNoteText}>読む → 選ぶ → 命中 → BREAK → BURST</div></div>
+          <button type="button" onClick={resetBattle} style={styles.primaryButton}><RotateCcw size={18} /> もう一度挑む</button>
+          <button type="button" onClick={onBack} style={styles.secondaryButton}><ArrowLeft size={17} /> 本体へ戻る</button>
         </div>
       </div>
     );
   }
 
-  const bossDangerStyle =
-    nextIntent.danger === 'EXTREME' ? styles.dangerExtreme :
-    nextIntent.danger === 'HIGH' ? styles.dangerHigh :
-    styles.dangerNormal;
+  const dangerText = intent.danger === 'EXTREME' ? '危険' : intent.danger === 'HIGH' ? '警戒' : '通常';
 
   return (
     <div style={styles.fullScreen}>
-      <style>{raidCss}</style>
-      {phaseFlash && <div style={styles.phaseFlash} aria-hidden="true" />}
-
-      <div style={styles.battleShell}>
-        <div style={styles.topBar}>
-          <button type="button" onClick={onBack} style={styles.backButton}>
-            <ArrowLeft size={15} /> 戻る
+      <style>{CSS}</style>
+      <div style={styles.main}>
+        <div style={styles.header}>
+          <button type="button" onClick={onBack} style={styles.backButton}><ArrowLeft size={16} /> 戻る</button>
+          <div style={styles.headerTitle}><span style={styles.headerPhase}>{phase === 1 ? 'PHASE I · 封印核' : 'PHASE II · 深淵解放'}</span><span>深淵喰らい・アビスコア</span></div>
+          <button type="button" onClick={() => setSoundOn(value => !value)} style={styles.soundButton} aria-label="サウンド切替">
+            {soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}
           </button>
-          <div style={styles.topTitle}>
-            <span>{stageTitle}</span>
-            <em>TURN {turn}</em>
-          </div>
-          <div style={styles.targetBadge}>TARGET · ABYSS CORE</div>
         </div>
 
-        <div style={styles.stage}>
-          <div style={styles.stageAtmosphere} />
-          {actionFx && (
-            <div style={styles.fxLayer} aria-hidden="true">
-              {actionFx === 'NORMAL' && <>
-                <div style={styles.normalFlash} />
-                <div style={styles.slashFxOne} />
-                <div style={styles.slashFxTwo} />
-              </>}
-              {actionFx === 'FEATHER' && <>
-                <div style={styles.featherBackdrop} />
-                <img src={irenaCutInImg} alt="" style={styles.featherCutIn} />
-                <div style={styles.featherRain}>羽弾</div>
-              </>}
-              {actionFx === 'FOCUS' && <div style={styles.focusFx}><div style={styles.focusCore} /><span>集中</span></div>}
-              {actionFx === 'GUARD' && <div style={styles.guardFx}><Shield size={92} /><span style={styles.guardFxLabel}>GUARD</span></div>}
-              {actionFx === 'POTION' && <div style={styles.potionFx}><Sparkles size={64} /><span style={styles.potionFxLabel}>RECOVER</span></div>}
-              {actionFx === 'ULTIMATE' && <div style={styles.ultimateFx}><div style={styles.ultimateRing} /><div style={styles.ultimateCore}>必殺</div></div>}
-              {actionFx === 'BOSS' && <div style={styles.bossStrikeFx}><AlertTriangle size={78} /><span style={styles.bossStrikeLabel}>BOSS STRIKE</span></div>}
+        <section style={styles.stage}>
+          <div style={{ ...styles.stageBackdrop, backgroundImage: 'linear-gradient(rgba(4,4,12,.35),rgba(5,3,12,.86)),url(' + raidBossArt + ')' }} />
+          <div style={styles.stageVignette} />
+
+          <div style={styles.bossHud}>
+            <div><div style={styles.kicker}>ABYSS CORE // TARGET</div><div style={styles.bossName}>深淵喰らい・アビスコア</div></div>
+            <div style={{ textAlign: 'right' }}><div style={styles.hpText}>{formatNumber(bossHp)} / {formatNumber(bossMaxHp)}</div><div style={styles.phaseBadge}>PHASE {phase}</div></div>
+          </div>
+
+          <div style={styles.hpTrack}><div style={{ ...styles.hpFill, width: bossHpPct + '%' }} /></div>
+
+          <div style={styles.breakWrap}>
+            <div style={styles.breakHead}><span>BREAK</span><b>{broken ? 'WINDOW × ' + brokenTurns : Math.round(bossBreak) + '%'}</b></div>
+            <div style={styles.breakTrack}><div style={{ ...styles.breakFill, width: (broken ? 100 : bossBreak) + '%' }} /></div>
+          </div>
+
+          {!broken && (
+            <div style={{ ...styles.intentCard, borderColor: intent.color }}>
+              <div style={styles.intentTop}><span>NEXT INTENT</span><span style={{ color: intent.color }}>{dangerText}</span></div>
+              <div style={styles.intentName}>{intent.name}</div>
+              <div style={styles.intentDetail}>{intent.detail}</div>
+              <div style={styles.intentCounter}>対処目安：{intent.counter}</div>
             </div>
           )}
-          <div style={styles.bossVisualWrapLarge}>
-            <div style={{ ...styles.bossHalo, ...(phase === 2 ? styles.bossHaloRage : {}) }} />
-            <div style={{ ...styles.bossRingOuter, ...(bossBroken ? styles.bossRingBroken : {}) }} />
-            <div style={{ ...styles.bossCore, ...(bossBroken ? styles.bossCoreBroken : {}), ...(phase === 2 ? styles.bossCoreRage : {}) }}>
-              <div style={styles.bossEye} />
+
+          {broken && (
+            <div style={styles.breakWindow}><div style={styles.breakKicker}>CORE EXPOSED</div><div style={styles.breakWindowTitle}>いまが最大火力</div><div style={styles.breakWindowSub}>攻撃系ダメージ ×1.30</div></div>
+          )}
+
+          <div style={styles.bossVisual}><img src={raidBossArt} alt="" style={styles.bossImage} /></div>
+          {lastDamage !== null && <div style={styles.damage}>{formatNumber(lastDamage)}</div>}
+
+          <div style={styles.turn}>TURN {turn}</div>
+          <div style={styles.log}><div style={styles.logKicker}>{broken ? 'BREAK WINDOW' : 'BATTLE LOG'}</div><div style={styles.logText}>{log}</div><div style={styles.hint}>
+            {broken ? '攻撃を重ねてバーストを使い切る。' :
+              bossPattern === 'CHARGE' || bossPattern === 'RAGE' ? '迎撃か防御が高効率。' :
+              bossPattern === 'VOID' ? '羽弾なら中断して大量BREAK。' :
+              '通常攻撃なら押し返しボーナス。'}
+          </div></div>
+
+          {fxView()}
+        </section>
+
+        <section className="raidBottom" style={styles.bottom}>
+          <div style={styles.playerPanel}>
+            <div style={styles.panelHeader}><div><div style={styles.kicker}>ALLY</div><div style={styles.playerName}>いれーな</div></div><div style={styles.state}>{player.focus ? 'FOCUS READY' : broken ? 'BURST TIME' : 'READY'}</div></div>
+            <div style={styles.hpLine}><span>HP</span><b>{formatNumber(player.hp)} / {formatNumber(PLAYER_MAX_HP)}</b></div>
+            <div style={styles.playerHpTrack}><div style={{ ...styles.playerHpFill, width: playerHpPct + '%' }} /></div>
+            <div className="raidStatGrid" style={styles.resourceGrid}>
+              <div style={styles.resource}><span>MP</span><b>{player.mp}</b></div>
+              <div style={styles.resource}><span>TP</span><b>{player.tp}</b></div>
+              <div style={styles.resource}><span>SHIELD</span><b>{formatNumber(player.shield)}</b></div>
+              <div style={styles.resource}><span>COMBO</span><b>{combo}</b></div>
             </div>
-            {bossBroken && <div style={styles.breakBurst}>BREAK</div>}
-            {lastDamage !== null && (
-              <div key={lastDamage + '-' + totalDamage} style={styles.floatingDamage}>
-                -{formatNumber(lastDamage)}
-              </div>
-            )}
+            <div style={styles.status}><span>ポーション ×{player.potions}</span>{player.featherCooldown > 0 && <span>羽弾 CD {player.featherCooldown}</span>}{player.focus && <span>次攻撃 ×1.45</span>}</div>
           </div>
 
-          <div style={styles.bossHeader}>
-            <div>
-              <div style={styles.bossKicker}>RAID BOSS · PHASE {phase}</div>
-              <div style={styles.bossTitle}>深淵喰らい・アビスコア</div>
-            </div>
-            <div style={styles.hpNumbers}>{formatNumber(bossHp)} / {formatNumber(bossMaxHp)}</div>
+          <div style={styles.tacticalPanel}>
+            <div style={styles.kicker}>TACTICAL READ</div>
+            <div style={styles.tacticalTitle}>{broken ? 'BREAKを伸ばして一気に削る' : intent.name + ' に備える'}</div>
+            <div style={styles.tacticalRow}><span>おすすめ</span><b>{broken ? '攻撃系を連打' : intent.counter}</b></div>
+            <div style={styles.tacticalRow}><span>第2形態</span><b>{phase === 2 ? '同じ行動2連続で学習' : 'まだ適応なし'}</b></div>
+            <div style={styles.tacticalRow}><span>コンボ</span><b>{combo >= 2 ? '×1.08 有効' : 'あと1回で ×1.08'}</b></div>
           </div>
+        </section>
 
-          <div style={styles.hpOuterBoss}>
-            <div style={{ ...styles.hpInnerBoss, width: `${bossHpPercent}%` }} />
-          </div>
+        <section className="raidActions" style={styles.actions}>
+          <button type="button" disabled={isResolving} onClick={() => performAction('NORMAL')} style={styles.actionButton}><Swords size={19} /><span>通常攻撃</span><small>6,500–7,600 · TP +18</small></button>
+          <button type="button" disabled={isResolving || player.mp < 18 || player.featherCooldown > 0} onClick={() => performAction('FEATHER')} style={{ ...styles.actionButton, ...styles.featherButton }}><Sparkles size={19} /><span>羽弾</span><small>{player.featherCooldown > 0 ? 'CD ' + player.featherCooldown : '9,800–11,500 · MP18'}</small></button>
+          <button type="button" disabled={isResolving || player.mp < 12} onClick={() => performAction('FOCUS')} style={styles.actionButton}><Eye size={19} /><span>風詠集中</span><small>次攻撃 ×1.45 · MP12</small></button>
+          <button type="button" disabled={isResolving || player.mp < 10} onClick={() => performAction('GUARD')} style={styles.actionButton}><Shield size={19} /><span>防御</span><small>盾3,600 · HP +450</small></button>
+          <button type="button" disabled={isResolving} onClick={() => performAction('COUNTER')} style={{ ...styles.actionButton, ...styles.counterButton }}><Crosshair size={19} /><span>迎撃</span><small>強攻撃なら大反撃</small></button>
+          <button type="button" disabled={isResolving || player.potions <= 0} onClick={() => performAction('POTION')} style={styles.actionButton}><Heart size={19} /><span>ポーション</span><small>HP +2,800 · MP +30</small></button>
+          <button type="button" disabled={isResolving || !canUltimate} onClick={() => performAction('ULTIMATE')} style={{ ...styles.actionButton, ...styles.ultimateButton, ...(canUltimate ? styles.ultimateReady : {}) }}><Zap size={20} /><span>必殺・終天羽星穿ち</span><small>{canUltimate ? 'READY · 26,000–30,000' : 'TP ' + player.tp + '/100'}</small></button>
+        </section>
 
-          <div style={styles.breakArea}>
-            <div style={styles.breakLabel}>
-              <span>BREAK CORE</span>
-              <b>{bossBroken ? 'EXPOSED' : `${bossBreak}%`}</b>
-            </div>
-            <div style={styles.breakTrack}>
-              <div style={{ ...styles.breakFill, width: `${bossBroken ? 100 : bossBreak}%` }} />
-            </div>
-          </div>
-
-          <div style={{ ...styles.intentCard, ...bossDangerStyle }}>
-            <div style={styles.intentTop}>
-              <span><AlertTriangle size={15} /> NEXT ATTACK</span>
-              <strong>{dangerText}</strong>
-            </div>
-            <div style={styles.intentName}>{nextIntent.name}</div>
-            <div style={styles.intentDetail}>{nextIntent.detail}</div>
-          </div>
-        </div>
-
-        <div style={styles.combatRow}>
-          <div style={styles.playerCard}>
-            <div style={styles.playerIdentity}>
-              <div style={styles.playerPortraitWrap}>
-                <img src={irenaImg} alt="いれーな" style={styles.playerPortrait} />
-              </div>
-              <div>
-                <div style={styles.kicker}>ALLY</div>
-                <div style={styles.playerName}>いれーな</div>
-                <div style={styles.playerTitle}>風詠の射手</div>
-              </div>
-            </div>
-
-            <div style={styles.playerHpText}>
-              <span>HP</span><b>{formatNumber(player.hp)} / {formatNumber(PLAYER_MAX_HP)}</b>
-            </div>
-            <div style={styles.hpOuterPlayer}>
-              <div style={{ ...styles.hpInnerPlayer, width: `${playerHpPercent}%` }} />
-            </div>
-
-            <div style={styles.resourceGrid}>
-              <div><span>MP</span><b>{player.mp}</b></div>
-              <div><span>TP</span><b>{player.tp}</b></div>
-              <div><span>SHIELD</span><b>{formatNumber(player.shield)}</b></div>
-              <div><span>POT</span><b>{player.potions}</b></div>
-            </div>
-
-            <div style={styles.statusRow}>
-              {player.focus && <span>集中 +35%</span>}
-              {player.guardNext && <span>次の攻撃を軽減</span>}
-              {player.featherCooldown > 0 && <span>羽弾 CD {player.featherCooldown}</span>}
-              {combo >= 2 && <span>CHAIN x{combo}</span>}
-            </div>
-          </div>
-
-          <div style={styles.centerMessage}>
-            <div style={styles.messageTag}>{bossBroken ? 'BREAK WINDOW' : 'BATTLE LOG'}</div>
-            <div style={styles.messageText}>{message}</div>
-            <div style={styles.chainText}>{combo > 1 ? `CHAIN ${combo}` : 'READY'}</div>
-          </div>
-        </div>
-
-        <div className="raid-actions" style={styles.actions}>
-          <button type="button" onClick={() => performAction('NORMAL')} disabled={isResolving} style={styles.actionButton}>
-            <Crosshair size={18} />
-            <span>通常射撃</span>
-            <small>DMG 4,700–5,600 · TP +20</small>
-          </button>
-
-          <button type="button" onClick={() => performAction('FEATHER')} disabled={isResolving || player.featherCooldown > 0 || player.mp < 18} style={styles.actionButton}>
-            <Sparkles size={18} />
-            <span>羽弾 {player.featherCooldown > 0 ? `· CD ${player.featherCooldown}` : ''}</span>
-            <small>DMG 8,200–9,500 · MP 18 · BREAK +22</small>
-          </button>
-
-          <button type="button" onClick={() => performAction('FOCUS')} disabled={isResolving || player.mp < 12} style={styles.actionButton}>
-            <Zap size={18} />
-            <span>風詠集中</span>
-            <small>次の攻撃 ×1.30 · MP 12 · TP +15</small>
-          </button>
-
-          <button type="button" onClick={() => performAction('GUARD')} disabled={isResolving || player.mp < 10} style={styles.actionButton}>
-            <Shield size={18} />
-            <span>防御</span>
-            <small>盾 2,200 · 大技の軽減量アップ</small>
-          </button>
-
-          <button type="button" onClick={() => performAction('POTION')} disabled={isResolving || player.potions <= 0} style={styles.actionButton}>
-            <Sparkles size={18} />
-            <span>ポーション</span>
-            <small>HP +2,300 · MP +35 · 残り {player.potions}</small>
-          </button>
-
-          <button type="button" onClick={() => performAction('ULTIMATE')} disabled={isResolving || !canUltimate} style={{ ...styles.actionButton, ...styles.ultimateButton, ...(canUltimate ? styles.ultimateReady : {}) }}>
-            <Swords size={19} />
-            <span>必殺・終天羽星穿ち</span>
-            <small>{canUltimate ? 'READY · DMG 26,000–30,000' : `TP ${player.tp}/100`}</small>
-          </button>
-        </div>
+        <div className="raidFooter" style={styles.footer}><span>読む → 選ぶ → 命中 → BREAK → BURST</span><span>{phase === 2 ? 'ADAPTIVE BOSS ONLINE' : 'READABLE BOSS ONLINE'}</span></div>
       </div>
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  fullScreen: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    minHeight: '100%',
-    overflowY: 'auto',
-    backgroundColor: '#05070d',
-    color: '#F4F8FF',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '16px',
-    boxSizing: 'border-box',
-  },
-  loadingKicker: { marginTop: '12px', color: '#7CF7D4', fontWeight: 900, letterSpacing: '0.28em', fontSize: '12px' },
-  loadingTitle: { marginTop: '6px', fontSize: 'clamp(30px, 7vw, 56px)', fontWeight: 1000, letterSpacing: '0.04em' },
-  loadingSub: { color: '#8C9AB6', marginTop: '6px', fontSize: '13px' },
-  loadingTrack: { width: 'min(320px, 70vw)', height: '3px', marginTop: '24px', background: '#172035', overflow: 'hidden' },
-  loadingBar: { width: '100%', height: '100%', background: 'linear-gradient(90deg, #54E7C0, #8B5CF6)', transformOrigin: 'left', animation: 'raidLoading 0.85s ease-out forwards' },
+  fullScreen: { position: 'relative', width: '100%', height: '100%', minHeight: '100%', overflowY: 'auto', background: '#05050c', color: '#f5f7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14, boxSizing: 'border-box' },
+  loading: { textAlign: 'center' },
+  loadingIcon: { width: 72, height: 72, margin: '0 auto 16px', borderRadius: 20, display: 'grid', placeItems: 'center', color: '#ff718e', background: 'rgba(255,54,88,.08)', border: '1px solid #573043' },
+  loadingKicker: { color: '#ff8fa6', fontSize: 11, fontWeight: 900, letterSpacing: '.24em' },
+  loadingTitle: { marginTop: 8, fontSize: 'clamp(30px,7vw,56px)', fontWeight: 1000 },
+  loadingSub: { marginTop: 6, color: '#8f99ad', fontSize: 13 },
+  loadingTrack: { width: 'min(340px,72vw)', height: 3, margin: '24px auto 0', overflow: 'hidden', background: '#1b1724' },
+  loadingBar: { width: '100%', height: '100%', background: 'linear-gradient(90deg,#ff4e73,#7f58ff)', transformOrigin: 'left', animation: 'raidLoad .75s ease-out forwards' },
 
-  preCard: { width: 'min(100%, 860px)', background: 'rgba(10, 15, 27, 0.94)', border: '1px solid #2D3C5B', borderRadius: '22px', padding: '22px', boxSizing: 'border-box', boxShadow: '0 24px 80px rgba(0,0,0,.45)', backdropFilter: 'blur(10px)' },
-  preTop: { display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start' },
-  kicker: { color: '#73F2D0', fontSize: '11px', fontWeight: 900, letterSpacing: '0.2em' },
-  title: { margin: '7px 0 4px', fontSize: 'clamp(24px, 5vw, 38px)', fontWeight: 1000, letterSpacing: '0.02em' },
-  subtle: { margin: 0, color: '#8C9AB6', fontSize: '13px', lineHeight: 1.6 },
-  preIcon: { width: '48px', height: '48px', display: 'grid', placeItems: 'center', borderRadius: '14px', color: '#FF5B6E', border: '1px solid #5A2D3A', background: '#1C0E16', flex: '0 0 auto' },
-  preStage: { marginTop: '20px', minHeight: '240px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '18px', padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(17,24,39,.9), rgba(13,11,25,.88))', border: '1px solid #283652' },
-  bossVisualWrap: { position: 'relative', width: '220px', height: '220px', margin: '0 auto', display: 'grid', placeItems: 'center' },
-  bossVisualWrapPre: { position: 'relative', width: 'min(42vw, 300px)', height: 'min(42vw, 300px)', minWidth: '220px', minHeight: '220px', margin: '0 auto', display: 'grid', placeItems: 'center', zIndex: 2 },
-  bossHalo: { position: 'absolute', width: '72%', height: '72%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(118, 69, 255, .26), rgba(7,9,16,0) 68%)', animation: 'raidBossPulse 2.4s ease-in-out infinite' },
-  bossHaloRage: { background: 'radial-gradient(circle, rgba(255, 46, 83, .30), rgba(7,9,16,0) 68%)' },
-  bossRingOuter: { position: 'absolute', width: '86%', height: '86%', borderRadius: '50%', border: '1px solid rgba(124,247,212,.26)', borderTopColor: '#7CF7D4', borderRightColor: '#9A7BFF', animation: 'raidBossRing 7s linear infinite' },
-  bossRingBroken: { borderColor: '#FFF4A3', borderTopColor: '#FFFFFF', animation: 'raidBossRing 1.3s linear infinite' },
-  bossCore: { position: 'relative', width: '48%', height: '48%', borderRadius: '42% 58% 55% 45%', background: 'radial-gradient(circle at 50% 40%, #2F214C 0%, #151022 42%, #05060A 74%)', border: '2px solid #806BD4', boxShadow: '0 0 40px rgba(126,86,255,.32)', animation: 'raidBossFloat 3.1s ease-in-out infinite', zIndex: 3 },
-  bossCoreBroken: { borderColor: '#FFF4A3', boxShadow: '0 0 55px rgba(255,244,163,.42)', animation: 'raidStagger .75s ease-in-out infinite' },
-  bossCoreRage: { borderColor: '#FF4763', boxShadow: '0 0 55px rgba(255,50,80,.4)' },
-  bossEye: { position: 'absolute', left: '50%', top: '48%', width: '34%', height: '12%', transform: 'translate(-50%,-50%)', borderRadius: '999px', background: 'linear-gradient(90deg, #FF3255, #FF9A66, #FF3255)', boxShadow: '0 0 16px rgba(255,80,100,.9)' },
-  bossLabel: { position: 'absolute', bottom: '2px', color: '#A8B8D6', fontSize: '11px', fontWeight: 900, letterSpacing: '0.24em' },
-  vsBadge: { width: '42px', height: '42px', display: 'grid', placeItems: 'center', borderRadius: '50%', border: '1px solid #465777', color: '#FFFFFF', fontWeight: 1000, background: '#121A2A', zIndex: 2 },
-  irenaCard: { display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' },
-  irenaPortrait: { width: '90px', height: '132px', objectFit: 'cover', objectPosition: 'center', borderRadius: '14px', border: '1px solid #3EE3BF', boxShadow: '0 0 24px rgba(62,227,191,.16)' },
-  irenaName: { marginTop: '5px', fontSize: '24px', fontWeight: 1000 },
-  irenaMeta: { marginTop: '5px', fontSize: '12px', color: '#9DAAC2' },
+  preCard: { width: 'min(100%,960px)', overflow: 'hidden', borderRadius: 24, background: '#0a0b13', border: '1px solid #2b2940', boxShadow: '0 28px 90px rgba(0,0,0,.55)' },
+  preArt: { position: 'relative', height: 350, overflow: 'hidden' },
+  preArtImage: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
+  preShade: { position: 'absolute', inset: 0, background: 'linear-gradient(90deg,rgba(2,3,9,.94),rgba(3,3,10,.52) 48%,rgba(3,3,10,.12)),linear-gradient(0deg,rgba(5,5,12,.92),transparent 55%)' },
+  preTitleBlock: { position: 'absolute', left: 26, right: 26, bottom: 24 },
+  kicker: { color: '#ff91a8', fontSize: 10, fontWeight: 900, letterSpacing: '.2em' },
+  preTitle: { marginTop: 7, fontSize: 'clamp(28px,6vw,48px)', lineHeight: 1.05, fontWeight: 1000 },
+  preSub: { marginTop: 6, color: '#b3bbcc', fontSize: 13 },
+  preBody: { padding: 18 },
+  preRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 },
+  preBox: { minHeight: 92, padding: 10, borderRadius: 16, background: '#0e1220', border: '1px solid #29324b', display: 'flex', alignItems: 'center', gap: 12, boxSizing: 'border-box' },
+  preIrena: { width: 120, height: 74, borderRadius: 11, objectFit: 'cover', objectPosition: '18% center', border: '1px solid #8d7eff' },
+  preName: { marginTop: 4, fontSize: 21, fontWeight: 1000 },
+  preBoss: { marginTop: 4, fontSize: 21, fontWeight: 1000, color: '#ff8da3' },
+  small: { marginTop: 4, color: '#8f9bb3', fontSize: 10 },
+  ruleGrid: { marginTop: 12, display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 9 },
+  rule: { minHeight: 70, padding: 11, borderRadius: 13, border: '1px solid #252c40', background: '#0d111b', color: '#9eabc3', display: 'flex', gap: 9, alignItems: 'flex-start' },
+  rule b: { color: '#f0f4ff', fontSize: 11 },
+  rule span: { color: '#9aa5bb', fontSize: 10, lineHeight: 1.45 },
+  primaryButton: { minHeight: 52, marginTop: 14, borderRadius: 13, border: '1px solid #ff6b8c', background: 'linear-gradient(135deg,#571b31,#2f225d)', color: '#fff', fontWeight: 1000, fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer', width: '100%' },
+  secondaryButton: { minHeight: 45, marginTop: 8, borderRadius: 12, border: '1px solid #2d3850', background: '#0d1320', color: '#ccd5e6', fontWeight: 800, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, cursor: 'pointer', width: '100%' },
 
-  ruleGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px', marginTop: '14px' },
-  ruleCard: { display: 'flex', alignItems: 'center', gap: '8px', minHeight: '48px', padding: '9px 10px', boxSizing: 'border-box', borderRadius: '11px', background: '#0F1626', border: '1px solid #273854', color: '#AAB8D2', fontSize: '11px', lineHeight: 1.4 },
-  preStats: { display: 'flex', flexWrap: 'wrap', gap: '14px 22px', marginTop: '12px', color: '#7E8DAA', fontSize: '11px' },
+  resultCard: { width: 'min(100%,620px)', padding: 24, borderRadius: 22, border: '1px solid #2d3045', background: 'rgba(10,11,20,.97)', textAlign: 'center', boxSizing: 'border-box' },
+  resultIcon: { width: 86, height: 86, margin: '14px auto 8px', borderRadius: '50%', display: 'grid', placeItems: 'center' },
+  resultWin: { color: '#c1b0ff', border: '1px solid #826eff', background: 'rgba(120,88,255,.1)' },
+  resultLoss: { color: '#ff7b94', border: '1px solid #6c3044', background: 'rgba(255,60,90,.08)' },
+  resultTitle: { fontSize: 38, fontWeight: 1000 },
+  resultText: { marginTop: 6, color: '#a5aec1', fontSize: 13, lineHeight: 1.55 },
+  resultGrid: { marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8 },
+  resultItem: { padding: 12, borderRadius: 11, background: '#0d1320', border: '1px solid #232d43' },
+  resultItem span: { display: 'block', color: '#7f8aa0', fontSize: 9, letterSpacing: '.16em' },
+  resultNote: { marginTop: 14, padding: 13, borderRadius: 12, background: '#0b101a', border: '1px solid #1f293b', textAlign: 'left' },
+  resultNoteText: { marginTop: 6, color: '#cbd6e9', fontSize: 13 },
 
-  primaryButton: { width: '100%', minHeight: '54px', marginTop: '18px', border: '1px solid #6BF6D8', borderRadius: '14px', background: 'linear-gradient(135deg, #0D6F60, #1D3D73)', color: '#FFFFFF', fontWeight: 1000, fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' },
-  secondaryButton: { width: '100%', minHeight: '48px', marginTop: '8px', border: '1px solid #33445F', borderRadius: '12px', background: '#0E1523', color: '#C0CCE0', fontWeight: 800, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', cursor: 'pointer' },
+  main: { width: 'min(100%,1180px)', minWidth: 0 },
+  header: { minHeight: 42, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '5px 7px', borderRadius: 12, background: 'rgba(9,10,17,.94)', border: '1px solid #232c42', boxSizing: 'border-box' },
+  backButton: { minHeight: 34, padding: '0 10px', borderRadius: 9, border: '1px solid #2e3a54', background: '#0d1320', color: '#ccd6e7', display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontWeight: 800 },
+  headerTitle: { display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, fontSize: 13, fontWeight: 950 },
+  headerPhase: { color: '#ff7f98', fontSize: 10, letterSpacing: '.15em' },
+  soundButton: { width: 34, height: 34, borderRadius: 9, border: '1px solid #2e3a54', background: '#0d1320', color: '#dce5f3', display: 'grid', placeItems: 'center', cursor: 'pointer' },
 
-  resultCard: { width: 'min(100%, 560px)', textAlign: 'center', background: 'rgba(11,16,28,.96)', border: '1px solid #334362', borderRadius: '22px', padding: '28px', boxSizing: 'border-box' },
-  resultIcon: { width: '84px', height: '84px', margin: '14px auto 10px', display: 'grid', placeItems: 'center', borderRadius: '50%' },
-  resultIconWin: { color: '#7CF7D4', background: 'rgba(71,230,189,.10)', border: '1px solid #3ED8B0' },
-  resultIconLoss: { color: '#FF7B8C', background: 'rgba(255,72,97,.08)', border: '1px solid #7A3343' },
-  resultTitle: { margin: '8px 0 4px', fontSize: '38px', fontWeight: 1000 },
-  resultMessage: { margin: 0, color: '#9AA8C0', fontSize: '13px' },
-  resultGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '8px', marginTop: '22px' },
-  resultGridItem: { background: '#0F1626', border: '1px solid #273854', borderRadius: '10px', padding: '12px 6px' },
+  stage: { position: 'relative', overflow: 'hidden', minHeight: 510, marginTop: 10, padding: 15, borderRadius: 18, border: '1px solid #292f45', background: '#070810', boxSizing: 'border-box' },
+  stageBackdrop: { position: 'absolute', inset: 0, backgroundSize: 'cover', backgroundPosition: 'center', opacity: .72, transform: 'scale(1.02)', animation: 'raidAmbient 8s ease-in-out infinite', pointerEvents: 'none' },
+  stageVignette: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 44%,transparent 0%,rgba(4,4,11,.1) 44%,rgba(3,3,9,.94) 100%)', pointerEvents: 'none' },
+  bossHud: { position: 'relative', zIndex: 4, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 },
+  bossName: { marginTop: 3, fontSize: 'clamp(19px,3vw,26px)', fontWeight: 1000 },
+  hpText: { color: '#ffd6df', fontSize: 12, fontWeight: 900 },
+  phaseBadge: { display: 'inline-block', marginTop: 3, padding: '3px 6px', borderRadius: 999, background: 'rgba(38,17,35,.76)', border: '1px solid #593147', color: '#ff9eaf', fontSize: 9, fontWeight: 900 },
+  hpTrack: { position: 'relative', zIndex: 4, height: 15, marginTop: 7, borderRadius: 999, background: '#20131a', border: '1px solid #50303a', overflow: 'hidden' },
+  hpFill: { height: '100%', background: 'linear-gradient(90deg,#5d1b49,#e53e6a,#ff934e)', transition: 'width .38s ease' },
+  breakWrap: { position: 'relative', zIndex: 4, marginTop: 8 },
+  breakHead: { display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#9aa6bb', fontWeight: 900, letterSpacing: '.15em' },
+  breakTrack: { height: 7, marginTop: 4, borderRadius: 999, background: '#1f1b10', border: '1px solid #534626', overflow: 'hidden' },
+  breakFill: { height: '100%', background: 'linear-gradient(90deg,#8f751a,#fff1a0)', transition: 'width .28s ease' },
 
-  battleShell: { width: 'min(100%, 980px)', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative', zIndex: 2 },
-  topBar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '8px 10px', borderRadius: '12px', border: '1px solid #283754', background: 'rgba(9,14,24,.92)', backdropFilter: 'blur(8px)' },
-  backButton: { minHeight: '34px', padding: '0 10px', display: 'flex', alignItems: 'center', gap: '5px', border: '1px solid #34455F', borderRadius: '9px', color: '#D6E0F0', background: '#0E1523', cursor: 'pointer', fontWeight: 800 },
-  topTitle: { display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', fontWeight: 900, letterSpacing: '0.08em' },
-  targetBadge: { color: '#7CF7D4', fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em' },
+  intentCard: { position: 'relative', zIndex: 5, width: 'min(100%,580px)', margin: '10px auto 0', padding: '11px 13px', borderRadius: 13, borderLeft: '3px solid #ff5d7d', background: 'rgba(8,10,18,.78)', animation: 'raidWarn 1.7s ease-in-out infinite' },
+  intentTop: { display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#8793aa', fontWeight: 900, letterSpacing: '.15em' },
+  intentName: { marginTop: 4, fontSize: 18, fontWeight: 1000 },
+  intentDetail: { marginTop: 2, color: '#94a0b5', fontSize: 10 },
+  intentCounter: { marginTop: 5, color: '#d1c8ff', fontSize: 10, fontWeight: 900 },
+  breakWindow: { position: 'relative', zIndex: 5, width: 'min(100%,560px)', margin: '12px auto 0', padding: '11px 13px', borderRadius: 13, textAlign: 'center', background: 'rgba(45,35,11,.5)', border: '1px solid #f0d667' },
+  breakKicker: { color: '#fff1a1', fontSize: 9, fontWeight: 1000, letterSpacing: '.22em' },
+  breakWindowTitle: { marginTop: 4, fontSize: 19, fontWeight: 1000 },
+  breakWindowSub: { marginTop: 3, color: '#dfd5a1', fontSize: 10 },
 
-  stage: { position: 'relative', overflow: 'hidden', minHeight: '430px', borderRadius: '18px', border: '1px solid #263551', background: 'linear-gradient(180deg, rgba(7,10,19,.82), rgba(10,9,22,.94))', padding: '20px 18px 16px', boxSizing: 'border-box' },
-  stageAtmosphere: { position: 'absolute', inset: 0, backgroundImage: `linear-gradient(rgba(5,7,13,.55), rgba(5,7,13,.88)), url(${battleBackground})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: .24, pointerEvents: 'none' },
-  bossHeader: { position: 'relative', display: 'flex', alignItems: 'end', justifyContent: 'space-between', gap: '10px', zIndex: 4 },
-  bossKicker: { color: '#8C9AB6', fontSize: '10px', fontWeight: 900, letterSpacing: '0.18em' },
-  bossTitle: { marginTop: '4px', fontSize: 'clamp(18px, 3vw, 25px)', fontWeight: 1000 },
-  hpNumbers: { color: '#FFCCD4', fontSize: '12px', fontWeight: 900 },
+  bossVisual: { position: 'absolute', left: '50%', top: 145, width: 'min(72vw,520px)', height: 'min(54vw,335px)', transform: 'translateX(-50%)', zIndex: 2, display: 'grid', placeItems: 'center' },
+  bossImage: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: 16, opacity: .82, mixBlendMode: 'screen', animation: 'raidPulse 2.8s ease-in-out infinite', filter: 'saturate(1.18) contrast(1.08)' },
+  damage: { position: 'absolute', left: '50%', top: '48%', zIndex: 12, fontSize: 'clamp(34px,6vw,58px)', fontWeight: 1000, color: '#fff', textShadow: '0 3px 0 #521426,0 0 22px rgba(255,86,126,.9)', animation: 'raidDamage .72s ease-out forwards' },
+  turn: { position: 'absolute', left: 15, bottom: 88, zIndex: 5, padding: '5px 8px', borderRadius: 7, background: 'rgba(6,8,13,.78)', border: '1px solid #303a51', color: '#aeb9ce', fontSize: 9, fontWeight: 900, letterSpacing: '.15em' },
+  log: { position: 'absolute', left: 15, right: 15, bottom: 13, zIndex: 5, padding: '9px 12px', borderRadius: 12, background: 'rgba(5,7,12,.84)', border: '1px solid #2a3449', boxSizing: 'border-box' },
+  logKicker: { color: '#78859d', fontSize: 8, fontWeight: 900, letterSpacing: '.17em' },
+  logText: { marginTop: 4, fontSize: 12, fontWeight: 900, lineHeight: 1.45 },
+  hint: { marginTop: 4, color: '#a9b4c8', fontSize: 10 },
 
-  hpOuterBoss: { position: 'relative', zIndex: 4, height: '13px', marginTop: '8px', borderRadius: '999px', background: '#24101A', border: '1px solid #5D3040', overflow: 'hidden' },
-  hpInnerBoss: { height: '100%', background: 'linear-gradient(90deg, #7D1A4B, #F23F69, #FF884A)', transition: 'width .25s ease', boxShadow: '0 0 16px rgba(242,63,105,.35)' },
-  breakArea: { position: 'relative', zIndex: 4, marginTop: '10px' },
-  breakLabel: { display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#91A0BA', fontWeight: 900, letterSpacing: '0.12em' },
-  breakTrack: { height: '7px', marginTop: '4px', borderRadius: '999px', overflow: 'hidden', background: '#201C13', border: '1px solid #514425' },
-  breakFill: { height: '100%', background: 'linear-gradient(90deg, #8D7D26, #FFF1A4)', transition: 'width .25s ease' },
+  fxOverlay: { position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none', overflow: 'hidden', display: 'grid', placeItems: 'center' },
+  fxShade: { position: 'absolute', inset: 0, background: 'rgba(4,4,15,.44)' },
+  cutinImage: { position: 'absolute', inset: '-3% -4%', width: '108%', height: '106%', objectFit: 'cover', animation: 'raidCut 1.3s cubic-bezier(.18,.78,.18,1) forwards', filter: 'saturate(1.08) contrast(1.05)' },
+  cutinSweep: { position: 'absolute', left: '-10%', top: '45%', width: '120%', height: 5, background: 'linear-gradient(90deg,transparent,#fff,rgba(180,120,255,.7),transparent)', boxShadow: '0 0 30px rgba(210,190,255,.85)', transform: 'rotate(-8deg)', animation: 'raidPop 1.1s ease-out forwards' },
+  cutinText: { position: 'absolute', right: '6%', top: '18%', textAlign: 'right', animation: 'raidText 1.25s ease-out forwards', textShadow: '0 4px 18px rgba(0,0,0,.85)' },
+  cutinSub: { color: '#d8d6ff', fontSize: 10, fontWeight: 900, letterSpacing: '.18em' },
+  cutinTitle: { marginTop: 6, color: '#fff', fontSize: 54, lineHeight: .95, fontWeight: 1000, textShadow: '0 0 24px #8d75ff' },
+  cutinHint: { marginTop: 5, color: '#f0ecff', fontSize: 10, fontWeight: 1000, letterSpacing: '.14em' },
+  hitCircle: { width: '48%', aspectRatio: '1', borderRadius: '50%', border: '2px solid #fff', boxShadow: '0 0 46px rgba(205,238,255,.85)', animation: 'raidFlash .55s ease-out forwards' },
+  hitLine: { position: 'absolute', width: '74%', height: 8, borderRadius: 999, background: 'linear-gradient(90deg,transparent,#fff,transparent)', boxShadow: '0 0 20px rgba(255,255,255,.8)' },
+  counterCircle: { width: '46%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #fff3bb', boxShadow: '0 0 44px rgba(255,224,130,.65)', animation: 'raidPop .7s ease-out forwards' },
+  guardCircle: { width: 160, height: 160, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#b9fff0', border: '2px solid rgba(173,255,235,.94)', background: 'rgba(75,240,208,.08)', boxShadow: '0 0 48px rgba(110,255,226,.38)', animation: 'raidPop .8s ease-out forwards' },
+  focusCircle: { width: 144, height: 144, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#d6ccff', border: '2px solid #c6b6ff', boxShadow: '0 0 44px rgba(160,125,255,.56)', animation: 'raidPop .72s ease-out forwards' },
+  recoverCircle: { width: 140, height: 140, borderRadius: '50%', display: 'grid', placeItems: 'center', color: '#abffbe', border: '2px solid rgba(130,255,160,.82)', background: 'rgba(65,180,95,.08)', boxShadow: '0 0 38px rgba(110,255,140,.3)', animation: 'raidPop .8s ease-out forwards' },
+  ultimateCircle: { width: '52%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ded4ff', boxShadow: '0 0 70px rgba(156,106,255,.84)', animation: 'raidFlash .86s ease-out forwards' },
+  breakCircle: { width: '62%', aspectRatio: '1', borderRadius: '50%', border: '4px solid #fff0a4', boxShadow: '0 0 72px rgba(255,232,128,.86)', animation: 'raidBreak .95s ease-out forwards' },
+  breakText: { position: 'relative', color: '#fff7be', fontSize: 'clamp(40px,9vw,92px)', fontWeight: 1000, letterSpacing: '.12em', textShadow: '0 0 34px rgba(255,233,120,.95)', animation: 'raidBreak .92s ease-out forwards' },
+  phaseOverlay: { position: 'fixed', inset: 0, zIndex: 100, display: 'grid', placeItems: 'center', pointerEvents: 'none', background: 'radial-gradient(circle,rgba(255,54,88,.84),rgba(10,0,16,.97) 68%)', animation: 'raidPhase 1.1s ease-out forwards' },
+  phaseText: { color: '#fff', fontSize: 'clamp(52px,11vw,120px)', fontWeight: 1000, textShadow: '0 0 45px rgba(255,72,110,.95)' },
+  phaseSub: { position: 'absolute', top: '61%', color: '#ffc8d4', fontSize: 16, fontWeight: 900, letterSpacing: '.35em' },
+  bossHit: { width: '44%', aspectRatio: '1', borderRadius: '50%', border: '3px solid #ff6b86', boxShadow: '0 0 46px rgba(255,70,100,.72)', animation: 'raidFlash .68s ease-out forwards' },
+  bossHitText: { position: 'relative', marginTop: 205, fontSize: 'clamp(24px,5vw,48px)', fontWeight: 1000, textShadow: '0 0 26px currentColor', animation: 'raidPop .65s ease-out forwards' },
+  giantText: { position: 'relative', marginTop: 220, color: '#fff', fontSize: 'clamp(22px,5vw,46px)', fontWeight: 1000, textShadow: '0 0 24px rgba(255,255,255,.75)', animation: 'raidPop .7s ease-out forwards' },
 
-  intentCard: { position: 'relative', zIndex: 4, width: 'min(100%, 520px)', margin: '8px auto 0', padding: '9px 12px', borderRadius: '12px', border: '1px solid #34445F', background: 'rgba(8,13,23,.78)', boxSizing: 'border-box', animation: 'raidDanger 1.6s ease-in-out infinite' },
-  dangerNormal: { borderColor: '#33445F' },
-  dangerHigh: { borderColor: '#7C5A2E', boxShadow: '0 0 20px rgba(255,196,80,.07)' },
-  dangerExtreme: { borderColor: '#8A3143', boxShadow: '0 0 24px rgba(255,75,95,.10)' },
-  intentTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#9DAAC2', fontSize: '10px', fontWeight: 900, letterSpacing: '0.12em' },
-  intentName: { marginTop: '4px', fontSize: '16px', fontWeight: 1000 },
-  intentDetail: { marginTop: '2px', color: '#8E9CB6', fontSize: '11px' },
+  bottom: { marginTop: 10, display: 'grid', gridTemplateColumns: '1.06fr .94fr', gap: 10 },
+  playerPanel: { borderRadius: 15, border: '1px solid #24384a', background: '#0b1419', padding: 12 },
+  panelHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  playerName: { marginTop: 4, fontSize: 22, fontWeight: 1000 },
+  state: { color: '#86f2d6', fontSize: 9, fontWeight: 900, letterSpacing: '.16em' },
+  hpLine: { display: 'flex', justifyContent: 'space-between', marginTop: 10, color: '#92a0b5', fontSize: 10, fontWeight: 900 },
+  playerHpTrack: { height: 10, marginTop: 4, borderRadius: 999, overflow: 'hidden', background: '#102026', border: '1px solid #204b49' },
+  playerHpFill: { height: '100%', background: 'linear-gradient(90deg,#19b897,#75f0d3)', transition: 'width .28s ease' },
+  resourceGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 6 },
+  resource: { marginTop: 9, padding: '7px 6px', borderRadius: 9, background: '#091117', border: '1px solid #1d3140', textAlign: 'center' },
+  resource span: { display: 'block', color: '#718296', fontSize: 8, letterSpacing: '.12em' },
+  status: { marginTop: 7, display: 'flex', flexWrap: 'wrap', gap: 5, color: '#9ce8dc', fontSize: 8 },
+  tacticalPanel: { borderRadius: 15, border: '1px solid #302b48', background: '#0e0d18', padding: 13 },
+  tacticalTitle: { marginTop: 6, fontSize: 17, fontWeight: 1000 },
+  tacticalRow: { marginTop: 8, paddingBottom: 7, display: 'flex', justifyContent: 'space-between', gap: 10, borderBottom: '1px solid #211f30', color: '#8790a4', fontSize: 10 },
+  tacticalRow b: { color: '#d8d4f1', textAlign: 'right' },
 
-  bossVisualWrapLarge: { position: 'absolute', left: '50%', top: '74px', transform: 'translateX(-50%)', width: 'min(42vw, 330px)', height: 'min(42vw, 330px)', minWidth: '240px', minHeight: '240px', display: 'grid', placeItems: 'center', zIndex: 2 },
-  floatingDamage: { position: 'absolute', left: '50%', top: '37%', zIndex: 8, color: '#FFFFFF', fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 1000, textShadow: '0 3px 0 #571A2B, 0 0 18px rgba(255,70,120,.75)', animation: 'raidDamagePop .72s ease-out forwards', pointerEvents: 'none' },
-  breakBurst: { position: 'absolute', left: '50%', top: '51%', transform: 'translate(-50%,-50%)', zIndex: 9, color: '#FFF6A4', fontSize: 'clamp(24px, 6vw, 44px)', fontWeight: 1000, letterSpacing: '0.12em', textShadow: '0 0 22px rgba(255,242,140,.9)', pointerEvents: 'none' },
-
-  combatRow: { display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, .9fr)', gap: '10px' },
-  playerCard: { position: 'relative', padding: '14px', borderRadius: '15px', border: '1px solid #244B48', background: 'linear-gradient(135deg, #0E1B1D, #101828)', animation: 'raidIrenaGlow 3.2s ease-in-out infinite' },
-  playerIdentity: { display: 'flex', alignItems: 'center', gap: '10px' },
-  playerPortraitWrap: { width: '56px', height: '70px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #53E7C6', flex: '0 0 auto' },
-  playerPortrait: { width: '100%', height: '100%', objectFit: 'cover' },
-  playerName: { marginTop: '3px', fontSize: '19px', fontWeight: 1000 },
-  playerTitle: { marginTop: '1px', color: '#7E9E9A', fontSize: '10px' },
-  playerHpText: { display: 'flex', justifyContent: 'space-between', gap: '10px', marginTop: '10px', fontSize: '10px', color: '#90A1B9', fontWeight: 900 },
-  hpOuterPlayer: { height: '10px', marginTop: '4px', overflow: 'hidden', borderRadius: '999px', background: '#11232A', border: '1px solid #265C59' },
-  hpInnerPlayer: { height: '100%', background: 'linear-gradient(90deg, #25C7A7, #74F5D7)', transition: 'width .22s ease' },
-  resourceGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: '6px', marginTop: '9px' },
-  resourceGridItem: { background: '#0B131D', border: '1px solid #203449', borderRadius: '8px', padding: '7px 4px', textAlign: 'center' },
-  statusRow: { minHeight: '18px', display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '8px' },
-  statusRowItem: { padding: '3px 6px', borderRadius: '999px', border: '1px solid #2C5670', background: '#102331', color: '#9AC6D9', fontSize: '9px', fontWeight: 800 },
-  centerMessage: { minHeight: '132px', padding: '14px', boxSizing: 'border-box', borderRadius: '15px', border: '1px solid #303A53', background: '#0B111D', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' },
-  messageTag: { color: '#7888A4', fontSize: '9px', fontWeight: 900, letterSpacing: '0.18em' },
-  messageText: { marginTop: '7px', fontSize: '14px', fontWeight: 900, lineHeight: 1.45 },
-  chainText: { marginTop: '9px', color: '#FFF0A2', fontSize: '11px', fontWeight: 1000, letterSpacing: '0.16em' },
-
-  actions: { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px' },
-  actionButton: { minHeight: '78px', borderRadius: '13px', border: '1px solid #31435F', background: '#111A2A', color: '#EFF5FF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px', padding: '8px', boxSizing: 'border-box', cursor: 'pointer', fontWeight: 900, transition: 'transform .12s ease, border-color .12s ease, background .12s ease' },
-  ultimateButton: { background: 'linear-gradient(135deg, #26154B, #40201D)', borderColor: '#7055C7' },
-  ultimateReady: { borderColor: '#FFF0A2', boxShadow: '0 0 20px rgba(255,240,162,.16)' },
-  actionButtonSmall: {},
-  disabledButton: { opacity: 0.4, cursor: 'not-allowed' },
-  phaseFlash: { position: 'fixed', inset: 0, zIndex: 50, pointerEvents: 'none', background: 'radial-gradient(circle, rgba(255,56,80,.72), rgba(0,0,0,.94) 72%)', animation: 'raidPhaseFlash 1.1s ease-out forwards' },
-
-  fxLayer: { position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none', overflow: 'hidden', display: 'grid', placeItems: 'center' },
-  normalFlash: { position: 'absolute', width: '52%', height: '52%', borderRadius: '50%', border: '2px solid rgba(255,255,255,.85)', boxShadow: '0 0 38px rgba(160,220,255,.55)', animation: 'raidActionFlash .55s ease-out forwards' },
-  slashFxOne: { position: 'absolute', width: '78%', height: '10px', borderRadius: '999px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent)', boxShadow: '0 0 18px rgba(180,230,255,.7)', animation: 'raidSlashFx .5s ease-out forwards' },
-  slashFxTwo: { position: 'absolute', width: '58%', height: '6px', borderRadius: '999px', background: 'linear-gradient(90deg, transparent, rgba(120,255,220,.95), transparent)', animation: 'raidSlashFx .56s .04s ease-out forwards' },
-  featherBackdrop: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 46%, rgba(176,112,255,.32), rgba(8,10,20,0) 60%)', animation: 'raidActionFlash 1.0s ease-out forwards' },
-  featherCutIn: { position: 'absolute', left: 0, top: '12%', width: '48%', maxWidth: '420px', maxHeight: '76%', objectFit: 'cover', objectPosition: 'center', borderRadius: '0 16px 16px 0', border: '1px solid rgba(255,255,255,.35)', boxShadow: '0 0 32px rgba(171,71,188,.34)', animation: 'raidFeatherCutIn 1.05s ease-out forwards' },
-  featherRain: { position: 'absolute', right: '10%', top: '18%', color: '#FFFFFF', fontSize: 'clamp(26px, 6vw, 52px)', fontWeight: 1000, letterSpacing: '.16em', textShadow: '0 0 20px rgba(210,180,255,.95)', animation: 'raidFeatherRain 1.05s ease-out forwards' },
-  focusFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '140px', height: '140px', borderRadius: '50%', color: '#A9FFE9', fontWeight: 1000, textShadow: '0 0 16px rgba(118,255,210,.9)', animation: 'raidActionFlash .7s ease-out forwards' },
-  focusCore: { position: 'absolute', width: '76px', height: '76px', borderRadius: '50%', border: '2px solid #7CF7D4', boxShadow: '0 0 28px rgba(124,247,212,.6)' },
-  guardFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '150px', height: '150px', borderRadius: '50%', color: '#7CF7D4', border: '2px solid rgba(124,247,212,.8)', background: 'rgba(40,180,160,.08)', boxShadow: '0 0 46px rgba(70,240,200,.32)', animation: 'raidGuardFx .78s ease-out forwards' },
-  guardFxLabel: { position: 'absolute', bottom: '18px', fontSize: '12px', letterSpacing: '.2em' },
-  potionFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '130px', height: '130px', borderRadius: '50%', color: '#9DFF9B', textShadow: '0 0 16px rgba(120,255,120,.8)', animation: 'raidGuardFx .78s ease-out forwards' },
-  potionFxLabel: { position: 'absolute', bottom: '8px', fontSize: '11px', letterSpacing: '.18em' },
-  ultimateFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '180px', height: '180px', color: '#FFF2A8', textShadow: '0 0 20px rgba(255,242,168,.9)' },
-  ultimateRing: { position: 'absolute', inset: 0, borderRadius: '50%', border: '3px solid rgba(230,190,255,.92)', boxShadow: '0 0 46px rgba(190,110,255,.65), inset 0 0 42px rgba(190,110,255,.38)', animation: 'raidUltimateFx .82s ease-out forwards' },
-  ultimateCore: { fontSize: 'clamp(34px, 8vw, 66px)', fontWeight: 1000, letterSpacing: '.12em', animation: 'raidActionFlash .82s ease-out forwards' },
-  bossStrikeFx: { position: 'absolute', display: 'grid', placeItems: 'center', width: '160px', height: '160px', borderRadius: '50%', color: '#FF7A8A', border: '2px solid rgba(255,90,110,.8)', background: 'rgba(120,10,30,.12)', boxShadow: '0 0 44px rgba(255,50,80,.35)', animation: 'raidBossStrikeFx .68s ease-out forwards' },
-  bossStrikeLabel: { position: 'absolute', bottom: '16px', fontSize: '11px', fontWeight: 1000, letterSpacing: '.18em' },
-
+  actions: { marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 8 },
+  actionButton: { minHeight: 82, padding: '9px 7px', borderRadius: 13, border: '1px solid #2d3950', background: '#101625', color: '#edf2ff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5, cursor: 'pointer', fontWeight: 900, boxSizing: 'border-box' },
+  featherButton: { borderColor: '#6f61a4', background: 'linear-gradient(135deg,#15152a,#201537)' },
+  counterButton: { borderColor: '#b28d3d', background: 'linear-gradient(135deg,#171411,#302417)' },
+  ultimateButton: { gridColumn: 'span 2', borderColor: '#6d57bd', background: 'linear-gradient(135deg,#21163e,#3a1b28)' },
+  ultimateReady: { borderColor: '#f4d997', boxShadow: '0 0 24px rgba(244,217,151,.14)' },
+  footer: { marginTop: 8, display: 'flex', justifyContent: 'space-between', color: '#6f7b91', fontSize: 8, letterSpacing: '.08em' },
 };
 
 export default RaidBossScreen;
