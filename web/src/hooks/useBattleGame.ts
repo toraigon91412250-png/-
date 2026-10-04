@@ -1041,7 +1041,7 @@ export function useBattleGame(
           }
         }
 
-        const finalDamage = baseDamage;
+        let finalDamage = baseDamage;
 
         if (isIrena && appliedIrenaVariant === 'OMNIPOTENCE') {
           const superBuff = 500;
