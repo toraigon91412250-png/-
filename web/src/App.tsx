@@ -78,10 +78,12 @@ export const App: React.FC = () => {
   }, [battleState.phase]);
 
   const handleOpenBattleSetup = () => {
+    setAbilityProgress(loadAbilityProgress());
     setScreen('BATTLE_SETUP');
   };
 
-  const handleStartBattle = () => {
+  const handleStartBattle = (config: BattleSetupConfig) => {
+    setBattleSetup(config);
     const sources = [
       battleBackground,
       IRENA.imageSrc,
@@ -93,7 +95,7 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(upgradedIrena, KAISER, difficulty);
+    restartBattle(upgradedIrena, KAISER, difficulty, config);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
