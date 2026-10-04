@@ -153,6 +153,21 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
           45% { transform: translate(-50%,-50%) scale(1.15); opacity:.92; }
           100% { transform: translate(-50%,-50%) scale(1.8); opacity:0; }
         }
+        @keyframes irenaReveal {
+          0% { transform: translate(-50%, 10%) scale(.96); opacity:0; filter:brightness(.35) saturate(.7) blur(4px); }
+          55% { opacity:.72; }
+          100% { transform: translate(-50%, 0) scale(1); opacity:.98; filter:brightness(1) saturate(1) blur(0); }
+        }
+        @keyframes crackFlash {
+          0% { opacity:0; transform:scale(.96); }
+          35% { opacity:.82; transform:scale(1); }
+          100% { opacity:0; transform:scale(1.03); }
+        }
+        @keyframes featherReveal {
+          0% { transform:translate(-50%,-50%) scale(.55) rotate(-8deg); opacity:0; filter:brightness(.35) blur(3px); }
+          48% { opacity:.9; }
+          100% { transform:translate(-50%,-50%) scale(1) rotate(0); opacity:.72; filter:brightness(.8) blur(0); }
+        }
         @keyframes drift {
           0% { transform: translateY(0); }
           50% { transform: translateY(-7px); }
@@ -198,9 +213,10 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
           boxShadow:'0 18px 65px rgba(0,0,0,.52), inset 0 0 75px rgba(100,53,120,.09)',
         }}>
           <img src={RECRUITMENT_ASSETS.cloud} alt="" aria-hidden="true" style={{ position:'absolute', inset:'-12%', width:'124%', height:'124%', objectFit:'cover', opacity: phase === 'SUMMONING' ? .5 : .16, mixBlendMode:'screen', filter:'contrast(1.15) brightness(.55)', transition:'opacity .35s ease' }} />
-          <img src={RECRUITMENT_ASSETS.feather} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', top:'52%', width:'min(58vw,430px)', height:'min(58vw,430px)', objectFit:'contain', transform:'translate(-50%,-50%)', opacity: phase === 'SUMMONING' ? .72 : .28, filter:'drop-shadow(0 0 22px rgba(110,75,130,.28))', transition:'opacity .35s ease, transform .8s ease' }} />
+          <img src={RECRUITMENT_ASSETS.feather} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', top:'52%', width:'min(58vw,430px)', height:'min(58vw,430px)', objectFit:'contain', transform:'translate(-50%,-50%)', opacity: phase === 'SUMMONING' ? .72 : .28, filter:'drop-shadow(0 0 22px rgba(110,75,130,.28))', transition:'opacity .35s ease, transform .8s ease', animation: phase === 'SUMMONING' ? 'featherReveal 1.05s cubic-bezier(.18,.86,.28,1) both' : undefined }} />
           <img src={RECRUITMENT_ASSETS.irena} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', bottom:'-7%', width:'min(46vw,300px)', height:'78%', objectFit:'contain', objectPosition:'center bottom', transform:'translateX(-50%)', opacity: phase === 'SUMMONING' ? .22 : .08, mixBlendMode:'screen', filter:'saturate(.85) contrast(1.1)', transition:'opacity .5s ease' }} />
-          {phase === 'SUMMONING' && <img src={RECRUITMENT_ASSETS.crack} alt="" aria-hidden="true" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.42, mixBlendMode:'screen', pointerEvents:'none' }} />}
+          <img src={RECRUITMENT_ASSETS.irenaAlt} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', bottom:'-7%', width:'min(46vw,300px)', height:'78%', objectFit:'contain', objectPosition:'center bottom', transform:'translateX(-50%)', opacity: phase === 'RESULT' ? .72 : 0, mixBlendMode:'screen', filter:'saturate(.95) contrast(1.12) drop-shadow(0 0 18px rgba(150,55,70,.22))', transition:'opacity .55s ease' }} />
+          {phase === 'SUMMONING' && <img src={RECRUITMENT_ASSETS.crack} alt="" aria-hidden="true" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.42, mixBlendMode:'screen', pointerEvents:'none', animation:'crackFlash 1.05s ease-out both' }} />}
           <div style={{
             position:'absolute', left:'50%', top:'52%', width:220, height:220, borderRadius:'50%',
             border:'1px solid rgba(197,154,220,.22)', animation:'wingPulse 3.2s ease-in-out infinite',
