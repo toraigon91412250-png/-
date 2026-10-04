@@ -318,6 +318,9 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               }}
             >
               {state.enemy.character.name} を撃破！
+            <div style={{ marginTop: '7px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '999px', background: 'rgba(126, 87, 194, 0.18)', border: '1px solid rgba(206, 147, 216, 0.42)', color: '#E1BEE7', fontSize: '12px', fontWeight: 950 }}>
+              ✦ 黒羽の欠片 +{state.lastBattleReward}
+            </div>
             </div>
           </div>
 
@@ -452,10 +455,12 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           DEFEAT... 敗北
         </div>
 
-        <div style={{ fontSize: '13px', color: '#B0BEC5', marginBottom: '16px' }}>
+        <div style={{ fontSize: '13px', color: '#B0BEC5', marginBottom: '7px' }}>
           {state.enemy.character.name} の前に倒れました... 次こそ勝利を掴みましょう！
         </div>
-
+        <div style={{ marginBottom: '16px', padding: '6px 10px', borderRadius: '999px', background: 'rgba(126, 87, 194, 0.18)', border: '1px solid rgba(206, 147, 216, 0.42)', color: '#E1BEE7', fontSize: '12px', fontWeight: 950 }}>
+          ✦ 黒羽の欠片 +{state.lastBattleReward}
+        </div>
         <div
           style={{
             width: '100%',
