@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -14,6 +14,7 @@ interface BattleScreenProps {
   onRestart: () => void;
   skillProgress: IrenaSkillProgress;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
+  onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
   onToggleSound: () => void;
   onToggleSpeed: () => void;
 }
@@ -53,6 +54,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   onRestart,
   skillProgress,
   onUpgradeSkill,
+  onChooseSkillPath,
   onToggleSound,
   onToggleSpeed,
 }) => {
@@ -555,6 +557,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           onBackToSelect={onBackToSelect}
           skillProgress={skillProgress}
           onUpgradeSkill={onUpgradeSkill}
+          onChooseSkillPath={onChooseSkillPath}
         />
       )}
     </div>
