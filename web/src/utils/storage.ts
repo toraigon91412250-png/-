@@ -1,4 +1,4 @@
-import { AbilityId, AbilityProgress, BattleChallengeLevel, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 
