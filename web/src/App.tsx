@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CpuDifficulty } from './types/game';
-import { IRENA, KAISER } from './data/characters';
+import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { loadOverallStats } from './utils/storage';
+import { chooseIrenaSkillPath, loadOverallStats, loadSkillProgress, upgradeIrenaSkill } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 
@@ -12,7 +12,10 @@ export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
+  const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
+
+  const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
 
   const {
     state: battleState,
@@ -65,6 +68,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (battleState.phase === 'BATTLE_FINISHED') {
       setOverallStats(loadOverallStats());
+      setSkillProgress(loadSkillProgress());
     }
   }, [battleState.phase]);
 
@@ -80,7 +84,7 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(IRENA, KAISER, difficulty);
+    restartBattle(upgradedIrena, KAISER, difficulty);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
@@ -92,6 +96,22 @@ export const App: React.FC = () => {
       setTimeout(() => setIsBattleDeploying(false), remainingMs);
     });
   };
+  const handleUpgradeSkill = (skillId: 'FEATHER' | 'RUIN') => {
+    const next = upgradeIrenaSkill(skillId);
+    if (next) setSkillProgress(next);
+  };
+
+  const handleChooseSkillPath = (
+    skillId: 'FEATHER' | 'RUIN',
+    path: 'ABYSS' | 'JUDGMENT' | 'CHARGE' | 'EXECUTION' | 'ANNIHILATION'
+  ) => {
+    const next =
+      skillId === 'FEATHER'
+        ? chooseIrenaSkillPath('FEATHER', path as 'ABYSS' | 'JUDGMENT' | 'CHARGE')
+        : chooseIrenaSkillPath('RUIN', path as 'EXECUTION' | 'ANNIHILATION');
+    if (next) setSkillProgress(next);
+  };
+
   const handleBackToSelect = () => {
     setOverallStats(loadOverallStats());
     setScreen('SELECT');
@@ -145,13 +165,19 @@ export const App: React.FC = () => {
           onSelectDifficulty={setDifficulty}
           onStartBattle={handleStartBattle}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
+          skillProgress={skillProgress}
+          onUpgradeSkill={handleUpgradeSkill}
+          onChooseSkillPath={handleChooseSkillPath}
         />
       ) : screen === 'BATTLE' ? (
         <BattleScreen
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle()}
+          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty)}
+          skillProgress={skillProgress}
+          onUpgradeSkill={handleUpgradeSkill}
+          onChooseSkillPath={handleChooseSkillPath}
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />

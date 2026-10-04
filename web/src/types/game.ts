@@ -85,6 +85,10 @@ export interface CharacterDef {
   specialCutInSrc?: string; // 特殊技カットイン用（未指定ならカットインなし）
   primaryColor: string;
   secondaryColor: string;
+  featherSkillPath?: FeatherSkillPath | null;
+  ruinSkillPath?: RuinSkillPath | null;
+  featherSkillLevel?: number;
+  ruinSkillLevel?: number;
 }
 
 export interface BattleFighter {
@@ -178,6 +182,18 @@ export interface VisualEffect {
 
 export type CpuDifficulty = 'NORMAL' | 'EXPERT';
 
+export type IrenaSkillId = 'FEATHER' | 'RUIN';
+export type FeatherSkillPath = 'ABYSS' | 'JUDGMENT' | 'CHARGE';
+export type RuinSkillPath = 'EXECUTION' | 'ANNIHILATION';
+
+export interface IrenaSkillProgress {
+  shards: number;
+  featherLevel: number;
+  ruinLevel: number;
+  featherPath: FeatherSkillPath | null;
+  ruinPath: RuinSkillPath | null;
+}
+
 export type BattlePhase = 'SELECT_ACTION' | 'EXECUTING_TURNS' | 'BATTLE_FINISHED';
 
 export interface BattleUiState {
@@ -193,6 +209,7 @@ export interface BattleUiState {
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
+  lastBattleReward: number;
 }
 
 export interface OverallStats {
