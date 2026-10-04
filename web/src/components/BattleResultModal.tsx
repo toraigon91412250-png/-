@@ -25,6 +25,31 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
   const loser = playerWon ? state.enemy : state.player;
+
+  // 評価は報酬・勝敗には影響せず、今回の戦闘内容だけを可視化する。
+  const playerHpRatio = state.player.character.maxHp > 0
+    ? Math.max(0, Math.min(1, state.player.currentHp / state.player.character.maxHp))
+    : 0;
+  const performanceScore = playerWon
+    ? Math.min(
+        100,
+        Math.round(
+          55
+          + playerHpRatio * 30
+          + (state.turnNumber <= 5 ? 15 : state.turnNumber <= 8 ? 8 : 0)
+          + Math.min(10, state.lastBattleMasteryReward),
+        ),
+      )
+    : 0;
+  const performanceGrade = performanceScore >= 90
+    ? 'S'
+    : performanceScore >= 75
+      ? 'A'
+      : performanceScore >= 60
+        ? 'B'
+        : performanceScore >= 45
+          ? 'C'
+          : 'D';
   const [victoryAssetsReady, setVictoryAssetsReady] = React.useState(!playerWon);
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
   const skillUpgradeOverlay = upgradeOpen ? (
@@ -471,6 +496,39 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             </span>
           )}
         </div>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            padding: '12px 14px',
+            marginBottom: '10px',
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 224, 130, 0.35)',
+            background: 'linear-gradient(90deg, rgba(255, 193, 7, 0.12), rgba(126, 87, 194, 0.12))',
+            boxSizing: 'border-box',
+          }}
+        >
+          <div>
+            <div style={{ color: '#90CAF9', fontSize: '10px', fontWeight: 900, letterSpacing: '0.14em' }}>
+              BATTLE PERFORMANCE
+            </div>
+            <div style={{ marginTop: '3px', color: '#FFFFFF', fontSize: '13px', fontWeight: 900 }}>
+              {playerWon ? '戦闘評価' : '戦闘結果'}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '28px', lineHeight: 1, fontWeight: 1000, color: '#FFE082' }}>
+              {performanceGrade}
+            </span>
+            <span style={{ marginLeft: '7px', color: '#B0BEC5', fontSize: '11px', fontWeight: 800 }}>
+              {performanceScore} pt
+            </span>
+          </div>
+        </div>
+
         <div
           style={{
             width: '100%',
