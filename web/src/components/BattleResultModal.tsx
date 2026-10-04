@@ -17,6 +17,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   state,
   onRematch,
   onBackToSelect,
+  skillProgress,
+  onUpgradeSkill,
 }) => {
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
