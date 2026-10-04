@@ -11,13 +11,15 @@ import {
   getEffectiveAttack,
   getEffectiveDefense,
   getEffectiveSpeed,
+  getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
+  STATUS_AILMENTS,
   LogType,
   StatusAilmentType,
 } from '../types/game';
 import { CpuAi } from '../utils/ai';
 import { soundManager } from '../utils/audio';
-import { getBattleReward, saveBattleResult } from '../utils/storage';
+import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import {
   applyDynamicAbilityModifiers,
   applyJudgmentDefense,
@@ -85,6 +87,7 @@ export function useBattleGame(
     isSoundEnabled: true,
     isAnimating: false,
     lastBattleReward: 0,
+    lastBattleMasteryReward: 0,
     battleConfig: normalizedInitialConfig,
     };
   });
@@ -108,6 +111,8 @@ export function useBattleGame(
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
   const fallenReleaseLoggedRef = useRef(false);
+  const masteryClaimedRef = useRef<Set<string>>(new Set());
+  const battleMasteryRewardRef = useRef(0);
 
 
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
@@ -123,6 +128,17 @@ export function useBattleGame(
       logs: [...prev.logs, newLog],
     }));
   }, [updateState]);
+
+  const claimPathMasteryReward = useCallback((masteryId: string, masteryName: string, turn: number) => {
+    if (masteryClaimedRef.current.has(masteryId)) return;
+    masteryClaimedRef.current.add(masteryId);
+    battleMasteryRewardRef.current += PATH_MASTERY_REWARD;
+    addLog(
+      `✦【戦術達成】${masteryName}を活かした！ 黒羽の欠片 +${PATH_MASTERY_REWARD}`,
+      'GAUGE_CHANGE',
+      turn
+    );
+  }, [addLog]);
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -214,6 +230,8 @@ export function useBattleGame(
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
+    masteryClaimedRef.current = new Set();
+    battleMasteryRewardRef.current = 0;
     judgmentMarksRef.current = 0;
     judgmentReadyRef.current = false;
     fallenKingSurvivalCountRef.current = 0;
@@ -243,6 +261,7 @@ export function useBattleGame(
       cpuIntent: nextCpuIntent,
       isAnimating: false,
       lastBattleReward: 0,
+      lastBattleMasteryReward: 0,
       battleConfig: nextConfig,
     }));
   }, [updateState]);
@@ -276,14 +295,22 @@ export function useBattleGame(
   // Apply Special Status Ailment (Bleed or Pressure)
   const applySpecialStatusAilment = (attacker: BattleFighter, defenderIsPlayer: boolean, turn: number) => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
+    const bleedDamage = attacker.character.id === 'irena' && (attacker.character.featherSkillLevel || 1) >= 3
+      ? 40
+      : STATUS_AILMENTS.BLEED.dotDamage;
     const def = ailmentType === 'BLEED'
-      ? { type: 'BLEED' as const, defaultDuration: 3, description: '各ターン開始時30ダメージ、速度-20、防御-20' }
+      ? { type: 'BLEED' as const, defaultDuration: 3, dotDamage: bleedDamage, description: '各ターン開始時' + bleedDamage + 'ダメージ、速度-20、防御-20' }
       : { type: 'PRESSURE' as const, defaultDuration: 2, description: '速度-25、攻撃力-25' };
 
     updateState(prev => {
       const target = defenderIsPlayer ? prev.player : prev.enemy;
       const filtered = target.activeAilments.filter(a => a.type !== ailmentType);
-      const updated = [...filtered, { type: ailmentType, remainingTurns: def.defaultDuration }];
+      const updated = [
+        ...filtered,
+        ailmentType === 'BLEED'
+          ? { type: ailmentType, remainingTurns: def.defaultDuration, dotDamage: bleedDamage }
+          : { type: ailmentType, remainingTurns: def.defaultDuration },
+      ];
       return defenderIsPlayer
         ? { ...prev, player: { ...prev.player, activeAilments: updated } }
         : { ...prev, enemy: { ...prev.enemy, activeAilments: updated } };
@@ -323,7 +350,7 @@ export function useBattleGame(
     const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
     if (bleedAilment) {
       soundManager.playHeavyStrike();
-      const dotDamage = 30;
+      const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
       const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
@@ -646,31 +673,42 @@ export function useBattleGame(
           const currentBonus = isActorPlayer
             ? stateRef.current.player.featherChargeBonus
             : stateRef.current.enemy.featherChargeBonus;
-          const gain = rollIrenaFeatherChargeGain(currentCount);
-          const nextBonus = currentBonus + gain;
-          updateState(prev => (isActorPlayer
-            ? {
-                ...prev,
-                player: {
-                  ...prev.player,
-                  featherChargeBonus: prev.player.featherChargeBonus + gain,
-                  featherChargeCount: prev.player.featherChargeCount + 1,
-                },
-              }
-            : {
-                ...prev,
-                enemy: {
-                  ...prev.enemy,
-                  featherChargeBonus: prev.enemy.featherChargeBonus + gain,
-                  featherChargeCount: prev.enemy.featherChargeCount + 1,
-                },
-              }
-          ));
-          addLog(
-            '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
-            isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
-            turn
-          );
+          const skillLevel = actor.character.featherSkillLevel || 1;
+          const maxChargeCount = getIrenaFeatherMaxChargeCount(skillLevel);
+
+          if (currentCount >= maxChargeCount) {
+            addLog(
+              '🪶【羽弾蓄積MAX】蓄積上限 ' + maxChargeCount + '回に到達している！ さらに通常攻撃してもチャージは増えない。',
+              isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
+              turn
+            );
+          } else {
+            const gain = rollIrenaFeatherChargeGain(currentCount);
+            const nextBonus = currentBonus + gain;
+            updateState(prev => (isActorPlayer
+              ? {
+                  ...prev,
+                  player: {
+                    ...prev.player,
+                    featherChargeBonus: prev.player.featherChargeBonus + gain,
+                    featherChargeCount: prev.player.featherChargeCount + 1,
+                  },
+                }
+              : {
+                  ...prev,
+                  enemy: {
+                    ...prev.enemy,
+                    featherChargeBonus: prev.enemy.featherChargeBonus + gain,
+                    featherChargeCount: prev.enemy.featherChargeCount + 1,
+                  },
+                }
+            ));
+            addLog(
+              '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
+              isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
+              turn
+            );
+          }
         }
 
         if (newTargetHp <= 0) return false;
@@ -696,6 +734,9 @@ export function useBattleGame(
 
         // The Charge route turns Feather into a renewable resource instead of a full reset.
         if (isIrenaSpecial) {
+          if (irenaSkillPath === 'CHARGE' && retainedFeatherCharge > 0) {
+            claimPathMasteryReward('FEATHER_CHARGE', '羽弾・蓄積', turn);
+          }
           updateState(prev => (isActorPlayer
             ? {
                 ...prev,
@@ -805,6 +846,7 @@ export function useBattleGame(
         }
 
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
+          claimPathMasteryReward('FEATHER_ABYSS', '羽弾・深淵', turn);
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += abyssBonus;
           addLog(
@@ -820,6 +862,7 @@ export function useBattleGame(
           irenaSkillPath === 'JUDGMENT' &&
           target.activeAilments.some(a => a.type === 'BLEED')
         ) {
+          claimPathMasteryReward('FEATHER_JUDGMENT', '羽弾・断罪', turn);
           const judgmentBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += judgmentBonus;
           addLog(
@@ -935,6 +978,7 @@ export function useBattleGame(
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
           if (ruinLevel >= 4 && ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)) {
+            claimPathMasteryReward('RUIN_EXECUTION', '破壊・処刑', turn);
             const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
             baseDamage += executionBonus;
             addLog(
@@ -947,6 +991,7 @@ export function useBattleGame(
             ruinPath === 'ANNIHILATION' &&
             target.activeAilments.some(a => a.type === 'BLEED')
           ) {
+            claimPathMasteryReward('RUIN_ANNIHILATION', '破壊・殲滅', turn);
             const annihilationBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
             baseDamage += annihilationBonus;
             addLog(
@@ -1158,8 +1203,9 @@ export function useBattleGame(
   };
 
   const finalizeBattle = (winnerIsPlayer: boolean) => {
-    const reward = getBattleReward(winnerIsPlayer);
-    saveBattleResult(winnerIsPlayer);
+    const masteryBonus = battleMasteryRewardRef.current;
+    const reward = getBattleReward(winnerIsPlayer, masteryBonus);
+    saveBattleResult(winnerIsPlayer, masteryBonus);
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);
