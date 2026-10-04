@@ -10,9 +10,10 @@ import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
+import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -80,9 +81,22 @@ export const App: React.FC = () => {
     }
   }, [battleState.phase]);
 
-  const handleOpenBattleSetup = () => {
+  const refreshProgress = () => {
+    setOverallStats(loadOverallStats());
+    setSkillProgress(loadSkillProgress());
+    setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
+  };
+
+  const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
+    refreshProgress();
+    if (prefill) setBattleSetup(prefill);
     setScreen('BATTLE_SETUP');
+  };
+
+  const handleOpenDeveloperTools = () => {
+    refreshProgress();
+    setScreen('DEV_TOOLS');
   };
 
   const handleStartBattle = (config: BattleSetupConfig) => {
@@ -148,10 +162,41 @@ export const App: React.FC = () => {
   };
 
   const handleBackToSelect = () => {
-    setOverallStats(loadOverallStats());
-    setSkillProgress(loadSkillProgress());
-    setRecruitmentProgress(loadRecruitmentProgress());
+    refreshProgress();
     setScreen('SELECT');
+  };
+
+  const handleDeveloperSetAbility = (id: AbilityId, level: number, shards?: number) => {
+    setAbilityProgress(setAbilityForDeveloper(id, level, shards));
+  };
+
+  const handleDeveloperSetAllAbilities = (level: number, shards: number) => {
+    setAbilityProgress(setAllAbilitiesForDeveloper(level, shards));
+  };
+
+  const handleDeveloperAddAbilityShards = (id: AbilityId, amount: number) => {
+    setAbilityProgress(addAbilityShardsForDeveloper(id, amount));
+  };
+
+  const handleDeveloperSetTickets = (tickets: number) => {
+    setRecruitmentProgress(setRecruitmentTicketsForDeveloper(tickets));
+  };
+
+  const handleDeveloperAddTickets = (amount: number) => {
+    setRecruitmentProgress(addRecruitmentTicketsForDeveloper(amount));
+  };
+
+  const handleDeveloperSetSkillProgress = (featherLevel: number, ruinLevel: number, shards: number) => {
+    setSkillProgress(setSkillProgressForDeveloper(featherLevel, ruinLevel, shards));
+  };
+
+  const handleDeveloperReset = () => {
+    const reset = resetProgressForDeveloper();
+    setOverallStats(reset.overallStats);
+    setSkillProgress(reset.skillProgress);
+    setRecruitmentProgress(reset.recruitmentProgress);
+    setAbilityProgress(reset.abilityProgress);
+    setBattleSetup({ kaiserLevel: 10, abilities: [] });
   };
 
   return (
@@ -236,6 +281,7 @@ export const App: React.FC = () => {
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
           abilityProgress={abilityProgress}
+          initialConfig={battleSetup}
           onBack={() => setScreen('SELECT')}
           onStartBattle={handleStartBattle}
         />
@@ -253,13 +299,32 @@ export const App: React.FC = () => {
         />
       ) : screen === 'RAID_BOSS' ? (
         <RaidBossScreen onBack={() => setScreen('SELECT')} />
-      ) : (
+      ) : screen === 'RECRUITMENT' ? (
         <RecruitmentScreen
           progress={recruitmentProgress}
           abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
           onUpgradeAbility={handleUpgradeAbility}
           onBack={() => setScreen('SELECT')}
+        />
+      ) : (
+        <DeveloperToolsScreen
+          abilityProgress={abilityProgress}
+          recruitmentProgress={recruitmentProgress}
+          skillProgress={skillProgress}
+          overallStats={overallStats}
+          battleSetup={battleSetup}
+          onBack={() => setScreen('SELECT')}
+          onRefresh={refreshProgress}
+          onSetAbility={handleDeveloperSetAbility}
+          onSetAllAbilities={handleDeveloperSetAllAbilities}
+          onAddAbilityShards={handleDeveloperAddAbilityShards}
+          onSetTickets={handleDeveloperSetTickets}
+          onAddTickets={handleDeveloperAddTickets}
+          onSetSkillProgress={handleDeveloperSetSkillProgress}
+          onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenBattleSetup={handleOpenBattleSetup}
+          onReset={handleDeveloperReset}
         />
       )}
     </div>
