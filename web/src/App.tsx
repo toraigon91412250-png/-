@@ -80,7 +80,7 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(IRENA, KAISER);
+    restartBattle(IRENA, KAISER, difficulty);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 

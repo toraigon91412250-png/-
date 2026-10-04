@@ -189,6 +189,7 @@ export interface BattleUiState {
   visualEffect: VisualEffect | null;
   winnerIsPlayer: boolean | null;
   cpuDifficulty: CpuDifficulty;
+  cpuIntent: BattleAction;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;

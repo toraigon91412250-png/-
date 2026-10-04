@@ -1,83 +1,203 @@
-import { BattleAction, BattleFighter, CpuDifficulty, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed } from '../types/game';
+import {
+  BattleAction,
+  BattleFighter,
+  CpuDifficulty,
+  getEffectiveAttack,
+  getEffectiveDefense,
+} from '../types/game';
+
+export interface CpuAiContext {
+  recentPlayerActions?: BattleAction[];
+  recentCpuActions?: BattleAction[];
+  turnNumber?: number;
+}
+
+const ACTION_KEYS = ['ATTACK', 'EVADE', 'BUFF', 'SPECIAL', 'ULTIMATE'] as const;
+type ActionKey = typeof ACTION_KEYS[number];
+
+const PLAYER_PRIOR: Record<ActionKey, number> = {
+  ATTACK: 0.40,
+  EVADE: 0.15,
+  BUFF: 0.10,
+  SPECIAL: 0.25,
+  ULTIMATE: 0.10,
+};
+
+function toKey(action: BattleAction): ActionKey {
+  return action;
+}
+
+function predictPlayerAction(
+  recentPlayerActions: BattleAction[],
+  windowSize: number
+): Record<ActionKey, number> {
+  if (recentPlayerActions.length === 0) {
+    return { ...PLAYER_PRIOR };
+  }
+
+  const recent = recentPlayerActions.slice(-windowSize);
+  const scores: Record<ActionKey, number> = { ...PLAYER_PRIOR };
+  const totalRecencyWeight = recent.reduce((sum, _, index) => sum + index + 1, 0);
+
+  recent.forEach((action, index) => {
+    scores[toKey(action)] += ((index + 1) / totalRecencyWeight) * 2.6;
+  });
+
+  // Repeating the same player action twice is a strong signal.
+  if (recent.length >= 2 && recent[recent.length - 1] === recent[recent.length - 2]) {
+    scores[toKey(recent[recent.length - 1])] += 1.4;
+  }
+
+  const total = ACTION_KEYS.reduce((sum, action) => sum + scores[action], 0);
+  return ACTION_KEYS.reduce(
+    (result, action) => {
+      result[action] = scores[action] / total;
+      return result;
+    },
+    {} as Record<ActionKey, number>
+  );
+}
+
+function chooseReadableVariation(
+  candidates: BattleAction[],
+  best: BattleAction,
+  difficulty: CpuDifficulty
+): BattleAction {
+  if (candidates.length <= 1) return best;
+
+  // Randomness is constrained to strategically close alternatives.
+  const variationChance = difficulty === 'EXPERT' ? 0.12 : 0.22;
+  if (Math.random() >= variationChance) return best;
+
+  return candidates[Math.floor(Math.random() * candidates.length)] ?? best;
+}
 
 export const CpuAi = {
   decideAction(
     cpu: BattleFighter,
     player: BattleFighter,
-    difficulty: CpuDifficulty
+    difficulty: CpuDifficulty,
+    context: CpuAiContext = {}
   ): BattleAction {
-    const cpuUltimateReady = cpu.ultimateGauge >= 3;
-    const cpuSpecialReady = cpu.specialCooldownRemaining <= 0;
-    const cpuBuffBonus = cpu.isBuffed ? 125 : 0;
-    const cpuSpecialDmg = cpu.character.specialSkillDamage + cpuBuffBonus;
-    const cpuUltimateDmg = cpu.character.ultimateSkillDamage + cpuBuffBonus;
-    const cpuAtk = getEffectiveAttack(cpu);
-    const playerDef = getEffectiveDefense(player);
+    const recentPlayerActions = context.recentPlayerActions ?? [];
+    const recentCpuActions = context.recentCpuActions ?? [];
+    const prediction = predictPlayerAction(
+      recentPlayerActions,
+      difficulty === 'EXPERT' ? 6 : 3
+    );
 
-    // Normal attack approximate damage
-    const approxNormalDmg = Math.max(15, cpuAtk - playerDef) + cpuBuffBonus;
+    const cpuAttack = getEffectiveAttack(cpu);
+    const playerDefense = getEffectiveDefense(player);
+    const buffBonus = cpu.isBuffed ? cpu.buffDamageBonus || 125 : 0;
+    const normalDamage = Math.max(15, cpuAttack - playerDefense) + buffBonus;
+    const specialDamage = cpu.character.specialSkillDamage + buffBonus;
+    const ultimateDamage = cpu.character.ultimateSkillDamage + buffBonus;
 
-    // 0. Ultimate Lethal / Usage: If Ultimate is ready (3/3)
-    if (cpuUltimateReady) {
-      if (player.currentHp <= cpuUltimateDmg) {
-        return 'ULTIMATE';
+    const finalNormalDamage = cpu.character.id === 'kaiser'
+      ? Math.max(0, normalDamage - 20)
+      : normalDamage;
+
+    const lethalNormal = player.currentHp <= finalNormalDamage;
+    const lethalSpecial = player.currentHp <= specialDamage;
+    const lethalUltimate = player.currentHp <= ultimateDamage;
+
+    const playerBurstThreat =
+      player.ultimateGauge >= 3 ||
+      (player.specialCooldownRemaining <= 0 && player.featherChargeBonus >= 70);
+
+    const playerOffenseSignal =
+      prediction.ATTACK +
+      prediction.SPECIAL * 0.92 +
+      prediction.ULTIMATE;
+
+    const candidates: BattleAction[] = [];
+    const addCandidate = (action: BattleAction) => {
+      if (!candidates.includes(action)) candidates.push(action);
+    };
+
+    // Guaranteed finishers come first. This prevents the anti-repeat rules
+    // from ever throwing away an actual winning move.
+    if (cpu.ultimateGauge >= 3 && lethalUltimate) return 'ULTIMATE';
+    if (cpu.specialCooldownRemaining <= 0 && lethalSpecial) return 'SPECIAL';
+    if (lethalNormal) return 'ATTACK';
+
+    // Predict and answer burst turns.
+    if (
+      playerBurstThreat &&
+      prediction.SPECIAL + prediction.ULTIMATE >= 0.40 &&
+      player.currentHp >= cpu.character.maxHp * 0.45
+    ) {
+      return 'EVADE';
+    }
+
+    // If the player repeatedly chooses an offensive/defensive pattern,
+    // select the response that makes that pattern less profitable.
+    if (prediction.EVADE >= 0.48) {
+      if (!cpu.isBuffed && cpu.currentHp > cpu.character.maxHp * 0.45) {
+        addCandidate('BUFF');
       }
-      const ultChance = difficulty === 'EXPERT' ? 0.85 : 0.75;
-      if (Math.random() < ultChance) {
-        return 'ULTIMATE';
+      addCandidate('ATTACK');
+    } else if (prediction.BUFF >= 0.40) {
+      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
+      addCandidate('ATTACK');
+    } else if (prediction.ATTACK >= 0.48) {
+      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
+      addCandidate('ATTACK');
+    } else {
+      addCandidate('ATTACK');
+      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
+    }
+
+    // Build pressure instead of spending a strong action on a bad timing.
+    if (!cpu.isBuffed && player.currentHp > player.character.maxHp * 0.40) {
+      const defensivePlayer =
+        prediction.EVADE + prediction.BUFF >= 0.34;
+      if (defensivePlayer || cpu.specialCooldownRemaining > 0) {
+        addCandidate('BUFF');
       }
     }
 
-    // 1. Lethal Finish Check: If CPU can defeat player this turn, execute kill
-    if (cpuSpecialReady && player.currentHp <= cpuSpecialDmg) {
+    // Situational defense. Expert reacts more often and uses the longer memory.
+    if (playerBurstThreat) {
+      addCandidate('EVADE');
+    }
+
+    // Ultimate is valuable, but should feel like a committed decision rather than
+    // an automatic gauge dump against a full-health player.
+    if (cpu.ultimateGauge >= 3) {
+      const ultimateThreshold = difficulty === 'EXPERT' ? 0.68 : 0.60;
+      if (
+        player.currentHp <= player.character.maxHp * ultimateThreshold ||
+        prediction.ATTACK + prediction.SPECIAL >= 0.55
+      ) {
+        addCandidate('ULTIMATE');
+      }
+    }
+
+    // Repetition breaker: a CPU that used the same action for two rounds in a row
+    // strongly prefers a different family of action unless it has lethal.
+    const lastCpuAction = recentCpuActions[recentCpuActions.length - 1];
+    const secondLastCpuAction = recentCpuActions[recentCpuActions.length - 2];
+    if (lastCpuAction && lastCpuAction === secondLastCpuAction) {
+      const filtered = candidates.filter(action => action !== lastCpuAction);
+      if (filtered.length > 0) {
+        return chooseReadableVariation(filtered, filtered[0], difficulty);
+      }
+    }
+
+    const filteredLast = lastCpuAction
+      ? candidates.filter(action => action !== lastCpuAction)
+      : candidates;
+
+    if (filteredLast.length > 0) {
+      return chooseReadableVariation(filteredLast, filteredLast[0], difficulty);
+    }
+
+    // Absolute fallback: valid and deterministic enough to remain debuggable.
+    if (cpu.specialCooldownRemaining <= 0 && playerOffenseSignal > 0.55) {
       return 'SPECIAL';
     }
-    if (player.currentHp <= approxNormalDmg) {
-      return (cpuSpecialReady && Math.random() < 0.2) ? 'SPECIAL' : 'ATTACK';
-    }
 
-    // 2. High Threat / Evade Check:
-    // If player strikes first (effectiveSpeed comparison) and player special/ultimate is ready
-    const playerCanStrikeFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(cpu);
-    const playerSpecialThreat =
-      (player.specialCooldownRemaining <= 0 && (cpu.currentHp <= player.character.specialSkillDamage + 50 || cpu.currentHp < cpu.character.maxHp * 0.35)) ||
-      (player.ultimateGauge >= 3 && (cpu.currentHp <= player.character.ultimateSkillDamage + 50 || cpu.currentHp < cpu.character.maxHp * 0.50));
-
-    if (playerCanStrikeFirst && playerSpecialThreat) {
-      const evadeChance = difficulty === 'EXPERT' ? 0.65 : 0.45;
-      if (Math.random() < evadeChance) {
-        return 'EVADE';
-      }
-    }
-
-    // 3. Low HP Desperation
-    if (cpu.currentHp < cpu.character.maxHp * 0.20) {
-      const r = Math.random();
-      if (cpuUltimateReady) return 'ULTIMATE';
-      if (cpuSpecialReady && r < 0.40) return 'SPECIAL';
-      if (r < 0.75) return 'EVADE';
-      if (!cpu.isBuffed && r < 0.85) return 'BUFF';
-      return 'ATTACK';
-    }
-
-    // 4. Special Skill Usage
-    if (cpuSpecialReady) {
-      const specialUsageChance = difficulty === 'EXPERT' ? 0.70 : 0.60;
-      if (Math.random() < specialUsageChance) {
-        return 'SPECIAL';
-      }
-    }
-
-    // 5. Tactical Buff: If not buffed and not under immediate threat
-    if (!cpu.isBuffed && Math.random() < 0.25) {
-      return 'BUFF';
-    }
-
-    // 6. Tactical Evade vs Normal Attack
-    const normalEvadeChance = difficulty === 'EXPERT'
-      ? (player.specialCooldownRemaining <= 0 || player.ultimateGauge >= 3 ? 0.35 : 0.15)
-      : (player.specialCooldownRemaining <= 0 || player.ultimateGauge >= 3 ? 0.20 : 0.10);
-
-    return Math.random() < normalEvadeChance ? 'EVADE' : 'ATTACK';
+    return 'ATTACK';
   },
 };
