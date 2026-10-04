@@ -45,6 +45,8 @@ export function getIrenaWithSkillProgress(progress: IrenaSkillProgress): Charact
     ultimateSkillDamage: ruinDamage,
     featherSkillPath: progress.featherPath,
     ruinSkillPath: progress.ruinPath,
+    featherSkillLevel: featherLevel,
+    ruinSkillLevel: ruinLevel,
   };
 }
 
