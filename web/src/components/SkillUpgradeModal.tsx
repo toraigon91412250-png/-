@@ -63,7 +63,8 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
         <div style={{ marginTop: '11px', padding: '10px', borderRadius: '10px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: '12px', fontWeight: 900, color: '#DCE5F2' }}>現在：{baseDamage(id, level)} ダメージ</div>
           {!maxed && <div style={{ marginTop: '4px', fontSize: '10px', color: '#A9B5C8' }}>次のLv：+{nextIncrease(id)} ダメージ</div>}
-          <div style={{ marginTop: '5px', fontSize: '10px', color: '#D1C4E9', fontWeight: 800 }}>{milestone}</div>
+          <div style={{ marginTop: '5px', fontSize: '10px', color: '#E1BEE7', fontWeight: 850 }}>{effectSummary}</div>
+          <div style={{ marginTop: '4px', fontSize: '10px', color: '#D1C4E9', fontWeight: 800 }}>{milestone}</div>
         </div>
 
         {needsPath && (
@@ -115,7 +116,7 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
         </div>
 
         <div style={{ marginTop: '13px', padding: '10px 12px', borderRadius: '11px', background: 'rgba(38,166,154,0.08)', border: '1px solid rgba(128,203,196,0.22)', color: '#B7C8D5', fontSize: '10px', lineHeight: 1.5 }}>
-          勝利で {BATTLE_REWARD_WIN} 欠片、敗北でも {BATTLE_REWARD_LOSS} 欠片。Lv.4から選択ルートの個性が戦闘に反映されます。
+          勝利で {BATTLE_REWARD_WIN} 欠片、敗北でも {BATTLE_REWARD_LOSS} 欠片。選択ルートの戦術条件を達成すると追加で 15 欠片を獲得。
         </div>
 
         <button onClick={onClose} style={{ marginTop: '12px', width: '100%', height: '44px', borderRadius: '10px', border: '1px solid #45516D', background: 'rgba(13,19,31,0.78)', color: '#FFFFFF', fontWeight: 850, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
