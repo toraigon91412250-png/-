@@ -149,7 +149,7 @@ export const CpuAi = {
     }
 
     // Build pressure instead of spending a strong action on a bad timing.
-    if (!cpu.isBuffed && player.currentHp > player.maxHp * 0.40) {
+    if (!cpu.isBuffed && player.currentHp > player.character.maxHp * 0.40) {
       const defensivePlayer =
         prediction.EVADE + prediction.BUFF >= 0.34;
       if (defensivePlayer || cpu.specialCooldownRemaining > 0) {
@@ -167,7 +167,7 @@ export const CpuAi = {
     if (cpu.ultimateGauge >= 3) {
       const ultimateThreshold = difficulty === 'EXPERT' ? 0.68 : 0.60;
       if (
-        player.currentHp <= player.maxHp * ultimateThreshold ||
+        player.currentHp <= player.character.maxHp * ultimateThreshold ||
         prediction.ATTACK + prediction.SPECIAL >= 0.55
       ) {
         addCandidate('ULTIMATE');
