@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense } from '../types/game';
+import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange } from '../types/game';
 import { Flame } from 'lucide-react';
 
 interface ActionDockProps {
@@ -27,7 +27,11 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
   const canUseBuff = player.character.id !== 'irena';
-  const specialDamagePreview = player.character.specialSkillDamage + buffDamageBonus;
+  const isIrenaPlayer = player.character.id === 'irena';
+  const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
+  const specialDamagePreview = isIrenaPlayer
+    ? player.character.specialSkillDamage + player.featherChargeBonus
+    : player.character.specialSkillDamage + buffDamageBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
@@ -156,6 +160,21 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ⚡【強化中】攻撃+{buffDamageBonus}
             </span>
           )}
+          {isIrenaPlayer && (
+            <span
+              style={{
+                fontSize: '10px',
+                fontWeight: 700,
+                color: '#B2DFDB',
+                backgroundColor: 'rgba(38, 166, 154, 0.16)',
+                border: '1px solid rgba(128, 203, 196, 0.45)',
+                padding: '1px 5px',
+                borderRadius: '4px',
+              }}
+            >
+              🪶【羽弾蓄積】+{player.featherChargeBonus}　次+{nextFeatherChargeRange[0]}〜{nextFeatherChargeRange[1]}
+            </span>
+          )}
         </div>
 
         <div
@@ -274,7 +293,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               whiteSpace: 'nowrap',
             }}
           >
-            {isSpecialReady ? `${specialDamagePreview}ダメ` : `CD:${player.specialCooldownRemaining}T`}
+            {isSpecialReady
+              ? `${specialDamagePreview}ダメ${isIrenaPlayer ? `（蓄積+${player.featherChargeBonus}）` : ''}`
+              : `CD:${player.specialCooldownRemaining}T`}
           </span>
         </button>
       </div>

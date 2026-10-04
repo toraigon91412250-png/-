@@ -1,5 +1,25 @@
 export type BattleAction = 'ATTACK' | 'EVADE' | 'BUFF' | 'SPECIAL' | 'ULTIMATE';
 
+export const IRENA_FEATHER_CHARGE_RANGES: ReadonlyArray<readonly [number, number]> = [
+  [60, 80],
+  [40, 60],
+  [30, 50],
+  [20, 40],
+  [15, 35],
+  [10, 30],
+  [5, 25],
+];
+
+export function getIrenaFeatherChargeRange(chargeCount: number): readonly [number, number] {
+  return IRENA_FEATHER_CHARGE_RANGES[Math.min(Math.max(chargeCount, 0), IRENA_FEATHER_CHARGE_RANGES.length - 1)];
+}
+
+export function rollIrenaFeatherChargeGain(chargeCount: number): number {
+  const [min, max] = getIrenaFeatherChargeRange(chargeCount);
+  const stepCount = Math.floor((max - min) / 5);
+  return min + Math.floor(Math.random() * (stepCount + 1)) * 5;
+}
+
 export type StatusAilmentType = 'BLEED' | 'PRESSURE';
 
 export interface StatusAilmentDef {
@@ -74,6 +94,8 @@ export interface BattleFighter {
   ultimateGauge: number; // 0..3
   isBuffed: boolean;
   buffDamageBonus: number; // 0 when not buffed; default buff is 50
+  featherChargeBonus: number; // 0 until Irena's normal attacks build Feather power
+  featherChargeCount: number; // number of successful Irena normal attacks since last Feather
   isEvading: boolean;
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];

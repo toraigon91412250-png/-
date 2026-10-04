@@ -10,6 +10,7 @@ import {
   getEffectiveAttack,
   getEffectiveDefense,
   getEffectiveSpeed,
+  rollIrenaFeatherChargeGain,
   LogType,
   StatusAilmentType,
 } from '../types/game';
@@ -25,6 +26,8 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
     ultimateGauge: 0,
     isBuffed: false,
     buffDamageBonus: 0,
+    featherChargeBonus: 0,
+    featherChargeCount: 0,
     isEvading: false,
     isPlayer,
     activeAilments: [],
@@ -468,11 +471,40 @@ export function useBattleGame(
         await sleep(850 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
 
+        // A successful Irena normal hit builds Feather power with diminishing random gains.
+        if (actor.character.id === 'irena') {
+          const currentCount = stateRef.current.player.featherChargeCount;
+          const gain = rollIrenaFeatherChargeGain(currentCount);
+          const nextBonus = stateRef.current.player.featherChargeBonus + gain;
+          updateState(prev => ({
+            ...prev,
+            player: {
+              ...prev.player,
+              featherChargeBonus: prev.player.featherChargeBonus + gain,
+              featherChargeCount: prev.player.featherChargeCount + 1,
+            },
+          }));
+          addLog(
+            '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
+            'PLAYER_ACTION',
+            turn
+          );
+        }
+
         if (newTargetHp <= 0) return false;
         return true;
       }
 
       case 'SPECIAL': {
+        // Firing Feather consumes all accumulated Feather power, even if the shot is evaded.
+        const featherChargeBonus = actor.character.id === 'irena' ? actor.featherChargeBonus : 0;
+        if (actor.character.id === 'irena') {
+          updateState(prev => ({
+            ...prev,
+            player: { ...prev.player, featherChargeBonus: 0, featherChargeCount: 0 },
+          }));
+        }
+
         const hadBuff = actor.isBuffed;
         const buffDamageBonus = actor.buffDamageBonus || 125;
         if (hadBuff) {
@@ -481,6 +513,14 @@ export function useBattleGame(
 
         const skillName = actor.character.specialSkillName;
         let baseDamage = actor.character.specialSkillDamage;
+        if (featherChargeBonus > 0) {
+          baseDamage += featherChargeBonus;
+          addLog(
+            '🪶【羽弾解放】蓄積した羽の力を放つ！ +' + featherChargeBonus + '（合計: ' + baseDamage + 'ダメージ）',
+            'SPECIAL_PLAYER',
+            turn
+          );
+        }
         if (hadBuff) {
           baseDamage += buffDamageBonus;
           addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
