@@ -6,17 +6,23 @@ import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLev
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
+  initialConfig?: BattleSetupConfig;
   onBack: () => void;
   onStartBattle: (config: BattleSetupConfig) => void;
 }
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   abilityProgress,
+  initialConfig,
   onBack,
   onStartBattle,
 }) => {
-  const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(10);
-  const [selectedAbilities, setSelectedAbilities] = useState<AbilityId[]>([]);
+  const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(
+    initialConfig?.kaiserLevel ?? 10,
+  );
+  const [selectedAbilities, setSelectedAbilities] = useState<AbilityId[]>(
+    initialConfig?.abilities.map(ability => ability.id).slice(0, 2) ?? [],
+  );
 
   const toggleAbility = (id: AbilityId) => {
     setSelectedAbilities(current => {
