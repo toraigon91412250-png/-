@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats } from '../types/game';
-import { IRENA, KAISER } from '../data/characters';
+import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { Swords, Trophy, Play, CheckCircle, Sparkles } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
@@ -39,7 +39,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
     return path ? labels[path] ?? path : '';
   };
 
-  const playerChar = IRENA;
+  const playerChar = getIrenaWithSkillProgress(skillProgress);
   const cpuChar = KAISER;
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
@@ -132,7 +132,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           gap: '12px', marginBottom: '18px',
         }}>
           {[
-            { char: IRENA, role: 'あなた' },
+            { char: playerChar, role: 'あなた' },
             { char: KAISER, role: 'CPU' },
           ].map(({ char, role }) => (
             <div key={char.id} style={{
