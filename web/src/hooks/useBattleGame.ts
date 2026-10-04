@@ -532,31 +532,42 @@ export function useBattleGame(
           const currentBonus = isActorPlayer
             ? stateRef.current.player.featherChargeBonus
             : stateRef.current.enemy.featherChargeBonus;
-          const gain = rollIrenaFeatherChargeGain(currentCount);
-          const nextBonus = currentBonus + gain;
-          updateState(prev => (isActorPlayer
-            ? {
-                ...prev,
-                player: {
-                  ...prev.player,
-                  featherChargeBonus: prev.player.featherChargeBonus + gain,
-                  featherChargeCount: prev.player.featherChargeCount + 1,
-                },
-              }
-            : {
-                ...prev,
-                enemy: {
-                  ...prev.enemy,
-                  featherChargeBonus: prev.enemy.featherChargeBonus + gain,
-                  featherChargeCount: prev.enemy.featherChargeCount + 1,
-                },
-              }
-          ));
-          addLog(
-            '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
-            isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
-            turn
-          );
+          const skillLevel = actor.character.featherSkillLevel || 1;
+          const maxChargeCount = getIrenaFeatherMaxChargeCount(skillLevel);
+
+          if (currentCount >= maxChargeCount) {
+            addLog(
+              '🪶【羽弾蓄積MAX】蓄積上限 ' + maxChargeCount + '回に到達している！ さらに通常攻撃してもチャージは増えない。',
+              isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
+              turn
+            );
+          } else {
+            const gain = rollIrenaFeatherChargeGain(currentCount);
+            const nextBonus = currentBonus + gain;
+            updateState(prev => (isActorPlayer
+              ? {
+                  ...prev,
+                  player: {
+                    ...prev.player,
+                    featherChargeBonus: prev.player.featherChargeBonus + gain,
+                    featherChargeCount: prev.player.featherChargeCount + 1,
+                  },
+                }
+              : {
+                  ...prev,
+                  enemy: {
+                    ...prev.enemy,
+                    featherChargeBonus: prev.enemy.featherChargeBonus + gain,
+                    featherChargeCount: prev.enemy.featherChargeCount + 1,
+                  },
+                }
+            ));
+            addLog(
+              '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
+              isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
+              turn
+            );
+          }
         }
 
         if (newTargetHp <= 0) return false;
