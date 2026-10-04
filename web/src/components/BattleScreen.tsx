@@ -82,7 +82,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       } else if (e.key === '2') {
         if (isEnabled) onAction('EVADE');
       } else if (e.key === '3') {
-        if (isEnabled) onAction('BUFF');
+        if (isEnabled && state.player.character.id !== 'irena') onAction('BUFF');
       } else if (e.key === '4') {
         if (isEnabled && state.player.specialCooldownRemaining <= 0) onAction('SPECIAL');
       } else if (e.key === '5') {
