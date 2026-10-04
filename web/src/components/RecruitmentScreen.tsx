@@ -14,13 +14,13 @@ interface Props {
 }
 
 type SummonPhase = 'IDLE' | 'SUMMONING' | 'RESULT';
+type SummonStep = 'BLACKOUT' | 'PRESENCE' | 'OMEN' | 'WINGS_FLASH' | 'REVEAL';
 
 const RECRUITMENT_ASSETS = {
-  irena: '/assets/recruitment/irena-summon-1.jpg',
-  irenaAlt: '/assets/recruitment/irena-summon-2.jpg',
-  feather: '/assets/recruitment/black-feather.png',
-  cloud: '/assets/recruitment/black-cloud.png',
-  crack: '/assets/recruitment/space-crack.png',
+  redEyes: '/assets/recruitment/1791110297970.jpg',
+  wingFrame: '/assets/recruitment/1791110298431.jpg',
+  irena: '/assets/recruitment/1791110298566.jpg',
+  wingedOmen: '/assets/recruitment/1791110298323.jpg',
 } as const;
 
 const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
@@ -53,19 +53,12 @@ const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
   },
 };
 
-const FEATHERS = Array.from({ length: 22 }, (_, i) => ({
-  left: (i * 43) % 102 - 1,
-  top: (i * 29) % 92 + 2,
-  delay: (i % 8) * 0.11,
-  duration: 1.5 + (i % 5) * 0.17,
-  rotate: -35 + (i % 7) * 12,
-  size: 11 + (i % 4) * 4,
-}));
 
 export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack }) => {
   const [phase, setPhase] = useState<SummonPhase>('IDLE');
+  const [summonStep, setSummonStep] = useState<SummonStep>('BLACKOUT');
   const [lastResult, setLastResult] = useState<RecruitmentDraw | null>(null);
-  const timerRef = useRef<number | null>(null);
+  const timersRef = useRef<number[]>([]);
 
   const collectedCount = progress.collectedIds.filter(id =>
     RECRUITMENT_REWARDS.some(reward => reward.id === id),
@@ -82,24 +75,41 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
   );
 
   useEffect(() => () => {
-    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    timersRef.current.forEach(timer => window.clearTimeout(timer));
+    timersRef.current = [];
   }, []);
 
   const handleRecruit = () => {
     if (phase !== 'IDLE' || progress.tickets < 1) return;
 
+    timersRef.current.forEach(timer => window.clearTimeout(timer));
+    timersRef.current = [];
     setLastResult(null);
+    setSummonStep('BLACKOUT');
     setPhase('SUMMONING');
 
-    timerRef.current = window.setTimeout(() => {
+    const schedule = (delay: number, callback: () => void) => {
+      const timer = window.setTimeout(callback, delay);
+      timersRef.current.push(timer);
+    };
+
+    schedule(180, () => setSummonStep('PRESENCE'));
+    schedule(900, () => setSummonStep('OMEN'));
+    schedule(1550, () => setSummonStep('WINGS_FLASH'));
+    schedule(1850, () => setSummonStep('REVEAL'));
+    schedule(2500, () => {
       const outcome = onRecruit();
       if (outcome) {
         setLastResult(outcome);
-        setPhase('RESULT');
+        schedule(950, () => {
+          setPhase('RESULT');
+          timersRef.current = [];
+        });
       } else {
         setPhase('IDLE');
+        setSummonStep('BLACKOUT');
       }
-    }, 1250);
+    });
   };
 
   return (
@@ -115,63 +125,45 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
       }}
     >
       <style>{`
-        @keyframes wingPulse {
-          0%,100% { transform: translate(-50%,-50%) scale(.92); opacity:.35; }
-          50% { transform: translate(-50%,-50%) scale(1.06); opacity:.72; }
+        @keyframes redPresence {
+          0% { transform: scale(1.10); opacity:0; filter:brightness(.12) saturate(.55) blur(10px); }
+          45% { opacity:.88; }
+          100% { transform: scale(1); opacity:.92; filter:brightness(.82) saturate(1) blur(0); }
         }
-        @keyframes wingOpenLeft {
-          0% { transform: rotate(-7deg) scaleX(.38); opacity:.08; }
-          55% { opacity:.9; }
-          100% { transform: rotate(-17deg) scaleX(1); opacity:.96; }
+        @keyframes omenRise {
+          0% { transform:scale(1.12); opacity:0; filter:brightness(.18) contrast(1.15) blur(8px); }
+          55% { opacity:.92; }
+          100% { transform:scale(1); opacity:.82; filter:brightness(.68) contrast(1.08) blur(0); }
         }
-        @keyframes wingOpenRight {
-          0% { transform: rotate(7deg) scaleX(.38); opacity:.08; }
-          55% { opacity:.9; }
-          100% { transform: rotate(17deg) scaleX(1); opacity:.96; }
+        @keyframes wingFlash {
+          0% { transform:scale(.92); opacity:0; }
+          18% { opacity:.98; }
+          68% { opacity:.95; }
+          100% { transform:scale(1.025); opacity:0; }
         }
-        @keyframes featherFall {
-          0% { transform: translate3d(0,-18px,0) rotate(0deg); opacity:0; }
-          18% { opacity:.76; }
-          100% { transform: translate3d(0,150px,0) rotate(160deg); opacity:0; }
-        }
-        @keyframes summonCore {
-          0% { transform: translate(-50%,-50%) scale(.2); opacity:0; }
-          30% { transform: translate(-50%,-50%) scale(.72); opacity:.56; }
-          62% { transform: translate(-50%,-50%) scale(1.18); opacity:1; }
-          100% { transform: translate(-50%,-50%) scale(1); opacity:.76; }
-        }
-        @keyframes blackout {
-          0%,100% { opacity:.03; }
-          45%,70% { opacity:.94; }
-        }
-        @keyframes revealCard {
-          0% { transform: translateY(20px) scale(.93); opacity:0; filter:blur(5px); }
-          100% { transform: translateY(0) scale(1); opacity:1; filter:blur(0); }
-        }
-        @keyframes flash {
-          0% { transform: translate(-50%,-50%) scale(.2); opacity:0; }
-          45% { transform: translate(-50%,-50%) scale(1.15); opacity:.92; }
-          100% { transform: translate(-50%,-50%) scale(1.8); opacity:0; }
+        @keyframes whiteBurst {
+          0% { opacity:0; transform:scale(.9); }
+          12% { opacity:.72; transform:scale(1); }
+          45% { opacity:.18; }
+          100% { opacity:0; transform:scale(1.08); }
         }
         @keyframes irenaReveal {
-          0% { transform: translate(-50%, 10%) scale(.96); opacity:0; filter:brightness(.35) saturate(.7) blur(4px); }
-          55% { opacity:.72; }
-          100% { transform: translate(-50%, 0) scale(1); opacity:.98; filter:brightness(1) saturate(1) blur(0); }
+          0% { transform:translate(-50%, 7%) scale(1.035); opacity:0; filter:brightness(.16) contrast(1.35) saturate(.55) blur(11px); }
+          38% { opacity:.7; }
+          72% { opacity:.98; }
+          100% { transform:translate(-50%, 0) scale(1); opacity:1; filter:brightness(1) contrast(1.06) saturate(1) blur(0); }
         }
-        @keyframes crackFlash {
-          0% { opacity:0; transform:scale(.96); }
-          35% { opacity:.82; transform:scale(1); }
-          100% { opacity:0; transform:scale(1.03); }
+        @keyframes sceneBreath {
+          0%,100% { transform:scale(1); }
+          50% { transform:scale(1.018); }
         }
-        @keyframes featherReveal {
-          0% { transform:translate(-50%,-50%) scale(.55) rotate(-8deg); opacity:0; filter:brightness(.35) blur(3px); }
-          48% { opacity:.9; }
-          100% { transform:translate(-50%,-50%) scale(1) rotate(0); opacity:.72; filter:brightness(.8) blur(0); }
+        @keyframes revealText {
+          0% { transform:translateY(14px); opacity:0; }
+          100% { transform:translateY(0); opacity:1; }
         }
-        @keyframes drift {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-7px); }
-          100% { transform: translateY(0); }
+        @keyframes resultGlow {
+          0%,100% { opacity:.35; transform:scale(.96); }
+          50% { opacity:.72; transform:scale(1.04); }
         }
       `}</style>
 
@@ -207,101 +199,235 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
         </header>
 
         <section style={{
-          position:'relative', minHeight:300, overflow:'hidden', borderRadius:24,
-          border:'1px solid rgba(134,93,161,.42)',
-          background:'radial-gradient(circle at 50% 50%, rgba(65,40,82,.25), transparent 34%), linear-gradient(180deg,rgba(7,8,12,.98),rgba(2,3,6,.99))',
-          boxShadow:'0 18px 65px rgba(0,0,0,.52), inset 0 0 75px rgba(100,53,120,.09)',
+          position:'relative',
+          minHeight:340,
+          height:'min(70vw, 520px)',
+          overflow:'hidden',
+          borderRadius:24,
+          border:'1px solid rgba(134,93,161,.48)',
+          background:'#010204',
+          boxShadow:'0 20px 80px rgba(0,0,0,.64), inset 0 0 110px rgba(68,30,90,.12)',
         }}>
-          <img src={RECRUITMENT_ASSETS.cloud} alt="" aria-hidden="true" style={{ position:'absolute', inset:'-12%', width:'124%', height:'124%', objectFit:'cover', opacity: phase === 'SUMMONING' ? .5 : .16, mixBlendMode:'screen', filter:'contrast(1.15) brightness(.55)', transition:'opacity .35s ease' }} />
-          <img src={RECRUITMENT_ASSETS.feather} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', top:'52%', width:'min(58vw,430px)', height:'min(58vw,430px)', objectFit:'contain', transform:'translate(-50%,-50%)', opacity: phase === 'SUMMONING' ? .72 : .28, filter:'drop-shadow(0 0 22px rgba(110,75,130,.28))', transition:'opacity .35s ease, transform .8s ease', animation: phase === 'SUMMONING' ? 'featherReveal 1.05s cubic-bezier(.18,.86,.28,1) both' : undefined }} />
-          <img src={RECRUITMENT_ASSETS.irena} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', bottom:'-7%', width:'min(46vw,300px)', height:'78%', objectFit:'contain', objectPosition:'center bottom', transform:'translateX(-50%)', opacity: phase === 'SUMMONING' ? .22 : .08, mixBlendMode:'screen', filter:'saturate(.85) contrast(1.1)', transition:'opacity .5s ease', animation: phase === 'SUMMONING' ? 'irenaReveal 1.05s ease-out .35s both' : undefined }} />
-          <img src={RECRUITMENT_ASSETS.irenaAlt} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', bottom:'-7%', width:'min(46vw,300px)', height:'78%', objectFit:'contain', objectPosition:'center bottom', transform:'translateX(-50%)', opacity: phase === 'RESULT' ? .72 : 0, mixBlendMode:'screen', filter:'saturate(.95) contrast(1.12) drop-shadow(0 0 18px rgba(150,55,70,.22))', transition:'opacity .55s ease' }} />
-          {phase === 'SUMMONING' && <img src={RECRUITMENT_ASSETS.crack} alt="" aria-hidden="true" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.42, mixBlendMode:'screen', pointerEvents:'none', animation:'crackFlash 1.05s ease-out both' }} />}
           <div style={{
-            position:'absolute', left:'50%', top:'52%', width:220, height:220, borderRadius:'50%',
-            border:'1px solid rgba(197,154,220,.22)', animation:'wingPulse 3.2s ease-in-out infinite',
+            position:'absolute',
+            inset:0,
+            background:'radial-gradient(circle at 50% 52%,rgba(96,40,62,.16),transparent 34%),linear-gradient(180deg,#010204 0%,#05050A 55%,#010103 100%)',
           }} />
 
-          <div style={{
-            position:'absolute', left:'50%', top:'52%', width:145, height:145, borderRadius:'50%',
-            border:'1px dashed rgba(255,224,130,.22)', transform:'translate(-50%,-50%)', opacity:.7,
-          }} />
+          <img
+            src={RECRUITMENT_ASSETS.redEyes}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position:'absolute',
+              inset:'-7%',
+              width:'114%',
+              height:'114%',
+              objectFit:'cover',
+              objectPosition:'center',
+              opacity: phase === 'SUMMONING'
+                ? (summonStep === 'PRESENCE' ? .92 : summonStep === 'BLACKOUT' ? 0 : .46)
+                : .08,
+              mixBlendMode:'screen',
+              animation: phase === 'SUMMONING' && summonStep === 'PRESENCE' ? 'redPresence 1.1s ease-out both' : undefined,
+              pointerEvents:'none',
+            }}
+          />
+
+          <img
+            src={RECRUITMENT_ASSETS.wingedOmen}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position:'absolute',
+              inset:'-8%',
+              width:'116%',
+              height:'116%',
+              objectFit:'cover',
+              objectPosition:'center',
+              opacity: phase === 'SUMMONING'
+                ? (summonStep === 'OMEN' ? .9 : summonStep === 'WINGS_FLASH' || summonStep === 'REVEAL' ? .55 : 0)
+                : .12,
+              mixBlendMode:'screen',
+              animation: phase === 'SUMMONING' && summonStep === 'OMEN' ? 'omenRise 1.05s cubic-bezier(.16,.84,.22,1) both' : undefined,
+              pointerEvents:'none',
+            }}
+          />
+
+          {phase === 'SUMMONING' && summonStep === 'WINGS_FLASH' && (
+            <>
+              <img
+                src={RECRUITMENT_ASSETS.wingFrame}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  position:'absolute',
+                  inset:0,
+                  width:'100%',
+                  height:'100%',
+                  objectFit:'cover',
+                  objectPosition:'center',
+                  opacity:1,
+                  mixBlendMode:'multiply',
+                  animation:'wingFlash .55s cubic-bezier(.2,.8,.2,1) both',
+                  pointerEvents:'none',
+                }}
+              />
+              <div style={{
+                position:'absolute',
+                inset:0,
+                background:'rgba(255,255,255,.82)',
+                animation:'whiteBurst .55s ease-out both',
+                pointerEvents:'none',
+              }} />
+            </>
+          )}
 
           <div style={{
-            position:'absolute', left:'50%', top:'52%', width:250, height:70, borderRadius:'50%',
-            background:'radial-gradient(ellipse, rgba(111,55,132,.22), transparent 68%)',
-            transform:'translate(-50%,-50%)', filter:'blur(6px)',
+            position:'absolute',
+            inset:0,
+            background:'radial-gradient(circle at 50% 52%,transparent 18%,rgba(0,0,0,.16) 42%,rgba(0,0,0,.72) 100%)',
+            pointerEvents:'none',
           }} />
 
-          <div style={{
-            position:'absolute', left:'50%', top:'50%', width:170, height:88, transform:'translate(-100%,-50%) rotate(-12deg)',
-            borderRadius:'100% 0 0 100%', borderLeft:'18px solid rgba(15,12,19,.95)',
-            borderTop:'12px solid rgba(35,29,42,.92)', borderBottom:'7px solid rgba(22,18,27,.96)',
-            boxShadow:'-18px 2px 55px rgba(0,0,0,.84)', animation: phase === 'SUMMONING' ? 'wingOpenLeft 1.15s cubic-bezier(.18,.86,.28,1) both' : 'drift 4.2s ease-in-out infinite',
-          }} />
-          <div style={{
-            position:'absolute', left:'50%', top:'50%', width:170, height:88, transform:'translate(0,-50%) rotate(12deg)',
-            borderRadius:'0 100% 100% 0', borderRight:'18px solid rgba(15,12,19,.95)',
-            borderTop:'12px solid rgba(35,29,42,.92)', borderBottom:'7px solid rgba(22,18,27,.96)',
-            boxShadow:'18px 2px 55px rgba(0,0,0,.84)', animation: phase === 'SUMMONING' ? 'wingOpenRight 1.15s cubic-bezier(.18,.86,.28,1) both' : 'drift 4.2s ease-in-out infinite',
-          }} />
-
-          {FEATHERS.map((feather, i) => (
-            <div
-              key={i}
-              style={{
-                position:'absolute', left:`${feather.left}%`, top:`${feather.top}%`,
-                width:feather.size, height:feather.size * 2.25,
-                borderRadius:'65% 20% 65% 20%', background:'linear-gradient(145deg,rgba(24,22,30,.1),rgba(5,5,8,.98))',
-                border:'1px solid rgba(117,97,131,.16)', transform:`rotate(${feather.rotate}deg)`,
-                opacity: phase === 'SUMMONING' ? .95 : .15,
-                animation: phase === 'SUMMONING'
-                  ? `featherFall ${feather.duration}s ease-in ${feather.delay}s both`
-                  : undefined,
-              }}
-            />
-          ))}
-
-          <div style={{
-            position:'absolute', left:'50%', top:'52%', width:72, height:72, borderRadius:'50%',
-            background:'radial-gradient(circle,rgba(255,210,100,.96) 0%,rgba(255,72,72,.68) 15%,rgba(93,43,111,.16) 55%,transparent 72%)',
-            filter:'blur(1px)', animation: phase === 'SUMMONING' ? 'summonCore 1.15s ease-out both' : 'wingPulse 2.7s ease-in-out infinite',
-            transform:'translate(-50%,-50%)',
-          }} />
-
-          {phase === 'SUMMONING' && (
+          {phase === 'SUMMONING' && summonStep === 'BLACKOUT' && (
             <div style={{
-              position:'absolute', inset:0, background:'#000', animation:'blackout 1.25s ease-in-out both', pointerEvents:'none',
+              position:'absolute',
+              inset:0,
+              background:'#000',
+              zIndex:5,
+              pointerEvents:'none',
             }} />
           )}
 
-          <div style={{ position:'relative', zIndex:3, minHeight:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:24 }}>
-            {phase === 'SUMMONING' ? (
-              <>
-                <div style={{ color:'#BFA6CB', fontSize:10, fontWeight:900, letterSpacing:'.32em' }}>THE BLACK WING ANSWERS</div>
-                <div style={{ marginTop:10, fontSize:'clamp(28px,7vw,44px)', fontWeight:950, letterSpacing:'.08em', textShadow:'0 0 24px rgba(173,112,197,.36)' }}>
-                  黒翼、顕現
+          {(phase === 'SUMMONING' && summonStep === 'REVEAL') || phase === 'RESULT' ? (
+            <img
+              src={RECRUITMENT_ASSETS.irena}
+              alt=""
+              aria-hidden="true"
+              style={{
+                position:'absolute',
+                left:'50%',
+                top:0,
+                width:'100%',
+                height:'100%',
+                objectFit:'cover',
+                objectPosition:'center 46%',
+                opacity:1,
+                zIndex:4,
+                animation: phase === 'SUMMONING' && summonStep === 'REVEAL' ? 'irenaReveal 1.15s cubic-bezier(.16,.86,.22,1) both' : undefined,
+                pointerEvents:'none',
+              }}
+            />
+          ) : null}
+
+          {phase === 'SUMMONING' && summonStep === 'REVEAL' && (
+            <>
+              <div style={{
+                position:'absolute',
+                inset:0,
+                background:'radial-gradient(circle at 50% 46%,rgba(255,220,170,.12),transparent 34%),linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.64))',
+                zIndex:5,
+                pointerEvents:'none',
+              }} />
+              <div style={{
+                position:'absolute',
+                left:'50%',
+                bottom:22,
+                transform:'translateX(-50%)',
+                width:'min(92%,520px)',
+                textAlign:'center',
+                zIndex:6,
+                animation:'revealText .42s ease-out .58s both',
+                textShadow:'0 2px 22px rgba(0,0,0,.88)',
+              }}>
+                <div style={{ color:'#E5C1E9', fontSize:10, fontWeight:950, letterSpacing:'.34em' }}>BLACK WING DESCENDS</div>
+                <div style={{ marginTop:7, fontSize:'clamp(30px,7vw,48px)', fontWeight:950, letterSpacing:'.08em' }}>いれーな、顕現</div>
+              </div>
+            </>
+          )}
+
+          {phase === 'SUMMONING' && (
+            <div style={{
+              position:'absolute',
+              left:'50%',
+              top:18,
+              transform:'translateX(-50%)',
+              width:'calc(100% - 32px)',
+              display:'flex',
+              justifyContent:'center',
+              zIndex:7,
+              pointerEvents:'none',
+            }}>
+              <div style={{
+                padding:'6px 10px',
+                borderRadius:999,
+                border:'1px solid rgba(216,178,228,.22)',
+                background:'rgba(4,3,7,.45)',
+                backdropFilter:'blur(8px)',
+                color:'#C9AECF',
+                fontSize:8,
+                fontWeight:950,
+                letterSpacing:'.26em',
+              }}>
+                {summonStep === 'BLACKOUT' && 'BLACK WING / SILENCE'}
+                {summonStep === 'PRESENCE' && 'BLACK WING / PRESENCE'}
+                {summonStep === 'OMEN' && 'BLACK WING / OMEN'}
+                {summonStep === 'WINGS_FLASH' && 'BLACK WING / AWAKEN'}
+                {summonStep === 'REVEAL' && 'BLACK WING / DESCEND'}
+              </div>
+            </div>
+          )}
+
+          {phase !== 'SUMMONING' && (
+            <div style={{
+              position:'absolute',
+              inset:0,
+              zIndex:7,
+              display:'flex',
+              alignItems:'center',
+              justifyContent:'center',
+              textAlign:'center',
+              padding:24,
+              pointerEvents:'none',
+            }}>
+              {lastResult ? (
+                <>
+                  <div style={{
+                    position:'absolute',
+                    left:'50%',
+                    top:'48%',
+                    width:240,
+                    height:240,
+                    borderRadius:'50%',
+                    background:'radial-gradient(circle,rgba(255,190,130,.18),transparent 64%)',
+                    transform:'translate(-50%,-50%)',
+                    animation:'resultGlow 3.4s ease-in-out infinite',
+                  }} />
+                  <div style={{
+                    position:'relative',
+                    maxWidth:560,
+                    marginTop:'48%',
+                    transform:'translateY(-38%)',
+                    textShadow:'0 2px 24px rgba(0,0,0,.88)',
+                  }}>
+                    <div style={{ color:'#E5C1E9', fontSize:9, fontWeight:950, letterSpacing:'.28em' }}>SUMMON COMPLETE</div>
+                    <div style={{ marginTop:6, fontSize:'clamp(27px,6vw,42px)', fontWeight:950 }}>{lastResult.reward.name}</div>
+                  </div>
+                </>
+              ) : (
+                <div style={{
+                  position:'relative',
+                  maxWidth:560,
+                  textShadow:'0 2px 22px rgba(0,0,0,.95)',
+                }}>
+                  <div style={{ color:'#BFA6CB', fontSize:10, fontWeight:900, letterSpacing:'.32em' }}>SUMMONING GROUND</div>
+                  <div style={{ marginTop:9, fontSize:'clamp(28px,7vw,44px)', fontWeight:950 }}>黒翼を呼ぶ</div>
+                  <div style={{ marginTop:7, color:'#B7AFBC', fontSize:11 }}>何が現れるかは、召喚した瞬間に決まる</div>
                 </div>
-                <div style={{ marginTop:8, color:'#8D8993', fontSize:11 }}>何が現れるかは、召喚した瞬間に決まる</div>
-              </>
-            ) : lastResult ? (
-              <>
-                <div style={{ color:selectedMeta?.accent, fontSize:11, fontWeight:950, letterSpacing:'.23em' }}>
-                  {selectedMeta?.label}
-                </div>
-                <div style={{ marginTop:8, fontSize:34, fontWeight:950 }}>{lastResult.reward.name}</div>
-                <div style={{ marginTop:7, color:'#AFAAB6', fontSize:11, maxWidth:520, lineHeight:1.65 }}>
-                  {lastResult.reward.description}
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ color:'#8C8293', fontSize:10, fontWeight:900, letterSpacing:'.28em' }}>SUMMONING GROUND</div>
-                <div style={{ marginTop:9, fontSize:'clamp(27px,7vw,43px)', fontWeight:950 }}>黒翼を呼ぶ</div>
-                <div style={{ marginTop:7, color:'#8D8993', fontSize:11 }}>召喚札を1枚使って、黒翼からひとつを引き出す</div>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </section>
 
         <section style={{ marginTop:12, display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
