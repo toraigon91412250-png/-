@@ -1,5 +1,6 @@
-import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
-import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw } from '../data/recruitment';
+import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
+import { MAX_ABILITY_LEVEL } from '../data/abilities';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -15,6 +16,234 @@ const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
 export const BATTLE_REWARD_WIN = 50;
 export const BATTLE_REWARD_LOSS = 20;
 export const MAX_SKILL_LEVEL = 10;
+
+const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
+
+const INITIAL_ABILITY_PROGRESS: AbilityProgress = {
+  // Prototype convenience: all five powers start unlocked at Lv.1 so the new battle
+  // selection can be tested immediately. Their higher levels still require summons.
+  levels: {
+    ABYSS: 1,
+    FALLEN: 1,
+    BLACK_WING: 1,
+    FALLEN_KING: 1,
+    JUDGMENT: 1,
+  },
+  shards: {
+    ABYSS: 0,
+    FALLEN: 0,
+    BLACK_WING: 0,
+    FALLEN_KING: 0,
+    JUDGMENT: 0,
+  },
+};
+
+function createEmptyAbilityLevels(): Record<AbilityId, number> {
+  return {
+    ABYSS: 0,
+    FALLEN: 0,
+    BLACK_WING: 0,
+    FALLEN_KING: 0,
+    JUDGMENT: 0,
+  };
+}
+
+function createEmptyAbilityShards(): Record<AbilityId, number> {
+  return {
+    ABYSS: 0,
+    FALLEN: 0,
+    BLACK_WING: 0,
+    FALLEN_KING: 0,
+    JUDGMENT: 0,
+  };
+}
+
+function normalizeAbilityProgress(
+  parsed: Partial<AbilityProgress> | null | undefined,
+): AbilityProgress {
+  const levels = createEmptyAbilityLevels();
+  const shards = createEmptyAbilityShards();
+
+  (Object.keys(levels) as AbilityId[]).forEach(id => {
+    const rawLevel = Number(parsed?.levels?.[id]);
+    const rawShards = Number(parsed?.shards?.[id]);
+    levels[id] = Number.isFinite(rawLevel)
+      ? Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(rawLevel)))
+      : INITIAL_ABILITY_PROGRESS.levels[id];
+    shards[id] = Number.isFinite(rawShards)
+      ? Math.max(0, Math.floor(rawShards))
+      : INITIAL_ABILITY_PROGRESS.shards[id];
+  });
+
+  return { levels, shards };
+}
+
+export function loadAbilityProgress(): AbilityProgress {
+  try {
+    const raw = localStorage.getItem(ABILITY_PROGRESS_KEY);
+    if (raw) return normalizeAbilityProgress(JSON.parse(raw));
+  } catch {
+    // fallback
+  }
+  return {
+    levels: { ...INITIAL_ABILITY_PROGRESS.levels },
+    shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+  };
+}
+
+function persistAbilityProgress(progress: AbilityProgress): AbilityProgress {
+  const normalized = normalizeAbilityProgress(progress);
+  try {
+    localStorage.setItem(ABILITY_PROGRESS_KEY, JSON.stringify(normalized));
+  } catch {
+    // ignore
+  }
+  return normalized;
+}
+
+export function addAbilityShards(abilityId: AbilityId, amount: number): AbilityProgress {
+  const current = loadAbilityProgress();
+  return persistAbilityProgress({
+    levels: { ...current.levels },
+    shards: {
+      ...current.shards,
+      [abilityId]: current.shards[abilityId] + Math.max(0, Math.floor(amount)),
+    },
+  });
+}
+
+export function unlockAbility(abilityId: AbilityId): AbilityProgress {
+  const current = loadAbilityProgress();
+  return persistAbilityProgress({
+    levels: {
+      ...current.levels,
+      [abilityId]: Math.max(1, current.levels[abilityId]),
+    },
+    shards: { ...current.shards },
+  });
+}
+
+export function getAbilityUpgradeCost(currentLevel: number): number {
+  if (currentLevel >= MAX_ABILITY_LEVEL) return Infinity;
+  return 40 + Math.max(0, currentLevel - 1) * 40;
+}
+
+export function upgradeAbility(abilityId: AbilityId): AbilityProgress | null {
+  const current = loadAbilityProgress();
+  const currentLevel = current.levels[abilityId];
+  const cost = getAbilityUpgradeCost(currentLevel);
+
+  if (currentLevel <= 0 || currentLevel >= MAX_ABILITY_LEVEL || current.shards[abilityId] < cost) {
+    return null;
+  }
+
+  return persistAbilityProgress({
+    levels: {
+      ...current.levels,
+      [abilityId]: currentLevel + 1,
+    },
+    shards: {
+      ...current.shards,
+      [abilityId]: current.shards[abilityId] - cost,
+    },
+  });
+}
+
+export function setAbilityForDeveloper(abilityId: AbilityId, level: number, shards?: number): AbilityProgress {
+  const current = loadAbilityProgress();
+  return persistAbilityProgress({
+    levels: {
+      ...current.levels,
+      [abilityId]: Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(level))),
+    },
+    shards: {
+      ...current.shards,
+      [abilityId]: shards === undefined
+        ? current.shards[abilityId]
+        : Math.max(0, Math.floor(shards)),
+    },
+  });
+}
+
+export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityProgress {
+  const normalizedLevel = Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(level)));
+  const normalizedShards = Math.max(0, Math.floor(shards));
+  return persistAbilityProgress({
+    levels: {
+      ABYSS: normalizedLevel,
+      FALLEN: normalizedLevel,
+      BLACK_WING: normalizedLevel,
+      FALLEN_KING: normalizedLevel,
+      JUDGMENT: normalizedLevel,
+    },
+    shards: {
+      ABYSS: normalizedShards,
+      FALLEN: normalizedShards,
+      BLACK_WING: normalizedShards,
+      FALLEN_KING: normalizedShards,
+      JUDGMENT: normalizedShards,
+    },
+  });
+}
+
+export function addAbilityShardsForDeveloper(abilityId: AbilityId, amount: number): AbilityProgress {
+  return addAbilityShards(abilityId, amount);
+}
+
+export function setRecruitmentTicketsForDeveloper(tickets: number): RecruitmentProgress {
+  return persistRecruitmentProgress({
+    ...loadRecruitmentProgress(),
+    tickets: Math.max(0, Math.floor(tickets)),
+  });
+}
+
+export function addRecruitmentTicketsForDeveloper(amount: number): RecruitmentProgress {
+  return addRecruitmentTickets(amount);
+}
+
+export function setSkillProgressForDeveloper(
+  featherLevel: number,
+  ruinLevel: number,
+  shards = 0,
+): IrenaSkillProgress {
+  const current = loadSkillProgress();
+  return persistSkillProgress({
+    ...current,
+    shards: Math.max(0, Math.floor(shards)),
+    featherLevel: Math.min(MAX_SKILL_LEVEL, Math.max(1, Math.floor(featherLevel))),
+    ruinLevel: Math.min(MAX_SKILL_LEVEL, Math.max(1, Math.floor(ruinLevel))),
+  });
+}
+
+export function resetProgressForDeveloper(): {
+  abilityProgress: AbilityProgress;
+  recruitmentProgress: RecruitmentProgress;
+  skillProgress: IrenaSkillProgress;
+  overallStats: OverallStats;
+} {
+  const abilityProgress = persistAbilityProgress({
+    levels: { ...INITIAL_ABILITY_PROGRESS.levels },
+    shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+  });
+  const recruitmentProgress = persistRecruitmentProgress({
+    tickets: 10,
+    totalPulls: 0,
+    collectedIds: [],
+    lastResults: [],
+  });
+  const skillProgress = persistSkillProgress({ ...INITIAL_SKILL_PROGRESS });
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
+  } catch {
+    // ignore
+  }
+  return {
+    abilityProgress,
+    recruitmentProgress,
+    skillProgress,
+    overallStats: { totalBattles: 0, wins: 0, losses: 0 },
+  };
+}
 
 export function getBattleReward(playerWon: boolean): number {
   return playerWon ? BATTLE_REWARD_WIN : BATTLE_REWARD_LOSS;
@@ -219,29 +448,92 @@ export function addRecruitmentTickets(amount: number): RecruitmentProgress {
   });
 }
 
-export function performRecruitment(): { progress: RecruitmentProgress; result: RecruitmentDraw } | null {
+export function performRecruitment(pullCount = 1): { progress: RecruitmentProgress; results: RecruitmentDraw[] } | null {
   const current = loadRecruitmentProgress();
-  if (current.tickets < 1) return null;
+  const normalizedCount = pullCount === 10 ? 10 : 1;
+  if (current.tickets < normalizedCount) return null;
 
-  const reward = getRecruitmentRewardForPull(current.totalPulls + 1);
   const collected = new Set(current.collectedIds);
-  const isNew = !collected.has(reward.id);
-  const shardGain = reward.shards + (isNew ? 0 : getDuplicateShardBonus(reward.rarity));
+  const draws: RecruitmentDraw[] = [];
+  let nextTickets = current.tickets - normalizedCount;
+  let abilityProgress = loadAbilityProgress();
 
-  const result: RecruitmentDraw = {
-    reward,
-    isNew,
-    shardGain,
+  const addAbilityReward = (abilityId: AbilityId, amount: number) => {
+    abilityProgress = {
+      levels: {
+        ...abilityProgress.levels,
+      },
+      shards: {
+        ...abilityProgress.shards,
+        [abilityId]: abilityProgress.shards[abilityId] + amount,
+      },
+    };
   };
 
+  for (let index = 0; index < normalizedCount; index += 1) {
+    let reward = getRecruitmentRewardForPull(current.totalPulls + index + 1);
+
+    // Prototype ten-pull guarantee: if the batch has no ability core, the last slot
+    // becomes an ability core so a ten-pull always reveals meaningful progression.
+    if (
+      normalizedCount === 10 &&
+      index === normalizedCount - 1 &&
+      !draws.some(draw => draw.reward.kind === 'ABILITY_CORE')
+    ) {
+      reward = getRecruitmentRewardForPull(-1, true);
+    }
+
+    const isNew = !collected.has(reward.id);
+    if (isNew) collected.add(reward.id);
+
+    let shardGain = 0;
+    if (reward.kind === 'ABILITY_CORE') {
+      if (isNew) {
+        abilityProgress = {
+          levels: {
+            ...abilityProgress.levels,
+            [reward.abilityId]: Math.max(1, abilityProgress.levels[reward.abilityId]),
+          },
+          shards: { ...abilityProgress.shards },
+        };
+      } else {
+        shardGain = reward.duplicateShards;
+        addAbilityReward(reward.abilityId, shardGain);
+      }
+    } else {
+      shardGain = reward.shardAmount;
+      addAbilityReward(reward.abilityId, shardGain);
+    }
+
+    draws.push({
+      reward,
+      isNew,
+      shardGain,
+      ticketBonus: 0,
+      collectionCompleted: false,
+      collectionBonusShards: 0,
+    });
+  }
+
+  const collectionCompleted =
+    collected.size >= RECRUITMENT_REWARDS.length &&
+    current.collectedIds.length < RECRUITMENT_REWARDS.length;
+
+  if (collectionCompleted && draws.length > 0) {
+    draws[draws.length - 1] = {
+      ...draws[draws.length - 1],
+      collectionCompleted: true,
+    };
+  }
+
+  persistAbilityProgress(abilityProgress);
   const nextProgress = persistRecruitmentProgress({
     ...current,
-    tickets: current.tickets - 1,
-    totalPulls: current.totalPulls + 1,
-    collectedIds: Array.from(collected).concat(isNew ? [reward.id] : []),
-    lastResults: current.lastResults.concat(reward.id).slice(-20),
+    tickets: nextTickets,
+    totalPulls: current.totalPulls + normalizedCount,
+    collectedIds: Array.from(collected),
+    lastResults: current.lastResults.concat(draws.map(draw => draw.reward.id)).slice(-20),
   });
 
-  addSkillShards(shardGain);
-  return { progress: nextProgress, result };
+  return { progress: nextProgress, results: draws };
 }

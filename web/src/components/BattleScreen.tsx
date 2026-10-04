@@ -196,7 +196,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           backdropFilter: 'blur(8px)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
           <button
             onClick={onBackToSelect}
             title="戻る"
@@ -225,6 +225,29 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             }}
           >
             第 {state.turnNumber} ターン
+          </div>
+          <div style={{
+            display:'flex',
+            flexDirection:'column',
+            gap:'2px',
+            minWidth:0,
+          }}>
+            <div style={{ fontSize:'9px', color:'#FFCC80', fontWeight:900, letterSpacing:'.08em' }}>
+              KAISER Lv.{state.battleConfig.kaiserLevel}
+            </div>
+            <div style={{
+              maxWidth:'42vw',
+              overflow:'hidden',
+              textOverflow:'ellipsis',
+              whiteSpace:'nowrap',
+              fontSize:'8px',
+              color:'#B39DDB',
+              fontWeight:800,
+            }}>
+              {state.battleConfig.abilities.length > 0
+                ? state.battleConfig.abilities.map(ability => ability.id === 'ABYSS' ? '深淵' : ability.id === 'FALLEN' ? '堕天' : ability.id === 'BLACK_WING' ? '黒翼' : ability.id === 'FALLEN_KING' ? '堕天王' : '断罪').join(' + ')
+                : '権能なし'}
+            </div>
           </div>
         </div>
 

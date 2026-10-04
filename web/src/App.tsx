@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { CpuDifficulty } from './types/game';
+import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
 import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { chooseIrenaSkillPath, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, upgradeIrenaSkill } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
+import { BattleSetupScreen } from './components/BattleSetupScreen';
+import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
+  const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
+  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({ kaiserLevel: 10, abilities: [] });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
@@ -27,7 +31,7 @@ export const App: React.FC = () => {
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,
-  } = useBattleGame(IRENA, KAISER, difficulty);
+  } = useBattleGame(IRENA, KAISER, difficulty, battleSetup);
 
   // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
   // does not have to start a fresh image decode during the attack.
@@ -73,10 +77,30 @@ export const App: React.FC = () => {
       setOverallStats(loadOverallStats());
       setSkillProgress(loadSkillProgress());
       setRecruitmentProgress(loadRecruitmentProgress());
+      setAbilityProgress(loadAbilityProgress());
     }
   }, [battleState.phase]);
 
-  const handleStartBattle = () => {
+  const refreshProgress = () => {
+    setOverallStats(loadOverallStats());
+    setSkillProgress(loadSkillProgress());
+    setRecruitmentProgress(loadRecruitmentProgress());
+    setAbilityProgress(loadAbilityProgress());
+  };
+
+  const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
+    refreshProgress();
+    if (prefill) setBattleSetup(prefill);
+    setScreen('BATTLE_SETUP');
+  };
+
+  const handleOpenDeveloperTools = () => {
+    refreshProgress();
+    setScreen('DEV_TOOLS');
+  };
+
+  const handleStartBattle = (config: BattleSetupConfig) => {
+    setBattleSetup(config);
     const sources = [
       battleBackground,
       IRENA.imageSrc,
@@ -88,7 +112,7 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(upgradedIrena, KAISER, difficulty);
+    restartBattle(upgradedIrena, KAISER, difficulty, config);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
@@ -116,23 +140,93 @@ export const App: React.FC = () => {
     if (next) setSkillProgress(next);
   };
 
-  const handleRecruit = (): RecruitmentDraw | null => {
-    const outcome = performRecruitment();
+  const handleRecruit = (count: 1 | 10): RecruitmentDraw[] | null => {
+    const outcome = performRecruitment(count);
     if (!outcome) return null;
     setRecruitmentProgress(outcome.progress);
-    setSkillProgress(loadSkillProgress());
-    return outcome.result;
+    setAbilityProgress(loadAbilityProgress());
+    return outcome.results;
+  };
+
+  const handleUpgradeAbility = (abilityId: AbilityId) => {
+    const next = upgradeAbility(abilityId);
+    if (!next) return;
+    setAbilityProgress(next);
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.map(ability => ({
+        ...ability,
+        level: next.levels[ability.id],
+      })),
+    }));
   };
 
   const handleBackToSelect = () => {
-    setOverallStats(loadOverallStats());
-    setSkillProgress(loadSkillProgress());
-    setRecruitmentProgress(loadRecruitmentProgress());
+    refreshProgress();
     setScreen('SELECT');
+  };
+
+  const handleDeveloperSetAbility = (id: AbilityId, level: number, shards?: number) => {
+    setAbilityProgress(setAbilityForDeveloper(id, level, shards));
+  };
+
+  const handleDeveloperSetAllAbilities = (level: number, shards: number) => {
+    setAbilityProgress(setAllAbilitiesForDeveloper(level, shards));
+  };
+
+  const handleDeveloperAddAbilityShards = (id: AbilityId, amount: number) => {
+    setAbilityProgress(addAbilityShardsForDeveloper(id, amount));
+  };
+
+  const handleDeveloperSetTickets = (tickets: number) => {
+    setRecruitmentProgress(setRecruitmentTicketsForDeveloper(tickets));
+  };
+
+  const handleDeveloperAddTickets = (amount: number) => {
+    setRecruitmentProgress(addRecruitmentTicketsForDeveloper(amount));
+  };
+
+  const handleDeveloperSetSkillProgress = (featherLevel: number, ruinLevel: number, shards: number) => {
+    setSkillProgress(setSkillProgressForDeveloper(featherLevel, ruinLevel, shards));
+  };
+
+  const handleDeveloperReset = () => {
+    const reset = resetProgressForDeveloper();
+    setOverallStats(reset.overallStats);
+    setSkillProgress(reset.skillProgress);
+    setRecruitmentProgress(reset.recruitmentProgress);
+    setAbilityProgress(reset.abilityProgress);
+    setBattleSetup({ kaiserLevel: 10, abilities: [] });
   };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+      {screen !== 'BATTLE' && (
+        <button
+          type="button"
+          onClick={handleOpenDeveloperTools}
+          style={{
+            position:'fixed',
+            right:10,
+            bottom:10,
+            zIndex:500,
+            minHeight:38,
+            padding:'0 11px',
+            borderRadius:10,
+            border:'1px solid #C48726',
+            background:'rgba(30,23,12,.96)',
+            color:'#FFE082',
+            fontSize:10,
+            fontWeight:950,
+            letterSpacing:'.06em',
+            boxShadow:'0 6px 20px rgba(0,0,0,.35)',
+            cursor:'pointer',
+          }}
+        >
+          開発者ツール
+        </button>
+      )}
+
       {isBattleDeploying && (
         <div
           style={{
@@ -177,19 +271,26 @@ export const App: React.FC = () => {
           overallStats={overallStats}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
-          onStartBattle={handleStartBattle}
+          onStartBattle={handleOpenBattleSetup}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
         />
+      ) : screen === 'BATTLE_SETUP' ? (
+        <BattleSetupScreen
+          abilityProgress={abilityProgress}
+          initialConfig={battleSetup}
+          onBack={() => setScreen('SELECT')}
+          onStartBattle={handleStartBattle}
+        />
       ) : screen === 'BATTLE' ? (
         <BattleScreen
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty)}
+          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty, battleSetup)}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
@@ -198,11 +299,32 @@ export const App: React.FC = () => {
         />
       ) : screen === 'RAID_BOSS' ? (
         <RaidBossScreen onBack={() => setScreen('SELECT')} />
-      ) : (
+      ) : screen === 'RECRUITMENT' ? (
         <RecruitmentScreen
           progress={recruitmentProgress}
+          abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
+          onUpgradeAbility={handleUpgradeAbility}
           onBack={() => setScreen('SELECT')}
+        />
+      ) : (
+        <DeveloperToolsScreen
+          abilityProgress={abilityProgress}
+          recruitmentProgress={recruitmentProgress}
+          skillProgress={skillProgress}
+          overallStats={overallStats}
+          battleSetup={battleSetup}
+          onBack={() => setScreen('SELECT')}
+          onRefresh={refreshProgress}
+          onSetAbility={handleDeveloperSetAbility}
+          onSetAllAbilities={handleDeveloperSetAllAbilities}
+          onAddAbilityShards={handleDeveloperAddAbilityShards}
+          onSetTickets={handleDeveloperSetTickets}
+          onAddTickets={handleDeveloperAddTickets}
+          onSetSkillProgress={handleDeveloperSetSkillProgress}
+          onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenBattleSetup={handleOpenBattleSetup}
+          onReset={handleDeveloperReset}
         />
       )}
     </div>
