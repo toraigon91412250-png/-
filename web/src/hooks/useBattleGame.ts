@@ -692,7 +692,7 @@ export function useBattleGame(
           appliedIrenaVariant === 'ALL_GODS'
             ? 0
             : appliedIrenaVariant === 'RUIN'
-              ? 900
+              ? Math.max(900, actor.character.ultimateSkillDamage)
               : appliedIrenaVariant === 'OMNIPOTENCE'
                 ? 1500
                 : actor.character.ultimateSkillDamage;
