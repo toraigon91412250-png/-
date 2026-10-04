@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, Play, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, Play } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 
 type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
