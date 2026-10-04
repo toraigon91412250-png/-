@@ -125,7 +125,7 @@ export const CpuAi = {
     if (
       playerBurstThreat &&
       prediction.SPECIAL + prediction.ULTIMATE >= 0.40 &&
-      player.currentHp >= cpu.maxHp * 0.45
+      player.currentHp >= cpu.character.maxHp * 0.45
     ) {
       return 'EVADE';
     }
@@ -133,7 +133,7 @@ export const CpuAi = {
     // If the player repeatedly chooses an offensive/defensive pattern,
     // select the response that makes that pattern less profitable.
     if (prediction.EVADE >= 0.48) {
-      if (!cpu.isBuffed && cpu.currentHp > cpu.maxHp * 0.45) {
+      if (!cpu.isBuffed && cpu.currentHp > cpu.character.maxHp * 0.45) {
         addCandidate('BUFF');
       }
       addCandidate('ATTACK');
