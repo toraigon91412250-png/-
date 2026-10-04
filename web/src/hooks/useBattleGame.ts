@@ -24,6 +24,7 @@ import {
   createBattleCharacters,
   getAbilityLevel,
   getJudgmentDamageMultiplier,
+  getJudgmentDefenseIgnore,
   getJudgmentThreshold,
   hasAbility,
   normalizeEquippedAbilities,
@@ -790,9 +791,9 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
         if (judgmentActive) {
-          baseDamage = Math.max(15, getEffectiveAttack(actor) - getEffectiveDefense(damageTarget)) + Math.max(0, baseDamage - getEffectiveAttack(actor) + getEffectiveDefense(target));
+          const defenseBreakBonus = Math.round(target.character.defense * getJudgmentDefenseIgnore(judgmentLevel));
+          baseDamage += defenseBreakBonus;
         }
 
         let finalDamage = baseDamage;
