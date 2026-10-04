@@ -191,6 +191,7 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
+          abilityProgress={abilityProgress}
           onBack={() => setScreen('SELECT')}
           onStartBattle={handleStartBattle}
         />
@@ -199,7 +200,7 @@ export const App: React.FC = () => {
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty)}
+          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty, battleSetup)}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
