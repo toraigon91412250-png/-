@@ -164,10 +164,10 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
               </div>
               <div style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', marginBottom: '8px' }}>{char.name}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-                <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 1200} color="#66BB6A" />
-                <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 200} color="#EF5350" />
+                <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 4000} color="#66BB6A" />
+                <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 400} color="#EF5350" />
                 <StatItem label="防御力" value={char.defense.toString()} ratio={char.defense / 200} color="#42A5F5" />
-                <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 150} color="#FFCA28" />
+                <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 240} color="#FFCA28" />
                 <StatItem label="回避率" value={`${Math.round(char.evasionRate * 100)}%`} ratio={char.evasionRate / 0.3} color="#26C6DA" />
               </div>
               <div style={{
