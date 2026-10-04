@@ -28,6 +28,17 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const pathLabel = (path: string | null) => {
+    const labels: Record<string, string> = {
+      ABYSS: '深淵',
+      JUDGMENT: '断罪',
+      CHARGE: '蓄積',
+      EXECUTION: '処刑',
+      ANNIHILATION: '殲滅',
+    };
+    return path ? labels[path] ?? path : '';
+  };
+
   const playerChar = IRENA;
   const cpuChar = KAISER;
   const winRate = overallStats.totalBattles > 0
@@ -226,11 +237,11 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           <div style={{ marginTop: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px' }}>
             <div style={{ padding: '8px', borderRadius: '9px', background: 'rgba(126,87,194,0.12)', border: '1px solid rgba(149,117,205,0.25)' }}>
               <div style={{ fontSize: '10px', color: '#BDB4D0', fontWeight: 800 }}>羽弾</div>
-              <div style={{ marginTop: '2px', fontSize: '15px', color: '#FFFFFF', fontWeight: 950 }}>Lv.{skillProgress.featherLevel}{skillProgress.featherPath ? ' ・ ' + skillProgress.featherPath : ''}</div>
+              <div style={{ marginTop: '2px', fontSize: '15px', color: '#FFFFFF', fontWeight: 950 }}>Lv.{skillProgress.featherLevel}{skillProgress.featherPath ? ' ・ ' + pathLabel(skillProgress.featherPath) : ''}</div>
             </div>
             <div style={{ padding: '8px', borderRadius: '9px', background: 'rgba(198,40,40,0.10)', border: '1px solid rgba(239,83,80,0.24)' }}>
               <div style={{ fontSize: '10px', color: '#CDB7B7', fontWeight: 800 }}>破壊の権能</div>
-              <div style={{ marginTop: '2px', fontSize: '15px', color: '#FFFFFF', fontWeight: 950 }}>Lv.{skillProgress.ruinLevel}{skillProgress.ruinPath ? ' ・ ' + skillProgress.ruinPath : ''}</div>
+              <div style={{ marginTop: '2px', fontSize: '15px', color: '#FFFFFF', fontWeight: 950 }}>Lv.{skillProgress.ruinLevel}{skillProgress.ruinPath ? ' ・ ' + pathLabel(skillProgress.ruinPath) : ''}</div>
             </div>
           </div>
           <button type='button' onClick={() => setUpgradeOpen(true)} style={{ width: '100%', height: '42px', marginTop: '9px', borderRadius: '10px', background: 'linear-gradient(90deg,#6A1B9A,#8E24AA)', color: '#FFFFFF', border: '1px solid #D1C4E9', fontSize: '13px', fontWeight: 950, cursor: 'pointer' }}>
