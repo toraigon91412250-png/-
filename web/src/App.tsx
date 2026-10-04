@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { CharacterDef, CpuDifficulty } from './types/game';
-import { CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
+import { CpuDifficulty } from './types/game';
+import { IRENA, KAISER } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
@@ -10,8 +10,6 @@ import { RaidBossScreen } from './components/RaidBossScreen';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS'>('SELECT');
-  const [playerChar, setPlayerChar] = useState<CharacterDef>(IRENA);
-  const [enemyChar, setEnemyChar] = useState<CharacterDef>(KAISER);
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
@@ -23,7 +21,7 @@ export const App: React.FC = () => {
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,
-  } = useBattleGame(playerChar, enemyChar, difficulty);
+  } = useBattleGame(IRENA, KAISER, difficulty);
 
   // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
   // does not have to start a fresh image decode during the attack.
@@ -71,21 +69,18 @@ export const App: React.FC = () => {
   }, [battleState.phase]);
 
   const handleStartBattle = () => {
-    const opp = CPU_CHARACTERS.find(c => c.id !== playerChar.id) || CPU_CHARACTERS.find(c => c.id === KAISER.id) || KAISER;
     const sources = [
       battleBackground,
-      // Images actually used during the battle itself.
-      playerChar.imageSrc,
-      playerChar.iconImageSrc,
-      playerChar.specialCutInSrc,
-      opp.imageSrc,
-      opp.iconImageSrc,
-      opp.specialCutInSrc,
+      IRENA.imageSrc,
+      IRENA.iconImageSrc,
+      IRENA.specialCutInSrc,
+      KAISER.imageSrc,
+      KAISER.iconImageSrc,
+      KAISER.specialCutInSrc,
     ].filter((src): src is string => Boolean(src));
 
-    setEnemyChar(opp);
     setCpuDifficulty(difficulty);
-    restartBattle(playerChar, opp);
+    restartBattle(IRENA, KAISER);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
@@ -97,7 +92,6 @@ export const App: React.FC = () => {
       setTimeout(() => setIsBattleDeploying(false), remainingMs);
     });
   };
-
   const handleBackToSelect = () => {
     setOverallStats(loadOverallStats());
     setScreen('SELECT');
@@ -147,9 +141,7 @@ export const App: React.FC = () => {
       {screen === 'SELECT' ? (
         <CharacterSelectScreen
           overallStats={overallStats}
-          selectedPlayer={playerChar}
           selectedDifficulty={difficulty}
-          onSelectPlayer={setPlayerChar}
           onSelectDifficulty={setDifficulty}
           onStartBattle={handleStartBattle}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}

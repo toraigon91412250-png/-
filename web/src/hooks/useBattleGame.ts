@@ -473,20 +473,35 @@ export function useBattleGame(
 
         // A successful Irena normal hit builds Feather power with diminishing random gains.
         if (actor.character.id === 'irena') {
-          const currentCount = stateRef.current.player.featherChargeCount;
+          const currentCount = isActorPlayer
+            ? stateRef.current.player.featherChargeCount
+            : stateRef.current.enemy.featherChargeCount;
+          const currentBonus = isActorPlayer
+            ? stateRef.current.player.featherChargeBonus
+            : stateRef.current.enemy.featherChargeBonus;
           const gain = rollIrenaFeatherChargeGain(currentCount);
-          const nextBonus = stateRef.current.player.featherChargeBonus + gain;
-          updateState(prev => ({
-            ...prev,
-            player: {
-              ...prev.player,
-              featherChargeBonus: prev.player.featherChargeBonus + gain,
-              featherChargeCount: prev.player.featherChargeCount + 1,
-            },
-          }));
+          const nextBonus = currentBonus + gain;
+          updateState(prev => (isActorPlayer
+            ? {
+                ...prev,
+                player: {
+                  ...prev.player,
+                  featherChargeBonus: prev.player.featherChargeBonus + gain,
+                  featherChargeCount: prev.player.featherChargeCount + 1,
+                },
+              }
+            : {
+                ...prev,
+                enemy: {
+                  ...prev.enemy,
+                  featherChargeBonus: prev.enemy.featherChargeBonus + gain,
+                  featherChargeCount: prev.enemy.featherChargeCount + 1,
+                },
+              }
+          ));
           addLog(
             '🪶【羽弾蓄積】通常攻撃成功！ 羽弾ダメージ+' + gain + '（累計+' + nextBonus + '）',
-            'PLAYER_ACTION',
+            isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
             turn
           );
         }
@@ -841,6 +856,8 @@ export function useBattleGame(
     // Check prerequisites
     if (playerAction === 'SPECIAL' && stateRef.current.player.specialCooldownRemaining > 0) return;
     if (playerAction === 'ULTIMATE' && stateRef.current.player.ultimateGauge < 3) return;
+    // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
+    if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
     updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null }));
     const speed = stateRef.current.battleSpeedMultiplier;
