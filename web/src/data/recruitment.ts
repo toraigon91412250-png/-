@@ -27,21 +27,10 @@ export const RECRUITMENT_REWARD_SEQUENCE: readonly RecruitmentRewardDef[] = [
   { id: 'omnipotent-crown', rarity: 'SSR', name: '全能の王冠', description: '全神の権能、その先を示す特別な収集報酬。', shards: 150 },
 ] as const;
 
-export function getRecruitmentCandidates(pullNumber: number): RecruitmentRewardDef[] {
+export function getRecruitmentRewardForPull(pullNumber: number): RecruitmentRewardDef {
   const safePull = Math.max(1, Math.floor(pullNumber));
-  const start = (safePull - 1) % RECRUITMENT_REWARD_SEQUENCE.length;
-  const candidates = [
-    RECRUITMENT_REWARD_SEQUENCE[start],
-    RECRUITMENT_REWARD_SEQUENCE[(start + 3) % RECRUITMENT_REWARD_SEQUENCE.length],
-    RECRUITMENT_REWARD_SEQUENCE[(start + 6) % RECRUITMENT_REWARD_SEQUENCE.length],
-  ];
-
-  if (safePull % 10 === 0) {
-    const ssr = RECRUITMENT_REWARD_SEQUENCE.find(reward => reward.rarity === 'SSR');
-    if (ssr) candidates[2] = ssr;
-  }
-
-  return Array.from(new Map(candidates.map(reward => [reward.id, reward])).values());
+  const reward = RECRUITMENT_REWARD_SEQUENCE[(safePull - 1) % RECRUITMENT_REWARD_SEQUENCE.length];
+  return reward;
 }
 
 export function getDuplicateShardBonus(rarity: RecruitmentRarity): number {
