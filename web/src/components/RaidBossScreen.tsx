@@ -49,6 +49,15 @@ type DamagePopup = {
   key: number;
 };
 
+type ReadQuality = 'PERFECT' | 'GOOD' | 'NEUTRAL' | 'BAD';
+
+const READ_QUALITY_INFO: Record<ReadQuality, { label: string; detail: string }> = {
+  PERFECT: { label: 'PERFECT READ', detail: '予告に最適な回答。次の展開を有利にする。' },
+  GOOD: { label: 'GOOD READ', detail: '安全寄りの回答。被害と資源を安定させる。' },
+  NEUTRAL: { label: 'NEUTRAL', detail: '悪くないが、ボスへの明確な回答ではない。' },
+  BAD: { label: 'READ PUNISHED', detail: '予告と噛み合わず、ボスに主導権を渡した。' },
+};
+
 const BOSS_HP: Record<Phase, number> = { 1: 50000, 2: 65000 };
 const PLAYER_MAX_HP = 10000;
 const PLAYER_MAX_MP = 100;
@@ -174,6 +183,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   const [perfectResponses, setPerfectResponses] = useState(0);
   const [adaptationLevel, setAdaptationLevel] = useState(0);
   const [lastAction, setLastAction] = useState<PlayerAction | null>(null);
+  const [readQuality, setReadQuality] = useState<ReadQuality>('NEUTRAL');
+  const [readStreak, setReadStreak] = useState(0);
   const [repeatCount, setRepeatCount] = useState(0);
   const [log, setLog] = useState('戦闘開始。ボスの予告を読む。');
   const [isResolving, setIsResolving] = useState(false);
@@ -360,6 +371,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     setAdaptationLevel(0);
     setLastAction(null);
     setRepeatCount(0);
+    setReadQuality('NEUTRAL');
+    setReadStreak(0);
     setLog('戦闘開始。ボスの予告を読む。');
     setIsResolving(false);
     setFx(null);
@@ -423,6 +436,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       GUARD: { VOID: 3, SWEEP: 2 },
       COUNTER: { SWEEP: 3, CHARGE: 2 },
       POTION: { CHARGE: 3, RAGE: 1 },
+      ULTIMATE: { CHARGE: 3, RAGE: 3 },
     };
 
     const activeBias =
@@ -439,14 +453,14 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       .map(pattern => {
         if (pattern === previous) return { pattern, weight: 0 };
 
-        const adaptationIntensity = 1 + Math.min(currentAdaptationLevel, 3) * 0.25;
+        const adaptationIntensity = 1 + Math.min(currentAdaptationLevel, 3) * 0.4;
         let weight = 2 + (activeBias[pattern] || 0) * adaptationIntensity;
 
-        if (
-          currentPlayer.hp <= PLAYER_MAX_HP * 0.45 &&
-          (pattern === 'CHARGE' || pattern === 'RAGE')
-        ) {
-          weight += 2;
+        if (currentPlayer.hp <= PLAYER_MAX_HP * 0.45 && (pattern === 'CHARGE' || pattern === 'RAGE')) {
+          weight += currentPhase === 2 ? 3 : 2;
+        }
+        if (currentPhase === 2 && currentPlayer.hp <= PLAYER_MAX_HP * 0.3 && pattern === 'RAGE') {
+          weight += 4;
         }
 
         if (currentPlayer.mp <= 28 && pattern === 'SWEEP') weight += 2;
@@ -455,7 +469,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
         if (currentPhase === 2 && pattern === 'RAGE') {
           const pressure = currentPlayer.hp <= PLAYER_MAX_HP * 0.45 ? 4 : 1;
-          weight = pressure + currentAdaptationLevel;
+          weight = Math.max(weight, pressure + currentAdaptationLevel * 1.5);
         }
 
         return { pattern, weight };
@@ -504,7 +518,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       const phaseMultiplier = 1;
       const raw = randomBetween(info.minDamage, info.maxDamage);
       const contractIncomingMultiplier = runContract === 'OVERDRIVE' ? 1.12 : 1;
-      const totalIncoming = Math.round(raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier);
+      const adaptationIncomingMultiplier = currentPhase === 2
+        ? 1 + Math.min(currentAdaptationLevel, 3) * 0.06
+        : 1;
+      const totalIncoming = Math.round(
+        raw * phaseMultiplier * extraMultiplier * contractIncomingMultiplier * adaptationIncomingMultiplier,
+      );
       const rawMpDrain = currentPattern === 'VOID'
         ? randomBetween(12, 20) + (runContract === 'OVERDRIVE' ? 2 : 0)
         : 0;
@@ -607,6 +626,16 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     const counterMiss = action === 'COUNTER' && !perfectCounter;
     const featherInterrupt = action === 'FEATHER' && currentPattern === 'VOID';
     const sweepOpening = action === 'NORMAL' && currentPattern === 'SWEEP';
+    const perfectGuard = action === 'GUARD' && isHeavy && currentBrokenTurns === 0;
+    const readQualityForAction: ReadQuality = currentBrokenTurns > 0
+      ? 'NEUTRAL'
+      : perfectCounter || featherInterrupt || sweepOpening || perfectGuard
+        ? 'PERFECT'
+        : action === 'GUARD' || (action === 'COUNTER' && isHeavy)
+          ? 'GOOD'
+          : action === 'COUNTER'
+            ? 'BAD'
+            : 'NEUTRAL';
     const bossWillRetaliate = currentBrokenTurns === 0 && !perfectCounter && !featherInterrupt;
     const nextAdaptationLevel =
       phase === 2 && bossWillRetaliate
@@ -617,6 +646,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     setLastAction(action);
     setRepeatCount(repeats);
+    setReadQuality(readQualityForAction);
+    setReadStreak(prev => readQualityForAction === 'PERFECT' ? prev + 1 : 0);
     setAdaptationLevel(phase === 1 ? 0 : nextAdaptationLevel);
 
     setFx(action);
@@ -647,9 +678,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       1;
 
     const responseMultiplier =
-      perfectCounter ? 1.15 :
-      featherInterrupt ? 1.08 :
-      sweepOpening ? 1.08 :
+      readQualityForAction === 'PERFECT' ? 1.15 :
+      readQualityForAction === 'GOOD' ? 1.04 :
       1;
 
     const focusMultiplier = player.focus ? 1.55 : 1;
@@ -707,14 +737,15 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
     if (counterMiss) {
       setCombo(0);
-      setLog('迎撃失敗。次のボス攻撃が15%強化される！');
+      setLog('READ PUNISHED。迎撃失敗、次のボス攻撃が20%強化される！');
       sfx('counter');
     } else if (perfectCounter) {
       setPerfectResponses(prev => prev + 1);
-      setLog('迎撃成功！大技の隙を反転した。');
+      setLog('PERFECT READ。迎撃成功！大技の隙を反転した。');
       sfx('counter');
     } else if (featherInterrupt) {
-      setLog('羽弾が黒雷の詠唱を撃ち抜いた！');
+      setPerfectResponses(prev => prev + 1);
+      setLog('PERFECT READ。羽弾が虚無落雷の詠唱を撃ち抜いた！');
       sfx('feather');
     } else if (action === 'ULTIMATE') {
       setLog(
@@ -810,8 +841,8 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     }
 
     if (action === 'GUARD') {
-      const perfectGuard = isHeavy && currentBrokenTurns === 0;
       const guardTpGain = perfectGuard ? 22 : 14;
+      const shieldAmount = runContract === 'SUSTAIN' ? 3360 : 2800;
       const nextPlayer: PlayerState = {
         ...player,
         hp: Math.min(PLAYER_MAX_HP, player.hp + (runContract === 'SUSTAIN' ? 540 : 450)),
@@ -821,7 +852,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           0,
           PLAYER_MAX_TP,
         ),
-        shield: runContract === 'SUSTAIN' ? 3360 : 2800,
+        shield: shieldAmount,
         focus: false,
         featherCooldown: Math.max(0, player.featherCooldown - 1),
       };
@@ -835,7 +866,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         setLog('PERFECT GUARD！大技を読み、BREAKと次の攻めを整えた。');
         sfx('guard');
       } else {
-        setLog('防御構え。盾3,600を展開。');
+        setLog('GOOD READ。防御構え。盾' + formatNumber(shieldAmount) + 'を展開。');
         sfx('click');
       }
 
@@ -891,6 +922,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
       setBossBreak(nextBreak);
       setBestHit(prev => Math.max(prev, actualDamage));
       setTotalDamage(prev => prev + actualDamage);
+
+      if (readQualityForAction === 'PERFECT' && !perfectCounter && !featherInterrupt && !sweepOpening) {
+        setPerfectResponses(prev => prev + 1);
+      } else if (readQualityForAction === 'PERFECT' && (perfectCounter || featherInterrupt || sweepOpening)) {
+        // The dedicated branches above already count these perfect responses.
+      }
 
       const nextCombo =
         counterMiss || currentBrokenTurns <= 0 && action === 'COUNTER' && !perfectCounter
@@ -1002,9 +1039,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
   const actionHint = useMemo(() => {
     if (broken) return 'BREAK WINDOW：残りターン数と必殺ゲージを見て、火力と準備のどちらを優先するか決めよう。';
-    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '大技の予告中。防御で被害を抑えるか、迎撃で大きく流れを変えるか、強気に攻めるか。';
-    if (bossPattern === 'VOID') return '資源にも干渉する攻撃。HP・MPの残量と、次の一手の価値をまとめて考えよう。';
-    return '比較的軽い薙ぎ払い。安定して削るか、次の展開に備えてリソースを整えるか。';
+    if (bossPattern === 'CHARGE' || bossPattern === 'RAGE') return '推奨：迎撃でPERFECT READ。失敗が怖ければ防御でGOOD READを狙う。';
+    if (bossPattern === 'VOID') return '推奨：羽弾で詠唱を中断。成功すればボスの反撃を止められる。';
+    return '推奨：通常攻撃で薙ぎ払い直後の隙を突く。防御なら安定して被害を抑えられる。';
   }, [bossPattern, broken]);
   const fxView = () => {
     if (!fx) return null;
@@ -1278,7 +1315,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.resultItem}><span>MAX COMBO</span><b>{maxCombo}</b></div>
             <div style={styles.resultItem}><span>BREAK</span><b>{breakCount}</b></div>
             <div style={styles.resultItem}><span>DAMAGE TAKEN</span><b>{formatNumber(damageTaken)}</b></div>
-            <div style={styles.resultItem}><span>PERFECT</span><b>{perfectResponses}</b></div>
+            <div style={styles.resultItem}><span>PERFECT READ</span><b>{perfectResponses}</b></div>
           </div>
 
           <div style={styles.resultNote}>
@@ -1386,7 +1423,7 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
                     : impactSource === 'BOSS'
                       ? 'saturate(1.3) contrast(1.22) brightness(1.25)'
                       : phase === 2
-                        ? 'saturate(' + (1.28 + adaptationLevel * 0.05) + ') contrast(' + (1.14 + adaptationLevel * 0.025) + ') brightness(' + (1.08 + adaptationLevel * 0.02) + ')'
+                        ? 'saturate(' + (1.28 + adaptationLevel * 0.08) + ') contrast(' + (1.14 + adaptationLevel * 0.04) + ') brightness(' + (1.08 + adaptationLevel * 0.03) + ')'
                         : 'saturate(1.12) contrast(1.08)',
                   opacity: broken ? .94 : phase === 2 ? .86 : .82,
               }}
@@ -1468,6 +1505,25 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.tacticalRow}>
               <span>契約</span>
               <b>{contractInfo.risk}</b>
+            </div>
+            {phase === 2 && adaptationLevel > 0 && (
+              <div style={styles.tacticalRow}>
+                <span>適応補正</span>
+                <b>被ダメージ +{adaptationLevel * 6}%</b>
+              </div>
+            )}
+            <div style={styles.tacticalRow}>
+              <span>読み判定</span>
+              <b style={{ color: readQuality === 'PERFECT' ? '#fff1a0' : readQuality === 'BAD' ? '#ff8fa6' : '#d8d4f1' }}>
+                {READ_QUALITY_INFO[readQuality].label}
+              </b>
+            </div>
+            <div style={styles.tacticalRow}>
+              <span>READ連続</span>
+              <b>{readStreak > 0 ? readStreak + ' 回' : 'なし'}</b>
+            </div>
+            <div style={{ marginTop: 6, color: '#8f9bb3', fontSize: 9, lineHeight: 1.4 }}>
+              {READ_QUALITY_INFO[readQuality].detail}
             </div>
             <div style={styles.tacticalRow}>
               <span>直近</span>
