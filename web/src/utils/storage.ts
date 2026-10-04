@@ -232,7 +232,6 @@ export function resetProgressForDeveloper(): {
     lastResults: [],
   });
   const skillProgress = persistSkillProgress({ ...INITIAL_SKILL_PROGRESS });
-  const overallStats = loadOverallStats();
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
   } catch {
