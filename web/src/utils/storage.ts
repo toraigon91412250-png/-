@@ -160,6 +160,7 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallS
   }
 
   addSkillShards(getBattleReward(playerWon, masteryBonus));
+  addRecruitmentTickets(1);
   return updated;
 }
 
