@@ -3,6 +3,7 @@ import {
   BattleAction,
   BattleFighter,
   BattleLog,
+  BattleSetupConfig,
   BattleUiState,
   CharacterDef,
   CpuDifficulty,
@@ -17,6 +18,16 @@ import {
 import { CpuAi } from '../utils/ai';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, saveBattleResult } from '../utils/storage';
+import {
+  applyDynamicAbilityModifiers,
+  applyJudgmentDefense,
+  createBattleCharacters,
+  getAbilityLevel,
+  getJudgmentDamageMultiplier,
+  getJudgmentThreshold,
+  hasAbility,
+  normalizeEquippedAbilities,
+} from '../utils/abilitySystem';
 
 export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
   return {
@@ -37,11 +48,18 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
 export function useBattleGame(
   initialPlayerChar: CharacterDef,
   initialEnemyChar: CharacterDef,
-  initialDifficulty: CpuDifficulty
+  initialDifficulty: CpuDifficulty,
+  initialBattleConfig: BattleSetupConfig = { kaiserLevel: 10, abilities: [] },
 ) {
+  const normalizedInitialConfig: BattleSetupConfig = {
+    kaiserLevel: initialBattleConfig.kaiserLevel,
+    abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
+  };
+
   const [state, setState] = useState<BattleUiState>(() => {
-    const initialPlayer = createInitialFighter(initialPlayerChar, true);
-    const initialEnemy = createInitialFighter(initialEnemyChar, false);
+    const initialCharacters = createBattleCharacters(initialPlayerChar, initialEnemyChar, normalizedInitialConfig);
+    const initialPlayer = createInitialFighter(initialCharacters.player, true);
+    const initialEnemy = createInitialFighter(initialCharacters.enemy, false);
     const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty);
 
     return {
@@ -52,7 +70,7 @@ export function useBattleGame(
       {
         id: 1,
         turn: 1,
-        text: `⚔️ バトル開始！ ${initialPlayerChar.name} (あなた) VS ${initialEnemyChar.name} (CPU)`,
+        text: `⚔️ バトル開始！ ${initialPlayerChar.name} (あなた) VS ${initialEnemyChar.name} Lv.${normalizedInitialConfig.kaiserLevel} (CPU)`,
         type: 'SYSTEM',
         timestamp: Date.now(),
       },
@@ -66,6 +84,7 @@ export function useBattleGame(
     isSoundEnabled: true,
     isAnimating: false,
     lastBattleReward: 0,
+    battleConfig: normalizedInitialConfig,
     };
   });
 
@@ -84,6 +103,10 @@ export function useBattleGame(
   const nextVisualEffectId = useRef(0);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
+  const judgmentMarksRef = useRef(0);
+  const judgmentReadyRef = useRef(false);
+  const fallenKingSurvivalUsedRef = useRef(false);
+  const fallenReleaseLoggedRef = useRef(false);
 
 
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
@@ -121,19 +144,79 @@ export function useBattleGame(
     updateState(prev => ({ ...prev, cpuDifficulty: diff }));
   }, [updateState]);
 
+  const addJudgmentMarks = (amount: number, turn: number) => {
+    const config = stateRef.current.battleConfig;
+    const level = getAbilityLevel(config, 'JUDGMENT');
+    if (level <= 0 || judgmentReadyRef.current) return;
+
+    judgmentMarksRef.current += amount;
+    const threshold = getJudgmentThreshold(level);
+
+    if (judgmentMarksRef.current >= threshold) {
+      judgmentReadyRef.current = true;
+      judgmentMarksRef.current = threshold;
+      addLog(
+        `⚖️【断罪準備完了】断罪の刻が満ちた！ 次の攻撃が「断罪執行」になる。`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+    } else {
+      addLog(
+        `⚖️【断罪蓄積】断罪 ${judgmentMarksRef.current}/${threshold}`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+    }
+  };
+
+  const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string): number => {
+    const safeDamage = Math.max(0, Math.floor(damage));
+    const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
+    const fallenKingLevel = getAbilityLevel(stateRef.current.battleConfig, 'FALLEN_KING');
+
+    if (
+      target.isPlayer &&
+      fallenKingLevel >= 5 &&
+      lethal &&
+      !fallenKingSurvivalUsedRef.current
+    ) {
+      fallenKingSurvivalUsedRef.current = true;
+      addLog(
+        `👑【堕天王】いれーなは致命傷を拒絶した！（${source}）HP1で踏みとどまる。`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+      return 1;
+    }
+
+    return Math.max(0, target.currentHp - safeDamage);
+  };
+
   const restartBattle = useCallback((
     pChar?: CharacterDef,
     eChar?: CharacterDef,
-    difficultyOverride?: CpuDifficulty
+    difficultyOverride?: CpuDifficulty,
+    battleConfigOverride?: BattleSetupConfig,
   ) => {
-    const curP = pChar || stateRef.current.player.character;
-    const curE = eChar || stateRef.current.enemy.character;
+    const baseP = pChar || stateRef.current.player.character;
+    const baseE = eChar || stateRef.current.enemy.character;
     const nextDifficulty = difficultyOverride || stateRef.current.cpuDifficulty;
-    const nextPlayer = createInitialFighter(curP, true);
-    const nextEnemy = createInitialFighter(curE, false);
+    const nextConfig: BattleSetupConfig = {
+      kaiserLevel: battleConfigOverride?.kaiserLevel ?? stateRef.current.battleConfig.kaiserLevel,
+      abilities: normalizeEquippedAbilities(
+        battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
+      ),
+    };
+    const prepared = createBattleCharacters(baseP, baseE, nextConfig);
+    const nextPlayer = createInitialFighter(prepared.player, true);
+    const nextEnemy = createInitialFighter(prepared.enemy, false);
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
+    judgmentMarksRef.current = 0;
+    judgmentReadyRef.current = false;
+    fallenKingSurvivalUsedRef.current = false;
+    fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
 
     const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
@@ -147,7 +230,7 @@ export function useBattleGame(
         {
           id: nextLogId.current++,
           turn: 1,
-          text: `⚔️ バトル開始！ ${curP.name} (あなた) VS ${curE.name} (CPU)`,
+          text: `⚔️ バトル開始！ ${prepared.player.name} (あなた) VS ${prepared.enemy.name} Lv.${nextConfig.kaiserLevel} (CPU)`,
           type: 'SYSTEM',
           timestamp: Date.now(),
         },
@@ -159,6 +242,7 @@ export function useBattleGame(
       cpuIntent: nextCpuIntent,
       isAnimating: false,
       lastBattleReward: 0,
+      battleConfig: nextConfig,
     }));
   }, [updateState]);
 
@@ -219,6 +303,20 @@ export function useBattleGame(
   ): Promise<boolean> => {
     let actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
     let target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
+    const baseActorMaxHp = actor.character.maxHp;
+
+    actor = applyDynamicAbilityModifiers(actor, stateRef.current.battleConfig, turn);
+    target = applyDynamicAbilityModifiers(target, stateRef.current.battleConfig, turn);
+
+    if (
+      isActorPlayer &&
+      hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+      actor.currentHp <= baseActorMaxHp * 0.10 &&
+      !fallenReleaseLoggedRef.current
+    ) {
+      fallenReleaseLoggedRef.current = true;
+      addLog('🩸【堕天・完全解放】いれーなの堕天使の力が完全に解放された！', 'PASSIVE_TRIGGER', turn);
+    }
 
     // 1. Process Start-of-Turn DoT (Bleed: 30 damage)
     const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
@@ -227,7 +325,7 @@ export function useBattleGame(
       const dotDamage = 30;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const newHp = Math.max(0, actor.currentHp - dotDamage);
+      const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
       updateState(prev => (isActorPlayer
         ? {
             ...prev,
@@ -295,8 +393,16 @@ export function useBattleGame(
     }
 
     // Refresh references
-    actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
-    target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
+    actor = applyDynamicAbilityModifiers(
+      isActorPlayer ? stateRef.current.player : stateRef.current.enemy,
+      stateRef.current.battleConfig,
+      turn,
+    );
+    target = applyDynamicAbilityModifiers(
+      isActorPlayer ? stateRef.current.enemy : stateRef.current.player,
+      stateRef.current.battleConfig,
+      turn,
+    );
 
     // 3. Execute Chosen Action
     switch (action) {
@@ -424,7 +530,12 @@ export function useBattleGame(
         }
 
         // Calculate attack damage
-        const rawDamage = getEffectiveAttack(actor) - getEffectiveDefense(target);
+        const judgmentLevel = isActorPlayer
+          ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
+          : 0;
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
+        const rawDamage = getEffectiveAttack(actor) - getEffectiveDefense(damageTarget);
         let baseDamage = Math.max(15, rawDamage);
 
         // Irena Precognition passive (+20 when acting first)
@@ -444,8 +555,17 @@ export function useBattleGame(
         const isCritical = Math.random() < 0.20;
         const attackDamage = isCritical ? Math.round(baseDamage * 1.5) : baseDamage;
 
-        // Kaiser Heavy Armor passive (-20 from normal attack, min 0)
-        let finalDamage = attackDamage;
+        // Judgement execution multiplies the completed attack.
+        let finalDamage = judgmentActive
+          ? Math.round(attackDamage * getJudgmentDamageMultiplier(judgmentLevel))
+          : attackDamage;
+        if (judgmentActive) {
+          addLog(
+            `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
+        }
         let heavyArmorTriggered = false;
         if (target.character.id === 'kaiser') {
           heavyArmorTriggered = true;
@@ -473,7 +593,18 @@ export function useBattleGame(
           );
         }
 
-        const newTargetHp = Math.max(0, target.currentHp - finalDamage);
+        const fallenExecution =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+
+        if (fallenExecution) {
+          finalDamage = target.currentHp;
+          addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
+        }
+
+        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '通常攻撃');
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
@@ -496,6 +627,14 @@ export function useBattleGame(
 
         await sleep(850 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
+
+        if (judgmentActive) {
+          judgmentReadyRef.current = false;
+          judgmentMarksRef.current = 0;
+          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+          addJudgmentMarks(isCritical ? 2 : 1, turn);
+        }
 
         // A successful Irena normal hit builds Feather power with diminishing random gains.
         if (actor.character.id === 'irena') {
@@ -647,6 +786,15 @@ export function useBattleGame(
           }
         }
 
+        const judgmentLevel = isActorPlayer
+          ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
+          : 0;
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
+        if (judgmentActive) {
+          baseDamage = Math.max(15, getEffectiveAttack(actor) - getEffectiveDefense(damageTarget)) + Math.max(0, baseDamage - getEffectiveAttack(actor) + getEffectiveDefense(target));
+        }
+
         let finalDamage = baseDamage;
 
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
@@ -674,6 +822,15 @@ export function useBattleGame(
           );
         }
 
+        if (judgmentActive) {
+          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel));
+          addLog(
+            `⚖️【断罪執行】特殊技にも断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
+        }
+
         if (actor.character.id === 'irena') {
           soundManager.playFeatherShot();
         } else {
@@ -689,7 +846,18 @@ export function useBattleGame(
         // Apply 100% Status Ailment upon hit
         applySpecialStatusAilment(actor, !isActorPlayer, turn);
 
-        const newTargetHp = Math.max(0, target.currentHp - finalDamage);
+        const fallenExecution =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+
+        if (fallenExecution) {
+          finalDamage = target.currentHp;
+          addLog('🩸【堕天・終局】5%以下のいれーなが、特殊技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
+        }
+
+        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '特殊技');
         const appliedAilmentName = actor.character.id === 'irena' ? '出血' : '重圧';
         const effType: EffectType = actor.character.id === 'irena' ? 'SPECIAL_FEATHER' : 'SPECIAL_SMASH';
 
@@ -715,6 +883,14 @@ export function useBattleGame(
 
         await sleep(850 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
+
+        if (judgmentActive) {
+          judgmentReadyRef.current = false;
+          judgmentMarksRef.current = 0;
+          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+          addJudgmentMarks(2, turn);
+        }
 
         if (newTargetHp <= 0) return false;
         return true;
@@ -898,13 +1074,41 @@ export function useBattleGame(
           isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
           turn
         );
+        const judgmentLevel = isActorPlayer
+          ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
+          : 0;
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        if (judgmentActive) {
+          const damageTarget = applyJudgmentDefense(target, judgmentLevel);
+          const defenseReductionBonus =
+            Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(damageTarget));
+          finalDamage += defenseReductionBonus;
+          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel));
+          addLog(
+            `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
+        }
+
+        const fallenExecution =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+
+        if (fallenExecution) {
+          finalDamage = target.currentHp;
+          addLog('🩸【堕天・終局】5%以下のいれーなが、必殺技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
+        }
+
         addLog(
           `💥 ${target.character.name}に ${finalDamage} の超絶ダメージ！`,
           isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
           turn
         );
 
-        const newTargetHp = Math.max(0, target.currentHp - finalDamage);
+        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '必殺技');
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
@@ -927,6 +1131,14 @@ export function useBattleGame(
 
         await sleep(1300 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
+
+        if (judgmentActive) {
+          judgmentReadyRef.current = false;
+          judgmentMarksRef.current = 0;
+          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+          addJudgmentMarks(3, turn);
+        }
 
         if (newTargetHp <= 0) return false;
         return true;
@@ -1045,9 +1257,11 @@ export function useBattleGame(
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.enemy.specialCooldownRemaining - 1),
       };
+      const aiEnemy = applyDynamicAbilityModifiers(nextEnemy, stateRef.current.battleConfig, currentTurn + 1);
+      const aiPlayer = applyDynamicAbilityModifiers(nextPlayer, stateRef.current.battleConfig, currentTurn + 1);
       const nextCpuIntent = CpuAi.decideAction(
-        nextEnemy,
-        nextPlayer,
+        aiEnemy,
+        aiPlayer,
         stateRef.current.cpuDifficulty,
         {
           recentPlayerActions: recentPlayerActionsRef.current,
