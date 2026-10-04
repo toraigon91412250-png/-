@@ -221,6 +221,18 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
                 <div style={{ marginTop:'12px', display:'inline-flex', padding:'6px 10px', borderRadius:'9px', background:'rgba(4,7,13,.46)', color:'#FFE082', fontSize:'11px', fontWeight:900 }}>
                   +{lastResult.shardGain} 黒羽の欠片
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setLastResult(null)}
+                  style={{
+                    display:'block', margin:'14px auto 0', height:'40px', padding:'0 18px',
+                    borderRadius:'10px', border:'1px solid #7E6AA3',
+                    background:'rgba(20,15,33,.88)', color:'#FFFFFF',
+                    fontSize:'11px', fontWeight:900, cursor:'pointer',
+                  }}
+                >
+                  次の召喚へ
+                </button>
               </div>
             </section>
           ) : (
