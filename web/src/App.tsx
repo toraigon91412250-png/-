@@ -96,6 +96,11 @@ export const App: React.FC = () => {
       setTimeout(() => setIsBattleDeploying(false), remainingMs);
     });
   };
+  const handleUpgradeSkill = (skillId: 'FEATHER' | 'RUIN') => {
+    const next = upgradeIrenaSkill(skillId);
+    if (next) setSkillProgress(next);
+  };
+
   const handleBackToSelect = () => {
     setOverallStats(loadOverallStats());
     setScreen('SELECT');
@@ -155,7 +160,9 @@ export const App: React.FC = () => {
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle()}
+          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty)}
+          skillProgress={skillProgress}
+          onUpgradeSkill={handleUpgradeSkill}
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />
