@@ -841,6 +841,8 @@ export function useBattleGame(
     // Check prerequisites
     if (playerAction === 'SPECIAL' && stateRef.current.player.specialCooldownRemaining > 0) return;
     if (playerAction === 'ULTIMATE' && stateRef.current.player.ultimateGauge < 3) return;
+    // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
+    if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
     updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null }));
     const speed = stateRef.current.battleSpeedMultiplier;
