@@ -4,15 +4,18 @@ import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { chooseIrenaSkillPath, loadOverallStats, loadSkillProgress, upgradeIrenaSkill } from './utils/storage';
+import { chooseIrenaSkillPath, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, upgradeIrenaSkill } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
+import { RecruitmentDraw } from './data/recruitment';
+import { RecruitmentScreen } from './components/RecruitmentScreen';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
+  const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
@@ -69,6 +72,7 @@ export const App: React.FC = () => {
     if (battleState.phase === 'BATTLE_FINISHED') {
       setOverallStats(loadOverallStats());
       setSkillProgress(loadSkillProgress());
+      setRecruitmentProgress(loadRecruitmentProgress());
     }
   }, [battleState.phase]);
 
@@ -112,8 +116,18 @@ export const App: React.FC = () => {
     if (next) setSkillProgress(next);
   };
 
+  const handleRecruit = (count: 1 | 10): { progress: typeof recruitmentProgress; results: RecruitmentDraw[] } | null => {
+    const outcome = performRecruitment(count);
+    if (!outcome) return null;
+    setRecruitmentProgress(outcome.progress);
+    setSkillProgress(loadSkillProgress());
+    return outcome;
+  };
+
   const handleBackToSelect = () => {
     setOverallStats(loadOverallStats());
+    setSkillProgress(loadSkillProgress());
+    setRecruitmentProgress(loadRecruitmentProgress());
     setScreen('SELECT');
   };
 
@@ -165,6 +179,7 @@ export const App: React.FC = () => {
           onSelectDifficulty={setDifficulty}
           onStartBattle={handleStartBattle}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
+          onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
@@ -181,8 +196,14 @@ export const App: React.FC = () => {
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />
-      ) : (
+      ) : screen === 'RAID_BOSS' ? (
         <RaidBossScreen onBack={() => setScreen('SELECT')} />
+      ) : (
+        <RecruitmentScreen
+          progress={recruitmentProgress}
+          onRecruit={handleRecruit}
+          onBack={() => setScreen('SELECT')}
+        />
       )}
     </div>
   );
