@@ -36,6 +36,18 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
     const cost = getSkillUpgradeCost(level);
     const needsPath = level >= 3 && !selectedPath;
     const canUpgrade = !maxed && !needsPath && progress.shards >= cost;
+    const effectSummary = id === 'FEATHER'
+      ? level >= 4
+        ? '出血 40ダメージ/T　｜　蓄積上限 ' + (level >= 10 ? 13 : level >= 7 ? 11 : 9) + '回'
+        : level >= 3
+          ? '出血 40ダメージ/T'
+          : '出血 30ダメージ/T'
+      : selectedPath === 'EXECUTION'
+        ? '瀕死判定：HP ' + (level >= 10 ? 50 : level >= 7 ? 45 : 40) + '%以下'
+        : selectedPath === 'ANNIHILATION'
+          ? '出血中に追加ダメージ'
+          : 'Lv.3で専用ルートを選択';
+
     const milestone =
       maxed
         ? 'MASTER：このビルドは最終段階。'
