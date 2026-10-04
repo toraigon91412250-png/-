@@ -11,6 +11,7 @@ interface CharacterSelectScreenProps {
   onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
   onOpenRaidBoss: () => void;
+  onOpenRecruitment: () => void;
   skillProgress: IrenaSkillProgress;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
@@ -22,6 +23,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onSelectDifficulty,
   onStartBattle,
   onOpenRaidBoss,
+  onOpenRecruitment,
   skillProgress,
   onUpgradeSkill,
   onChooseSkillPath,
@@ -294,6 +296,33 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Black Wing Summon */}
+        <button
+          type="button"
+          onClick={onOpenRecruitment}
+          style={{
+            width: '100%',
+            height: '50px',
+            marginBottom: '8px',
+            background: 'linear-gradient(135deg, #2A1744 0%, #17122A 55%, #3A2910 100%)',
+            color: '#FFFFFF',
+            border: '1.5px solid #B39DDB',
+            borderRadius: '14px',
+            fontSize: '16px',
+            fontWeight: 950,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 18px rgba(126, 87, 194, 0.22)',
+          }}
+        >
+          <Sparkles size={19} color="#FFE082" />
+          <span>黒翼召喚</span>
+          <span style={{ fontSize: '9px', color: '#C5B8D9', fontWeight: 800 }}>SUMMON</span>
+        </button>
 
         {/* Start Battle Button */}
         <button
