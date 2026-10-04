@@ -707,9 +707,3 @@ const pillStyle: React.CSSProperties = {
   color:'#FFE082', fontSize:10, fontWeight:950,
 };
 
-const ticketPillStyle: React.CSSProperties = {
-  ...pillStyle,
-  background:'rgba(144,202,249,.08)',
-  border:'1px solid rgba(144,202,249,.23)',
-  color:'#90CAF9',
-};
