@@ -14,9 +14,10 @@ interface Props {
 }
 
 type SummonPhase = 'IDLE' | 'SUMMONING' | 'RESULT';
-type SummonStep = 'BLACKOUT' | 'PRESENCE' | 'OMEN' | 'WINGS_FLASH' | 'REVEAL';
+type SummonStep = 'BLACKOUT' | 'GATE' | 'GATE_OPEN' | 'PRESENCE' | 'OMEN' | 'WINGS_FLASH' | 'REVEAL';
 
 const RECRUITMENT_ASSETS = {
+  gate: '/assets/recruitment/開く直前の門.jpg',
   redEyes: '/assets/recruitment/1791110297970.jpg',
   wingFrame: '/assets/recruitment/1791110298431.jpg',
   irena: '/assets/recruitment/1791110298566.jpg',
@@ -93,11 +94,13 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
       timersRef.current.push(timer);
     };
 
-    schedule(180, () => setSummonStep('PRESENCE'));
-    schedule(900, () => setSummonStep('OMEN'));
-    schedule(1550, () => setSummonStep('WINGS_FLASH'));
-    schedule(1850, () => setSummonStep('REVEAL'));
-    schedule(2500, () => {
+    schedule(180, () => setSummonStep('GATE'));
+    schedule(820, () => setSummonStep('GATE_OPEN'));
+    schedule(1280, () => setSummonStep('PRESENCE'));
+    schedule(1880, () => setSummonStep('OMEN'));
+    schedule(2380, () => setSummonStep('WINGS_FLASH'));
+    schedule(2660, () => setSummonStep('REVEAL'));
+    schedule(3320, () => {
       const outcome = onRecruit();
       if (outcome) {
         setLastResult(outcome);
@@ -125,6 +128,26 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
       }}
     >
       <style>{`
+        @keyframes gateReveal {
+          0% { transform:scale(1.035); opacity:0; filter:brightness(.08) saturate(.5) blur(9px); }
+          45% { opacity:.72; }
+          100% { transform:scale(1); opacity:1; filter:brightness(.9) saturate(1) blur(0); }
+        }
+        @keyframes gateOpenLeft {
+          0% { transform:translateX(0); filter:brightness(.92) saturate(1); }
+          62% { transform:translateX(-7%); filter:brightness(1.02) saturate(1.08); }
+          100% { transform:translateX(-15%); filter:brightness(.7) saturate(.9); opacity:.88; }
+        }
+        @keyframes gateOpenRight {
+          0% { transform:translateX(0); filter:brightness(.92) saturate(1); }
+          62% { transform:translateX(7%); filter:brightness(1.02) saturate(1.08); }
+          100% { transform:translateX(15%); filter:brightness(.7) saturate(.9); opacity:.88; }
+        }
+        @keyframes gateVoid {
+          0% { opacity:.25; transform:scale(.94); }
+          55% { opacity:.75; transform:scale(1.02); }
+          100% { opacity:1; transform:scale(1.05); }
+        }
         @keyframes redPresence {
           0% { transform: scale(1.10); opacity:0; filter:brightness(.12) saturate(.55) blur(10px); }
           45% { opacity:.88; }
@@ -213,6 +236,74 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
             inset:0,
             background:'radial-gradient(circle at 50% 52%,rgba(96,40,62,.16),transparent 34%),linear-gradient(180deg,#010204 0%,#05050A 55%,#010103 100%)',
           }} />
+
+          {(phase === 'SUMMONING' && (summonStep === 'GATE' || summonStep === 'GATE_OPEN')) && (
+            <div
+              style={{
+                position:'absolute',
+                inset:0,
+                zIndex:2,
+                overflow:'hidden',
+                background:'radial-gradient(circle at 50% 50%,rgba(153,34,84,.24),rgba(27,8,36,.14) 35%,rgba(0,0,0,.72) 78%,#000 100%)',
+              }}
+            >
+              <div
+                style={{
+                  position:'absolute',
+                  inset:'-7%',
+                  background:'radial-gradient(circle at 50% 52%,rgba(217,39,100,.25),transparent 30%),radial-gradient(circle at 50% 50%,rgba(108,53,157,.28),transparent 48%),#020104',
+                  animation:summonStep === 'GATE_OPEN' ? 'gateVoid .7s cubic-bezier(.18,.86,.22,1) both' : undefined,
+                }}
+              />
+              {summonStep === 'GATE' && (
+                <img
+                  src={RECRUITMENT_ASSETS.gate}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    position:'absolute',
+                    inset:'-6%',
+                    width:'112%',
+                    height:'112%',
+                    objectFit:'cover',
+                    objectPosition:'center',
+                    animation:'gateReveal .82s cubic-bezier(.18,.84,.22,1) both',
+                    pointerEvents:'none',
+                  }}
+                />
+              )}
+              {summonStep === 'GATE_OPEN' && (
+                <>
+                  <div style={{
+                    position:'absolute',
+                    left:'-1%',
+                    top:0,
+                    width:'51%',
+                    height:'100%',
+                    backgroundImage:\`url("\${RECRUITMENT_ASSETS.gate}")\`,
+                    backgroundSize:'200% 100%',
+                    backgroundPosition:'left center',
+                    backgroundRepeat:'no-repeat',
+                    animation:'gateOpenLeft .7s cubic-bezier(.16,.86,.22,1) both',
+                    transformOrigin:'right center',
+                  }} />
+                  <div style={{
+                    position:'absolute',
+                    right:'-1%',
+                    top:0,
+                    width:'51%',
+                    height:'100%',
+                    backgroundImage:\`url("\${RECRUITMENT_ASSETS.gate}")\`,
+                    backgroundSize:'200% 100%',
+                    backgroundPosition:'right center',
+                    backgroundRepeat:'no-repeat',
+                    animation:'gateOpenRight .7s cubic-bezier(.16,.86,.22,1) both',
+                    transformOrigin:'left center',
+                  }} />
+                </>
+              )}
+            </div>
+          )}
 
           <img
             src={RECRUITMENT_ASSETS.redEyes}
@@ -371,6 +462,8 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
                 letterSpacing:'.26em',
               }}>
                 {summonStep === 'BLACKOUT' && 'BLACK WING / SILENCE'}
+                {summonStep === 'GATE' && 'BLACK WING / GATE'}
+                {summonStep === 'GATE_OPEN' && 'BLACK WING / GATE OPEN'}
                 {summonStep === 'PRESENCE' && 'BLACK WING / PRESENCE'}
                 {summonStep === 'OMEN' && 'BLACK WING / OMEN'}
                 {summonStep === 'WINGS_FLASH' && 'BLACK WING / AWAKEN'}
