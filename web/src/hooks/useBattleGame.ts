@@ -1138,7 +1138,7 @@ export function useBattleGame(
           },
         }));
 
-        await sleep(1300 / speed);
+        await sleep((appliedIrenaVariant === 'RUIN' ? 5600 : 1300) / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
 
         if (judgmentActive) {
