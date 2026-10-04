@@ -10,7 +10,6 @@ import {
   getEffectiveAttack,
   getEffectiveDefense,
   getEffectiveSpeed,
-  getIrenaFeatherChargeRange,
   rollIrenaFeatherChargeGain,
   LogType,
   StatusAilmentType,
