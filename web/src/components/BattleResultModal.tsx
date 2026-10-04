@@ -1,13 +1,16 @@
 import React from 'react';
-import { BattleUiState } from '../types/game';
+import { BattleUiState, IrenaSkillId, IrenaSkillProgress } from '../types/game';
 import { Skull, RotateCcw, ArrowLeft } from 'lucide-react';
 import battleBackground from '../assets/戦闘中背景.png';
 import irenaVictoryImage from '../assets/いれーな勝利演出.jpg';
+import SkillUpgradeModal from './SkillUpgradeModal';
 
 interface BattleResultModalProps {
   state: BattleUiState;
   onRematch: () => void;
   onBackToSelect: () => void;
+  skillProgress: IrenaSkillProgress;
+  onUpgradeSkill: (skillId: IrenaSkillId) => void;
 }
 
 export const BattleResultModal: React.FC<BattleResultModalProps> = ({
@@ -19,6 +22,14 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   const winner = playerWon ? state.player : state.enemy;
   const loser = playerWon ? state.enemy : state.player;
   const [victoryAssetsReady, setVictoryAssetsReady] = React.useState(!playerWon);
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
+  const skillUpgradeOverlay = upgradeOpen ? (
+    <SkillUpgradeModal
+      progress={skillProgress}
+      onUpgrade={onUpgradeSkill}
+      onClose={() => setUpgradeOpen(false)}
+    />
+  ) : null;
 
   React.useEffect(() => {
     if (!playerWon) return;
@@ -317,6 +328,24 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             }}
           >
             <button
+              onClick={() => setUpgradeOpen(true)}
+              style={{
+                width: '100%',
+                minHeight: '48px',
+                background: 'linear-gradient(90deg, #5E35B1 0%, #7E57C2 100%)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(225, 190, 231, 0.75)',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: 900,
+                cursor: 'pointer',
+                boxShadow: '0 6px 18px rgba(32, 15, 70, 0.32)',
+              }}
+            >
+              ✨ 技を強化する
+            </button>
+
+            <button
               onClick={onRematch}
               style={{
                 width: '100%',
@@ -357,6 +386,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           </div>
         </div>
       </div>
+      {skillUpgradeOverlay}
     );
   }
 
@@ -491,6 +521,28 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
 
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button
+            onClick={() => setUpgradeOpen(true)}
+            style={{
+              width: '100%',
+              height: '46px',
+              background: 'linear-gradient(90deg, #5E35B1 0%, #7E57C2 100%)',
+              color: '#FFFFFF',
+              border: '1px solid #D1C4E9',
+              borderRadius: '10px',
+              fontSize: '14px',
+              fontWeight: 900,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            ✨ 技を強化する
+          </button>
+
+          <button
             onClick={onRematch}
             style={{
               width: '100%',
@@ -536,6 +588,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           </button>
         </div>
       </div>
+      {skillUpgradeOverlay}
     </div>
   );
 };
