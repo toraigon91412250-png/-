@@ -73,9 +73,8 @@ export function applyDynamicAbilityModifiers(
   let character: CharacterDef = { ...fighter.character };
 
   if (character.id === 'kaiser' && abyssLevel > 0) {
-    const maximumPenalty = abyssLevel * 0.05;
-    const penaltyPerTurn = abyssLevel * 0.01;
-    const penalty = Math.min(maximumPenalty, Math.max(0, turn - 1) * penaltyPerTurn);
+    const penaltyPerTurn = abyssLevel * 0.012;
+    const penalty = Math.min(0.99, Math.max(0, turn - 1) * penaltyPerTurn);
     const multiplier = 1 - penalty;
 
     character = {
@@ -83,6 +82,8 @@ export function applyDynamicAbilityModifiers(
       attack: Math.max(1, Math.round(character.attack * multiplier)),
       defense: Math.max(0, Math.round(character.defense * multiplier)),
       speed: Math.max(1, Math.round(character.speed * multiplier)),
+      specialSkillDamage: Math.max(1, Math.round(character.specialSkillDamage * multiplier)),
+      ultimateSkillDamage: Math.max(1, Math.round(character.ultimateSkillDamage * multiplier)),
     };
   }
 
@@ -91,9 +92,11 @@ export function applyDynamicAbilityModifiers(
     let multiplier = 1;
 
     if (hpRatio <= 0.10) {
-      multiplier = 1 + fallenLevel * 0.10;
-    } else if (hpRatio <= 0.20) {
-      multiplier = 1 + fallenLevel * 0.06;
+      multiplier = 3.0;
+    } else if (hpRatio <= 0.25) {
+      multiplier = 2.5;
+    } else if (hpRatio <= 0.50) {
+      multiplier = 2.0;
     }
 
     if (multiplier > 1) {
