@@ -1,5 +1,5 @@
 import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
-import { getDuplicateShardBonus, getRecruitmentCandidates, RecruitmentDraw } from '../data/recruitment';
+import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw } from '../data/recruitment';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -219,27 +219,17 @@ export function addRecruitmentTickets(amount: number): RecruitmentProgress {
   });
 }
 
-export function getCurrentRecruitmentCandidates(): ReturnType<typeof getRecruitmentCandidates> {
-  const current = loadRecruitmentProgress();
-  return getRecruitmentCandidates(current.totalPulls + 1);
-}
-
-export function performRecruitment(
-  rewardId: string,
-): { progress: RecruitmentProgress; result: RecruitmentDraw } | null {
+export function performRecruitment(): { progress: RecruitmentProgress; result: RecruitmentDraw } | null {
   const current = loadRecruitmentProgress();
   if (current.tickets < 1) return null;
 
-  const candidate = getRecruitmentCandidates(current.totalPulls + 1)
-    .find(reward => reward.id === rewardId);
-  if (!candidate) return null;
-
+  const reward = getRecruitmentRewardForPull(current.totalPulls + 1);
   const collected = new Set(current.collectedIds);
-  const isNew = !collected.has(candidate.id);
-  const shardGain = candidate.shards + (isNew ? 0 : getDuplicateShardBonus(candidate.rarity));
+  const isNew = !collected.has(reward.id);
+  const shardGain = reward.shards + (isNew ? 0 : getDuplicateShardBonus(reward.rarity));
 
   const result: RecruitmentDraw = {
-    reward: candidate,
+    reward,
     isNew,
     shardGain,
   };
@@ -248,8 +238,8 @@ export function performRecruitment(
     ...current,
     tickets: current.tickets - 1,
     totalPulls: current.totalPulls + 1,
-    collectedIds: Array.from(collected).concat(isNew ? [candidate.id] : []),
-    lastResults: current.lastResults.concat(candidate.id).slice(-20),
+    collectedIds: Array.from(collected).concat(isNew ? [reward.id] : []),
+    lastResults: current.lastResults.concat(reward.id).slice(-20),
   });
 
   addSkillShards(shardGain);

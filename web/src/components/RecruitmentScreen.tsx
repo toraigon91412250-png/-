@@ -5,13 +5,12 @@ import {
   RECRUITMENT_REWARD_SEQUENCE,
   RecruitmentDraw,
   RecruitmentRewardDef,
-  getRecruitmentCandidates,
 } from '../data/recruitment';
 import { RecruitmentProgress } from '../types/game';
 
 interface Props {
   progress: RecruitmentProgress;
-  onRecruit: (rewardId: string) => RecruitmentDraw | null;
+  onRecruit: () => RecruitmentDraw | null;
   onBack: () => void;
 }
 
@@ -49,18 +48,18 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
   const [revealing, setRevealing] = useState(false);
   const [lastResult, setLastResult] = useState<RecruitmentDraw | null>(null);
 
-  const candidates = getRecruitmentCandidates(progress.totalPulls + 1);
   const collectedCount = progress.collectedIds.length;
   const maxCollection = RECRUITMENT_REWARD_SEQUENCE.length;
-  const isMilestone = (progress.totalPulls + 1) % 10 === 0;
+  const nextPull = progress.totalPulls + 1;
+  const isMilestone = nextPull % 10 === 0;
 
-  const handleChoose = (rewardId: string) => {
+  const handleRecruit = () => {
     if (revealing || progress.tickets < 1) return;
     setRevealing(true);
     setLastResult(null);
 
     window.setTimeout(() => {
-      const outcome = onRecruit(rewardId);
+      const outcome = onRecruit();
       if (outcome) setLastResult(outcome);
       setRevealing(false);
     }, 650);
@@ -155,12 +154,12 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
               background:'rgba(126,87,194,.16)', border:'1px solid rgba(179,157,219,.25)',
               color:'#D1C4E9', fontSize:'9px', fontWeight:900, letterSpacing:'.12em',
             }}>
-              <Zap size={12} /> CHOOSE YOUR REWARD
+              <Zap size={12} /> REVEAL YOUR REWARD
             </div>
 
-            <h1 style={{ margin:'14px 0 6px', fontSize:'30px', fontWeight:950 }}>黒翼が3つの道を示す</h1>
+            <h1 style={{ margin:'14px 0 6px', fontSize:'30px', fontWeight:950 }}>黒翼が報酬を呼び寄せる</h1>
             <p style={{ margin:0, maxWidth:'465px', color:'#AAB6C8', fontSize:'11px', lineHeight:1.7 }}>
-              召喚札1枚につき3つの候補から1つを選択。選んだ報酬だけがコレクションに登録されます。
+              召喚札1枚を使うと報酬が自動で確定し、その結果だけが表示されます。
               重複報酬は黒羽の欠片へ変換されます。
             </p>
 
@@ -174,9 +173,9 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
         <section style={{ marginTop:'12px', padding:'12px', borderRadius:'15px', border:'1px solid #293653', background:'rgba(12,17,29,.9)' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', gap:'8px' }}>
             <div>
-              <div style={{ color:'#8EA0BB', fontSize:'9px', fontWeight:800 }}>NEXT CHOICE</div>
+              <div style={{ color:'#8EA0BB', fontSize:'9px', fontWeight:800 }}>NEXT SUMMON</div>
               <div style={{ marginTop:'3px', fontSize:'14px', fontWeight:900 }}>
-                {isMilestone ? '10回目：SSR候補から選択できます' : '3つの候補から、好きな1つを選択'}
+                {isMilestone ? '10回目：特別報酬を確定' : '召喚すると報酬が自動で確定'}
               </div>
             </div>
             <div style={{ color:'#FFE082', fontSize:'10px', fontWeight:900 }}>残り {progress.tickets} 札</div>
@@ -236,16 +235,36 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
               </div>
             </section>
           ) : (
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,minmax(0,1fr))', gap:'10px' }}>
-              {candidates.map((candidate, index) => (
-                <CandidateCard
-                  key={candidate.id}
-                  reward={candidate}
-                  index={index}
-                  disabled={progress.tickets < 1}
-                  onChoose={handleChoose}
-                />
-              ))}
+            <div style={{
+              minHeight:'220px', borderRadius:'18px',
+              border:'1px solid rgba(179,157,219,.34)',
+              background:'linear-gradient(145deg,rgba(18,15,31,.92),rgba(7,10,17,.98))',
+              display:'grid', placeItems:'center', padding:'18px',
+            }}>
+              <button
+                type="button"
+                disabled={progress.tickets < 1}
+                onClick={handleRecruit}
+                style={{
+                  width:'min(100%,430px)', minHeight:'112px', borderRadius:'18px',
+                  border:'1px solid rgba(255,213,79,.58)',
+                  background:'radial-gradient(circle at 50% 35%,rgba(126,87,194,.26),rgba(10,12,20,.98) 67%)',
+                  color:'#FFFFFF', cursor:progress.tickets < 1 ? 'not-allowed' : 'pointer',
+                  opacity:progress.tickets < 1 ? .46 : 1,
+                  boxShadow:'0 0 45px rgba(126,87,194,.16), inset 0 0 35px rgba(255,255,255,.025)',
+                  position:'relative', overflow:'hidden',
+                }}
+              >
+                <span style={{ position:'relative', zIndex:1, display:'block', color:'#FFE082', fontSize:'10px', fontWeight:950, letterSpacing:'.18em' }}>
+                  {progress.tickets < 1 ? '召喚札がありません' : 'BLACK WING SUMMON'}
+                </span>
+                <span style={{ position:'relative', zIndex:1, display:'block', marginTop:'8px', fontSize:'24px', fontWeight:950 }}>
+                  {progress.tickets < 1 ? '戦闘で召喚札を獲得' : '召喚する'}
+                </span>
+                <span style={{ position:'relative', zIndex:1, display:'block', marginTop:'6px', color:'#9FAABE', fontSize:'10px' }}>
+                  引いた時点で報酬が自動確定
+                </span>
+              </button>
             </div>
           )}
         </section>
@@ -255,8 +274,8 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
             <Gift size={14} /> 召喚のルール
           </div>
           <div style={{ marginTop:'7px', color:'#9EABBF', fontSize:'10px', lineHeight:1.7 }}>
-            召喚は無料のゲーム内札のみを使用します。抽選確率はなく、毎回3候補から1つを選択します。
-            10回目にはSSR候補が必ず1つ含まれます。戦闘終了時に召喚札を1枚獲得します。
+            召喚は無料のゲーム内札のみを使用します。プレイヤーが報酬を選ぶのではなく、召喚時に報酬が自動確定して結果を表示します。
+            10回目にはSSR報酬を確定します。戦闘終了時に召喚札を1枚獲得します。
           </div>
         </section>
       </div>
@@ -270,41 +289,3 @@ const miniStatStyle: React.CSSProperties = {
   color:'#B6C0D1', fontSize:'9px', fontWeight:850,
 };
 
-const CandidateCard: React.FC<{
-  reward: RecruitmentRewardDef;
-  index: number;
-  disabled: boolean;
-  onChoose: (rewardId: string) => void;
-}> = ({ reward, index, disabled, onChoose }) => {
-  const meta = rarityMeta[reward.rarity];
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={() => onChoose(reward.id)}
-      style={{
-        position:'relative', minHeight:'278px', padding:'14px 10px', overflow:'hidden',
-        borderRadius:'17px', border:`1px solid ${meta.border}`,
-        background:`linear-gradient(145deg,${meta.bg},rgba(8,12,20,.97))`,
-        color:'#FFF', cursor:disabled ? 'not-allowed' : 'pointer',
-        opacity:disabled ? .48 : 1,
-        boxShadow:`0 9px 30px ${meta.glow}, inset 0 0 28px rgba(255,255,255,.025)`,
-        animation:'candidateIn 430ms cubic-bezier(.18,.82,.27,1) both',
-        animationDelay:`${index * 85}ms`,
-        textAlign:'center',
-      }}
-    >
-      <div style={{ position:'absolute', top:0, left:'-30%', width:'27%', height:'100%', background:'linear-gradient(90deg,transparent,rgba(255,255,255,.13),transparent)', animation:'shineSweep 900ms ease-out 120ms both', pointerEvents:'none' }} />
-      <div style={{ color:meta.border, fontSize:'9px', fontWeight:950, letterSpacing:'.1em' }}>{meta.label}</div>
-      <div style={{ margin:'16px auto 12px', width:'72px', height:'72px', borderRadius:'50%', border:`1px solid ${meta.border}`, background:'rgba(4,7,13,.52)', boxShadow:`0 0 30px ${meta.glow}`, display:'grid', placeItems:'center', color:meta.border }}>
-        {meta.icon}
-      </div>
-      <div style={{ fontSize:'17px', fontWeight:950, lineHeight:1.2 }}>{reward.name}</div>
-      <div style={{ marginTop:'7px', minHeight:'52px', color:'#AEB9CB', fontSize:'9px', lineHeight:1.55 }}>{reward.description}</div>
-      <div style={{ marginTop:'11px', display:'inline-flex', padding:'5px 8px', borderRadius:'8px', background:'rgba(4,7,13,.46)', color:'#FFE082', fontSize:'9px', fontWeight:900 }}>
-        選択で +{reward.shards} 欠片
-      </div>
-      <div style={{ marginTop:'9px', fontSize:'9px', color:'#D1C4E9', fontWeight:850 }}>この報酬を選ぶ</div>
-    </button>
-  );
-};
