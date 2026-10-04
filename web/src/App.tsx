@@ -156,6 +156,32 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+      {screen !== 'BATTLE' && (
+        <button
+          type="button"
+          onClick={handleOpenDeveloperTools}
+          style={{
+            position:'fixed',
+            right:10,
+            bottom:10,
+            zIndex:500,
+            minHeight:38,
+            padding:'0 11px',
+            borderRadius:10,
+            border:'1px solid #C48726',
+            background:'rgba(30,23,12,.96)',
+            color:'#FFE082',
+            fontSize:10,
+            fontWeight:950,
+            letterSpacing:'.06em',
+            boxShadow:'0 6px 20px rgba(0,0,0,.35)',
+            cursor:'pointer',
+          }}
+        >
+          開発者ツール
+        </button>
+      )}
+
       {isBattleDeploying && (
         <div
           style={{
