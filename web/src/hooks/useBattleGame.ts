@@ -1220,6 +1220,7 @@ export function useBattleGame(
       visualEffect: null,
       isAnimating: false,
       lastBattleReward: reward,
+      lastBattleMasteryReward: masteryBonus,
     }));
   };
 
