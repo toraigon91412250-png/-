@@ -1,5 +1,5 @@
 import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
-import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw } from '../data/recruitment';
+import { getDuplicateShardBonus, getRecruitmentCandidates, RecruitmentDraw } from '../data/recruitment';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -219,38 +219,39 @@ export function addRecruitmentTickets(amount: number): RecruitmentProgress {
   });
 }
 
-export function performRecruitment(
-  count: 1 | 10,
-): { progress: RecruitmentProgress; results: RecruitmentDraw[] } | null {
+export function getCurrentRecruitmentCandidates(): ReturnType<typeof getRecruitmentCandidates> {
   const current = loadRecruitmentProgress();
-  if (current.tickets < count) return null;
+  return getRecruitmentCandidates(current.totalPulls + 1);
+}
+
+export function performRecruitment(
+  rewardId: string,
+): { progress: RecruitmentProgress; result: RecruitmentDraw } | null {
+  const current = loadRecruitmentProgress();
+  if (current.tickets < 1) return null;
+
+  const candidate = getRecruitmentCandidates(current.totalPulls + 1)
+    .find(reward => reward.id === rewardId);
+  if (!candidate) return null;
 
   const collected = new Set(current.collectedIds);
-  const results: RecruitmentDraw[] = [];
-  let totalShardGain = 0;
+  const isNew = !collected.has(candidate.id);
+  const shardGain = candidate.shards + (isNew ? 0 : getDuplicateShardBonus(candidate.rarity));
 
-  for (let index = 0; index < count; index += 1) {
-    const pullNumber = current.totalPulls + index + 1;
-    const reward = getRecruitmentRewardForPull(pullNumber);
-    const isNew = !collected.has(reward.id);
-    const shardGain = reward.shards + (isNew ? 0 : getDuplicateShardBonus(reward.rarity));
-
-    results.push({ reward, isNew, shardGain });
-    totalShardGain += shardGain;
-    collected.add(reward.id);
-  }
+  const result: RecruitmentDraw = {
+    reward: candidate,
+    isNew,
+    shardGain,
+  };
 
   const nextProgress = persistRecruitmentProgress({
     ...current,
-    tickets: current.tickets - count,
-    totalPulls: current.totalPulls + count,
-    collectedIds: Array.from(collected),
-    lastResults: results.map(result => result.reward.id).slice(-20),
+    tickets: current.tickets - 1,
+    totalPulls: current.totalPulls + 1,
+    collectedIds: Array.from(collected).concat(isNew ? [candidate.id] : []),
+    lastResults: current.lastResults.concat(candidate.id).slice(-20),
   });
 
-  if (totalShardGain > 0) {
-    addSkillShards(totalShardGain);
-  }
-
-  return { progress: nextProgress, results };
+  addSkillShards(shardGain);
+  return { progress: nextProgress, result };
 }
