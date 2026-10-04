@@ -165,6 +165,9 @@ export const App: React.FC = () => {
           onSelectDifficulty={setDifficulty}
           onStartBattle={handleStartBattle}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
+          skillProgress={skillProgress}
+          onUpgradeSkill={handleUpgradeSkill}
+          onChooseSkillPath={handleChooseSkillPath}
         />
       ) : screen === 'BATTLE' ? (
         <BattleScreen
