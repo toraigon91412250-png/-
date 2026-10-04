@@ -15,6 +15,14 @@ interface Props {
 
 type SummonPhase = 'IDLE' | 'SUMMONING' | 'RESULT';
 
+const RECRUITMENT_ASSETS = {
+  irena: '/assets/recruitment/irena-summon-1.jpg',
+  irenaAlt: '/assets/recruitment/irena-summon-2.jpg',
+  feather: '/assets/recruitment/black-feather.png',
+  cloud: '/assets/recruitment/black-cloud.png',
+  crack: '/assets/recruitment/space-crack.png',
+} as const;
+
 const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
   label: string;
   icon: React.ReactNode;
@@ -189,6 +197,10 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
           background:'radial-gradient(circle at 50% 50%, rgba(65,40,82,.25), transparent 34%), linear-gradient(180deg,rgba(7,8,12,.98),rgba(2,3,6,.99))',
           boxShadow:'0 18px 65px rgba(0,0,0,.52), inset 0 0 75px rgba(100,53,120,.09)',
         }}>
+          <img src={RECRUITMENT_ASSETS.cloud} alt="" aria-hidden="true" style={{ position:'absolute', inset:'-12%', width:'124%', height:'124%', objectFit:'cover', opacity: phase === 'SUMMONING' ? .5 : .16, mixBlendMode:'screen', filter:'contrast(1.15) brightness(.55)', transition:'opacity .35s ease' }} />
+          <img src={RECRUITMENT_ASSETS.feather} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', top:'52%', width:'min(58vw,430px)', height:'min(58vw,430px)', objectFit:'contain', transform:'translate(-50%,-50%)', opacity: phase === 'SUMMONING' ? .72 : .28, filter:'drop-shadow(0 0 22px rgba(110,75,130,.28))', transition:'opacity .35s ease, transform .8s ease' }} />
+          <img src={RECRUITMENT_ASSETS.irena} alt="" aria-hidden="true" style={{ position:'absolute', left:'50%', bottom:'-7%', width:'min(46vw,300px)', height:'78%', objectFit:'contain', objectPosition:'center bottom', transform:'translateX(-50%)', opacity: phase === 'SUMMONING' ? .22 : .08, mixBlendMode:'screen', filter:'saturate(.85) contrast(1.1)', transition:'opacity .5s ease' }} />
+          {phase === 'SUMMONING' && <img src={RECRUITMENT_ASSETS.crack} alt="" aria-hidden="true" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:.42, mixBlendMode:'screen', pointerEvents:'none' }} />}
           <div style={{
             position:'absolute', left:'50%', top:'52%', width:220, height:220, borderRadius:'50%',
             border:'1px solid rgba(197,154,220,.22)', animation:'wingPulse 3.2s ease-in-out infinite',
