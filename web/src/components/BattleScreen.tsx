@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BattleAction, BattleUiState } from '../types/game';
-import { CHARACTERS } from '../data/characters';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -63,15 +62,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     const handleResize = () => setIsWide(window.innerWidth >= 680);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Preload Irena's feather-shot cut-in as soon as the battle screen opens.
-  useEffect(() => {
-    const irenaCutInSrc = CHARACTERS.find(character => character.id === 'irena')?.specialCutInSrc;
-    if (!irenaCutInSrc) return;
-
-    const image = new Image();
-    image.src = irenaCutInSrc;
   }, []);
 
   // Screen shake on impactful damage

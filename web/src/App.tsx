@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CharacterDef, CpuDifficulty } from './types/game';
-import { CHARACTERS, CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
+import { CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
@@ -25,18 +25,43 @@ export const App: React.FC = () => {
     setCpuDifficulty,
   } = useBattleGame(playerChar, enemyChar, difficulty);
 
-  // Preload character special-skill cut-ins before the first battle action.
-  useEffect(() => {
-    CHARACTERS.forEach(character => {
-      if (!character.specialCutInSrc) return;
+  // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
+  // does not have to start a fresh image decode during the attack.
+  const battleImagePreloadCache = new Map<string, Promise<void>>();
+
+  const preloadBattleImage = (src: string) => {
+    const cached = battleImagePreloadCache.get(src);
+    if (cached) return cached;
+
+    const promise = new Promise<void>(resolve => {
       const image = new Image();
+      let finished = false;
+
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+
+        if (typeof image.decode === 'function') {
+          image.decode().catch(() => {}).finally(() => resolve());
+        } else {
+          resolve();
+        }
+      };
+
       image.decoding = 'async';
-      image.src = character.specialCutInSrc;
-      if (typeof image.decode === 'function') {
-        image.decode().catch(() => {});
+      image.setAttribute('fetchpriority', 'high');
+      image.onload = finish;
+      image.onerror = () => resolve();
+      image.src = src;
+
+      if (image.complete) {
+        finish();
       }
     });
-  }, []);
+
+    battleImagePreloadCache.set(src, promise);
+    return promise;
+  };
 
   // Reload stats whenever battle is finished
   useEffect(() => {
@@ -49,6 +74,7 @@ export const App: React.FC = () => {
     const opp = CPU_CHARACTERS.find(c => c.id !== playerChar.id) || CPU_CHARACTERS.find(c => c.id === KAISER.id) || KAISER;
     const sources = [
       battleBackground,
+      // Images actually used during the battle itself.
       playerChar.imageSrc,
       playerChar.iconImageSrc,
       playerChar.specialCutInSrc,
@@ -66,18 +92,7 @@ export const App: React.FC = () => {
     const startedAt = Date.now();
     const minimumDeployMs = 1100;
 
-    Promise.all(
-      sources.map(
-        (src) =>
-          new Promise<void>((resolve) => {
-            const image = new Image();
-            image.onload = () => resolve();
-            image.onerror = () => resolve();
-            image.src = src;
-            if (typeof image.decode === 'function') image.decode().catch(() => {});
-          }),
-      ),
-    ).then(() => {
+    Promise.all(sources.map(preloadBattleImage)).then(() => {
       const remainingMs = Math.max(0, minimumDeployMs - (Date.now() - startedAt));
       setTimeout(() => setIsBattleDeploying(false), remainingMs);
     });
