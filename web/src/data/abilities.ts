@@ -47,7 +47,7 @@ export const ABILITY_DEFINITIONS: readonly AbilityDefinition[] = [
       '全ステ×1.04 / 羽弾×1.4',
       '全ステ×1.06 / 羽弾×1.6',
       '全ステ×1.08 / 羽弾×1.8',
-      '全ステ×1.10 / 羽弾×2.0',
+      '全ステ×1.10 / 羽弾最終ダメージ×5.0',
     ],
   },
   {
