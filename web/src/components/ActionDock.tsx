@@ -29,6 +29,20 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
   const specialDamagePreview = player.character.specialSkillDamage + player.featherChargeBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
+  const featherPathName =
+    player.character.featherSkillPath === 'ABYSS'
+      ? '深淵'
+      : player.character.featherSkillPath === 'JUDGMENT'
+        ? '断罪'
+        : player.character.featherSkillPath === 'CHARGE'
+          ? '蓄積'
+          : null;
+  const ruinPathName =
+    player.character.ruinSkillPath === 'EXECUTION'
+      ? '処刑'
+      : player.character.ruinSkillPath === 'ANNIHILATION'
+        ? '殲滅'
+        : null;
   const isIrenaUltimate = true;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
   const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
@@ -138,9 +152,21 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-            🎯 コマンド選択
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
+              🎯 コマンド選択
+            </span>
+            {featherPathName && (
+              <span style={{ fontSize: '9px', fontWeight: 900, color: '#E1BEE7', background: 'rgba(126,87,194,0.2)', border: '1px solid rgba(179,157,219,0.35)', padding: '2px 6px', borderRadius: '999px' }}>
+                羽弾・{featherPathName}
+              </span>
+            )}
+            {ruinPathName && (
+              <span style={{ fontSize: '9px', fontWeight: 900, color: '#FFB3B3', background: 'rgba(198,40,40,0.16)', border: '1px solid rgba(239,83,80,0.3)', padding: '2px 6px', borderRadius: '999px' }}>
+                破壊・{ruinPathName}
+              </span>
+            )}
+          </div>
           {player.isBuffed && (
             <span
               style={{
