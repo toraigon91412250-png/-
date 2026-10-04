@@ -90,18 +90,6 @@ export function useBattleGame(
   const masteryClaimedRef = useRef<Set<string>>(new Set());
   const battleMasteryRewardRef = useRef(0);
 
-  const claimPathMasteryReward = useCallback((masteryId: string, masteryName: string, turn: number) => {
-    if (masteryClaimedRef.current.has(masteryId)) return;
-    masteryClaimedRef.current.add(masteryId);
-    battleMasteryRewardRef.current += PATH_MASTERY_REWARD;
-    addLog(
-      `✦【戦術達成】${masteryName}を活かした！ 黒羽の欠片 +${PATH_MASTERY_REWARD}`,
-      'GAUGE_CHANGE',
-      turn
-    );
-  }, [addLog]);
-
-
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
     const newLog: BattleLog = {
       id: nextLogId.current++,
@@ -115,6 +103,18 @@ export function useBattleGame(
       logs: [...prev.logs, newLog],
     }));
   }, [updateState]);
+
+  const claimPathMasteryReward = useCallback((masteryId: string, masteryName: string, turn: number) => {
+    if (masteryClaimedRef.current.has(masteryId)) return;
+    masteryClaimedRef.current.add(masteryId);
+    battleMasteryRewardRef.current += PATH_MASTERY_REWARD;
+    addLog(
+      `✦【戦術達成】${masteryName}を活かした！ 黒羽の欠片 +${PATH_MASTERY_REWARD}`,
+      'GAUGE_CHANGE',
+      turn
+    );
+  }, [addLog]);
+
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
