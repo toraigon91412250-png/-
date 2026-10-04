@@ -106,7 +106,7 @@ export function useBattleGame(
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
-  const fallenKingSurvivalUsedRef = useRef(false);
+  const fallenKingSurvivalCountRef = useRef(0);
   const fallenReleaseLoggedRef = useRef(false);
 
 
@@ -179,9 +179,9 @@ export function useBattleGame(
       target.isPlayer &&
       fallenKingLevel >= 5 &&
       lethal &&
-      !fallenKingSurvivalUsedRef.current
+      fallenKingSurvivalCountRef.current < (fallenKingLevel >= 5 ? 5 : 1)
     ) {
-      fallenKingSurvivalUsedRef.current = true;
+      fallenKingSurvivalCountRef.current += 1;
       addLog(
         `👑【堕天王】いれーなは致命傷を拒絶した！（${source}）HP1で踏みとどまる。`,
         'PASSIVE_TRIGGER',
@@ -216,7 +216,7 @@ export function useBattleGame(
     recentCpuActionsRef.current = [];
     judgmentMarksRef.current = 0;
     judgmentReadyRef.current = false;
-    fallenKingSurvivalUsedRef.current = false;
+    fallenKingSurvivalCountRef.current = 0;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
 
@@ -558,7 +558,7 @@ export function useBattleGame(
 
         // Judgement execution multiplies the completed attack.
         let finalDamage = judgmentActive
-          ? Math.round(attackDamage * getJudgmentDamageMultiplier(judgmentLevel))
+          ? Math.round(attackDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20)
           : attackDamage;
         if (judgmentActive) {
           addLog(
@@ -799,6 +799,11 @@ export function useBattleGame(
 
         let finalDamage = baseDamage;
 
+        if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
+          finalDamage = Math.round(finalDamage * 5);
+          addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
+        }
+
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += abyssBonus;
@@ -825,7 +830,7 @@ export function useBattleGame(
         }
 
         if (judgmentActive) {
-          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel));
+          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20);
           addLog(
             `⚖️【断罪執行】特殊技にも断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
