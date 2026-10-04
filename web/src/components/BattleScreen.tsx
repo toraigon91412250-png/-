@@ -16,6 +16,34 @@ interface BattleScreenProps {
   onToggleSpeed: () => void;
 }
 
+const CPU_INTENT_META: Record<BattleAction, { label: string; description: string; accent: string }> = {
+  ATTACK: {
+    label: '通常攻撃',
+    description: '直接攻撃を狙っている',
+    accent: '#64B5F6',
+  },
+  EVADE: {
+    label: '回避',
+    description: '攻撃を避ける構え',
+    accent: '#4DD0E1',
+  },
+  BUFF: {
+    label: '強化',
+    description: '次の攻撃に向けて力を溜める',
+    accent: '#FFD54F',
+  },
+  SPECIAL: {
+    label: '重撃',
+    description: '特殊技を放つ',
+    accent: '#CE93D8',
+  },
+  ULTIMATE: {
+    label: '超重撃',
+    description: '必殺技を解放する',
+    accent: '#FF8A65',
+  },
+};
+
 export const BattleScreen: React.FC<BattleScreenProps> = ({
   state,
   onAction,
@@ -298,6 +326,36 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               visualEffect={state.visualEffect}
             />
 
+            {isActionEnabled && (
+              <div
+                aria-live="polite"
+                style={{
+                  marginTop: '5px',
+                  padding: '7px 10px',
+                  borderRadius: '9px',
+                  border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
+                  background: 'rgba(8, 12, 20, 0.78)',
+                  boxShadow: `inset 0 0 16px ${CPU_INTENT_META[state.cpuIntent].accent}12`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
+                    CPU 予兆
+                  </div>
+                  <div style={{ fontSize: '13px', fontWeight: 950, color: '#FFFFFF', marginTop: '1px' }}>
+                    {CPU_INTENT_META[state.cpuIntent].label}
+                  </div>
+                </div>
+                <div style={{ flex: 1, fontSize: '10px', fontWeight: 700, color: '#B7C2D3', textAlign: 'right' }}>
+                  {CPU_INTENT_META[state.cpuIntent].description}
+                </div>
+              </div>
+            )}
+
             {/* 2. Clash Area / Banner */}
             <div
               style={{
@@ -394,6 +452,35 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
                 visualEffect={state.visualEffect}
               />
+
+              {isActionEnabled && (
+                <div
+                  aria-live="polite"
+                  style={{
+                    marginTop: '6px',
+                    padding: '8px 10px',
+                    borderRadius: '10px',
+                    border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
+                    background: 'rgba(8, 12, 20, 0.78)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
+                      CPU 予兆
+                    </div>
+                    <div style={{ marginTop: '2px', fontSize: '14px', fontWeight: 950, color: CPU_INTENT_META[state.cpuIntent].accent }}>
+                      {CPU_INTENT_META[state.cpuIntent].label}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#B7C2D3', textAlign: 'right' }}>
+                    {CPU_INTENT_META[state.cpuIntent].description}
+                  </div>
+                </div>
+              )}
 
               <div
                 style={{
