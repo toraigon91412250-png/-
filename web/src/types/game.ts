@@ -182,6 +182,26 @@ export interface VisualEffect {
 
 export type CpuDifficulty = 'NORMAL' | 'EXPERT';
 
+export type BattleChallengeLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
+export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
+
+export interface AbilityProgress {
+  levels: Record<AbilityId, number>;
+  shards: Record<AbilityId, number>;
+}
+
+export interface EquippedAbility {
+  id: AbilityId;
+  level: number;
+}
+
+export interface BattleSetupConfig {
+  kaiserLevel: BattleChallengeLevel;
+  abilities: EquippedAbility[];
+}
+
 export type IrenaSkillId = 'FEATHER' | 'RUIN';
 export type FeatherSkillPath = 'ABYSS' | 'JUDGMENT' | 'CHARGE';
 export type RuinSkillPath = 'EXECUTION' | 'ANNIHILATION';
@@ -210,6 +230,7 @@ export interface BattleUiState {
   isSoundEnabled: boolean;
   isAnimating: boolean;
   lastBattleReward: number;
+  battleConfig: BattleSetupConfig;
 }
 
 export interface OverallStats {
