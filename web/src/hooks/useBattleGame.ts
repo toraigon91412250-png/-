@@ -866,8 +866,9 @@ export function useBattleGame(
     const cpu = stateRef.current.enemy;
     const player = stateRef.current.player;
 
-    // CPU decides action
-    const cpuAction = CpuAi.decideAction(cpu, player, stateRef.current.cpuDifficulty);
+    // The CPU intent was selected at the end of the previous round and is now the
+    // telegraphed action the player has been allowed to react to.
+    const cpuAction = stateRef.current.cpuIntent;
 
     addLog(`--- 第${currentTurn}ターン 開始 ---`, 'SYSTEM', currentTurn);
 
@@ -922,21 +923,40 @@ export function useBattleGame(
 
       await sleep(400 / speed);
 
-      // End of Round: decrement cooldowns & reset evade stances
+      // End of Round: remember what the player just did, then select the next
+      // CPU action from the updated state. This makes the opponent learn from
+      // repeated habits without re-rolling its action after the player commits.
+      recentPlayerActionsRef.current = [...recentPlayerActionsRef.current.slice(-5), playerAction];
+      recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
+
+      const nextPlayer = {
+        ...stateRef.current.player,
+        isEvading: false,
+        specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
+      };
+      const nextEnemy = {
+        ...stateRef.current.enemy,
+        isEvading: false,
+        specialCooldownRemaining: Math.max(0, stateRef.current.enemy.specialCooldownRemaining - 1),
+      };
+      const nextCpuIntent = CpuAi.decideAction(
+        nextEnemy,
+        nextPlayer,
+        stateRef.current.cpuDifficulty,
+        {
+          recentPlayerActions: recentPlayerActionsRef.current,
+          recentCpuActions: recentCpuActionsRef.current,
+          turnNumber: currentTurn + 1,
+        }
+      );
+
       updateState(prev => ({
         ...prev,
         turnNumber: prev.turnNumber + 1,
         phase: 'SELECT_ACTION',
-        player: {
-          ...prev.player,
-          isEvading: false,
-          specialCooldownRemaining: Math.max(0, prev.player.specialCooldownRemaining - 1),
-        },
-        enemy: {
-          ...prev.enemy,
-          isEvading: false,
-          specialCooldownRemaining: Math.max(0, prev.enemy.specialCooldownRemaining - 1),
-        },
+        player: nextPlayer,
+        enemy: nextEnemy,
+        cpuIntent: nextCpuIntent,
         visualEffect: null,
         isAnimating: false,
       }));
