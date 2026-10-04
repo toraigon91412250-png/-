@@ -35,8 +35,13 @@ export function loadOverallStats(): OverallStats {
 }
 
 function normalizeSkillProgress(parsed: Partial<IrenaSkillProgress> | null | undefined): IrenaSkillProgress {
+  const storedShards = Number(parsed && parsed.shards);
+  const shards = Number.isFinite(storedShards)
+    ? Math.max(0, Math.floor(storedShards))
+    : INITIAL_SKILL_PROGRESS.shards;
+
   return {
-    shards: Math.max(0, Math.floor(Number(parsed && parsed.shards) || INITIAL_SKILL_PROGRESS.shards)),
+    shards,
     featherLevel: Math.min(
       MAX_SKILL_LEVEL,
       Math.max(1, Math.floor(Number(parsed && parsed.featherLevel) || INITIAL_SKILL_PROGRESS.featherLevel)),
