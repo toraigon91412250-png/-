@@ -1,5 +1,5 @@
 import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
-import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw } from '../data/recruitment';
+import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_COLLECTION_COMPLETE_BONUS, RECRUITMENT_REWARDS } from '../data/recruitment';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -225,23 +225,33 @@ export function performRecruitment(): { progress: RecruitmentProgress; result: R
 
   const reward = getRecruitmentRewardForPull(current.totalPulls + 1);
   const collected = new Set(current.collectedIds);
+  const wasCollectionComplete = collected.size >= RECRUITMENT_REWARDS.length;
   const isNew = !collected.has(reward.id);
   const shardGain = reward.shards + (isNew ? 0 : getDuplicateShardBonus(reward.rarity));
+
+  if (isNew) collected.add(reward.id);
+
+  const collectionCompleted = !wasCollectionComplete && collected.size >= RECRUITMENT_REWARDS.length;
+  const collectionBonusShards = collectionCompleted ? RECRUITMENT_COLLECTION_COMPLETE_BONUS : 0;
+  const totalShardGain = shardGain + collectionBonusShards;
 
   const result: RecruitmentDraw = {
     reward,
     isNew,
     shardGain,
+    ticketBonus: reward.ticketBonus,
+    collectionCompleted,
+    collectionBonusShards,
   };
 
   const nextProgress = persistRecruitmentProgress({
     ...current,
-    tickets: current.tickets - 1,
+    tickets: current.tickets - 1 + reward.ticketBonus,
     totalPulls: current.totalPulls + 1,
-    collectedIds: Array.from(collected).concat(isNew ? [reward.id] : []),
+    collectedIds: Array.from(collected),
     lastResults: current.lastResults.concat(reward.id).slice(-20),
   });
 
-  addSkillShards(shardGain);
+  addSkillShards(totalShardGain);
   return { progress: nextProgress, result };
 }
