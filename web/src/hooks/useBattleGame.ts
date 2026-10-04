@@ -223,7 +223,7 @@ export function useBattleGame(
       const updated = [
         ...filtered,
         ailmentType === 'BLEED'
-          ? { type: ailmentType, remainingTurns: def.defaultDuration, dotDamage: def.dotDamage }
+          ? { type: ailmentType, remainingTurns: def.defaultDuration, dotDamage: bleedDamage }
           : { type: ailmentType, remainingTurns: def.defaultDuration },
       ];
       return defenderIsPlayer
