@@ -893,9 +893,6 @@ export function useBattleGame(
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
 
-    const cpu = stateRef.current.enemy;
-    const player = stateRef.current.player;
-
     // The CPU intent was selected at the end of the previous round and is now the
     // telegraphed action the player has been allowed to react to.
     const cpuAction = stateRef.current.cpuIntent;
