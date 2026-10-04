@@ -179,11 +179,15 @@ export interface VisualEffect {
 export type CpuDifficulty = 'NORMAL' | 'EXPERT';
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';
+export type FeatherSkillPath = 'ABYSS' | 'JUDGMENT' | 'CHARGE';
+export type RuinSkillPath = 'EXECUTION' | 'ANNIHILATION';
 
 export interface IrenaSkillProgress {
   shards: number;
   featherLevel: number;
   ruinLevel: number;
+  featherPath: FeatherSkillPath | null;
+  ruinPath: RuinSkillPath | null;
 }
 
 export type BattlePhase = 'SELECT_ACTION' | 'EXECUTING_TURNS' | 'BATTLE_FINISHED';
