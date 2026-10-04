@@ -1,4 +1,4 @@
-import { IrenaSkillId, IrenaSkillProgress, OverallStats } from '../types/game';
+import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RuinSkillPath } from '../types/game';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -7,6 +7,8 @@ const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
   shards: 50,
   featherLevel: 1,
   ruinLevel: 1,
+  featherPath: null,
+  ruinPath: null,
 };
 
 export const BATTLE_REWARD_WIN = 50;
@@ -40,8 +42,19 @@ function normalizeSkillProgress(parsed: Partial<IrenaSkillProgress> | null | und
     ? Math.max(0, Math.floor(storedShards))
     : INITIAL_SKILL_PROGRESS.shards;
 
+  const featherPath: FeatherSkillPath | null =
+    parsed?.featherPath === 'ABYSS' || parsed?.featherPath === 'JUDGMENT' || parsed?.featherPath === 'CHARGE'
+      ? parsed.featherPath
+      : null;
+  const ruinPath: RuinSkillPath | null =
+    parsed?.ruinPath === 'EXECUTION' || parsed?.ruinPath === 'ANNIHILATION'
+      ? parsed.ruinPath
+      : null;
+
   return {
     shards,
+    featherPath,
+    ruinPath,
     featherLevel: Math.min(
       MAX_SKILL_LEVEL,
       Math.max(1, Math.floor(Number(parsed && parsed.featherLevel) || INITIAL_SKILL_PROGRESS.featherLevel)),
@@ -90,8 +103,11 @@ export function upgradeIrenaSkill(skillId: IrenaSkillId): IrenaSkillProgress | n
   const current = loadSkillProgress();
   const levelKey = skillId === 'FEATHER' ? 'featherLevel' : 'ruinLevel';
   const currentLevel = current[levelKey];
+  const selectedPath = skillId === 'FEATHER' ? current.featherPath : current.ruinPath;
   const cost = getSkillUpgradeCost(currentLevel);
 
+  // Lv.4 unlocks specialization; choose a path before progressing beyond Lv.3.
+  if (currentLevel === 3 && !selectedPath) return null;
   if (currentLevel >= MAX_SKILL_LEVEL || current.shards < cost) return null;
 
   return persistSkillProgress({
@@ -99,6 +115,31 @@ export function upgradeIrenaSkill(skillId: IrenaSkillId): IrenaSkillProgress | n
     shards: current.shards - cost,
     [levelKey]: currentLevel + 1,
   });
+}
+
+export function chooseIrenaSkillPath(
+  skillId: 'FEATHER',
+  path: FeatherSkillPath,
+): IrenaSkillProgress | null;
+export function chooseIrenaSkillPath(
+  skillId: 'RUIN',
+  path: RuinSkillPath,
+): IrenaSkillProgress | null;
+export function chooseIrenaSkillPath(
+  skillId: IrenaSkillId,
+  path: FeatherSkillPath | RuinSkillPath,
+): IrenaSkillProgress | null {
+  const current = loadSkillProgress();
+
+  if (skillId === 'FEATHER') {
+    if (current.featherPath || current.featherLevel < 4) return null;
+    if (path !== 'ABYSS' && path !== 'JUDGMENT' && path !== 'CHARGE') return null;
+    return persistSkillProgress({ ...current, featherPath: path });
+  }
+
+  if (current.ruinPath || current.ruinLevel < 4) return null;
+  if (path !== 'EXECUTION' && path !== 'ANNIHILATION') return null;
+  return persistSkillProgress({ ...current, ruinPath: path });
 }
 
 export function saveBattleResult(playerWon: boolean): OverallStats {
