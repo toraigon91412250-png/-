@@ -1,4 +1,5 @@
-import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RuinSkillPath } from '../types/game';
+import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { getDuplicateShardBonus, getRecruitmentRewardForPull, RecruitmentDraw } from '../data/recruitment';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -160,4 +161,97 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallS
 
   addSkillShards(getBattleReward(playerWon, masteryBonus));
   return updated;
+}
+
+
+const RECRUITMENT_KEY = 'duel_arena_recruitment_progress';
+const INITIAL_RECRUITMENT_PROGRESS: RecruitmentProgress = {
+  tickets: 10,
+  totalPulls: 0,
+  collectedIds: [],
+  lastResults: [],
+};
+
+function normalizeRecruitmentProgress(
+  parsed: Partial<RecruitmentProgress> | null | undefined,
+): RecruitmentProgress {
+  const tickets = Number(parsed?.tickets);
+  const totalPulls = Number(parsed?.totalPulls);
+  const collectedIds = Array.isArray(parsed?.collectedIds)
+    ? parsed!.collectedIds.filter((id): id is string => typeof id === 'string')
+    : [];
+  const lastResults = Array.isArray(parsed?.lastResults)
+    ? parsed!.lastResults.filter((id): id is string => typeof id === 'string').slice(-20)
+    : [];
+
+  return {
+    tickets: Number.isFinite(tickets) ? Math.max(0, Math.floor(tickets)) : INITIAL_RECRUITMENT_PROGRESS.tickets,
+    totalPulls: Number.isFinite(totalPulls) ? Math.max(0, Math.floor(totalPulls)) : 0,
+    collectedIds: Array.from(new Set(collectedIds)),
+    lastResults,
+  };
+}
+
+export function loadRecruitmentProgress(): RecruitmentProgress {
+  try {
+    const raw = localStorage.getItem(RECRUITMENT_KEY);
+    if (raw) return normalizeRecruitmentProgress(JSON.parse(raw));
+  } catch {
+    // fallback
+  }
+  return { ...INITIAL_RECRUITMENT_PROGRESS, collectedIds: [], lastResults: [] };
+}
+
+function persistRecruitmentProgress(progress: RecruitmentProgress): RecruitmentProgress {
+  const normalized = normalizeRecruitmentProgress(progress);
+  try {
+    localStorage.setItem(RECRUITMENT_KEY, JSON.stringify(normalized));
+  } catch {
+    // ignore
+  }
+  return normalized;
+}
+
+export function addRecruitmentTickets(amount: number): RecruitmentProgress {
+  const current = loadRecruitmentProgress();
+  return persistRecruitmentProgress({
+    ...current,
+    tickets: current.tickets + Math.max(0, Math.floor(amount)),
+  });
+}
+
+export function performRecruitment(
+  count: 1 | 10,
+): { progress: RecruitmentProgress; results: RecruitmentDraw[] } | null {
+  const current = loadRecruitmentProgress();
+  if (current.tickets < count) return null;
+
+  const collected = new Set(current.collectedIds);
+  const results: RecruitmentDraw[] = [];
+  let totalShardGain = 0;
+
+  for (let index = 0; index < count; index += 1) {
+    const pullNumber = current.totalPulls + index + 1;
+    const reward = getRecruitmentRewardForPull(pullNumber);
+    const isNew = !collected.has(reward.id);
+    const shardGain = reward.shards + (isNew ? 0 : getDuplicateShardBonus(reward.rarity));
+
+    results.push({ reward, isNew, shardGain });
+    totalShardGain += shardGain;
+    collected.add(reward.id);
+  }
+
+  const nextProgress = persistRecruitmentProgress({
+    ...current,
+    tickets: current.tickets - count,
+    totalPulls: current.totalPulls + count,
+    collectedIds: Array.from(collected),
+    lastResults: results.map(result => result.reward.id).slice(-20),
+  });
+
+  if (totalShardGain > 0) {
+    addSkillShards(totalShardGain);
+  }
+
+  return { progress: nextProgress, results };
 }
