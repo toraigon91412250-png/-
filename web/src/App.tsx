@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CharacterDef, CpuDifficulty } from './types/game';
-import { CHARACTERS, CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
+import { CPU_CHARACTERS, IRENA, KAISER } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
