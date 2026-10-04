@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleUiState, IrenaSkillId, IrenaSkillProgress } from '../types/game';
+import { BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath } from '../types/game';
 import { Skull, RotateCcw, ArrowLeft } from 'lucide-react';
 import battleBackground from '../assets/戦闘中背景.png';
 import irenaVictoryImage from '../assets/いれーな勝利演出.jpg';
@@ -11,6 +11,7 @@ interface BattleResultModalProps {
   onBackToSelect: () => void;
   skillProgress: IrenaSkillProgress;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
+  onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
 }
 
 export const BattleResultModal: React.FC<BattleResultModalProps> = ({
@@ -19,6 +20,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   onBackToSelect,
   skillProgress,
   onUpgradeSkill,
+  onChooseSkillPath,
 }) => {
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
@@ -29,6 +31,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     <SkillUpgradeModal
       progress={skillProgress}
       onUpgrade={onUpgradeSkill}
+      onChoosePath={onChooseSkillPath}
       onClose={() => setUpgradeOpen(false)}
     />
   ) : null;
