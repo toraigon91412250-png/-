@@ -53,7 +53,7 @@ const CORE_DEFINITIONS: readonly RecruitmentRewardDef[] = [
     name: '黒翼',
     description: '黒翼の権能本体。初回獲得で権能を解放する。',
     abilityId: 'BLACK_WING',
-    shardAmount: 70,
+    shardAmount: 0,
     duplicateShards: 70,
     weight: 3,
   },
