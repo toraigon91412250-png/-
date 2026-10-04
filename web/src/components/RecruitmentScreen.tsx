@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Award, Check, Crown, Feather, Gift, Sparkles, Ticket, Zap } from 'lucide-react';
+import { ArrowLeft, Award, Crown, Feather, Gift, Sparkles, Ticket, Zap } from 'lucide-react';
 import { IRENA } from '../data/characters';
 import {
   RECRUITMENT_REWARD_SEQUENCE,
