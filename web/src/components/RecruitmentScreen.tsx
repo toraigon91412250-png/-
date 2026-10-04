@@ -5,11 +5,14 @@ import {
   RecruitmentDraw,
   RecruitmentRewardDef,
 } from '../data/recruitment';
-import { RecruitmentProgress } from '../types/game';
+import { AbilityId, AbilityProgress, RecruitmentProgress } from '../types/game';
+import { ABILITY_DEFINITIONS } from '../data/abilities';
 
 interface Props {
   progress: RecruitmentProgress;
-  onRecruit: () => RecruitmentDraw | null;
+  abilityProgress: AbilityProgress;
+  onRecruit: (count: 1 | 10) => RecruitmentDraw[] | null;
+  onUpgradeAbility: (abilityId: AbilityId) => void;
   onBack: () => void;
 }
 
@@ -55,10 +58,11 @@ const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
 };
 
 
-export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack }) => {
+export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, onRecruit, onUpgradeAbility, onBack }) => {
   const [phase, setPhase] = useState<SummonPhase>('IDLE');
   const [summonStep, setSummonStep] = useState<SummonStep>('BLACKOUT');
-  const [lastResult, setLastResult] = useState<RecruitmentDraw | null>(null);
+  const [lastResults, setLastResults] = useState<RecruitmentDraw[]>([]);
+  const lastResult = lastResults[lastResults.length - 1] ?? null;
   const timersRef = useRef<number[]>([]);
 
   const collectedCount = progress.collectedIds.filter(id =>
@@ -80,12 +84,12 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
     timersRef.current = [];
   }, []);
 
-  const handleRecruit = () => {
-    if (phase !== 'IDLE' || progress.tickets < 1) return;
+  const handleRecruit = (count: 1 | 10) => {
+    if (phase !== 'IDLE' || progress.tickets < count) return;
 
     timersRef.current.forEach(timer => window.clearTimeout(timer));
     timersRef.current = [];
-    setLastResult(null);
+    setLastResults([]);
     setSummonStep('BLACKOUT');
     setPhase('SUMMONING');
 
@@ -101,9 +105,9 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
     schedule(2380, () => setSummonStep('WINGS_FLASH'));
     schedule(2660, () => setSummonStep('REVEAL'));
     schedule(3320, () => {
-      const outcome = onRecruit();
-      if (outcome) {
-        setLastResult(outcome);
+      const outcomes = onRecruit(count);
+      if (outcomes && outcomes.length > 0) {
+        setLastResults(outcomes);
         schedule(950, () => {
           setPhase('RESULT');
           timersRef.current = [];
@@ -505,7 +509,14 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
                     textShadow:'0 2px 24px rgba(0,0,0,.88)',
                   }}>
                     <div style={{ color:'#E5C1E9', fontSize:9, fontWeight:950, letterSpacing:'.28em' }}>SUMMON COMPLETE</div>
-                    <div style={{ marginTop:6, fontSize:'clamp(27px,6vw,42px)', fontWeight:950 }}>{lastResult.reward.name}</div>
+                    <div style={{ marginTop:6, fontSize:'clamp(27px,6vw,42px)', fontWeight:950 }}>
+                    {lastResults.length === 1 ? lastResult.reward.name : '10連召喚完了'}
+                  </div>
+                  {lastResults.length > 1 && (
+                    <div style={{ marginTop:8, color:'#B7AFBC', fontSize:10 }}>
+                      権能本体・権能の欠片をまとめて獲得
+                    </div>
+                  )}
                   </div>
                 </>
               ) : (
@@ -544,8 +555,8 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
             <div style={{ display:'flex', alignItems:'center', gap:7, color:'#B7AFC0', fontSize:9, fontWeight:900 }}>
               <Zap size={14} /> 召喚の意味
             </div>
-            <div style={{ marginTop:4, color:'#FFF', fontSize:13, fontWeight:900 }}>引いた報酬 → 育成へ</div>
-            <div style={{ marginTop:4, color:'#7F8490', fontSize:9, lineHeight:1.5 }}>すべての報酬が黒羽の欠片として、いれーなの成長に変わる</div>
+            <div style={{ marginTop:4, color:'#FFF', fontSize:13, fontWeight:900 }}>引いた権能 → 欠片でLv.UP</div>
+            <div style={{ marginTop:4, color:'#7F8490', fontSize:9, lineHeight:1.5 }}>権能本体は解放、重複本体と専用欠片はその権能のLv強化へ。</div>
           </div>
         </section>
 
@@ -573,8 +584,9 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
             <div style={{ marginTop:4, fontSize:25, fontWeight:950 }}>{lastResult.reward.name}</div>
 
             <div style={{ marginTop:12, display:'flex', justifyContent:'center', gap:7, flexWrap:'wrap' }}>
-              <span style={pillStyle}>+{lastResult.shardGain} 黒羽の欠片</span>
-              {lastResult.ticketBonus > 0 && <span style={ticketPillStyle}>+{lastResult.ticketBonus} 召喚札</span>}
+              {lastResult.shardGain > 0 && (
+                <span style={pillStyle}>+{lastResult.shardGain} {lastResult.reward.abilityId === 'ABYSS' ? '深淵' : lastResult.reward.abilityId === 'FALLEN' ? '堕天' : lastResult.reward.abilityId === 'BLACK_WING' ? '黒翼' : lastResult.reward.abilityId === 'FALLEN_KING' ? '堕天王' : '断罪'}の欠片</span>
+              )}
             </div>
 
             {lastResult.collectionCompleted && (
@@ -593,7 +605,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
 
             <button
               type="button"
-              onClick={() => { setLastResult(null); setPhase('IDLE'); }}
+              onClick={() => { setLastResults([]); setPhase('IDLE'); }}
               style={{
                 marginTop:15, minWidth:150, height:42, borderRadius:11,
                 border:'1px solid #62506B', background:'rgba(20,14,26,.92)',
@@ -606,28 +618,38 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, onRecruit, onBack
         )}
 
         {phase === 'IDLE' && (
-          <button
-            type="button"
-            disabled={progress.tickets < 1}
-            onClick={handleRecruit}
-            style={{
-              width:'100%', minHeight:68, marginTop:12, borderRadius:16,
-              border:'1px solid rgba(202,165,73,.66)',
-              background: progress.tickets > 0
-                ? 'linear-gradient(135deg,rgba(45,28,48,.98),rgba(12,11,16,.99) 56%,rgba(45,35,15,.98))'
-                : 'linear-gradient(135deg,#15161B,#0D0E12)',
-              color:'#FFF', cursor: progress.tickets > 0 ? 'pointer' : 'not-allowed',
-              opacity: progress.tickets > 0 ? 1 : .46,
-              boxShadow: progress.tickets > 0 ? '0 8px 30px rgba(87,60,102,.18)' : 'none',
-            }}
-          >
-            <span style={{ display:'block', color:'#FFE082', fontSize:10, fontWeight:950, letterSpacing:'.2em' }}>
-              {progress.tickets > 0 ? 'BLACK WING SUMMON' : 'NO TICKETS'}
-            </span>
-            <span style={{ display:'block', marginTop:5, fontSize:22, fontWeight:950 }}>
-              {progress.tickets > 0 ? '召喚する' : '戦闘で召喚札を獲得'}
-            </span>
-          </button>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:9, marginTop:12 }}>
+            {[{ count:1 as const, label:'1回召喚', need:1 }, { count:10 as const, label:'10連召喚', need:10 }].map(option => {
+              const available = progress.tickets >= option.need;
+              return (
+                <button
+                  key={option.count}
+                  type="button"
+                  disabled={!available}
+                  onClick={() => handleRecruit(option.count)}
+                  style={{
+                    width:'100%', minHeight:68, borderRadius:16,
+                    border:'1px solid rgba(202,165,73,.66)',
+                    background: available
+                      ? 'linear-gradient(135deg,rgba(45,28,48,.98),rgba(12,11,16,.99) 56%,rgba(45,35,15,.98))'
+                      : 'linear-gradient(135deg,#15161B,#0D0E12)',
+                    color:'#FFF', cursor: available ? 'pointer' : 'not-allowed',
+                    opacity: available ? 1 : .46,
+                  }}
+                >
+                  <span style={{ display:'block', color:'#FFE082', fontSize:9, fontWeight:950, letterSpacing:'.16em' }}>
+                    {option.count === 10 ? '10 PULL' : '1 PULL'}
+                  </span>
+                  <span style={{ display:'block', marginTop:5, fontSize:18, fontWeight:950 }}>
+                    {available ? option.label : '召喚札不足'}
+                  </span>
+                  <span style={{ display:'block', marginTop:3, color:'#8F8A94', fontSize:9 }}>
+                    召喚札 {option.need}枚
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         )}
 
         <section style={{
