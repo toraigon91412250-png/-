@@ -20,6 +20,13 @@ export function rollIrenaFeatherChargeGain(chargeCount: number): number {
   return min + Math.floor(Math.random() * (stepCount + 1)) * 5;
 }
 
+export function getIrenaFeatherMaxChargeCount(skillLevel = 1): number {
+  if (skillLevel >= 10) return 13;
+  if (skillLevel >= 7) return 11;
+  if (skillLevel >= 4) return 9;
+  return 7;
+}
+
 export type StatusAilmentType = 'BLEED' | 'PRESSURE';
 
 export interface StatusAilmentDef {
@@ -59,6 +66,8 @@ export const STATUS_AILMENTS: Record<StatusAilmentType, StatusAilmentDef> = {
 export interface ActiveStatusAilment {
   type: StatusAilmentType;
   remainingTurns: number;
+  // 出血ダメージは付与時のスキルLvを記録し、後続ターンでも同じ威力を維持する。
+  dotDamage?: number;
 }
 
 export interface CharacterDef {
@@ -230,6 +239,7 @@ export interface BattleUiState {
   isSoundEnabled: boolean;
   isAnimating: boolean;
   lastBattleReward: number;
+  lastBattleMasteryReward: number;
   battleConfig: BattleSetupConfig;
 }
 
