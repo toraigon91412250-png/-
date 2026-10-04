@@ -593,6 +593,9 @@ export function useBattleGame(
 
         // The Charge route turns Feather into a renewable resource instead of a full reset.
         if (isIrenaSpecial) {
+          if (irenaSkillPath === 'CHARGE' && retainedFeatherCharge > 0) {
+            claimPathMasteryReward('FEATHER_CHARGE', '羽弾・蓄積', turn);
+          }
           updateState(prev => (isActorPlayer
             ? {
                 ...prev,
@@ -688,6 +691,7 @@ export function useBattleGame(
         let finalDamage = baseDamage;
 
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
+          claimPathMasteryReward('FEATHER_ABYSS', '羽弾・深淵', turn);
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += abyssBonus;
           addLog(
@@ -703,6 +707,7 @@ export function useBattleGame(
           irenaSkillPath === 'JUDGMENT' &&
           target.activeAilments.some(a => a.type === 'BLEED')
         ) {
+          claimPathMasteryReward('FEATHER_JUDGMENT', '羽弾・断罪', turn);
           const judgmentBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += judgmentBonus;
           addLog(
@@ -789,6 +794,7 @@ export function useBattleGame(
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
           if (ruinLevel >= 4 && ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)) {
+            claimPathMasteryReward('RUIN_EXECUTION', '破壊・処刑', turn);
             const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
             baseDamage += executionBonus;
             addLog(
@@ -801,6 +807,7 @@ export function useBattleGame(
             ruinPath === 'ANNIHILATION' &&
             target.activeAilments.some(a => a.type === 'BLEED')
           ) {
+            claimPathMasteryReward('RUIN_ANNIHILATION', '破壊・殲滅', turn);
             const annihilationBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
             baseDamage += annihilationBonus;
             addLog(
@@ -975,8 +982,9 @@ export function useBattleGame(
   };
 
   const finalizeBattle = (winnerIsPlayer: boolean) => {
-    const reward = getBattleReward(winnerIsPlayer);
-    saveBattleResult(winnerIsPlayer);
+    const masteryBonus = battleMasteryRewardRef.current;
+    const reward = getBattleReward(winnerIsPlayer, masteryBonus);
+    saveBattleResult(winnerIsPlayer, masteryBonus);
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);
@@ -991,6 +999,7 @@ export function useBattleGame(
       visualEffect: null,
       isAnimating: false,
       lastBattleReward: reward,
+      lastBattleMasteryReward: masteryBonus,
     }));
   };
 
