@@ -81,7 +81,25 @@ function normalizeAbilityProgress(
 export function loadAbilityProgress(): AbilityProgress {
   try {
     const raw = localStorage.getItem(ABILITY_PROGRESS_KEY);
-    if (raw) return normalizeAbilityProgress(JSON.parse(raw));
+    if (raw) {
+      const normalized = normalizeAbilityProgress(JSON.parse(raw));
+      const hasAnyProgress =
+        Object.values(normalized.levels).some(level => level > 0) ||
+        Object.values(normalized.shards).some(shards => shards > 0);
+
+      // Legacy/invalid empty saves could leave every power at Lv.0, making the
+      // normal battle setup permanently unable to select the required two powers.
+      // The current prototype starts with all five powers at Lv.1, so recover that
+      // invalid empty state without touching non-empty progress.
+      if (!hasAnyProgress) {
+        return {
+          levels: { ...INITIAL_ABILITY_PROGRESS.levels },
+          shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+        };
+      }
+
+      return normalized;
+    }
   } catch {
     // fallback
   }
