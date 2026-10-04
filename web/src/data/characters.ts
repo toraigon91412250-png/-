@@ -36,12 +36,14 @@ export function getIrenaWithSkillProgress(progress: IrenaSkillProgress): Charact
   const ruinLevel = Math.max(1, progress.ruinLevel);
   const featherDamage = IRENA.specialSkillDamage + (featherLevel - 1) * 25;
   const ruinDamage = 900 + (ruinLevel - 1) * 75;
+  const bleedDamage = featherLevel >= 3 ? 40 : 30;
+  const featherChargeCap = featherLevel >= 10 ? 13 : featherLevel >= 7 ? 11 : featherLevel >= 4 ? 9 : 7;
 
   return {
     ...IRENA,
     specialSkillDamage: featherDamage,
     specialSkillDescription:
-      '必殺ゲージ+1。' + featherDamage + 'ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時30ダメージ、速度-20、防御-20）',
+      '必殺ゲージ+1。' + featherDamage + 'ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時' + bleedDamage + 'ダメージ、速度-20、防御-20）。羽弾蓄積上限' + featherChargeCap + '回',
     ultimateSkillDamage: ruinDamage,
     featherSkillPath: progress.featherPath,
     ruinSkillPath: progress.ruinPath,
