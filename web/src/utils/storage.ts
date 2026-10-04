@@ -106,8 +106,8 @@ export function upgradeIrenaSkill(skillId: IrenaSkillId): IrenaSkillProgress | n
   const selectedPath = skillId === 'FEATHER' ? current.featherPath : current.ruinPath;
   const cost = getSkillUpgradeCost(currentLevel);
 
-  // Lv.4 unlocks specialization; choose a path before progressing beyond Lv.3.
-  if (currentLevel === 3 && !selectedPath) return null;
+  // Specialization must be chosen before any level at or above Lv.3 can progress.
+  if (currentLevel >= 3 && !selectedPath) return null;
   if (currentLevel >= MAX_SKILL_LEVEL || current.shards < cost) return null;
 
   return persistSkillProgress({
