@@ -39,10 +39,15 @@ export function useBattleGame(
   initialEnemyChar: CharacterDef,
   initialDifficulty: CpuDifficulty
 ) {
-  const [state, setState] = useState<BattleUiState>(() => ({
+  const [state, setState] = useState<BattleUiState>(() => {
+    const initialPlayer = createInitialFighter(initialPlayerChar, true);
+    const initialEnemy = createInitialFighter(initialEnemyChar, false);
+    const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty);
+
+    return {
     turnNumber: 1,
-    player: createInitialFighter(initialPlayerChar, true),
-    enemy: createInitialFighter(initialEnemyChar, false),
+    player: initialPlayer,
+    enemy: initialEnemy,
     logs: [
       {
         id: 1,
@@ -56,10 +61,12 @@ export function useBattleGame(
     visualEffect: null,
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
+    cpuIntent: initialCpuIntent,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
-  }));
+    };
+  });
 
   const stateRef = useRef(state);
   stateRef.current = state;
@@ -74,6 +81,8 @@ export function useBattleGame(
 
   const nextLogId = useRef(2);
   const nextVisualEffectId = useRef(0);
+  const recentPlayerActionsRef = useRef<BattleAction[]>([]);
+  const recentCpuActionsRef = useRef<BattleAction[]>([]);
 
 
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
@@ -111,15 +120,28 @@ export function useBattleGame(
     updateState(prev => ({ ...prev, cpuDifficulty: diff }));
   }, [updateState]);
 
-  const restartBattle = useCallback((pChar?: CharacterDef, eChar?: CharacterDef) => {
+  const restartBattle = useCallback((
+    pChar?: CharacterDef,
+    eChar?: CharacterDef,
+    difficultyOverride?: CpuDifficulty
+  ) => {
     const curP = pChar || stateRef.current.player.character;
     const curE = eChar || stateRef.current.enemy.character;
+    const nextDifficulty = difficultyOverride || stateRef.current.cpuDifficulty;
+    const nextPlayer = createInitialFighter(curP, true);
+    const nextEnemy = createInitialFighter(curE, false);
+
+    recentPlayerActionsRef.current = [];
+    recentCpuActionsRef.current = [];
     nextLogId.current = 1;
+
+    const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
+
     updateState(prev => ({
       ...prev,
       turnNumber: 1,
-      player: createInitialFighter(curP, true),
-      enemy: createInitialFighter(curE, false),
+      player: nextPlayer,
+      enemy: nextEnemy,
       logs: [
         {
           id: nextLogId.current++,
@@ -132,6 +154,8 @@ export function useBattleGame(
       phase: 'SELECT_ACTION',
       visualEffect: null,
       winnerIsPlayer: null,
+      cpuDifficulty: nextDifficulty,
+      cpuIntent: nextCpuIntent,
       isAnimating: false,
     }));
   }, [updateState]);
@@ -514,10 +538,16 @@ export function useBattleGame(
         // Firing Feather consumes all accumulated Feather power, even if the shot is evaded.
         const featherChargeBonus = actor.character.id === 'irena' ? actor.featherChargeBonus : 0;
         if (actor.character.id === 'irena') {
-          updateState(prev => ({
-            ...prev,
-            player: { ...prev.player, featherChargeBonus: 0, featherChargeCount: 0 },
-          }));
+          updateState(prev => (isActorPlayer
+            ? {
+                ...prev,
+                player: { ...prev.player, featherChargeBonus: 0, featherChargeCount: 0 },
+              }
+            : {
+                ...prev,
+                enemy: { ...prev.enemy, featherChargeBonus: 0, featherChargeCount: 0 },
+              }
+          ));
         }
 
         const hadBuff = actor.isBuffed;
