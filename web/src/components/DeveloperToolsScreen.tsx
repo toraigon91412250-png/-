@@ -21,13 +21,6 @@ interface DeveloperToolsScreenProps {
   onReset: () => void;
 }
 
-const ABILITY_LABELS: Record<AbilityId, string> = {
-  ABYSS: '深淵',
-  FALLEN: '堕天',
-  BLACK_WING: '黒翼',
-  FALLEN_KING: '堕天王',
-  JUDGMENT: '断罪',
-};
 
 const makeConfig = (level: BattleChallengeLevel, abilityProgress: AbilityProgress, ids: AbilityId[]): BattleSetupConfig => ({
   kaiserLevel: level,
@@ -176,7 +169,9 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           background:'rgba(22,17,28,.95)',
         }}>
           <div style={{ fontSize:11, fontWeight:950, color:'#D1C4E9' }}>🪽 権能テスト</div>
-          <div style={{ marginTop:4, color:'#8F8798', fontSize:9 }}>各権能のLv・欠片を好きな状態へ。</div>
+          <div style={{ marginTop:4, color:'#8F8798', fontSize:9 }}>
+            各権能のLv・欠片を好きな状態へ。既存スキル: 羽弾Lv.{skillProgress.featherLevel} / 必殺Lv.{skillProgress.ruinLevel}
+          </div>
           <div style={{ display:'grid', gap:8, marginTop:10 }}>
             {ABILITY_DEFINITIONS.map(ability => {
               const level=abilityProgress.levels[ability.id];
