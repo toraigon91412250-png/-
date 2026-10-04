@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { CpuDifficulty } from './types/game';
+import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
 import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { chooseIrenaSkillPath, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, upgradeIrenaSkill } from './utils/storage';
+import { chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, upgradeAbility, upgradeIrenaSkill } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
@@ -17,6 +17,8 @@ export const App: React.FC = () => {
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
+  const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
+  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({ kaiserLevel: 10, abilities: [] });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
@@ -28,7 +30,7 @@ export const App: React.FC = () => {
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,
-  } = useBattleGame(IRENA, KAISER, difficulty);
+  } = useBattleGame(IRENA, KAISER, difficulty, battleSetup);
 
   // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
   // does not have to start a fresh image decode during the attack.
@@ -74,6 +76,7 @@ export const App: React.FC = () => {
       setOverallStats(loadOverallStats());
       setSkillProgress(loadSkillProgress());
       setRecruitmentProgress(loadRecruitmentProgress());
+      setAbilityProgress(loadAbilityProgress());
     }
   }, [battleState.phase]);
 
@@ -123,12 +126,25 @@ export const App: React.FC = () => {
     if (next) setSkillProgress(next);
   };
 
-  const handleRecruit = (): RecruitmentDraw | null => {
-    const outcome = performRecruitment();
+  const handleRecruit = (count: 1 | 10): RecruitmentDraw[] | null => {
+    const outcome = performRecruitment(count);
     if (!outcome) return null;
     setRecruitmentProgress(outcome.progress);
-    setSkillProgress(loadSkillProgress());
-    return outcome.result;
+    setAbilityProgress(loadAbilityProgress());
+    return outcome.results;
+  };
+
+  const handleUpgradeAbility = (abilityId: AbilityId) => {
+    const next = upgradeAbility(abilityId);
+    if (!next) return;
+    setAbilityProgress(next);
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.map(ability => ({
+        ...ability,
+        level: next.levels[ability.id],
+      })),
+    }));
   };
 
   const handleBackToSelect = () => {
@@ -214,7 +230,9 @@ export const App: React.FC = () => {
       ) : (
         <RecruitmentScreen
           progress={recruitmentProgress}
+          abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
+          onUpgradeAbility={handleUpgradeAbility}
           onBack={() => setScreen('SELECT')}
         />
       )}
