@@ -26,6 +26,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
+  const canUseBuff = player.character.id !== 'irena';
   const specialDamagePreview = player.character.specialSkillDamage + buffDamageBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
@@ -140,7 +141,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
             🎯 コマンド選択
           </span>
-          {player.isBuffed && (
+          {canUseBuff && player.isBuffed && (
             <span
               style={{
                 fontSize: '10px',
@@ -180,11 +181,11 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         </div>
       </div>
 
-      {/* Row 1: The 4 Normal Commands (攻撃, 回避, 強化, 特殊) */}
+      {/* Row 1: Normal Commands (いれーなは強化コマンドなし) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: canUseBuff ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
           gap: '5px',
           marginBottom: '6px',
         }}
@@ -243,34 +244,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           </span>
         </button>
 
-        {/* 3. 強化 */}
-        <button
-          onClick={() => onAction('BUFF')}
-          disabled={!isEnabled}
-          style={{
-            height: '56px',
-            backgroundColor: isEnabled ? '#C0392B' : '#261917',
-            color: isEnabled ? '#FFFFFF' : '#6E5652',
-            border: isEnabled ? (player.isBuffed ? '1px solid #FFB300' : '1px solid #E74C3C') : '1px solid #33201D',
-            borderRadius: '10px',
-            cursor: isEnabled ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2px 4px',
-            transition: 'transform 0.1s ease, filter 0.15s ease',
-          }}
-          onMouseDown={e => isEnabled && (e.currentTarget.style.transform = 'scale(0.96)')}
-          onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>強化</span>
-          <span style={{ fontSize: '10px', fontWeight: 700, color: isEnabled ? '#FFCC80' : '#6E5652', whiteSpace: 'nowrap' }}>
-            {player.isBuffed ? '付与中' : '攻+125'}
-          </span>
-        </button>
-
-        {/* 4. 特殊 */}
+        {/* 3. 特殊 */}
         <button
           onClick={() => onAction('SPECIAL')}
           disabled={!isEnabled || !isSpecialReady}
