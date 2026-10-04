@@ -15,6 +15,8 @@ export const App: React.FC = () => {
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
+  const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
+
   const {
     state: battleState,
     onActionSelected,
@@ -66,6 +68,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (battleState.phase === 'BATTLE_FINISHED') {
       setOverallStats(loadOverallStats());
+      setSkillProgress(loadSkillProgress());
     }
   }, [battleState.phase]);
 
@@ -81,7 +84,7 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(IRENA, KAISER, difficulty);
+    restartBattle(upgradedIrena, KAISER, difficulty);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
