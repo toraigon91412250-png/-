@@ -11,7 +11,7 @@ interface ActionDockProps {
     allGods: number;
     ruin: number;
   };
-  onIrenaUltimateAction?: (variant: 'ALL_GODS' | 'RUIN') => void;
+  onIrenaUltimateAction: (variant: 'ALL_GODS' | 'RUIN') => void;
 }
 
 export const ActionDock: React.FC<ActionDockProps> = ({
@@ -26,14 +26,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
-  const canUseBuff = player.character.id !== 'irena';
-  const isIrenaPlayer = player.character.id === 'irena';
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
-  const specialDamagePreview = isIrenaPlayer
-    ? player.character.specialSkillDamage + player.featherChargeBonus
-    : player.character.specialSkillDamage + buffDamageBonus;
+  const specialDamagePreview = player.character.specialSkillDamage + player.featherChargeBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
-  const isIrenaUltimate = player.character.id === 'irena' && !!onIrenaUltimateAction;
+  const isIrenaUltimate = true;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
   const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
   const hasUnlockedOmnipotence = hasUsedAllGods && hasUsedRuin;
@@ -64,7 +60,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       if (variant === 'OMNIPOTENCE') {
         onAction('ULTIMATE');
       } else {
-        onIrenaUltimateAction?.(variant);
+        onIrenaUltimateAction(variant);
       }
     }, 260);
 
@@ -145,7 +141,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
             🎯 コマンド選択
           </span>
-          {canUseBuff && player.isBuffed && (
+          {player.isBuffed && (
             <span
               style={{
                 fontSize: '10px',
@@ -160,7 +156,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ⚡【強化中】攻撃+{buffDamageBonus}
             </span>
           )}
-          {isIrenaPlayer && (
+          {true && (
             <span
               style={{
                 fontSize: '10px',
@@ -204,7 +200,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: canUseBuff ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '5px',
           marginBottom: '6px',
         }}
@@ -294,7 +290,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             }}
           >
             {isSpecialReady
-              ? `${specialDamagePreview}ダメ${isIrenaPlayer ? `（蓄積+${player.featherChargeBonus}）` : ''}`
+              ? `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
               : `CD:${player.specialCooldownRemaining}T`}
           </span>
         </button>
@@ -670,64 +666,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         </div>
       )}
 
-      {!isIrenaUltimate && (
-        <button
-          onClick={() => onAction('ULTIMATE')}
-          disabled={!isEnabled || !isUltimateReady}
-          style={{
-            width: '100%',
-            height: '50px',
-            backgroundColor: isEnabled && isUltimateReady ? '#D84315' : '#251A1C',
-            color: isEnabled && isUltimateReady ? '#FFFFFF' : '#6B575A',
-            border: isEnabled && isUltimateReady ? '1.5px solid #FFD54F' : '1px solid #3E2D30',
-            borderRadius: '10px',
-            cursor: isEnabled && isUltimateReady ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 12px',
-            boxShadow: isEnabled && isUltimateReady ? '0 0 12px rgba(255, 213, 79, 0.4)' : 'none',
-            transition: 'transform 0.1s ease, filter 0.15s ease',
-          }}
-          onMouseDown={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(0.98)')}
-          onMouseUp={e => isEnabled && isUltimateReady && (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Flame
-              size={18}
-              color={isEnabled && isUltimateReady ? '#FFD54F' : '#8D6E63'}
-              style={{ filter: isEnabled && isUltimateReady ? 'drop-shadow(0 0 4px #FFD54F)' : 'none' }}
-            />
-            <span style={{ fontSize: '14px', fontWeight: 900, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
-              必殺技
-            </span>
-            <span
-              style={{
-                fontSize: '12px',
-                fontWeight: 700,
-                color: isEnabled && isUltimateReady ? '#FFE082' : '#B0BEC5',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              【{player.character.ultimateSkillName}】
-            </span>
-          </div>
-          <div
-            style={{
-              fontSize: '11px',
-              fontWeight: 800,
-              padding: '3px 8px',
-              borderRadius: '6px',
-              backgroundColor: isEnabled && isUltimateReady ? '#FFD54F' : '#2B2124',
-              color: isEnabled && isUltimateReady ? '#210E04' : '#B0BEC5',
-              border: `1px solid ${isEnabled && isUltimateReady ? '#FFE082' : '#4A373A'}`,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
-          </div>
-        </button>
-      )}
+
     </div>
   );
 };
