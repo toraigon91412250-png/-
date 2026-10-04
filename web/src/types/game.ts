@@ -85,6 +85,8 @@ export interface CharacterDef {
   specialCutInSrc?: string; // 特殊技カットイン用（未指定ならカットインなし）
   primaryColor: string;
   secondaryColor: string;
+  featherSkillPath?: FeatherSkillPath | null;
+  ruinSkillPath?: RuinSkillPath | null;
 }
 
 export interface BattleFighter {
