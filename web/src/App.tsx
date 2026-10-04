@@ -116,8 +116,8 @@ export const App: React.FC = () => {
     if (next) setSkillProgress(next);
   };
 
-  const handleRecruit = (rewardId: string): RecruitmentDraw | null => {
-    const outcome = performRecruitment(rewardId);
+  const handleRecruit = (): RecruitmentDraw | null => {
+    const outcome = performRecruitment();
     if (!outcome) return null;
     setRecruitmentProgress(outcome.progress);
     setSkillProgress(loadSkillProgress());
