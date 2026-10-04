@@ -535,17 +535,40 @@ export function useBattleGame(
       }
 
       case 'SPECIAL': {
-        // Firing Feather consumes all accumulated Feather power, even if the shot is evaded.
-        const featherChargeBonus = actor.character.id === 'irena' ? actor.featherChargeBonus : 0;
-        if (actor.character.id === 'irena') {
+        const isIrenaSpecial = actor.character.id === 'irena';
+        const irenaSkillLevel = actor.character.featherSkillLevel || 1;
+        const irenaSkillPath = actor.character.featherSkillPath || null;
+        const featherChargeBonus = isIrenaSpecial ? actor.featherChargeBonus : 0;
+        const chargeRetentionRate =
+          irenaSkillPath === 'CHARGE'
+            ? irenaSkillLevel >= 10
+              ? 0.45
+              : irenaSkillLevel >= 7
+                ? 0.35
+                : 0.25
+            : 0;
+        const retainedFeatherCharge = isIrenaSpecial
+          ? Math.floor(featherChargeBonus * chargeRetentionRate)
+          : 0;
+
+        // The Charge route turns Feather into a renewable resource instead of a full reset.
+        if (isIrenaSpecial) {
           updateState(prev => (isActorPlayer
             ? {
                 ...prev,
-                player: { ...prev.player, featherChargeBonus: 0, featherChargeCount: 0 },
+                player: {
+                  ...prev.player,
+                  featherChargeBonus: retainedFeatherCharge,
+                  featherChargeCount: 0,
+                },
               }
             : {
                 ...prev,
-                enemy: { ...prev.enemy, featherChargeBonus: 0, featherChargeCount: 0 },
+                enemy: {
+                  ...prev.enemy,
+                  featherChargeBonus: retainedFeatherCharge,
+                  featherChargeCount: 0,
+                },
               }
           ));
         }
@@ -622,7 +645,31 @@ export function useBattleGame(
           }
         }
 
-        const finalDamage = baseDamage;
+        let finalDamage = baseDamage;
+
+        if (isIrenaSpecial && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
+          const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
+          finalDamage += abyssBonus;
+          addLog(
+            `🌑【羽弾・深淵】高密度の羽が炸裂！ 追加ダメージ+${abyssBonus}`,
+            isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
+            turn
+          );
+        }
+
+        if (
+          isIrenaSpecial &&
+          irenaSkillPath === 'JUDGMENT' &&
+          target.activeAilments.some(a => a.type === 'BLEED')
+        ) {
+          const judgmentBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
+          finalDamage += judgmentBonus;
+          addLog(
+            `⚖️【羽弾・断罪】出血した敵を穿つ！ 追加ダメージ+${judgmentBonus}`,
+            isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
+            turn
+          );
+        }
 
         if (actor.character.id === 'irena') {
           soundManager.playFeatherShot();
@@ -696,6 +743,32 @@ export function useBattleGame(
               : appliedIrenaVariant === 'OMNIPOTENCE'
                 ? 1500
                 : actor.character.ultimateSkillDamage;
+
+        if (isIrena && appliedIrenaVariant === 'RUIN') {
+          const ruinLevel = actor.character.ruinSkillLevel || 1;
+          const ruinPath = actor.character.ruinSkillPath || null;
+          if (ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * 0.4) {
+            const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
+            baseDamage += executionBonus;
+            addLog(
+              `☠️【破壊・処刑】瀕死の敵を断ち切る！ 追加ダメージ+${executionBonus}`,
+              isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
+              turn
+            );
+          } else if (
+            ruinPath === 'ANNIHILATION' &&
+            target.activeAilments.some(a => a.type === 'BLEED')
+          ) {
+            const annihilationBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
+            baseDamage += annihilationBonus;
+            addLog(
+              `🩸【破壊・殲滅】出血した敵へ権能が共鳴！ 追加ダメージ+${annihilationBonus}`,
+              isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
+              turn
+            );
+          }
+        }
+
         if (hadBuff) {
           baseDamage += buffDamageBonus;
           addLog(`⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
