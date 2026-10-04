@@ -209,6 +209,7 @@ export interface BattleUiState {
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
+  lastBattleReward: number;
 }
 
 export interface OverallStats {
