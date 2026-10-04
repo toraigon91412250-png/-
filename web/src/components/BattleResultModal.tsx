@@ -385,7 +385,6 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
       {skillUpgradeOverlay}
     </div>
   );
