@@ -43,6 +43,8 @@ export function getIrenaWithSkillProgress(progress: IrenaSkillProgress): Charact
     specialSkillDescription:
       '必殺ゲージ+1。' + featherDamage + 'ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時30ダメージ、速度-20、防御-20）',
     ultimateSkillDamage: ruinDamage,
+    featherSkillPath: progress.featherPath,
+    ruinSkillPath: progress.ruinPath,
   };
 }
 
