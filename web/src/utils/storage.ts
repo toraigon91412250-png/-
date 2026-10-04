@@ -149,6 +149,103 @@ export function upgradeAbility(abilityId: AbilityId): AbilityProgress | null {
   });
 }
 
+export function setAbilityForDeveloper(abilityId: AbilityId, level: number, shards?: number): AbilityProgress {
+  const current = loadAbilityProgress();
+  return persistAbilityProgress({
+    levels: {
+      ...current.levels,
+      [abilityId]: Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(level))),
+    },
+    shards: {
+      ...current.shards,
+      [abilityId]: shards === undefined
+        ? current.shards[abilityId]
+        : Math.max(0, Math.floor(shards)),
+    },
+  });
+}
+
+export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityProgress {
+  const normalizedLevel = Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(level)));
+  const normalizedShards = Math.max(0, Math.floor(shards));
+  return persistAbilityProgress({
+    levels: {
+      ABYSS: normalizedLevel,
+      FALLEN: normalizedLevel,
+      BLACK_WING: normalizedLevel,
+      FALLEN_KING: normalizedLevel,
+      JUDGMENT: normalizedLevel,
+    },
+    shards: {
+      ABYSS: normalizedShards,
+      FALLEN: normalizedShards,
+      BLACK_WING: normalizedShards,
+      FALLEN_KING: normalizedShards,
+      JUDGMENT: normalizedShards,
+    },
+  });
+}
+
+export function addAbilityShardsForDeveloper(abilityId: AbilityId, amount: number): AbilityProgress {
+  return addAbilityShards(abilityId, amount);
+}
+
+export function setRecruitmentTicketsForDeveloper(tickets: number): RecruitmentProgress {
+  return persistRecruitmentProgress({
+    ...loadRecruitmentProgress(),
+    tickets: Math.max(0, Math.floor(tickets)),
+  });
+}
+
+export function addRecruitmentTicketsForDeveloper(amount: number): RecruitmentProgress {
+  return addRecruitmentTickets(amount);
+}
+
+export function setSkillProgressForDeveloper(
+  featherLevel: number,
+  ruinLevel: number,
+  shards = 0,
+): IrenaSkillProgress {
+  const current = loadSkillProgress();
+  return persistSkillProgress({
+    ...current,
+    shards: Math.max(0, Math.floor(shards)),
+    featherLevel: Math.min(MAX_SKILL_LEVEL, Math.max(1, Math.floor(featherLevel))),
+    ruinLevel: Math.min(MAX_SKILL_LEVEL, Math.max(1, Math.floor(ruinLevel))),
+  });
+}
+
+export function resetProgressForDeveloper(): {
+  abilityProgress: AbilityProgress;
+  recruitmentProgress: RecruitmentProgress;
+  skillProgress: IrenaSkillProgress;
+  overallStats: OverallStats;
+} {
+  const abilityProgress = persistAbilityProgress({
+    levels: { ...INITIAL_ABILITY_PROGRESS.levels },
+    shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+  });
+  const recruitmentProgress = persistRecruitmentProgress({
+    tickets: 10,
+    totalPulls: 0,
+    collectedIds: [],
+    lastResults: [],
+  });
+  const skillProgress = persistSkillProgress({ ...INITIAL_SKILL_PROGRESS });
+  const overallStats = loadOverallStats();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
+  } catch {
+    // ignore
+  }
+  return {
+    abilityProgress,
+    recruitmentProgress,
+    skillProgress,
+    overallStats: { totalBattles: 0, wins: 0, losses: 0 },
+  };
+}
+
 export function getBattleReward(playerWon: boolean): number {
   return playerWon ? BATTLE_REWARD_WIN : BATTLE_REWARD_LOSS;
 }
