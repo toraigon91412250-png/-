@@ -1506,6 +1506,12 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
               <span>契約</span>
               <b>{contractInfo.risk}</b>
             </div>
+            {phase === 2 && adaptationLevel > 0 && (
+              <div style={styles.tacticalRow}>
+                <span>適応補正</span>
+                <b>被ダメージ +{adaptationLevel * 6}%</b>
+              </div>
+            )}
             <div style={styles.tacticalRow}>
               <span>読み判定</span>
               <b style={{ color: readQuality === 'PERFECT' ? '#fff1a0' : readQuality === 'BAD' ? '#ff8fa6' : '#d8d4f1' }}>
@@ -1515,6 +1521,9 @@ export const RaidBossScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div style={styles.tacticalRow}>
               <span>READ連続</span>
               <b>{readStreak > 0 ? readStreak + ' 回' : 'なし'}</b>
+            </div>
+            <div style={{ marginTop: 6, color: '#8f9bb3', fontSize: 9, lineHeight: 1.4 }}>
+              {READ_QUALITY_INFO[readQuality].detail}
             </div>
             <div style={styles.tacticalRow}>
               <span>直近</span>
