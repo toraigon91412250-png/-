@@ -10,13 +10,15 @@ import {
   getEffectiveAttack,
   getEffectiveDefense,
   getEffectiveSpeed,
+  getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
+  STATUS_AILMENTS,
   LogType,
   StatusAilmentType,
 } from '../types/game';
 import { CpuAi } from '../utils/ai';
 import { soundManager } from '../utils/audio';
-import { getBattleReward, saveBattleResult } from '../utils/storage';
+import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 
 export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
   return {
@@ -66,6 +68,7 @@ export function useBattleGame(
     isSoundEnabled: true,
     isAnimating: false,
     lastBattleReward: 0,
+    lastBattleMasteryReward: 0,
     };
   });
 
@@ -84,6 +87,19 @@ export function useBattleGame(
   const nextVisualEffectId = useRef(0);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
+  const masteryClaimedRef = useRef<Set<string>>(new Set());
+  const battleMasteryRewardRef = useRef(0);
+
+  const claimPathMasteryReward = useCallback((masteryId: string, masteryName: string, turn: number) => {
+    if (masteryClaimedRef.current.has(masteryId)) return;
+    masteryClaimedRef.current.add(masteryId);
+    battleMasteryRewardRef.current += PATH_MASTERY_REWARD;
+    addLog(
+      `✦【戦術達成】${masteryName}を活かした！ 黒羽の欠片 +${PATH_MASTERY_REWARD}`,
+      'GAUGE_CHANGE',
+      turn
+    );
+  }, [addLog]);
 
 
   const addLog = useCallback((text: string, type: LogType, turn: number) => {
@@ -134,6 +150,8 @@ export function useBattleGame(
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
+    masteryClaimedRef.current = new Set();
+    battleMasteryRewardRef.current = 0;
     nextLogId.current = 1;
 
     const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
@@ -159,6 +177,7 @@ export function useBattleGame(
       cpuIntent: nextCpuIntent,
       isAnimating: false,
       lastBattleReward: 0,
+      lastBattleMasteryReward: 0,
     }));
   }, [updateState]);
 
