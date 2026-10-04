@@ -227,3 +227,13 @@ export interface OverallStats {
   wins: number;
   losses: number;
 }
+
+
+export type RecruitmentRarity = 'R' | 'SR' | 'SSR';
+
+export interface RecruitmentProgress {
+  tickets: number;
+  totalPulls: number;
+  collectedIds: string[];
+  lastResults: string[];
+}
