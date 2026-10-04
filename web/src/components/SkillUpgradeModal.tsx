@@ -36,6 +36,16 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
     const cost = getSkillUpgradeCost(level);
     const needsPath = level >= 3 && !selectedPath;
     const canUpgrade = !maxed && !needsPath && progress.shards >= cost;
+    const milestone =
+      maxed
+        ? 'MASTER：このビルドは最終段階。'
+        : level < 3
+          ? 'Lv.3で専用ルートを選択。'
+          : needsPath
+            ? '今すぐ専用ルートを選択できます。'
+            : level < 7
+              ? 'Lv.7でルート効果がさらに強化。'
+              : 'Lv.10でMAX。ルートの完成形へ。';
 
     return (
       <div key={id} style={{ padding: '14px', borderRadius: '16px', background: 'rgba(12,19,33,0.94)', border: maxed ? '1px solid rgba(255,224,130,0.7)' : '1px solid #31405E', boxShadow: 'inset 0 0 24px rgba(255,255,255,0.02)' }}>
@@ -53,6 +63,7 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
         <div style={{ marginTop: '11px', padding: '10px', borderRadius: '10px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: '12px', fontWeight: 900, color: '#DCE5F2' }}>現在：{baseDamage(id, level)} ダメージ</div>
           {!maxed && <div style={{ marginTop: '4px', fontSize: '10px', color: '#A9B5C8' }}>次のLv：+{nextIncrease(id)} ダメージ</div>}
+          <div style={{ marginTop: '5px', fontSize: '10px', color: '#D1C4E9', fontWeight: 800 }}>{milestone}</div>
         </div>
 
         {needsPath && (
