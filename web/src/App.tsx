@@ -116,12 +116,12 @@ export const App: React.FC = () => {
     if (next) setSkillProgress(next);
   };
 
-  const handleRecruit = (count: 1 | 10): { progress: typeof recruitmentProgress; results: RecruitmentDraw[] } | null => {
-    const outcome = performRecruitment(count);
+  const handleRecruit = (rewardId: string): RecruitmentDraw | null => {
+    const outcome = performRecruitment(rewardId);
     if (!outcome) return null;
     setRecruitmentProgress(outcome.progress);
     setSkillProgress(loadSkillProgress());
-    return outcome;
+    return outcome.result;
   };
 
   const handleBackToSelect = () => {
