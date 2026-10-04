@@ -16,7 +16,7 @@ import {
 } from '../types/game';
 import { CpuAi } from '../utils/ai';
 import { soundManager } from '../utils/audio';
-import { saveBattleResult } from '../utils/storage';
+import { getBattleReward, saveBattleResult } from '../utils/storage';
 
 export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
   return {
@@ -65,6 +65,7 @@ export function useBattleGame(
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
+    lastBattleReward: 0,
     };
   });
 
@@ -157,6 +158,7 @@ export function useBattleGame(
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
       isAnimating: false,
+      lastBattleReward: 0,
     }));
   }, [updateState]);
 
@@ -647,7 +649,7 @@ export function useBattleGame(
 
         let finalDamage = baseDamage;
 
-        if (isIrenaSpecial && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
+        if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
           finalDamage += abyssBonus;
           addLog(
@@ -659,6 +661,7 @@ export function useBattleGame(
 
         if (
           isIrenaSpecial &&
+          irenaSkillLevel >= 4 &&
           irenaSkillPath === 'JUDGMENT' &&
           target.activeAilments.some(a => a.type === 'BLEED')
         ) {
@@ -747,7 +750,7 @@ export function useBattleGame(
         if (isIrena && appliedIrenaVariant === 'RUIN') {
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
-          if (ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * 0.4) {
+          if (ruinLevel >= 4 && ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)) {
             const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
             baseDamage += executionBonus;
             addLog(
@@ -756,6 +759,7 @@ export function useBattleGame(
               turn
             );
           } else if (
+            ruinLevel >= 4 &&
             ruinPath === 'ANNIHILATION' &&
             target.activeAilments.some(a => a.type === 'BLEED')
           ) {
@@ -933,6 +937,7 @@ export function useBattleGame(
   };
 
   const finalizeBattle = (winnerIsPlayer: boolean) => {
+    const reward = getBattleReward(winnerIsPlayer);
     saveBattleResult(winnerIsPlayer);
     if (winnerIsPlayer) {
       soundManager.playVictory();
@@ -947,6 +952,7 @@ export function useBattleGame(
       winnerIsPlayer,
       visualEffect: null,
       isAnimating: false,
+      lastBattleReward: reward,
     }));
   };
 
