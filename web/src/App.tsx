@@ -9,9 +9,10 @@ import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
+import { BattleSetupScreen } from './components/BattleSetupScreen';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -75,6 +76,10 @@ export const App: React.FC = () => {
       setRecruitmentProgress(loadRecruitmentProgress());
     }
   }, [battleState.phase]);
+
+  const handleOpenBattleSetup = () => {
+    setScreen('BATTLE_SETUP');
+  };
 
   const handleStartBattle = () => {
     const sources = [
@@ -177,12 +182,17 @@ export const App: React.FC = () => {
           overallStats={overallStats}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
-          onStartBattle={handleStartBattle}
+          onStartBattle={handleOpenBattleSetup}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
+        />
+      ) : screen === 'BATTLE_SETUP' ? (
+        <BattleSetupScreen
+          onBack={() => setScreen('SELECT')}
+          onStartBattle={handleStartBattle}
         />
       ) : screen === 'BATTLE' ? (
         <BattleScreen
