@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CpuDifficulty } from './types/game';
-import { IRENA, KAISER } from './data/characters';
+import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { loadOverallStats } from './utils/storage';
+import { loadOverallStats, loadSkillProgress, upgradeIrenaSkill } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 
@@ -12,6 +12,7 @@ export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE' | 'RAID_BOSS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
+  const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const {
