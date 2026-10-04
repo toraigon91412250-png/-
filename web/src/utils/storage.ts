@@ -132,12 +132,12 @@ export function chooseIrenaSkillPath(
   const current = loadSkillProgress();
 
   if (skillId === 'FEATHER') {
-    if (current.featherPath || current.featherLevel < 4) return null;
+    if (current.featherPath || current.featherLevel < 3) return null;
     if (path !== 'ABYSS' && path !== 'JUDGMENT' && path !== 'CHARGE') return null;
     return persistSkillProgress({ ...current, featherPath: path });
   }
 
-  if (current.ruinPath || current.ruinLevel < 4) return null;
+  if (current.ruinPath || current.ruinLevel < 3) return null;
   if (path !== 'EXECUTION' && path !== 'ANNIHILATION') return null;
   return persistSkillProgress({ ...current, ruinPath: path });
 }
