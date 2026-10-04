@@ -34,7 +34,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   const handleIrenaUltimateAction = (variant: 'ALL_GODS' | 'RUIN') => {
     if (
       !isActionEnabled ||
-      state.player.character.id !== 'irena' ||
       state.player.ultimateGauge < 3
     ) {
       return;
@@ -81,13 +80,11 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         if (isEnabled) onAction('ATTACK');
       } else if (e.key === '2') {
         if (isEnabled) onAction('EVADE');
-      } else if (e.key === '3') {
-        if (isEnabled && state.player.character.id !== 'irena') onAction('BUFF');
       } else if (e.key === '4') {
         if (isEnabled && state.player.specialCooldownRemaining <= 0) onAction('SPECIAL');
       } else if (e.key === '5') {
         if (isEnabled && state.player.ultimateGauge >= 3) {
-          if (state.player.character.id === 'irena') {
+          {
             if (irenaUltimateUses.allGods === 0) {
               handleIrenaUltimateAction('ALL_GODS');
             } else if (irenaUltimateUses.ruin === 0) {
@@ -95,8 +92,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             } else {
               onAction('ULTIMATE', 'OMNIPOTENCE');
             }
-          } else {
-            onAction('ULTIMATE');
           }
         }
       } else if (e.key === 'r' || e.key === 'R') {
