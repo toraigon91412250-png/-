@@ -15,6 +15,7 @@ const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
 
 export const BATTLE_REWARD_WIN = 50;
 export const BATTLE_REWARD_LOSS = 20;
+export const PATH_MASTERY_REWARD = 15;
 export const MAX_SKILL_LEVEL = 10;
 
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
@@ -263,8 +264,9 @@ export function resetProgressForDeveloper(): {
   };
 }
 
-export function getBattleReward(playerWon: boolean): number {
-  return playerWon ? BATTLE_REWARD_WIN : BATTLE_REWARD_LOSS;
+export function getBattleReward(playerWon: boolean, masteryBonus = 0): number {
+  const baseReward = playerWon ? BATTLE_REWARD_WIN : BATTLE_REWARD_LOSS;
+  return baseReward + Math.max(0, Math.floor(masteryBonus));
 }
 
 export function loadOverallStats(): OverallStats {
@@ -390,7 +392,7 @@ export function chooseIrenaSkillPath(
   return persistSkillProgress({ ...current, ruinPath: path });
 }
 
-export function saveBattleResult(playerWon: boolean): OverallStats {
+export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallStats {
   const current = loadOverallStats();
   const updated: OverallStats = {
     totalBattles: current.totalBattles + 1,
@@ -404,7 +406,7 @@ export function saveBattleResult(playerWon: boolean): OverallStats {
     // ignore
   }
 
-  addSkillShards(getBattleReward(playerWon));
+  addSkillShards(getBattleReward(playerWon, masteryBonus));
   addRecruitmentTickets(1);
   return updated;
 }

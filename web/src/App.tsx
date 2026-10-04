@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
-import { IRENA, KAISER, getIrenaWithSkillProgress } from './data/characters';
+import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
@@ -112,7 +112,8 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    restartBattle(upgradedIrena, KAISER, difficulty, config);
+    const cpuOpponent = CPU_CHARACTERS.find(c => c.id !== upgradedIrena.id) || CPU_CHARACTERS.find(c => c.id === KAISER.id) || KAISER;
+    restartBattle(upgradedIrena, cpuOpponent, difficulty, config);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
