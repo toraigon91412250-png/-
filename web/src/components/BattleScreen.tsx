@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -12,6 +12,8 @@ interface BattleScreenProps {
   onAction: (action: BattleAction, ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE') => void;
   onBackToSelect: () => void;
   onRestart: () => void;
+  skillProgress: IrenaSkillProgress;
+  onUpgradeSkill: (skillId: IrenaSkillId) => void;
   onToggleSound: () => void;
   onToggleSpeed: () => void;
 }
@@ -49,6 +51,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   onAction,
   onBackToSelect,
   onRestart,
+  skillProgress,
+  onUpgradeSkill,
   onToggleSound,
   onToggleSpeed,
 }) => {
@@ -549,6 +553,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           state={state}
           onRematch={handleRestart}
           onBackToSelect={onBackToSelect}
+          skillProgress={skillProgress}
+          onUpgradeSkill={onUpgradeSkill}
         />
       )}
     </div>
