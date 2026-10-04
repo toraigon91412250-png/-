@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { CharacterDef, CpuDifficulty, OverallStats } from '../types/game';
-import { CHARACTERS, CPU_CHARACTERS } from '../data/characters';
+import { IRENA, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { Swords, Trophy, Play, CheckCircle, Sparkles } from 'lucide-react';
 
 interface CharacterSelectScreenProps {
   overallStats: OverallStats;
-  selectedPlayer: CharacterDef;
   selectedDifficulty: CpuDifficulty;
-  onSelectPlayer: (char: CharacterDef) => void;
   onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
   onOpenRaidBoss: () => void;
@@ -16,15 +14,14 @@ interface CharacterSelectScreenProps {
 
 export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   overallStats,
-  selectedPlayer,
   selectedDifficulty,
-  onSelectPlayer,
   onSelectDifficulty,
   onStartBattle,
   onOpenRaidBoss,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
-  const cpuChar = CPU_CHARACTERS.find(c => c.id !== selectedPlayer.id) || CPU_CHARACTERS[1];
+  const playerChar = IRENA;
+  const cpuChar = KAISER;
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
@@ -107,148 +104,66 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           </div>
         </div>
 
-        {/* Section Heading */}
+        {/* Fixed matchup: the player controls Irena only; Kaiser is CPU-only. */}
         <div style={{ width: '100%', textAlign: 'left', marginBottom: '8px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF' }}>
-            キャラクターを選択
-          </h2>
+          <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF' }}>対戦キャラクター</h2>
         </div>
-
-        {/* Character Selection Cards */}
-        <div
-          style={{
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '12px',
-            marginBottom: '18px',
-          }}
-        >
-          {CHARACTERS.map(char => {
-            const isSelected = char.id === selectedPlayer.id;
-            return (
-              <div
-                key={char.id}
-                onClick={() => onSelectPlayer(char)}
-                style={{
-                  backgroundColor: isSelected ? '#1E2436' : '#121520',
-                  border: isSelected ? `2.5px solid ${char.primaryColor}` : '1px solid #2B3347',
-                  borderRadius: '16px',
-                  padding: '12px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.15s ease, border-color 0.2s ease',
-                  boxShadow: isSelected ? `0 0 16px ${char.primaryColor}40` : 'none',
-                }}
-              >
-                {/* Header: Title badge + Checkmark */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      color: char.primaryColor,
-                      backgroundColor: `${char.primaryColor}25`,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    {char.title}
-                  </span>
-                  {isSelected && <CheckCircle size={18} color="#64FFDA" />}
-                </div>
-
-                {/* Portrait */}
-                <div
-                  style={{
-                    width: '100%',
-                    height: char.selectImageSrc ? '200px' : '140px',
-                    borderRadius: '10px',
-                    overflow: 'hidden',
-                    border: `1px solid ${char.primaryColor}80`,
-                    marginBottom: '8px',
-                    backgroundColor: '#0a0d16',
-                    position: 'relative',
-                  }}
-                >
-                  <img
-                    src={char.selectImageSrc ?? char.imageSrc}
-                    alt={char.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      objectPosition: char.selectImageSrc ? 'center 22%' : 'center',
-                      display: 'block',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setViewingChar(char);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      right: '6px',
-                      bottom: '6px',
-                      backgroundColor: 'rgba(10, 13, 22, 0.75)',
-                      border: `1px solid ${char.primaryColor}`,
-                      color: '#FFFFFF',
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      borderRadius: '6px',
-                      padding: '3px 8px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    🔍 全身を見る
-                  </button>
-                </div>
-
-                {/* Name */}
-                <div style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', marginBottom: '8px' }}>
-                  {char.name}
-                </div>
-
-                {/* Stats List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-                  <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 1200} color="#66BB6A" />
-                  <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 200} color="#EF5350" />
-                  <StatItem label="防御力" value={char.defense.toString()} ratio={char.defense / 200} color="#42A5F5" />
-                  <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 150} color="#FFCA28" />
-                  <StatItem label="回避率" value={`${Math.round(char.evasionRate * 100)}%`} ratio={char.evasionRate / 0.3} color="#26C6DA" />
-                </div>
-
-                {/* Passive Ability Card */}
-                <div
-                  style={{
-                    backgroundColor: '#1E1C2B',
-                    border: '1px solid #4A3B69',
-                    borderRadius: '8px',
-                    padding: '6px 8px',
-                    marginBottom: '6px',
-                    fontSize: '11px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#D1C4E9', marginBottom: '2px' }}>
-                    <Sparkles size={12} color="#B39DDB" />
-                    <span>固有能力「{char.passiveName}」</span>
-                  </div>
-                  <div style={{ color: '#B0BEC5', fontSize: '10px', lineHeight: 1.3 }}>
-                    {char.passiveDescription}
-                  </div>
-                </div>
-
-                {/* Special & Ultimate skills overview */}
-                <div style={{ fontSize: '10px', color: '#90CAF9', lineHeight: 1.4 }}>
-                  <div>✨ 特殊「{char.specialSkillName}」: {char.specialSkillDamage}ダメ (CD:{char.specialSkillCooldown}T)</div>
-                  <div>🌟 必殺「{char.ultimateSkillName}」: {char.ultimateSkillDamage}ダメ (ゲージ3消費)</div>
-                </div>
+        <div style={{
+          width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '12px', marginBottom: '18px',
+        }}>
+          {[
+            { char: IRENA, role: 'あなた' },
+            { char: KAISER, role: 'CPU' },
+          ].map(({ char, role }) => (
+            <div key={char.id} style={{
+              backgroundColor: '#1E2436', border: `2px solid ${char.primaryColor}`, borderRadius: '16px',
+              padding: '12px', display: 'flex', flexDirection: 'column', boxShadow: `0 0 16px ${char.primaryColor}25`,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{
+                  fontSize: '10px', fontWeight: 800, color: char.primaryColor, backgroundColor: `${char.primaryColor}25`,
+                  padding: '2px 7px', borderRadius: '4px',
+                }}>{role}</span>
+                {role === 'あなた' && <CheckCircle size={18} color="#64FFDA" />}
               </div>
-            );
-          })}
+              <div style={{
+                width: '100%', height: char.selectImageSrc ? '200px' : '140px', borderRadius: '10px', overflow: 'hidden',
+                border: `1px solid ${char.primaryColor}80`, marginBottom: '8px', backgroundColor: '#0a0d16', position: 'relative',
+              }}>
+                <img src={char.selectImageSrc ?? char.imageSrc} alt={char.name} style={{
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  objectPosition: char.selectImageSrc ? 'center 22%' : 'center', display: 'block',
+                }} />
+                <button type="button" onClick={() => setViewingChar(char)} style={{
+                  position: 'absolute', right: '6px', bottom: '6px', backgroundColor: 'rgba(10, 13, 22, 0.75)',
+                  border: `1px solid ${char.primaryColor}`, color: '#FFFFFF', fontSize: '10px', fontWeight: 700,
+                  borderRadius: '6px', padding: '3px 8px', cursor: 'pointer',
+                }}>🔍 全身を見る</button>
+              </div>
+              <div style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', marginBottom: '8px' }}>{char.name}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+                <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 1200} color="#66BB6A" />
+                <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 200} color="#EF5350" />
+                <StatItem label="防御力" value={char.defense.toString()} ratio={char.defense / 200} color="#42A5F5" />
+                <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 150} color="#FFCA28" />
+                <StatItem label="回避率" value={`${Math.round(char.evasionRate * 100)}%`} ratio={char.evasionRate / 0.3} color="#26C6DA" />
+              </div>
+              <div style={{
+                backgroundColor: '#1E1C2B', border: '1px solid #4A3B69', borderRadius: '8px',
+                padding: '6px 8px', marginBottom: '6px', fontSize: '11px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#D1C4E9', marginBottom: '2px' }}>
+                  <Sparkles size={12} color="#B39DDB" /><span>固有能力「{char.passiveName}」</span>
+                </div>
+                <div style={{ color: '#B0BEC5', fontSize: '10px', lineHeight: 1.3 }}>{char.passiveDescription}</div>
+              </div>
+              <div style={{ fontSize: '10px', color: '#90CAF9', lineHeight: 1.4 }}>
+                <div>✨ 特殊「{char.specialSkillName}」: {char.specialSkillDamage}ダメ (CD:{char.specialSkillCooldown}T)</div>
+                <div>🌟 必殺「{char.ultimateSkillName}」: {char.ultimateSkillDamage}ダメ (ゲージ3消費)</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Matchup Overview Preview Card */}
@@ -276,7 +191,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
             }}
           >
             <span style={{ color: '#90CAF9' }}>
-              あなた: {selectedPlayer.name} (素早さ {selectedPlayer.speed})
+              あなた: {playerChar.name} (素早さ {playerChar.speed})
             </span>
             <span style={{ color: '#FF5252', fontWeight: 900 }}>VS</span>
             <span style={{ color: '#FFCC80' }}>
@@ -285,7 +200,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           </div>
 
           <div style={{ fontSize: '11px', color: '#B0BEC5' }}>
-            {selectedPlayer.speed > cpuChar.speed
+            {playerChar.speed > cpuChar.speed
               ? '⚡ あなたの素早さが高いため、毎ターン先手で行動できます！'
               : '🌀 相手の素早さが高いため、相手が先手で行動します。回避や強化を上手く活用しましょう！'}
           </div>
