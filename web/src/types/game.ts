@@ -87,6 +87,8 @@ export interface CharacterDef {
   secondaryColor: string;
   featherSkillPath?: FeatherSkillPath | null;
   ruinSkillPath?: RuinSkillPath | null;
+  featherSkillLevel?: number;
+  ruinSkillLevel?: number;
 }
 
 export interface BattleFighter {
