@@ -595,11 +595,36 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
                 border:'1px solid rgba(255,213,79,.42)', background:'rgba(65,49,12,.25)', color:'#FFE082',
               }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:11, fontWeight:950 }}>
-                  <Gift size={14} /> 黒翼コレクション COMPLETE
+                  <Gift size={14} /> 権能コレクション COMPLETE
                 </div>
                 <div style={{ marginTop:4, fontSize:10, color:'#D2BE7A' }}>
-                  収集達成ボーナス +{lastResult.collectionBonusShards} 黒羽の欠片
+                  5権能の本体と欠片報酬をすべて記録しました。
                 </div>
+              </div>
+            )}
+
+            {lastResults.length > 1 && (
+              <div style={{
+                marginTop:14, display:'grid', gridTemplateColumns:'repeat(2,minmax(0,1fr))', gap:6,
+                textAlign:'left',
+              }}>
+                {lastResults.map((draw, index) => (
+                  <div key={`${draw.reward.id}-${index}`} style={{
+                    padding:'8px 9px', borderRadius:10,
+                    border:`1px solid ${rarityMeta[draw.reward.rarity].border}`,
+                    background:'rgba(3,5,9,.55)',
+                  }}>
+                    <div style={{ fontSize:8, color:rarityMeta[draw.reward.rarity].accent, fontWeight:950 }}>
+                      {draw.reward.rarity} ・ {draw.reward.kind === 'ABILITY_CORE' ? '本体' : '欠片'}
+                    </div>
+                    <div style={{ marginTop:3, fontSize:10, color:'#FFF', fontWeight:900 }}>
+                      {draw.reward.name}
+                    </div>
+                    {draw.shardGain > 0 && (
+                      <div style={{ marginTop:2, fontSize:8, color:'#FFE082' }}>+{draw.shardGain} 欠片</div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 
@@ -653,6 +678,59 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
         )}
 
         <section style={{
+          marginTop:14, padding:'14px 13px', borderRadius:16,
+          border:'1px solid #3A3046', background:'rgba(12,9,18,.84)',
+        }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+            <div>
+              <div style={{ color:'#B39DDB', fontSize:9, fontWeight:950, letterSpacing:'.18em' }}>POWER GROWTH</div>
+              <div style={{ marginTop:3, color:'#FFF', fontSize:15, fontWeight:950 }}>権能育成</div>
+            </div>
+            <div style={{ color:'#8F849B', fontSize:9 }}>最大Lv.5</div>
+          </div>
+          <div style={{ display:'grid', gap:7, marginTop:10 }}>
+            {ABILITY_DEFINITIONS.map(ability => {
+              const level = abilityProgress.levels[ability.id];
+              const shards = abilityProgress.shards[ability.id];
+              const cost = level >= 5 ? null : 40 + Math.max(0, level - 1) * 40;
+              const canUpgrade = level > 0 && cost !== null && shards >= cost;
+              return (
+                <div key={ability.id} style={{
+                  display:'flex', alignItems:'center', gap:9, padding:'9px',
+                  borderRadius:11, border:'1px solid #27202F', background:'rgba(24,18,31,.76)',
+                }}>
+                  <div style={{ width:35, height:35, borderRadius:9, display:'grid', placeItems:'center', background:'rgba(179,157,219,.08)', fontSize:18 }}>
+                    {ability.symbol}
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:11, fontWeight:950, color:'#FFF' }}>
+                      {ability.name} <span style={{ color:'#FFE082' }}>Lv.{level > 0 ? level : '—'}</span>
+                    </div>
+                    <div style={{ marginTop:3, fontSize:9, color:'#85808A' }}>
+                      {level > 0 ? `欠片 ${shards}${cost !== null ? ` / ${cost}` : ' / MAX'}` : '未解放'}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!canUpgrade}
+                    onClick={() => onUpgradeAbility(ability.id)}
+                    style={{
+                      minWidth:72, height:32, borderRadius:8,
+                      border:'1px solid rgba(179,157,219,.35)',
+                      background:canUpgrade ? '#4A235F' : '#17141C',
+                      color:canUpgrade ? '#FFF' : '#5F5A64',
+                      fontSize:9, fontWeight:950, cursor:canUpgrade ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    {level >= 5 ? 'MAX' : 'Lv.UP'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section style={{
           marginTop:18, padding:'13px 13px 14px', borderRadius:16,
           border:'1px solid #232936', background:'rgba(6,8,12,.76)',
         }}>
@@ -661,7 +739,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
           </div>
           <div style={{ marginTop:7, color:'#8D919B', fontSize:10, lineHeight:1.7 }}>
             召喚すると、その場で報酬が抽選されます。新規報酬は収集に登録され、重複した報酬は追加の黒羽の欠片へ変換されます。
-            一部の深い権能は、召喚札そのものも返します。収集を完成させると追加ボーナスを獲得できます。
+            SSRでは権能本体、R/SRでは権能ごとの欠片が出現します。10連は最低1個の権能本体を保証します。
           </div>
         </section>
 
