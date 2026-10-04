@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange } from '../types/game';
+import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount } from '../types/game';
 import { Flame } from 'lucide-react';
 
 interface ActionDockProps {
@@ -26,6 +26,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
   const isSpecialReady = player.specialCooldownRemaining <= 0;
   const isUltimateReady = player.ultimateGauge >= 3;
+  const featherSkillLevel = player.character.featherSkillLevel || 1;
+  const featherChargeMaxCount = getIrenaFeatherMaxChargeCount(featherSkillLevel);
+  const featherChargeAtMax = player.featherChargeCount >= featherChargeMaxCount;
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
   const specialDamagePreview = player.character.specialSkillDamage + player.featherChargeBonus;
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
@@ -194,7 +197,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 borderRadius: '4px',
               }}
             >
-              🪶【羽弾蓄積】+{player.featherChargeBonus}　次+{nextFeatherChargeRange[0]}〜{nextFeatherChargeRange[1]}
+              🪶【羽弾蓄積】+{player.featherChargeBonus}　回数 {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount}　{featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
             </span>
           )}
         </div>
