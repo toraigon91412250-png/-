@@ -598,6 +598,7 @@ export function useBattleGame(
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
           target.currentHp > 0 &&
+          actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
@@ -851,6 +852,7 @@ export function useBattleGame(
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
           target.currentHp > 0 &&
+          actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
@@ -1096,6 +1098,7 @@ export function useBattleGame(
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
           target.currentHp > 0 &&
+          actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
