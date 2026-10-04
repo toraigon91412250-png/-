@@ -178,6 +178,14 @@ export interface VisualEffect {
 
 export type CpuDifficulty = 'NORMAL' | 'EXPERT';
 
+export type IrenaSkillId = 'FEATHER' | 'RUIN';
+
+export interface IrenaSkillProgress {
+  shards: number;
+  featherLevel: number;
+  ruinLevel: number;
+}
+
 export type BattlePhase = 'SELECT_ACTION' | 'EXECUTING_TURNS' | 'BATTLE_FINISHED';
 
 export interface BattleUiState {
