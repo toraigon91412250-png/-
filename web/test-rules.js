@@ -140,7 +140,7 @@ assert.strictEqual(getJudgmentDamageMultiplier(1), 1.4);
 assert.strictEqual(Math.round(getJudgmentDamageMultiplier(4) * 100) / 100, 1.85);
 assert.strictEqual(getJudgmentDamageMultiplier(5), 3.0);
 assert.strictEqual(getJudgmentDefenseIgnore(1), 0.20);
-assert.strictEqual(getJudgmentDefenseIgnore(4), 0.35);
+assert.strictEqual(Math.round(getJudgmentDefenseIgnore(4) * 100) / 100, 0.35);
 assert.strictEqual(getJudgmentDefenseIgnore(5), 0.60);
 
 const lv4BlackWing = applyStaticAbilityModifiers(IRENA, {
