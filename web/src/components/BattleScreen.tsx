@@ -23,30 +23,46 @@ interface BattleScreenProps {
   onToggleSpeed: () => void;
 }
 
-const CPU_INTENT_META: Record<BattleAction, { label: string; description: string; accent: string }> = {
+const CPU_INTENT_META: Record<BattleAction, {
+  label: string;
+  description: string;
+  counterplay: string;
+  alert: string;
+  accent: string;
+}> = {
   ATTACK: {
     label: '通常攻撃',
     description: '直接攻撃を狙っている',
+    counterplay: '回避で受け流す／攻撃で応戦',
+    alert: '警戒：中',
     accent: '#64B5F6',
   },
   EVADE: {
     label: '回避',
     description: '攻撃を避ける構え',
+    counterplay: '攻撃系は回避判定に注意',
+    alert: '警戒：低',
     accent: '#4DD0E1',
   },
   BUFF: {
     label: '強化',
     description: '次の攻撃に向けて力を溜める',
+    counterplay: '今ターンの攻めが通りやすい',
+    alert: '警戒：中',
     accent: '#FFD54F',
   },
   SPECIAL: {
     label: '重撃',
     description: '特殊技を放つ',
+    counterplay: '回避で対処可能／命中時は状態異常',
+    alert: '警戒：高',
     accent: '#CE93D8',
   },
   ULTIMATE: {
     label: '超重撃',
     description: '必殺技を解放する',
+    counterplay: '大ダメージに注意／回避も選択肢',
+    alert: '警戒：最高',
     accent: '#FF8A65',
   },
 };
@@ -151,6 +167,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   ]);
 
   const isActionEnabled = state.phase === 'SELECT_ACTION' && !state.player.isSuperFallenShotCharging;
+  const cpuIntentMeta = CPU_INTENT_META[state.cpuIntent];
 
   useEffect(() => {
     if (state.phase !== 'SELECT_ACTION' || !state.player.isSuperFallenShotCharging) return;
@@ -385,16 +402,39 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                   gap: '10px',
                 }}
               >
-                <div style={{ minWidth: 0 }}>
+                <div style={{ minWidth: 0, flex: '0 0 auto' }}>
                   <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
                     CPU 予兆
                   </div>
-                  <div style={{ fontSize: '13px', fontWeight: 950, color: '#FFFFFF', marginTop: '1px' }}>
-                    {CPU_INTENT_META[state.cpuIntent].label}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 950, color: '#FFFFFF' }}>
+                      {cpuIntentMeta.label}
+                    </span>
+                    <span style={{
+                      fontSize: '8px',
+                      fontWeight: 900,
+                      color: cpuIntentMeta.accent,
+                      border: `1px solid ${cpuIntentMeta.accent}55`,
+                      borderRadius: '999px',
+                      padding: '2px 5px',
+                    }}>
+                      {cpuIntentMeta.alert}
+                    </span>
                   </div>
                 </div>
-                <div style={{ flex: 1, fontSize: '10px', fontWeight: 700, color: '#B7C2D3', textAlign: 'right' }}>
-                  {CPU_INTENT_META[state.cpuIntent].description}
+                <div style={{
+                  flex: 1,
+                  minWidth: 0,
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  color: '#B7C2D3',
+                  textAlign: 'right',
+                  lineHeight: 1.45,
+                }}>
+                  <div>{cpuIntentMeta.description}</div>
+                  <div style={{ marginTop: '2px', color: '#D5DEEB', fontWeight: 800 }}>
+                    {cpuIntentMeta.counterplay}
+                  </div>
                 </div>
               </div>
             )}
@@ -511,16 +551,38 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                     gap: '12px',
                   }}
                 >
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
                       CPU 予兆
                     </div>
-                    <div style={{ marginTop: '2px', fontSize: '14px', fontWeight: 950, color: CPU_INTENT_META[state.cpuIntent].accent }}>
-                      {CPU_INTENT_META[state.cpuIntent].label}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '2px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 950, color: cpuIntentMeta.accent }}>
+                        {cpuIntentMeta.label}
+                      </span>
+                      <span style={{
+                        fontSize: '8px',
+                        fontWeight: 900,
+                        color: cpuIntentMeta.accent,
+                        border: `1px solid ${cpuIntentMeta.accent}55`,
+                        borderRadius: '999px',
+                        padding: '2px 6px',
+                      }}>
+                        {cpuIntentMeta.alert}
+                      </span>
                     </div>
                   </div>
-                  <div style={{ fontSize: '10px', fontWeight: 700, color: '#B7C2D3', textAlign: 'right' }}>
-                    {CPU_INTENT_META[state.cpuIntent].description}
+                  <div style={{
+                    maxWidth: '52%',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    color: '#B7C2D3',
+                    textAlign: 'right',
+                    lineHeight: 1.5,
+                  }}>
+                    <div>{cpuIntentMeta.description}</div>
+                    <div style={{ marginTop: '2px', color: '#D5DEEB', fontWeight: 800 }}>
+                      {cpuIntentMeta.counterplay}
+                    </div>
                   </div>
                 </div>
               )}
