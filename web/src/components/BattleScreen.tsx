@@ -515,7 +515,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                       fontSize: '8px',
                       fontWeight: 900,
                       color: cpuIntentMeta.accent,
-                      border: `1px solid ${cpuIntentMeta.accent}55`,
+                      border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
                       borderRadius: '999px',
                       padding: '2px 5px',
                     }}>
@@ -666,7 +666,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                         fontSize: '8px',
                         fontWeight: 900,
                         color: cpuIntentMeta.accent,
-                        border: `1px solid ${cpuIntentMeta.accent}55`,
+                        border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
                         borderRadius: '999px',
                         padding: '2px 6px',
                       }}>
