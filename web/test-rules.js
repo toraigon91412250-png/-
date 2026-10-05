@@ -185,7 +185,7 @@ assert.strictEqual(lv10.maxHp, KAISER.maxHp);
 assert.strictEqual(lv10.attack, KAISER.attack);
 assert.strictEqual(lv10.defense, KAISER.defense);
 assert.strictEqual(lv100.maxHp, KAISER.maxHp * 2);
-assert.strictEqual(lv100.attack, Math.round(KAISER.attack * 1.8));
+assert.strictEqual(lv100.attack, KAISER.attack * 2);
 assert.strictEqual(lv100.defense, Math.round(KAISER.defense * 1.5));
 assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
 assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
