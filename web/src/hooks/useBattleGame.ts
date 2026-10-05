@@ -506,7 +506,7 @@ export function useBattleGame(
           ));
           soundManager.playAttack();
           addLog(
-            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+125）`,
+            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+${GAME_BALANCE.BUFF_DAMAGE_BONUS}）`,
             isActorPlayer ? 'BUFF_PLAYER' : 'BUFF_ENEMY',
             turn
           );
