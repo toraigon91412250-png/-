@@ -4,6 +4,7 @@ import {
   IrenaSpecialSkillId,
   getEffectiveAttack,
   getEffectiveDefense,
+  getIrenaSuperFallenShotMultiplier,
 } from '../types/game';
 import { GAME_BALANCE } from '../data/gameBalance';
 import {
@@ -24,9 +25,14 @@ export interface DamageContext {
   judgmentReady?: boolean;
   specialSkillId?: IrenaSpecialSkillId;
   ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE';
+  alreadyPrepared?: boolean;
 }
 
 function prepareFighters(context: DamageContext): { attacker: BattleFighter; target: BattleFighter } {
+  if (context.alreadyPrepared) {
+    return { attacker: context.attacker, target: context.target };
+  }
+
   return {
     attacker: applyDynamicAbilityModifiers(context.attacker, context.config, context.turn),
     target: applyDynamicAbilityModifiers(context.target, context.config, context.turn),
@@ -103,7 +109,7 @@ export function calculateSpecialDamage(context: DamageContext): number {
     let damage = Math.max(
       0,
       Math.round(getEffectiveAttack(attacker) * (
-        2.8 + (Math.max(1, attacker.character.featherSkillLevel || 1) - 1) * 0.1
+        getIrenaSuperFallenShotMultiplier(attacker.character.featherSkillLevel || 1)
       ) - getEffectiveDefense(target)),
     );
 
