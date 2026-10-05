@@ -27,6 +27,26 @@ const RECRUITMENT_ASSETS = {
   wingedOmen: '/assets/recruitment/1791110298323.jpg',
 } as const;
 
+const getRewardKindLabel = (reward: RecruitmentRewardDef): string => {
+  if (reward.kind === 'SKILL_SHARD') return '技強化の欠片';
+  if (reward.kind === 'ABILITY_SHARD') return '権能の欠片';
+  if (reward.kind === 'ABILITY_CORE') return '権能本体';
+  return '特殊技';
+};
+
+const getShardLabel = (reward: RecruitmentRewardDef): string => {
+  if (reward.kind === 'SKILL_SHARD') return '技強化の欠片';
+  if (reward.kind === 'SPECIAL_SKILL') return '技強化の欠片';
+  const abilityNames: Record<string, string> = {
+    ABYSS: '深淵',
+    FALLEN: '堕天',
+    BLACK_WING: '黒翼',
+    FALLEN_KING: '堕天王',
+    JUDGMENT: '断罪',
+  };
+  return reward.abilityId ? `${abilityNames[reward.abilityId] ?? '権能'}の欠片` : '欠片';
+};
+
 const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
   label: string;
   icon: React.ReactNode;
@@ -35,25 +55,32 @@ const rarityMeta: Record<RecruitmentRewardDef['rarity'], {
   accent: string;
 }> = {
   R: {
-    label: '権能',
+    label: '技強化の欠片',
     icon: <Feather size={21} />,
     border: 'rgba(144,202,249,.62)',
     glow: 'rgba(66,165,245,.23)',
     accent: '#90CAF9',
   },
   SR: {
-    label: '深層権能',
+    label: '権能の欠片',
     icon: <Sparkles size={22} />,
     border: 'rgba(206,147,216,.72)',
     glow: 'rgba(171,71,188,.30)',
     accent: '#CE93D8',
   },
   SSR: {
-    label: '権能顕現',
+    label: '権能本体',
     icon: <Crown size={24} />,
     border: 'rgba(255,213,79,.86)',
     glow: 'rgba(255,193,7,.34)',
     accent: '#FFD54F',
+  },
+  UR: {
+    label: 'UR・特殊技',
+    icon: <Zap size={26} />,
+    border: 'rgba(224,242,241,.95)',
+    glow: 'rgba(38,166,154,.38)',
+    accent: '#E0F2F1',
   },
 };
 
@@ -191,6 +218,11 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
         @keyframes resultGlow {
           0%,100% { opacity:.35; transform:scale(.96); }
           50% { opacity:.72; transform:scale(1.04); }
+        }
+        @keyframes urPulse {
+          0%,100% { filter:brightness(.92) saturate(1); transform:scale(.985); }
+          35% { filter:brightness(1.22) saturate(1.15); transform:scale(1.012); }
+          70% { filter:brightness(1.05) saturate(1.02); transform:scale(1); }
         }
       `}</style>
 
