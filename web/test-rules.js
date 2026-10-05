@@ -3,7 +3,7 @@ import { register } from 'node:module';
 import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffectiveDefense, STATUS_AILMENTS } from './src/types/game.ts';
 import { createKaiserForLevel } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
-import { calculateNormalAttackDamage } from './src/utils/battleMath.ts';
+import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
 
 register(
   'data:text/javascript,' + encodeURIComponent(`
@@ -93,6 +93,22 @@ assert.strictEqual(calculateNormalAttackDamage({
   turn: 1,
   isActingFirst: true,
 }), 345);
+
+const lv50Kaiser = createKaiserForLevel(KAISER, 50);
+const maxSkillIrena = createInitialFighter(
+  { ...IRENA, featherSkillLevel: 10 },
+  true,
+);
+const lv50FeatherDamage = calculateSpecialDamage({
+  attacker: maxSkillIrena,
+  target: createInitialFighter(lv50Kaiser, false),
+  config: { kaiserLevel: 50, abilities: [] },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(lv50Kaiser.defense, 171);
+assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
+assert.strictEqual(lv50FeatherDamage, 354);
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
