@@ -495,6 +495,14 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
   for (let index = 0; index < normalizedCount; index += 1) {
     let reward = getRecruitmentRewardForPull(current.totalPulls + index + 1);
 
+    // 初回10連は権能本体を2種確定させ、召喚開始直後からバトルに必要な
+    // 権能を2つ確保できるようにする。以降の召喚確率は変更しない。
+    if (normalizedCount === 10 && current.totalPulls === 0 && index < 2) {
+      do {
+        reward = getRecruitmentRewardForPull(-1, true);
+      } while (draws.some(draw => draw.reward.kind === 'ABILITY_CORE' && draw.reward.abilityId === reward.abilityId));
+    }
+
     // Ten-pulls guarantee at least one SR-or-better result.
     if (
       normalizedCount === 10 &&
