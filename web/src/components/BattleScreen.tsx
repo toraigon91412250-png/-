@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -65,6 +65,107 @@ const CPU_INTENT_META: Record<BattleAction, {
     alert: '警戒：最高',
     accent: '#FF8A65',
   },
+};
+
+const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = ({ state, compact = false }) => {
+  if (state.phase !== 'SELECT_ACTION') return null;
+
+  const playerSpeed = getEffectiveSpeed(state.player);
+  const enemySpeed = getEffectiveSpeed(state.enemy);
+  const playerGoesFirst = playerSpeed >= enemySpeed;
+  const orderText = playerGoesFirst
+    ? `先攻 いれーな ${playerSpeed} → カイザー ${enemySpeed}`
+    : `先攻 カイザー ${enemySpeed} → いれーな ${playerSpeed}`;
+
+  const cpuBuffBonus = state.enemy.isBuffed ? (state.enemy.buffDamageBonus || 125) : 0;
+  const cpuNormalBase = Math.max(15, getEffectiveAttack(state.enemy) - getEffectiveDefense(state.player)) + cpuBuffBonus;
+  const cpuNormalCrit = Math.round(cpuNormalBase * 1.5);
+  const evadeRate = Math.round(state.player.character.evasionRate * 100);
+  const cpuEvadeRate = Math.round(state.enemy.character.evasionRate * 100);
+
+  let impact = '';
+  let risk = '';
+  let detail = '';
+
+  switch (state.cpuIntent) {
+    case 'ATTACK':
+      impact = `約${cpuNormalBase}〜${cpuNormalCrit} DMG`;
+      risk = `回避選択：${evadeRate}%`;
+      detail = '通常攻撃。会心20%で上限側のダメージになり、回避時は成功判定があります。';
+      break;
+    case 'SPECIAL':
+      impact = `${state.enemy.character.specialSkillDamage + cpuBuffBonus} DMG`;
+      risk = `回避選択：${evadeRate}%`;
+      detail = `特殊技。命中すると${state.enemy.character.id === 'kaiser' ? '重圧' : '出血'}が付与されます。`;
+      break;
+    case 'ULTIMATE':
+      impact = `${state.enemy.character.ultimateSkillDamage + cpuBuffBonus} DMG`;
+      risk = `回避選択：${evadeRate}%`;
+      detail = '必殺技。大きな固定ダメージを受ける可能性があります。';
+      break;
+    case 'BUFF':
+      impact = 'このターン 0 DMG';
+      risk = '次回攻撃 +125';
+      detail = '強化行動。今ターンに攻めるか、次ターンの大きな反撃を警戒する場面です。';
+      break;
+    case 'EVADE':
+      impact = '直接ダメージ 0';
+      risk = `CPU回避率：${cpuEvadeRate}%`;
+      detail = '回避構え。攻撃系は回避判定を受けますが、行動そのものは失われません。';
+      break;
+  }
+
+  const cellPadding = compact ? '4px 6px' : '5px 8px';
+  const labelSize = compact ? '7px' : '8px';
+  const valueSize = compact ? '9px' : '10px';
+
+  return (
+    <div
+      aria-label="戦況予測"
+      style={{
+        marginTop: compact ? '4px' : '6px',
+        padding: compact ? '6px 8px' : '7px 9px',
+        borderRadius: '9px',
+        border: '1px solid rgba(144, 202, 249, 0.25)',
+        background: 'linear-gradient(180deg, rgba(10, 16, 28, 0.92), rgba(8, 12, 20, 0.82))',
+        boxShadow: 'inset 0 0 18px rgba(100, 181, 246, 0.06)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
+        <span style={{ fontSize: labelSize, fontWeight: 950, letterSpacing: '0.14em', color: '#90CAF9' }}>
+          戦況予測
+        </span>
+        <span style={{ fontSize: labelSize, fontWeight: 850, color: '#B7C2D3', whiteSpace: 'nowrap' }}>
+          予兆はこのターンに実行
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
+          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>行動順</div>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {orderText}
+          </div>
+        </div>
+        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
+          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>相手の影響</div>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: cpuIntentMeta.accent, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {impact}
+          </div>
+        </div>
+        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
+          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避・対処</div>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: '#D5DEEB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {risk}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.45, fontWeight: 750, color: '#AEB9CB' }}>
+        {detail}
+      </div>
+    </div>
+  );
 };
 
 export const BattleScreen: React.FC<BattleScreenProps> = ({
@@ -439,6 +540,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               </div>
             )}
 
+            <TacticalForecast state={state} compact />
+
             {/* 2. Clash Area / Banner */}
             <div
               style={{
@@ -586,6 +689,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                   </div>
                 </div>
               )}
+
+              <TacticalForecast state={state} />
 
               <div
                 style={{
