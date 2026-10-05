@@ -675,13 +675,13 @@ export function useBattleGame(
           : '';
         if (isCritical) {
           addLog(
-            `💥【会心の一撃】クリティカル！ \${actor.character.name}の猛撃！ \${target.character.name}に \${finalDamage} の大ダメージ！\${armorNote}`,
+            `💥【会心の一撃】クリティカル！ ${actor.character.name}の猛撃！ ${target.character.name}に ${finalDamage} の大ダメージ！${armorNote}`,
             isActorPlayer ? 'CRITICAL_PLAYER' : 'CRITICAL_ENEMY',
             turn
           );
         } else {
           addLog(
-            `⚔️ \${actor.character.name}の攻撃！ \${target.character.name}に \${finalDamage} のダメージ！\${armorNote}`,
+            `⚔️ ${actor.character.name}の攻撃！ ${target.character.name}に ${finalDamage} のダメージ！${armorNote}`,
             isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
             turn
           );
