@@ -1,26 +1,32 @@
 import React from 'react';
-import { BattleFighter, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
+import { BattleFighter, BattleSetupConfig, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
+import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import { HpBar } from './HpBar';
 import { Zap, Sparkles, Activity, Flame, Hourglass } from 'lucide-react';
 
 interface FighterCardProps {
   fighter: BattleFighter;
+  battleConfig: BattleSetupConfig;
+  turnNumber: number;
   isTargetOfEffect: boolean;
   visualEffect: VisualEffect | null;
 }
 
 export const FighterCard: React.FC<FighterCardProps> = ({
   fighter,
+  battleConfig,
+  turnNumber,
   isTargetOfEffect,
   visualEffect,
 }) => {
+  const displayFighter = applyDynamicAbilityModifiers(fighter, battleConfig, turnNumber);
   const isHit = isTargetOfEffect && visualEffect !== null && visualEffect.damage > 0;
   const baseAttack = fighter.character.attack;
-  const effectiveAttack = getEffectiveAttack(fighter);
+  const effectiveAttack = getEffectiveAttack(displayFighter);
   const baseDefense = fighter.character.defense;
-  const effectiveDefense = getEffectiveDefense(fighter);
+  const effectiveDefense = getEffectiveDefense(displayFighter);
   const baseSpeed = fighter.character.speed;
-  const effectiveSpeed = getEffectiveSpeed(fighter);
+  const effectiveSpeed = getEffectiveSpeed(displayFighter);
   const attackDelta = effectiveAttack - baseAttack;
   const defenseDelta = effectiveDefense - baseDefense;
   const speedDelta = effectiveSpeed - baseSpeed;
@@ -257,16 +263,20 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           {fighter.activeAilments.map(ailment => {
             const def = STATUS_AILMENTS[ailment.type];
             const isBleed = ailment.type === 'BLEED';
+            const actualDotDamage = ailment.dotDamage ?? def.dotDamage;
             const effectParts = [
-              def.dotDamage > 0 ? `HP-${ailment.dotDamage ?? def.dotDamage}` : '',
+              def.dotDamage > 0 ? `HP-${actualDotDamage}` : '',
               def.speedMod !== 0 ? `速度${def.speedMod > 0 ? '+' : ''}${def.speedMod}` : '',
               def.attackMod !== 0 ? `攻撃${def.attackMod > 0 ? '+' : ''}${def.attackMod}` : '',
               def.defenseMod !== 0 ? `防御${def.defenseMod > 0 ? '+' : ''}${def.defenseMod}` : '',
             ].filter(Boolean).join(' / ');
+            const statusDescription = isBleed
+              ? `各ターン開始時に${actualDotDamage}ダメージ、速度-20、防御-20`
+              : def.description;
             return (
               <div
                 key={ailment.type}
-                title={def.description}
+                title={statusDescription}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
