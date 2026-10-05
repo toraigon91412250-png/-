@@ -1,0 +1,79 @@
+name: Temporary Battle Audit Check
+
+on:
+  push:
+    branches:
+      - fix/mobile-battle-audit-20261006
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run game rule tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify battle audit wiring
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+
+          const hook = fs.readFileSync('src/hooks/useBattleGame.ts', 'utf8');
+          const battle = fs.readFileSync('src/components/BattleScreen.tsx', 'utf8');
+          const action = fs.readFileSync('src/components/ActionDock.tsx', 'utf8');
+          const card = fs.readFileSync('src/components/FighterCard.tsx', 'utf8');
+
+          assert.match(
+            hook,
+            /const preparedPlayer = applyDynamicAbilityModifiers[\\s\\S]*const preparedEnemy = applyDynamicAbilityModifiers[\\s\\S]*getEffectiveSpeed\\(preparedPlayer\\)[\\s\\S]*getEffectiveSpeed\\(preparedEnemy\\)/,
+            'Turn order must use dynamic ability-adjusted fighters.'
+          );
+          assert.match(
+            battle,
+            /overflowY: 'auto',[\\s\\S]*minHeight: 0,[\\s\\S]*WebkitOverflowScrolling: 'touch'/,
+            'Mobile battle content must remain scrollable on short screens.'
+          );
+          assert.match(
+            battle,
+            /const forecastPlayer = applyDynamicAbilityModifiers/,
+            'Battle forecast must use dynamic ability-adjusted player speed.'
+          );
+          assert.match(
+            action,
+            /const effectivePlayer = applyDynamicAbilityModifiers[\\s\\S]*const effectiveEnemy = applyDynamicAbilityModifiers[\\s\\S]*playerActsFirst = getEffectiveSpeed\\(effectivePlayer\\) >= getEffectiveSpeed\\(effectiveEnemy\\)/,
+            'Action preview order must use dynamic speed.'
+          );
+          assert.match(
+            card,
+            /const displayFighter = applyDynamicAbilityModifiers/,
+            'Fighter cards must display dynamic battle stats.'
+          );
+
+          console.log('✓ Battle audit wiring checks passed.');
+          NODE
+
+      - name: Verify final change scope
+        working-directory: .
+        run: |
+          changed=$(git diff --name-only main...HEAD | grep -v '^\.github/workflows/temporary-battle-audit-check.yml$' | sort)
+          expected='web/src/components/ActionDock.tsx
+          web/src/components/BattleScreen.tsx
+          web/src/components/FighterCard.tsx
+          web/src/hooks/useBattleGame.ts
+          web/test-rules.js'
+          test "$changed" = "$expected"
+          echo "✓ Change scope is limited to the five intended product/test files (temporary workflow excluded)."
