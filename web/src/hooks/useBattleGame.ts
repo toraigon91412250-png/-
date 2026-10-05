@@ -682,7 +682,6 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
