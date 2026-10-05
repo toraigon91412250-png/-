@@ -6,7 +6,11 @@ interface ActionDockProps {
   player: BattleFighter;
   enemy: BattleFighter;
   isEnabled: boolean;
-  onAction: (action: BattleAction, specialSkillId?: IrenaSpecialSkillId) => void;
+  onAction: (
+    action: BattleAction,
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
+    specialSkillId?: IrenaSpecialSkillId,
+  ) => void;
   irenaUltimateUses?: {
     allGods: number;
     ruin: number;
@@ -339,7 +343,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
         {/* 3. 特殊 */}
         <button
-          onClick={() => onAction('SPECIAL', selectedSpecialSkill)}
+          onClick={() => onAction('SPECIAL', undefined, selectedSpecialSkill)}
           disabled={!isEnabled || !isSpecialReady || isChargingSuperFallenShot}
           style={{
             height: '56px',
