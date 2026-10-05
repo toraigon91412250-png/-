@@ -84,10 +84,6 @@ export function loadAbilityProgress(): AbilityProgress {
     const raw = localStorage.getItem(ABILITY_PROGRESS_KEY);
     if (raw) {
       const normalized = normalizeAbilityProgress(JSON.parse(raw));
-      const hasAnyProgress =
-        Object.values(normalized.levels).some(level => level > 0) ||
-        Object.values(normalized.shards).some(shards => shards > 0);
-
       // Lv.0の空セーブは現在の正規状態なので、そのまま返す。
       return normalized;
     }
