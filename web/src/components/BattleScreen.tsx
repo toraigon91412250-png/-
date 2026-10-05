@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -9,7 +9,11 @@ import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
 interface BattleScreenProps {
   state: BattleUiState;
-  onAction: (action: BattleAction, ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE') => void;
+  onAction: (
+    action: BattleAction,
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
+    specialSkillId?: IrenaSpecialSkillId,
+  ) => void;
   onBackToSelect: () => void;
   onRestart: () => void;
   skillProgress: IrenaSkillProgress;
@@ -146,7 +150,17 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     onAction,
   ]);
 
-  const isActionEnabled = state.phase === 'SELECT_ACTION';
+  const isActionEnabled = state.phase === 'SELECT_ACTION' && !state.player.isSuperFallenShotCharging;
+
+  useEffect(() => {
+    if (state.phase !== 'SELECT_ACTION' || !state.player.isSuperFallenShotCharging) return;
+
+    const timer = window.setTimeout(() => {
+      onAction('SPECIAL', undefined, 'SUPER_FALLEN_SHOT');
+    }, 480);
+
+    return () => window.clearTimeout(timer);
+  }, [state.phase, state.player.isSuperFallenShotCharging, onAction]);
 
   return (
     <div
