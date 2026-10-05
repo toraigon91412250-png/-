@@ -623,47 +623,46 @@ export function useBattleGame(
           }
         }
 
-        // Calculate attack damage
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
-        const rawDamage = getEffectiveAttack(actor) - getEffectiveDefense(damageTarget);
-        let baseDamage = Math.max(15, rawDamage);
+        const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
+        const finalDamage = calculateNormalAttackDamage(
+          {
+            attacker: actor,
+            target,
+            config: stateRef.current.battleConfig,
+            turn,
+            isActingFirst,
+            judgmentReady: judgmentActive,
+          },
+          isCritical,
+        );
 
-        // Irena Precognition passive (+20 when acting first)
-        const isIrenaPrecognition = actor.character.id === 'irena' && isActingFirst;
-        if (isIrenaPrecognition) {
-          baseDamage += 20;
-          addLog(`🔮【先読み発動】いれーなは先手を制し通常攻撃ダメージ+20！（基礎: ${baseDamage}）`, 'PASSIVE_TRIGGER', turn);
+        if (actor.character.id === 'irena' && isActingFirst) {
+          addLog(
+            `🔮【先読み発動】いれーなは先手を制し通常攻撃ダメージ+${GAME_BALANCE.IRENA_PRECOGNITION_BONUS}！`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
         }
 
-        // Buff bonus (+50)
+        const heavyArmorTriggered = target.character.id === 'kaiser';
         if (hadBuff) {
-          baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！（基礎: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(
+            `⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！`,
+            'BUFF_PLAYER',
+            turn,
+          );
         }
 
-        // Critical: 20% on normal attack only (1.5x after additions)
-        const isCritical = Math.random() < 0.20;
-        const attackDamage = isCritical ? Math.round(baseDamage * 1.5) : baseDamage;
-
-        // Judgement execution multiplies the completed attack.
-        let finalDamage = judgmentActive
-          ? Math.round(attackDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20)
-          : attackDamage;
         if (judgmentActive) {
           addLog(
             `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
             'PASSIVE_TRIGGER',
             turn,
           );
-        }
-        let heavyArmorTriggered = false;
-        if (target.character.id === 'kaiser') {
-          heavyArmorTriggered = true;
-          finalDamage = Math.max(0, finalDamage - 20);
         }
 
         if (isCritical) {
@@ -672,21 +671,9 @@ export function useBattleGame(
           soundManager.playAttack();
         }
 
-        const armorNote = heavyArmorTriggered ? '（カイザーの【重装】により20軽減！）' : '';
-        if (isCritical) {
-          addLog(
-            `💥【会心の一撃】クリティカル！ ${actor.character.name}の猛撃！ ${target.character.name}に ${finalDamage} の大ダメージ！${armorNote}`,
-            isActorPlayer ? 'CRITICAL_PLAYER' : 'CRITICAL_ENEMY',
-            turn
-          );
-        } else {
-          addLog(
-            `⚔️ ${actor.character.name}の攻撃！ ${target.character.name}に ${finalDamage} のダメージ！${armorNote}`,
-            isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
-            turn
-          );
-        }
-
+        const armorNote = heavyArmorTriggered
+          ? '（カイザーの【重装】により20軽減！）'
+          : '';
         const fallenExecution =
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
