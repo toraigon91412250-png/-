@@ -37,9 +37,11 @@ jobs:
           const action = fs.readFileSync('src/components/ActionDock.tsx', 'utf8');
           const card = fs.readFileSync('src/components/FighterCard.tsx', 'utf8');
 
-          assert.match(
-            hook,
-            /const preparedPlayer = applyDynamicAbilityModifiers[\\s\\S]*const preparedEnemy = applyDynamicAbilityModifiers[\\s\\S]*getEffectiveSpeed\\(preparedPlayer\\)[\\s\\S]*getEffectiveSpeed\\(preparedEnemy\\)/,
+          assert.ok(
+            hook.includes('const preparedPlayer = applyDynamicAbilityModifiers(') &&
+            hook.includes('const preparedEnemy = applyDynamicAbilityModifiers(') &&
+            hook.includes('getEffectiveSpeed(preparedPlayer)') &&
+            hook.includes('getEffectiveSpeed(preparedEnemy)'),
             'Turn order must use dynamic ability-adjusted fighters.'
           );
           assert.match(
@@ -52,9 +54,10 @@ jobs:
             /const forecastPlayer = applyDynamicAbilityModifiers/,
             'Battle forecast must use dynamic ability-adjusted player speed.'
           );
-          assert.match(
-            action,
-            /const effectivePlayer = applyDynamicAbilityModifiers[\\s\\S]*const effectiveEnemy = applyDynamicAbilityModifiers[\\s\\S]*playerActsFirst = getEffectiveSpeed\\(effectivePlayer\\) >= getEffectiveSpeed\\(effectiveEnemy\\)/,
+          assert.ok(
+            action.includes('const effectivePlayer = applyDynamicAbilityModifiers(') &&
+            action.includes('const effectiveEnemy = applyDynamicAbilityModifiers(') &&
+            action.includes('const playerActsFirst = getEffectiveSpeed(effectivePlayer) >= getEffectiveSpeed(effectiveEnemy);'),
             'Action preview order must use dynamic speed.'
           );
           assert.match(
