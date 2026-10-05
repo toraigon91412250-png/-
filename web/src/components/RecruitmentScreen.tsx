@@ -617,7 +617,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
 
             <div style={{ marginTop:12, display:'flex', justifyContent:'center', gap:7, flexWrap:'wrap' }}>
               {lastResult.shardGain > 0 && (
-                <span style={pillStyle}>+{lastResult.shardGain} {lastResult.reward.abilityId === 'ABYSS' ? '深淵' : lastResult.reward.abilityId === 'FALLEN' ? '堕天' : lastResult.reward.abilityId === 'BLACK_WING' ? '黒翼' : lastResult.reward.abilityId === 'FALLEN_KING' ? '堕天王' : '断罪'}の欠片</span>
+                <span style={pillStyle}>+{lastResult.shardGain} {getShardLabel(lastResult.reward)}</span>
               )}
             </div>
 
