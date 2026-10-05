@@ -1464,9 +1464,19 @@ export function useBattleGame(
       enemy: { ...prev.enemy, isEvading: cpuAction === 'EVADE' },
     }));
 
-    // Determine Turn Order based on effectiveSpeed
-    const playerSpeed = getEffectiveSpeed(stateRef.current.player);
-    const cpuSpeed = getEffectiveSpeed(stateRef.current.enemy);
+    // Determine Turn Order from the same dynamic/stat-modified fighters used during turn execution.
+    const preparedPlayer = applyDynamicAbilityModifiers(
+      stateRef.current.player,
+      stateRef.current.battleConfig,
+      currentTurn,
+    );
+    const preparedEnemy = applyDynamicAbilityModifiers(
+      stateRef.current.enemy,
+      stateRef.current.battleConfig,
+      currentTurn,
+    );
+    const playerSpeed = getEffectiveSpeed(preparedPlayer);
+    const cpuSpeed = getEffectiveSpeed(preparedEnemy);
     const playerGoesFirst = playerSpeed >= cpuSpeed;
 
     const firstIsPlayer = playerGoesFirst;
