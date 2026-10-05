@@ -27,11 +27,9 @@ import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import {
   applyDynamicAbilityModifiers,
-  applyJudgmentDefense,
   createBattleCharacters,
   getAbilityLevel,
   getJudgmentDamageMultiplier,
-  getJudgmentDefenseIgnore,
   getJudgmentThreshold,
   hasAbility,
   normalizeEquippedAbilities,
@@ -503,8 +501,8 @@ export function useBattleGame(
       case 'BUFF': {
         if (!actor.isBuffed) {
           updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: 125 } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: 125 } }
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: GAME_BALANCE.BUFF_DAMAGE_BONUS } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: GAME_BALANCE.BUFF_DAMAGE_BONUS } }
           ));
           soundManager.playAttack();
           addLog(
@@ -533,7 +531,7 @@ export function useBattleGame(
             actorName: actor.character.name,
             skillName: '強化',
             statusAilmentName: '',
-            bannerText: '⚡ 攻撃強化 (+125)！',
+            bannerText: `⚡ 攻撃強化 (+${GAME_BALANCE.BUFF_DAMAGE_BONUS})！`,
             effectId: nextVisualEffectId.current++,
           },
         }));
@@ -576,7 +574,7 @@ export function useBattleGame(
 
       case 'ATTACK': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -712,6 +710,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(isCritical ? 2 : 1, turn);
@@ -823,7 +822,7 @@ export function useBattleGame(
           const skillLevel = actor.character.featherSkillLevel || 1;
           const multiplier = getIrenaSuperFallenShotMultiplier(skillLevel);
           const hadBuff = actor.isBuffed;
-          const buffDamageBonus = actor.buffDamageBonus || 125;
+          const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
 
           updateState(prev => ({
             ...prev,
@@ -972,7 +971,7 @@ export function useBattleGame(
         }
 
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -989,7 +988,7 @@ export function useBattleGame(
         }
         if (hadBuff) {
           baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！`, 'BUFF_PLAYER', turn);
         }
 
         // Special gives +1 ultimate gauge
@@ -1147,6 +1146,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(2, turn);
@@ -1158,7 +1158,7 @@ export function useBattleGame(
 
       case 'ULTIMATE': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -1366,6 +1366,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(3, turn);
@@ -1395,6 +1396,8 @@ export function useBattleGame(
       phase: 'BATTLE_FINISHED',
       winnerIsPlayer,
       visualEffect: null,
+      visualEffects: [],
+      judgmentReady: false,
       isAnimating: false,
       lastBattleReward: reward,
       lastBattleMasteryReward: masteryBonus,
@@ -1428,7 +1431,8 @@ export function useBattleGame(
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
-    updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null }));
+    const actionRunId = battleRunIdRef.current;
+    updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null, visualEffects: [] }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
 
@@ -1528,9 +1532,11 @@ export function useBattleGame(
         enemy: nextEnemy,
         cpuIntent: nextCpuIntent,
         visualEffect: null,
+        visualEffects: [],
         isAnimating: false,
       }));
     } catch (err) {
+      if (isBattleCancelled(err) || actionRunId !== battleRunIdRef.current) return;
       console.error('Battle execution error occurred, recovering state:', err);
       updateState(prev => ({
         ...prev,
@@ -1539,6 +1545,7 @@ export function useBattleGame(
         phase: prev.phase === 'BATTLE_FINISHED' ? 'BATTLE_FINISHED' : 'SELECT_ACTION',
       }));
     } finally {
+      if (actionRunId !== battleRunIdRef.current) return;
       // Guaranteed safety cleanup: ensure visualEffect is null if settled
       updateState(prev => {
         if (prev.phase === 'SELECT_ACTION' || prev.phase === 'BATTLE_FINISHED') {
