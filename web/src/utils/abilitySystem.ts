@@ -22,11 +22,17 @@ export function createKaiserForLevel(base: CharacterDef, level: BattleChallengeL
   const multiplier = getKaiserLevelMultiplier(level);
   const scale = (value: number) => Math.max(1, Math.round(value * multiplier));
 
+  // Keep high-level Kaiser threatening through HP/offense/speed, while avoiding
+  // a defense wall that makes Irena's normal attack effectively useless too early.
+  const tierProgress = Math.max(0, level / 10 - 1);
+  const defenseMultiplier = 1 + tierProgress * 0.13;
+  const scaleDefense = (value: number) => Math.max(0, Math.round(value * defenseMultiplier));
+
   return {
     ...base,
     maxHp: scale(base.maxHp),
     attack: scale(base.attack),
-    defense: scale(base.defense),
+    defense: scaleDefense(base.defense),
     speed: scale(base.speed),
     specialSkillDamage: scale(base.specialSkillDamage),
     ultimateSkillDamage: scale(base.ultimateSkillDamage),
