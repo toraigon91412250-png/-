@@ -73,7 +73,7 @@ jobs:
       - name: Verify final change scope
         working-directory: .
         run: |
-          changed=$(git diff --name-only main...HEAD | grep -v '^\.github/workflows/temporary-battle-audit-check.yml$' | sort)
+          changed=$(git diff --name-only 1e14b6e18d228d210b3bec4ff84d557e280a314b...HEAD | grep -v '^\.github/workflows/temporary-battle-audit-check.yml$' | sort)
           expected='web/src/components/ActionDock.tsx
           web/src/components/BattleScreen.tsx
           web/src/components/FighterCard.tsx
