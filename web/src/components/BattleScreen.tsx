@@ -149,7 +149,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
         </div>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>相手の影響</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: cpuIntentMeta.accent, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: CPU_INTENT_META[state.cpuIntent].accent, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {impact}
           </div>
         </div>
