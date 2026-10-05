@@ -6,6 +6,7 @@ import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
+import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
@@ -72,8 +73,10 @@ const CPU_INTENT_META: Record<BattleAction, {
 const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = ({ state, compact = false }) => {
   if (state.phase !== 'SELECT_ACTION') return null;
 
-  const playerSpeed = getEffectiveSpeed(state.player);
-  const enemySpeed = getEffectiveSpeed(state.enemy);
+  const forecastPlayer = applyDynamicAbilityModifiers(state.player, state.battleConfig, state.turnNumber);
+  const forecastEnemy = applyDynamicAbilityModifiers(state.enemy, state.battleConfig, state.turnNumber);
+  const playerSpeed = getEffectiveSpeed(forecastPlayer);
+  const enemySpeed = getEffectiveSpeed(forecastEnemy);
   const playerBaseSpeed = state.player.character.speed;
   const enemyBaseSpeed = state.enemy.character.speed;
   const playerSpeedDelta = playerSpeed - playerBaseSpeed;
@@ -81,7 +84,13 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
   const playerGoesFirst = playerSpeed >= enemySpeed;
   const baseOrderPlayerFirst = playerBaseSpeed >= enemyBaseSpeed;
 
-  const formatSpeed = (fighter: typeof state.player, speed: number, baseSpeed: number, delta: number) => {
+  const formatSpeed = (
+    fighter: typeof state.player,
+    speed: number,
+    baseSpeed: number,
+    delta: number,
+    dynamicBaseSpeed: number,
+  ) => {
     const causes = fighter.activeAilments
       .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
       .map(ailment => {
@@ -89,12 +98,26 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
         return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
       })
       .join(' / ');
+    const hasDynamicSpeedChange = dynamicBaseSpeed !== baseSpeed;
+    const causeText = [causes, hasDynamicSpeedChange ? '能力補正' : ''].filter(Boolean).join(' / ');
     if (delta === 0) return `${speed}`;
-    return `${speed}（${baseSpeed}→${speed}、${causes || '変化'}）`;
+    return `${speed}（${baseSpeed}→${speed}、${causeText || '変化'}）`;
   };
 
-  const playerSpeedText = formatSpeed(state.player, playerSpeed, playerBaseSpeed, playerSpeedDelta);
-  const enemySpeedText = formatSpeed(state.enemy, enemySpeed, enemyBaseSpeed, enemySpeedDelta);
+  const playerSpeedText = formatSpeed(
+    state.player,
+    playerSpeed,
+    playerBaseSpeed,
+    playerSpeedDelta,
+    forecastPlayer.character.speed,
+  );
+  const enemySpeedText = formatSpeed(
+    state.enemy,
+    enemySpeed,
+    enemyBaseSpeed,
+    enemySpeedDelta,
+    forecastEnemy.character.speed,
+  );
   const orderText =
     playerSpeed === enemySpeed
       ? '同速 → いれーな先攻'
