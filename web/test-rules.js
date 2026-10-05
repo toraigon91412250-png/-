@@ -116,6 +116,61 @@ for (let i = 1; i < levelStats.length; i += 1) {
   assert.ok(levelStats[i].playerDamage <= levelStats[i - 1].playerDamage, 'Higher defense must not increase Irena normal damage.');
 }
 
+function simulateNormalAttackBattle(level) {
+  const kaiser = createKaiserForLevel(KAISER, level);
+  let player = createInitialFighter(IRENA, true);
+  let enemy = createInitialFighter(kaiser, false);
+  let round = 0;
+
+  while (player.currentHp > 0 && enemy.currentHp > 0 && round < 100) {
+    round += 1;
+    const playerFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(enemy);
+
+    const attacker = playerFirst ? player : enemy;
+    const target = playerFirst ? enemy : player;
+    const firstDamage = calculateNormalAttackDamage({
+      attacker,
+      target,
+      config: { kaiserLevel: level, abilities: [] },
+      turn: round,
+      isActingFirst: playerFirst,
+    });
+    target.currentHp = Math.max(0, target.currentHp - firstDamage);
+
+    if (target.currentHp <= 0) break;
+
+    const secondAttacker = playerFirst ? enemy : player;
+    const secondTarget = playerFirst ? player : enemy;
+    const secondDamage = calculateNormalAttackDamage({
+      attacker: secondAttacker,
+      target: secondTarget,
+      config: { kaiserLevel: level, abilities: [] },
+      turn: round,
+      isActingFirst: false,
+    });
+    secondTarget.currentHp = Math.max(0, secondTarget.currentHp - secondDamage);
+  }
+
+  return {
+    rounds: round,
+    playerHpRemaining: player.currentHp,
+    enemyHpRemaining: enemy.currentHp,
+  };
+}
+
+const battleCurve = levelStats.map(row => ({
+  ...row,
+  ...simulateNormalAttackBattle(row.level),
+}));
+
+for (const row of battleCurve) {
+  assert.ok(row.rounds > 0 && row.rounds < 100, `Lv${row.level} normal-attack battle must finish within 100 rounds.`);
+}
+assert.ok(
+  battleCurve[battleCurve.length - 1].rounds <= battleCurve[0].rounds * 3,
+  'Lv100 should not require more than three times the Lv10 base-combat rounds.'
+);
+
 const lv10 = levelStats[0];
 const lv100 = levelStats[levelStats.length - 1];
 assert.strictEqual(lv10.maxHp, KAISER.maxHp);
@@ -130,6 +185,6 @@ assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threateni
 console.log('✓ Kaiser Lv10-Lv100 progression stays bounded and monotonic.');
 console.log(
   'Level curve:',
-  levelStats.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage}`).join(' | ')
+  battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
 );
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
