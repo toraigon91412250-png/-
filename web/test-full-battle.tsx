@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
+// @ts-expect-error jsdom is used only by this Node test harness.
 import { JSDOM } from 'jsdom';
 import { IRENA, KAISER } from './src/data/characters';
 import { useBattleGame } from './src/hooks/useBattleGame';
 import { BattleScreen } from './src/components/BattleScreen';
 import { IrenaSkillProgress } from './src/types/game';
 
+declare const process: { exit(code?: number): never };
+
+const nodeGlobal = globalThis as any;
+
 const dom = new JSDOM('<!DOCTYPE html><html><body><div id="root"></div></body></html>', {
   url: 'http://localhost:3000',
   pretendToBeVisual: true,
 });
 
-global.window = dom.window as any;
-global.document = dom.window.document as any;
+nodeGlobal.window = dom.window as any;
+nodeGlobal.document = dom.window.document as any;
 const startTime = Date.now();
-global.performance = { now: () => Date.now() - startTime } as any;
-global.requestAnimationFrame = ((cb: FrameRequestCallback) => setTimeout(() => cb(global.performance.now()), 16)) as any;
-global.cancelAnimationFrame = ((id: ReturnType<typeof setTimeout>) => clearTimeout(id)) as any;
+nodeGlobal.performance = { now: () => Date.now() - startTime } as any;
+nodeGlobal.requestAnimationFrame = ((cb: FrameRequestCallback) => setTimeout(() => cb(nodeGlobal.performance.now()), 16)) as any;
+nodeGlobal.cancelAnimationFrame = ((id: ReturnType<typeof setTimeout>) => clearTimeout(id)) as any;
 
 dom.window.HTMLCanvasElement.prototype.getContext = () => ({
   clearRect() {},
@@ -31,7 +36,7 @@ dom.window.HTMLCanvasElement.prototype.getContext = () => ({
   lineTo() {},
 }) as any;
 
-(global.window as any).AudioContext = class {
+(nodeGlobal.window as any).AudioContext = class {
   currentTime = 0;
   state = 'running';
   destination = {};
