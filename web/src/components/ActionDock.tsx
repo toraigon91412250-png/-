@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, IrenaSpecialSkillId } from '../types/game';
+import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId } from '../types/game';
 import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
