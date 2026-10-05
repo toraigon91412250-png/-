@@ -671,8 +671,22 @@ export function useBattleGame(
         }
 
         const armorNote = heavyArmorTriggered
-          ? '（カイザーの【重装】により20軽減！）'
+          ? '（カイザーの【重装】により\${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）'
           : '';
+        if (isCritical) {
+          addLog(
+            `💥【会心の一撃】クリティカル！ \${actor.character.name}の猛撃！ \${target.character.name}に \${finalDamage} の大ダメージ！\${armorNote}`,
+            isActorPlayer ? 'CRITICAL_PLAYER' : 'CRITICAL_ENEMY',
+            turn
+          );
+        } else {
+          addLog(
+            `⚔️ \${actor.character.name}の攻撃！ \${target.character.name}に \${finalDamage} のダメージ！\${armorNote}`,
+            isActorPlayer ? 'PLAYER_ACTION' : 'ENEMY_ACTION',
+            turn
+          );
+        }
+
         const fallenExecution =
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
@@ -1176,8 +1190,6 @@ export function useBattleGame(
                 ? '全能の一撃'
                 : actor.character.ultimateSkillName
           : actor.character.ultimateSkillName;
-        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
-
         if (isIrena && appliedIrenaVariant === 'RUIN') {
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
@@ -1226,7 +1238,7 @@ export function useBattleGame(
 
         // Irena authority effects use the same existing ultimate visual effect.
         if (isIrena && appliedIrenaVariant === 'ALL_GODS') {
-          const strongBuff = 200;
+          const strongBuff = GAME_BALANCE.ALL_GODS_BUFF_DAMAGE;
           updateState(prev => (isActorPlayer
             ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: strongBuff } }
             : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: strongBuff } }
