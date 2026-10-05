@@ -3,6 +3,7 @@ import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getI
 import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
+import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 
 interface ActionDockProps {
   player: BattleFighter;
@@ -38,7 +39,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
 }) => {
-  const playerActsFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(enemy);
+  const effectivePlayer = applyDynamicAbilityModifiers(player, battleConfig, turnNumber);
+  const effectiveEnemy = applyDynamicAbilityModifiers(enemy, battleConfig, turnNumber);
+  const playerActsFirst = getEffectiveSpeed(effectivePlayer) >= getEffectiveSpeed(effectiveEnemy);
   const damageContext = {
     attacker: player,
     target: enemy,
