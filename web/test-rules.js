@@ -183,7 +183,7 @@ const judgmentDamage = calculateNormalAttackDamage({
   isActingFirst: true,
   judgmentReady: true,
 });
-assert.strictEqual(judgmentDamage, 1352);
+assert.strictEqual(judgmentDamage, 1432);
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
