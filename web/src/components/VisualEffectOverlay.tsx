@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
 import { CHARACTERS } from '../data/characters';
 
-interface VisualEffectOverlayProps {
-  effect: VisualEffect | null;
+interface SingleVisualEffectOverlayProps {
+  effect: VisualEffect;
   speedMultiplier?: number;
 }
 
@@ -320,6 +320,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
 
   return (
     <div
+      className="battle-vfx-root"
       style={{
         position: 'absolute',
         inset: 0,
@@ -519,7 +520,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
   );
 };
 
-export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
+const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastUiUpdateRef = useRef(0);
@@ -644,17 +645,121 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         ctx.stroke();
       }
 
-      // 3. Migrated 技一・全神の権能 VFX
+      // 3. 超堕天撃: focused convergence and impact ring.
+      else if (isSuperFallenShot) {
+        const size = Math.max(w, h);
+        const pulse = Math.sin(Math.min(1, t) * Math.PI);
+        const center = targetCenter;
+        const ringRadius = size * (0.05 + 0.18 * Math.min(1, t));
+        const alpha = Math.max(0, 1 - t);
+
+        const flash = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, size * 0.28);
+        flash.addColorStop(0, 'rgba(255,255,255,' + (0.95 * pulse) + ')');
+        flash.addColorStop(0.3, 'rgba(224,64,251,' + (0.55 * pulse) + ')');
+        flash.addColorStop(1, 'rgba(224,64,251,0)');
+        ctx.fillStyle = flash;
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, size * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(224,242,255,' + (alpha * 0.95) + ')';
+        ctx.lineWidth = Math.max(3, size * 0.006);
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, ringRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(224,64,251,' + (alpha * 0.75) + ')';
+        ctx.lineWidth = Math.max(2, size * 0.003);
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, ringRadius * 0.72, 0, Math.PI * 2);
+        ctx.stroke();
+
+        for (let i = 0; i < 18; i += 1) {
+          const angle = (i / 18) * Math.PI * 2 + effect.effectId * 0.13;
+          const length = size * (0.12 + 0.18 * t) * (0.75 + (i % 4) * 0.08);
+          const startX = center.x + Math.cos(angle) * size * 0.055;
+          const startY = center.y + Math.sin(angle) * size * 0.055;
+          const endX = center.x + Math.cos(angle) * (size * 0.055 + length);
+          const endY = center.y + Math.sin(angle) * (size * 0.055 + length);
+          ctx.strokeStyle = 'rgba(180,245,255,' + (alpha * (0.55 + (i % 3) * 0.12)) + ')';
+          ctx.lineWidth = Math.max(1.5, size * 0.002);
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(endX, endY);
+          ctx.stroke();
+        }
+
+        for (let i = 0; i < 10; i += 1) {
+          const angle = (i / 10) * Math.PI * 2 + effect.effectId * 0.19;
+          const distance = size * (0.24 + t * 0.15);
+          const x = center.x + Math.cos(angle) * distance;
+          const y = center.y + Math.sin(angle) * distance;
+          const featherSize = Math.max(8, size * (0.012 + (i % 3) * 0.003));
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(angle + Math.PI / 2);
+          ctx.fillStyle = 'rgba(224,64,251,' + (alpha * 0.9) + ')';
+          ctx.beginPath();
+          ctx.moveTo(0, -featherSize);
+          ctx.lineTo(featherSize * 0.38, featherSize * 0.2);
+          ctx.lineTo(0, featherSize);
+          ctx.lineTo(-featherSize * 0.38, featherSize * 0.2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      // 4. Migrated 技一・全神の権能 VFX
       else if (isAllGods) {
         drawAllGodsVfx(ctx, w, h, t);
       }
 
-      // 4. 破壊の権能は専用のレイヤー演出で描画する。
+      // 5. 破壊の権能は専用のレイヤー演出で描画する。
       else if (isRuin) {
         // Legacy ULTIMATE canvas effect is intentionally suppressed for this variant.
       }
 
-      // 5. Irena Feather Projectiles & Burst (羽弾)
+      // 6. Generic ultimate impact: layered shockwaves for normal variants.
+      else if (isGenericUltimate) {
+        const size = Math.max(w, h);
+        const alpha = Math.max(0, 1 - t);
+        const center = targetCenter;
+        const radius = size * (0.08 + 0.32 * t);
+
+        const grad = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, radius);
+        grad.addColorStop(0, 'rgba(255,255,255,' + (alpha * 0.95) + ')');
+        grad.addColorStop(0.28, 'rgba(255,224,130,' + (alpha * 0.72) + ')');
+        grad.addColorStop(1, 'rgba(255,193,7,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let i = 0; i < 4; i += 1) {
+          const ringProgress = Math.max(0, t - i * 0.08);
+          const ring = size * (0.10 + ringProgress * (0.16 + i * 0.03));
+          ctx.strokeStyle = 'rgba(255,224,130,' + (alpha * (0.78 - i * 0.12)) + ')';
+          ctx.lineWidth = Math.max(2, size * (0.004 - i * 0.00035));
+          ctx.beginPath();
+          ctx.arc(center.x, center.y, ring, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        for (let i = 0; i < 16; i += 1) {
+          const angle = (i / 16) * Math.PI * 2 + effect.effectId * 0.09;
+          const inner = size * 0.07;
+          const outer = size * (0.20 + 0.25 * t) * (0.78 + (i % 5) * 0.06);
+          ctx.strokeStyle = 'rgba(255,249,196,' + (alpha * (0.35 + (i % 4) * 0.10)) + ')';
+          ctx.lineWidth = Math.max(1.5, size * 0.0022);
+          ctx.beginPath();
+          ctx.moveTo(center.x + Math.cos(angle) * inner, center.y + Math.sin(angle) * inner);
+          ctx.lineTo(center.x + Math.cos(angle) * outer, center.y + Math.sin(angle) * outer);
+          ctx.stroke();
+        }
+      }
+
+      // 7. Irena Feather Projectiles & Burst (羽弾)
       else if (effect.effectType === 'SPECIAL_FEATHER') {
         if (t < 0.45) {
           const projT = t / 0.45;
@@ -811,7 +916,10 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
   if (!effect) return null;
 
   const t = progress;
+  const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
   const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
+  const isSuperFallenShot = effect.effectType === 'SPECIAL_FEATHER' && effect.skillName === '超堕天撃';
+  const isGenericUltimate = effect.isUltimate && !isAllGods && !isRuin && effect.effectType === 'ULTIMATE_BLAST';
 
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
     ? (1 - Math.abs(t - 0.16) / 0.08) * 0.25
@@ -839,8 +947,54 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
         justifyContent: 'center',
         zIndex: 50,
         overflow: 'hidden',
+        animation: isSuperFallenShot
+          ? 'superFallenImpactShake 560ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+          : isGenericUltimate
+            ? 'ultimateImpactShake 680ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+            : undefined,
       }}
     >
+      <style>{[
+        '@keyframes superFallenImpactShake {',
+        '  0%, 100% { transform: translate3d(0,0,0); }',
+        '  18% { transform: translate3d(-7px,2px,0) scale(1.01); }',
+        '  34% { transform: translate3d(8px,-3px,0) scale(1.015); }',
+        '  52% { transform: translate3d(-5px,2px,0); }',
+        '  70% { transform: translate3d(3px,-1px,0); }',
+        '}',
+        '@keyframes ultimateImpactShake {',
+        '  0%, 100% { transform: translate3d(0,0,0); }',
+        '  16% { transform: translate3d(-5px,1px,0) scale(1.008); }',
+        '  30% { transform: translate3d(6px,-2px,0) scale(1.012); }',
+        '  48% { transform: translate3d(-4px,2px,0); }',
+        '  68% { transform: translate3d(2px,-1px,0); }',
+        '}',
+        '@media (prefers-reduced-motion: reduce) {',
+        '  .battle-vfx-root { animation: none !important; }',
+        '}',
+      ].join('\n')}</style>
+      {/* Dedicated special / ultimate impact flashes */}
+      {isSuperFallenShot && t > 0.04 && t < 0.42 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 48%, rgba(255,255,255,0.82) 0%, rgba(224,64,251,0.24) 30%, rgba(224,64,251,0) 72%)',
+            opacity: Math.max(0, 1 - Math.abs(t - 0.16) / 0.26),
+          }}
+        />
+      )}
+      {isGenericUltimate && t > 0.08 && t < 0.56 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 50% 38%, rgba(255,255,255,0.76) 0%, rgba(255,213,79,0.20) 34%, rgba(255,193,7,0) 75%)',
+            opacity: Math.max(0, 1 - Math.abs(t - 0.24) / 0.32),
+          }}
+        />
+      )}
+
       {/* Critical Flash */}
       {critFlashAlpha > 0.01 && (
         <div
@@ -1012,3 +1166,23 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
     </div>
   );
 };
+
+interface VisualEffectOverlayProps {
+  effects: VisualEffect[];
+  speedMultiplier?: number;
+}
+
+export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({
+  effects,
+  speedMultiplier = 1,
+}) => (
+  <>
+    {effects.map(effect => (
+      <SingleVisualEffectOverlay
+        key={effect.effectId}
+        effect={effect}
+        speedMultiplier={speedMultiplier}
+      />
+    ))}
+  </>
+);

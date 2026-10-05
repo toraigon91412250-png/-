@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   BattleAction,
   BattleFighter,
@@ -21,15 +21,15 @@ import {
   StatusAilmentType,
 } from '../types/game';
 import { CpuAi } from '../utils/ai';
+import { GAME_BALANCE } from '../data/gameBalance';
+import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import {
   applyDynamicAbilityModifiers,
-  applyJudgmentDefense,
   createBattleCharacters,
   getAbilityLevel,
   getJudgmentDamageMultiplier,
-  getJudgmentDefenseIgnore,
   getJudgmentThreshold,
   hasAbility,
   normalizeEquippedAbilities,
@@ -84,6 +84,8 @@ export function useBattleGame(
     ],
     phase: 'SELECT_ACTION',
     visualEffect: null,
+    visualEffects: [],
+    judgmentReady: false,
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
@@ -102,13 +104,45 @@ export function useBattleGame(
   const updateState = useCallback((updater: (prev: BattleUiState) => BattleUiState) => {
     setState(prev => {
       const next = updater(prev);
-      stateRef.current = next;
-      return next;
+      const previousEffects = prev.visualEffects ?? [];
+      let visualEffects = previousEffects;
+
+      if (next.visualEffect) {
+        if (!previousEffects.some(effect => effect.effectId === next.visualEffect?.effectId)) {
+          visualEffects = [...previousEffects, next.visualEffect];
+        }
+      } else if (prev.visualEffect) {
+        visualEffects = previousEffects.filter(effect => effect.effectId !== prev.visualEffect?.effectId);
+      }
+
+      const normalizedNext: BattleUiState = {
+        ...next,
+        visualEffects,
+      };
+      stateRef.current = normalizedNext;
+      return normalizedNext;
     });
   }, []);
 
   const nextLogId = useRef(2);
   const nextVisualEffectId = useRef(0);
+  const battleRunIdRef = useRef(0);
+  const pendingSleepCancellersRef = useRef(new Map<number, () => void>());
+
+  const cancelPendingBattleWork = useCallback(() => {
+    battleRunIdRef.current += 1;
+    for (const cancel of pendingSleepCancellersRef.current.values()) {
+      cancel();
+    }
+    pendingSleepCancellersRef.current.clear();
+  }, []);
+
+  const isBattleCancelled = (error: unknown): boolean =>
+    error instanceof Error && error.message === 'BATTLE_CANCELLED';
+
+  useEffect(() => () => {
+    cancelPendingBattleWork();
+  }, [cancelPendingBattleWork]);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
   const judgmentMarksRef = useRef(0);
@@ -144,7 +178,28 @@ export function useBattleGame(
     );
   }, [addLog]);
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = useCallback((ms: number) => {
+    const runId = battleRunIdRef.current;
+    return new Promise<void>((resolve, reject) => {
+      let timerId = 0;
+      const cancel = () => {
+        window.clearTimeout(timerId);
+        pendingSleepCancellersRef.current.delete(timerId);
+        reject(new Error('BATTLE_CANCELLED'));
+      };
+
+      timerId = window.setTimeout(() => {
+        pendingSleepCancellersRef.current.delete(timerId);
+        if (runId !== battleRunIdRef.current) {
+          reject(new Error('BATTLE_CANCELLED'));
+        } else {
+          resolve();
+        }
+      }, Math.max(0, ms));
+
+      pendingSleepCancellersRef.current.set(timerId, cancel);
+    });
+  }, []);
 
   const toggleSound = useCallback(() => {
     updateState(prev => {
@@ -176,6 +231,7 @@ export function useBattleGame(
     if (judgmentMarksRef.current >= threshold) {
       judgmentReadyRef.current = true;
       judgmentMarksRef.current = threshold;
+      updateState(prev => ({ ...prev, judgmentReady: true }));
       addLog(
         `⚖️【断罪準備完了】断罪の刻が満ちた！ 次の攻撃が「断罪執行」になる。`,
         'PASSIVE_TRIGGER',
@@ -241,6 +297,7 @@ export function useBattleGame(
     fallenKingSurvivalCountRef.current = 0;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
+    cancelPendingBattleWork();
 
     const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
 
@@ -260,6 +317,8 @@ export function useBattleGame(
       ],
       phase: 'SELECT_ACTION',
       visualEffect: null,
+      visualEffects: [],
+      judgmentReady: false,
       winnerIsPlayer: null,
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
@@ -442,12 +501,12 @@ export function useBattleGame(
       case 'BUFF': {
         if (!actor.isBuffed) {
           updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: 125 } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: 125 } }
+            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: GAME_BALANCE.BUFF_DAMAGE_BONUS } }
+            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: GAME_BALANCE.BUFF_DAMAGE_BONUS } }
           ));
           soundManager.playAttack();
           addLog(
-            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+125）`,
+            `⚡ ${actor.character.name}は気合を高めた！（次の攻撃系行動のダメージ+${GAME_BALANCE.BUFF_DAMAGE_BONUS}）`,
             isActorPlayer ? 'BUFF_PLAYER' : 'BUFF_ENEMY',
             turn
           );
@@ -472,7 +531,7 @@ export function useBattleGame(
             actorName: actor.character.name,
             skillName: '強化',
             statusAilmentName: '',
-            bannerText: '⚡ 攻撃強化 (+125)！',
+            bannerText: `⚡ 攻撃強化 (+${GAME_BALANCE.BUFF_DAMAGE_BONUS})！`,
             effectId: nextVisualEffectId.current++,
           },
         }));
@@ -515,7 +574,7 @@ export function useBattleGame(
 
       case 'ATTACK': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -562,47 +621,47 @@ export function useBattleGame(
           }
         }
 
-        // Calculate attack damage
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
-        const rawDamage = getEffectiveAttack(actor) - getEffectiveDefense(damageTarget);
-        let baseDamage = Math.max(15, rawDamage);
+        const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
+        const finalDamage = calculateNormalAttackDamage(
+          {
+            attacker: actor,
+            target,
+            config: stateRef.current.battleConfig,
+            turn,
+            isActingFirst,
+            judgmentReady: judgmentActive,
+            alreadyPrepared: true,
+          },
+          isCritical,
+        );
 
-        // Irena Precognition passive (+20 when acting first)
-        const isIrenaPrecognition = actor.character.id === 'irena' && isActingFirst;
-        if (isIrenaPrecognition) {
-          baseDamage += 20;
-          addLog(`🔮【先読み発動】いれーなは先手を制し通常攻撃ダメージ+20！（基礎: ${baseDamage}）`, 'PASSIVE_TRIGGER', turn);
+        if (actor.character.id === 'irena' && isActingFirst) {
+          addLog(
+            `🔮【先読み発動】いれーなは先手を制し通常攻撃ダメージ+${GAME_BALANCE.IRENA_PRECOGNITION_BONUS}！`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
         }
 
-        // Buff bonus (+50)
+        const heavyArmorTriggered = target.character.id === 'kaiser';
         if (hadBuff) {
-          baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！（基礎: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(
+            `⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！`,
+            'BUFF_PLAYER',
+            turn,
+          );
         }
 
-        // Critical: 20% on normal attack only (1.5x after additions)
-        const isCritical = Math.random() < 0.20;
-        const attackDamage = isCritical ? Math.round(baseDamage * 1.5) : baseDamage;
-
-        // Judgement execution multiplies the completed attack.
-        let finalDamage = judgmentActive
-          ? Math.round(attackDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20)
-          : attackDamage;
         if (judgmentActive) {
           addLog(
             `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
             'PASSIVE_TRIGGER',
             turn,
           );
-        }
-        let heavyArmorTriggered = false;
-        if (target.character.id === 'kaiser') {
-          heavyArmorTriggered = true;
-          finalDamage = Math.max(0, finalDamage - 20);
         }
 
         if (isCritical) {
@@ -611,7 +670,9 @@ export function useBattleGame(
           soundManager.playAttack();
         }
 
-        const armorNote = heavyArmorTriggered ? '（カイザーの【重装】により20軽減！）' : '';
+        const armorNote = heavyArmorTriggered
+          ? '（カイザーの【重装】により\${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）'
+          : '';
         if (isCritical) {
           addLog(
             `💥【会心の一撃】クリティカル！ ${actor.character.name}の猛撃！ ${target.character.name}に ${finalDamage} の大ダメージ！${armorNote}`,
@@ -634,7 +695,6 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
@@ -665,6 +725,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(isCritical ? 2 : 1, turn);
@@ -776,7 +837,7 @@ export function useBattleGame(
           const skillLevel = actor.character.featherSkillLevel || 1;
           const multiplier = getIrenaSuperFallenShotMultiplier(skillLevel);
           const hadBuff = actor.isBuffed;
-          const buffDamageBonus = actor.buffDamageBonus || 125;
+          const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
 
           updateState(prev => ({
             ...prev,
@@ -925,7 +986,7 @@ export function useBattleGame(
         }
 
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -942,7 +1003,7 @@ export function useBattleGame(
         }
         if (hadBuff) {
           baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(`⚡【強化消費】強化の効果で『${skillName}』のダメージ+${buffDamageBonus}！`, 'BUFF_PLAYER', turn);
         }
 
         // Special gives +1 ultimate gauge
@@ -1000,29 +1061,29 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        if (judgmentActive) {
-          const defenseBreakBonus = Math.round(target.character.defense * getJudgmentDefenseIgnore(judgmentLevel));
-          baseDamage += defenseBreakBonus;
-        }
-
-        let finalDamage = baseDamage;
+        const finalDamage = calculateSpecialDamage({
+          attacker: actor,
+          target,
+          config: stateRef.current.battleConfig,
+          turn,
+          isActingFirst,
+          judgmentReady: judgmentActive,
+          specialSkillId: specialSkillId ?? 'FEATHER',
+          alreadyPrepared: true,
+        });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
-          finalDamage = Math.round(finalDamage * 5);
           addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
         }
-
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
           claimPathMasteryReward('FEATHER_ABYSS', '羽弾・深淵', turn);
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
-          finalDamage += abyssBonus;
           addLog(
             `🌑【羽弾・深淵】高密度の羽が炸裂！ 追加ダメージ+${abyssBonus}`,
             isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
             turn
           );
         }
-
         if (
           isIrenaSpecial &&
           irenaSkillLevel >= 4 &&
@@ -1031,16 +1092,13 @@ export function useBattleGame(
         ) {
           claimPathMasteryReward('FEATHER_JUDGMENT', '羽弾・断罪', turn);
           const judgmentBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
-          finalDamage += judgmentBonus;
           addLog(
             `⚖️【羽弾・断罪】出血した敵を穿つ！ 追加ダメージ+${judgmentBonus}`,
             isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
             turn
           );
         }
-
         if (judgmentActive) {
-          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20);
           addLog(
             `⚖️【断罪執行】特殊技にも断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
@@ -1071,8 +1129,7 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
-          addLog('🩸【堕天・終局】5%以下のいれーなが、特殊技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
+          addLog('🩸【堕天・終局】5%以下のいれーなの特殊技に即死効果が発動した！', 'PASSIVE_TRIGGER', turn);
         }
 
         const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '特殊技');
@@ -1105,6 +1162,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(2, turn);
@@ -1116,7 +1174,7 @@ export function useBattleGame(
 
       case 'ULTIMATE': {
         const hadBuff = actor.isBuffed;
-        const buffDamageBonus = actor.buffDamageBonus || 125;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
         if (hadBuff) {
           consumeBuff(isActorPlayer);
         }
@@ -1132,22 +1190,16 @@ export function useBattleGame(
                 ? '全能の一撃'
                 : actor.character.ultimateSkillName
           : actor.character.ultimateSkillName;
-        let baseDamage =
-          appliedIrenaVariant === 'ALL_GODS'
-            ? 0
-            : appliedIrenaVariant === 'RUIN'
-              ? Math.max(900, actor.character.ultimateSkillDamage)
-              : appliedIrenaVariant === 'OMNIPOTENCE'
-                ? 1500
-                : actor.character.ultimateSkillDamage;
-
         if (isIrena && appliedIrenaVariant === 'RUIN') {
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
-          if (ruinLevel >= 4 && ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)) {
+          if (
+            ruinLevel >= 4 &&
+            ruinPath === 'EXECUTION' &&
+            target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)
+          ) {
             claimPathMasteryReward('RUIN_EXECUTION', '破壊・処刑', turn);
             const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
-            baseDamage += executionBonus;
             addLog(
               `☠️【破壊・処刑】瀕死の敵を断ち切る！ 追加ダメージ+${executionBonus}`,
               isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
@@ -1160,7 +1212,6 @@ export function useBattleGame(
           ) {
             claimPathMasteryReward('RUIN_ANNIHILATION', '破壊・殲滅', turn);
             const annihilationBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
-            baseDamage += annihilationBonus;
             addLog(
               `🩸【破壊・殲滅】出血した敵へ権能が共鳴！ 追加ダメージ+${annihilationBonus}`,
               isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
@@ -1170,8 +1221,11 @@ export function useBattleGame(
         }
 
         if (hadBuff) {
-          baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(
+            `⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！`,
+            'BUFF_PLAYER',
+            turn
+          );
         }
 
         // Reset ultimate gauge to 0
@@ -1184,7 +1238,7 @@ export function useBattleGame(
 
         // Irena authority effects use the same existing ultimate visual effect.
         if (isIrena && appliedIrenaVariant === 'ALL_GODS') {
-          const strongBuff = 200;
+          const strongBuff = GAME_BALANCE.ALL_GODS_BUFF_DAMAGE;
           updateState(prev => (isActorPlayer
             ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: strongBuff } }
             : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: strongBuff } }
@@ -1260,50 +1314,22 @@ export function useBattleGame(
           }
         }
 
-        let finalDamage = baseDamage;
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const finalDamage = calculateUltimateDamage({
+          attacker: actor,
+          target,
+          config: stateRef.current.battleConfig,
+          turn,
+          isActingFirst,
+          judgmentReady: judgmentActive,
+          ultimateVariant: appliedIrenaVariant,
+          alreadyPrepared: true,
+        });
 
-        if (isIrena && appliedIrenaVariant === 'OMNIPOTENCE') {
-          const superBuff = 500;
-          updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: superBuff } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: superBuff } }
-          ));
-          addLog(
-            `👑【全能の一撃】${actor.character.name}は全ての権能を統合した！ 次の攻撃系行動のダメージ+${superBuff}！`,
-            isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
-            turn
-          );
-        }
-
-        soundManager.playCritical();
-        if (actor.character.id === 'irena') {
-          soundManager.playFeatherShot();
-        } else {
-          soundManager.playHeavyStrike();
-        }
-
-        const slogan = isIrena
-          ? appliedIrenaVariant === 'RUIN'
-            ? '破壊の権能を解放する一撃！'
-            : appliedIrenaVariant === 'OMNIPOTENCE'
-              ? '全ての権能を統合した一撃！'
-              : actor.character.ultimateSlogan
-          : actor.character.ultimateSlogan;
-        addLog(
-          `🌟🔥【必殺技】${actor.character.name}は${skillName}を放った！ ${slogan}`,
-          isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
-          turn
-        );
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
-        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         if (judgmentActive) {
-          const damageTarget = applyJudgmentDefense(target, judgmentLevel);
-          const defenseReductionBonus =
-            Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(damageTarget));
-          finalDamage += defenseReductionBonus;
-          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel));
           addLog(
             `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
@@ -1319,7 +1345,6 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
           addLog('🩸【堕天・終局】5%以下のいれーなが、必殺技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
@@ -1356,6 +1381,7 @@ export function useBattleGame(
         if (judgmentActive) {
           judgmentReadyRef.current = false;
           judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(3, turn);
@@ -1385,6 +1411,8 @@ export function useBattleGame(
       phase: 'BATTLE_FINISHED',
       winnerIsPlayer,
       visualEffect: null,
+      visualEffects: [],
+      judgmentReady: false,
       isAnimating: false,
       lastBattleReward: reward,
       lastBattleMasteryReward: masteryBonus,
@@ -1418,7 +1446,8 @@ export function useBattleGame(
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
-    updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null }));
+    const actionRunId = battleRunIdRef.current;
+    updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null, visualEffects: [] }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
 
@@ -1518,9 +1547,11 @@ export function useBattleGame(
         enemy: nextEnemy,
         cpuIntent: nextCpuIntent,
         visualEffect: null,
+        visualEffects: [],
         isAnimating: false,
       }));
     } catch (err) {
+      if (isBattleCancelled(err) || actionRunId !== battleRunIdRef.current) return;
       console.error('Battle execution error occurred, recovering state:', err);
       updateState(prev => ({
         ...prev,
@@ -1529,6 +1560,7 @@ export function useBattleGame(
         phase: prev.phase === 'BATTLE_FINISHED' ? 'BATTLE_FINISHED' : 'SELECT_ACTION',
       }));
     } finally {
+      if (actionRunId !== battleRunIdRef.current) return;
       // Guaranteed safety cleanup: ensure visualEffect is null if settled
       updateState(prev => {
         if (prev.phase === 'SELECT_ACTION' || prev.phase === 'BATTLE_FINISHED') {

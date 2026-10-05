@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleFighter, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
+import { BattleFighter, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
 import { HpBar } from './HpBar';
 import { Zap, Sparkles, Activity, Flame, Hourglass } from 'lucide-react';
 
@@ -15,7 +15,22 @@ export const FighterCard: React.FC<FighterCardProps> = ({
   visualEffect,
 }) => {
   const isHit = isTargetOfEffect && visualEffect !== null && visualEffect.damage > 0;
+  const baseAttack = fighter.character.attack;
+  const effectiveAttack = getEffectiveAttack(fighter);
+  const baseDefense = fighter.character.defense;
+  const effectiveDefense = getEffectiveDefense(fighter);
+  const baseSpeed = fighter.character.speed;
   const effectiveSpeed = getEffectiveSpeed(fighter);
+  const attackDelta = effectiveAttack - baseAttack;
+  const defenseDelta = effectiveDefense - baseDefense;
+  const speedDelta = effectiveSpeed - baseSpeed;
+  const speedAilmentText = fighter.activeAilments
+    .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
+    .map(ailment => {
+      const mod = STATUS_AILMENTS[ailment.type].speedMod;
+      return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
+    })
+    .join(' / ');
 
   let borderStyle = `1px solid ${fighter.character.primaryColor}CC`;
   if (fighter.isBuffed) {
@@ -138,26 +153,33 @@ export const FighterCard: React.FC<FighterCardProps> = ({
             </div>
 
             {/* Speed & Evade Badges */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
               <div
+                title={speedDelta === 0 ? '基礎速度と同じ' : `速度変化: ${speedAilmentText || '状態変化'}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '3px',
                   backgroundColor: '#1E2836',
-                  border: '1px solid #334568',
+                  border: `1px solid ${speedDelta < 0 ? '#EF5350' : speedDelta > 0 ? '#4FC3F7' : '#334568'}`,
                   borderRadius: '6px',
                   padding: '2px 6px',
                   fontSize: '11px',
                   fontWeight: 700,
-                  color: effectiveSpeed < fighter.character.speed ? '#FF8A80' : '#E0F7FA',
+                  color: speedDelta < 0 ? '#FF8A80' : '#E0F7FA',
                 }}
               >
                 <Zap size={12} color="#4FC3F7" />
-                <span>{effectiveSpeed}</span>
+                <span>速度 {effectiveSpeed}</span>
+                {speedDelta !== 0 && (
+                  <span style={{ fontSize: '9px', color: speedDelta < 0 ? '#FFABAB' : '#81D4FA' }}>
+                    （{baseSpeed}→{effectiveSpeed}）
+                  </span>
+                )}
               </div>
 
               <div
+                title="回避構え時、この確率で攻撃を回避"
                 style={{
                   backgroundColor: '#103630',
                   border: '1px solid #00BFA5',
@@ -168,7 +190,7 @@ export const FighterCard: React.FC<FighterCardProps> = ({
                   color: '#64FFDA',
                 }}
               >
-                回避{Math.round(fighter.character.evasionRate * 100)}%
+                回避 {Math.round(fighter.character.evasionRate * 100)}%
               </div>
             </div>
           </div>
@@ -176,6 +198,36 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           <div style={{ marginTop: '5px' }}>
             <HpBar currentHp={fighter.currentHp} maxHp={fighter.character.maxHp} />
           </div>
+          {fighter.activeAilments.length > 0 && (
+            <div
+              aria-label="状態異常反映後の実効ステータス"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '4px 8px',
+                marginTop: '5px',
+                padding: '3px 6px',
+                borderRadius: '6px',
+                backgroundColor: 'rgba(10, 16, 28, 0.78)',
+                border: '1px solid rgba(120, 144, 156, 0.28)',
+                fontSize: '9px',
+                fontWeight: 800,
+                color: '#B0BEC5',
+              }}
+            >
+              <span style={{ color: '#90CAF9', letterSpacing: '0.05em' }}>実効</span>
+              <span style={{ color: attackDelta !== 0 ? (attackDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                ATK {effectiveAttack}{attackDelta !== 0 ? ` (${attackDelta > 0 ? '+' : ''}${attackDelta})` : ''}
+              </span>
+              <span style={{ color: defenseDelta !== 0 ? (defenseDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                DEF {effectiveDefense}{defenseDelta !== 0 ? ` (${defenseDelta > 0 ? '+' : ''}${defenseDelta})` : ''}
+              </span>
+              <span style={{ color: speedDelta !== 0 ? (speedDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                SPD {effectiveSpeed}{speedDelta !== 0 ? ` (${speedDelta > 0 ? '+' : ''}${speedDelta})` : ''}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -205,23 +257,34 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           {fighter.activeAilments.map(ailment => {
             const def = STATUS_AILMENTS[ailment.type];
             const isBleed = ailment.type === 'BLEED';
+            const effectParts = [
+              def.dotDamage > 0 ? `HP-${ailment.dotDamage ?? def.dotDamage}` : '',
+              def.speedMod !== 0 ? `速度${def.speedMod > 0 ? '+' : ''}${def.speedMod}` : '',
+              def.attackMod !== 0 ? `攻撃${def.attackMod > 0 ? '+' : ''}${def.attackMod}` : '',
+              def.defenseMod !== 0 ? `防御${def.defenseMod > 0 ? '+' : ''}${def.defenseMod}` : '',
+            ].filter(Boolean).join(' / ');
             return (
               <div
                 key={ailment.type}
+                title={def.description}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '3px',
+                  gap: '4px',
+                  flexWrap: 'wrap',
                   backgroundColor: isBleed ? 'rgba(183, 28, 28, 0.4)' : 'rgba(74, 20, 140, 0.4)',
                   border: `1px solid ${isBleed ? '#EF5350' : '#AB47BC'}`,
                   borderRadius: '5px',
-                  padding: '2px 6px',
+                  padding: '3px 6px',
                   fontSize: '10px',
                   fontWeight: 700,
                   color: isBleed ? '#FFCDD2' : '#F3E5F5',
                 }}
               >
-                <span>{def.displayName}({ailment.remainingTurns}T)</span>
+                <span>{def.displayName} {ailment.remainingTurns}T</span>
+                <span style={{ fontSize: '9px', color: isBleed ? '#FFE5E5' : '#E8D7FF' }}>
+                  {effectParts}
+                </span>
               </div>
             );
           })}

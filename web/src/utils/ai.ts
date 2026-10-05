@@ -115,7 +115,11 @@ export const CpuAi = {
     // actions the player can actually take now, rather than hidden future state.
     const playerBurstThreat =
       player.ultimateGauge >= 3 ||
-      (player.specialCooldownRemaining <= 0 && player.featherChargeBonus >= 70);
+      (player.specialCooldownRemaining <= 0 && player.featherChargeBonus >= 70) ||
+      player.isSuperFallenShotCharging;
+
+    const cpuIsPressured = cpu.activeAilments.some(ailment => ailment.type === 'PRESSURE');
+    const playerIsBleeding = player.activeAilments.some(ailment => ailment.type === 'BLEED');
 
     const playerOffenseSignal =
       prediction.ATTACK +
@@ -157,6 +161,9 @@ export const CpuAi = {
     if (player.currentHp <= player.character.maxHp * 0.35) {
       scoreOf('ATTACK').score += 14;
     }
+    if (playerIsBleeding && player.currentHp <= player.character.maxHp * 0.45) {
+      scoreOf('ATTACK').score += 8;
+    }
 
     // EVADE: strongest response to an imminent burst, but it should not become
     // the default defensive loop.
@@ -166,6 +173,10 @@ export const CpuAi = {
     scoreOf('EVADE').score -= prediction.EVADE * 20;
     if (cpu.currentHp <= cpu.character.maxHp * 0.30) {
       scoreOf('EVADE').score += 8;
+    }
+    if (player.isSuperFallenShotCharging) {
+      scoreOf('EVADE').score += difficulty === 'EXPERT' ? 24 : 16;
+      scoreOf('ATTACK').score -= difficulty === 'EXPERT' ? 8 : 5;
     }
 
     // BUFF: use it when the player is likely to spend a low-pressure turn.
@@ -191,6 +202,9 @@ export const CpuAi = {
 
       if (player.currentHp <= specialDamage * 1.15) {
         scoreOf('SPECIAL').score += 16;
+      }
+      if (cpuIsPressured) {
+        scoreOf('SPECIAL').score += 15;
       }
     }
 

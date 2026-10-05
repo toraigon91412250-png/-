@@ -13,19 +13,20 @@ export function hasAbility(config: BattleSetupConfig, id: AbilityId): boolean {
 }
 
 export function getKaiserLevelMultiplier(level: BattleChallengeLevel): number {
-  // Prototype scale: Lv10 is the existing Kaiser; Lv100 is deliberately overwhelming.
-  const tier = level / 10;
-  return 1 + (tier - 1) * 0.5;
+  // Lv10 is the baseline. Growth is intentionally capped at 2x by Lv100
+  // so higher difficulty comes from a manageable stat increase rather than runaway values.
+  const progress = (level - 10) / 90;
+  return 1 + Math.min(1, Math.max(0, progress));
 }
 
 export function createKaiserForLevel(base: CharacterDef, level: BattleChallengeLevel): CharacterDef {
   const multiplier = getKaiserLevelMultiplier(level);
+  const progress = multiplier - 1;
   const scale = (value: number) => Math.max(1, Math.round(value * multiplier));
 
-  // Keep high-level Kaiser threatening through HP/offense/speed, while avoiding
-  // a defense wall that makes Irena's normal attack effectively useless too early.
-  const tierProgress = Math.max(0, level / 10 - 1);
-  const defenseMultiplier = 1 + tierProgress * 0.13;
+  // Defense grows more slowly than HP/offense so higher levels stay threatening
+  // without turning normal attacks into an excessive damage wall.
+  const defenseMultiplier = 1 + progress * 0.5;
   const scaleDefense = (value: number) => Math.max(0, Math.round(value * defenseMultiplier));
 
   return {
@@ -46,7 +47,9 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
 
   if (blackWingLevel > 0 && character.id === 'irena') {
     const statMultiplier = 1 + blackWingLevel * 0.02;
-    const featherMultiplier = 1 + blackWingLevel * 0.2;
+    // Lv5's x5 effect is applied to the final Feather Shot damage in battleMath.
+    // Do not multiply the base special-skill value here as well.
+    const featherMultiplier = blackWingLevel >= 5 ? 1 : 1 + blackWingLevel * 0.2;
     next = {
       ...next,
       maxHp: Math.max(1, Math.round(next.maxHp * statMultiplier)),
@@ -88,8 +91,12 @@ export function applyDynamicAbilityModifiers(
       attack: Math.max(1, Math.round(character.attack * multiplier)),
       defense: Math.max(0, Math.round(character.defense * multiplier)),
       speed: Math.max(1, Math.round(character.speed * multiplier)),
-      specialSkillDamage: Math.max(1, Math.round(character.specialSkillDamage * multiplier)),
-      ultimateSkillDamage: Math.max(1, Math.round(character.ultimateSkillDamage * multiplier)),
+      ...(abyssLevel >= 5
+        ? {
+            specialSkillDamage: Math.max(1, Math.round(character.specialSkillDamage * multiplier)),
+            ultimateSkillDamage: Math.max(1, Math.round(character.ultimateSkillDamage * multiplier)),
+          }
+        : {}),
     };
   }
 
@@ -98,11 +105,11 @@ export function applyDynamicAbilityModifiers(
     let multiplier = 1;
 
     if (hpRatio <= 0.10) {
-      multiplier = 3.0;
+      multiplier = 3.0 + Math.max(0, fallenLevel - 1) * 0.20;
     } else if (hpRatio <= 0.25) {
-      multiplier = 2.5;
+      multiplier = 2.5 + Math.max(0, fallenLevel - 1) * 0.15;
     } else if (hpRatio <= 0.50) {
-      multiplier = 2.0;
+      multiplier = 2.0 + Math.max(0, fallenLevel - 1) * 0.10;
     }
 
     if (multiplier > 1) {
@@ -126,11 +133,13 @@ export function getJudgmentThreshold(level: number): number {
 }
 
 export function getJudgmentDamageMultiplier(level: number): number {
-  return 1.4 + Math.min(4, Math.max(0, level - 1)) * 0.15;
+  if (level >= 5) return 3.0;
+  return 1.4 + Math.min(3, Math.max(0, level - 1)) * 0.15;
 }
 
 export function getJudgmentDefenseIgnore(level: number): number {
-  return 0.20 + Math.min(4, Math.max(0, level - 1)) * 0.05;
+  if (level >= 5) return 0.60;
+  return 0.20 + Math.min(3, Math.max(0, level - 1)) * 0.05;
 }
 
 export function applyJudgmentDefense(target: BattleFighter, level: number): BattleFighter {

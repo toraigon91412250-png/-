@@ -107,7 +107,7 @@ export interface BattleFighter {
   specialCooldownRemaining: number;
   ultimateGauge: number; // 0..3
   isBuffed: boolean;
-  buffDamageBonus: number; // 0 when not buffed; default buff is 50
+  buffDamageBonus: number; // 0 when not buffed; default buff is 125
   featherChargeBonus: number; // 0 until Irena's normal attacks build Feather power
   featherChargeCount: number; // number of successful Irena normal attacks since last Feather
   isSuperFallenShotCharging: boolean;
@@ -237,6 +237,8 @@ export interface BattleUiState {
   logs: BattleLog[];
   phase: BattlePhase;
   visualEffect: VisualEffect | null;
+  visualEffects: VisualEffect[];
+  judgmentReady: boolean;
   winnerIsPlayer: boolean | null;
   cpuDifficulty: CpuDifficulty;
   cpuIntent: BattleAction;
@@ -258,7 +260,7 @@ export interface OverallStats {
 export const IRENA_SUPER_FALLEN_SHOT_COOLDOWN = 5;
 
 export function getIrenaSuperFallenShotMultiplier(skillLevel = 1): number {
-  return 2.8 + (Math.max(1, skillLevel) - 1) * 0.1;
+  return (2.8 + (Math.max(1, skillLevel) - 1) * 0.1) * 2;
 }
 
 export type RecruitmentRarity = 'R' | 'SR' | 'SSR' | 'UR';

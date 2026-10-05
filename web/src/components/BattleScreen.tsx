@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed, STATUS_AILMENTS } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
+import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { GAME_BALANCE } from '../data/gameBalance';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
@@ -72,14 +74,46 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
 
   const playerSpeed = getEffectiveSpeed(state.player);
   const enemySpeed = getEffectiveSpeed(state.enemy);
+  const playerBaseSpeed = state.player.character.speed;
+  const enemyBaseSpeed = state.enemy.character.speed;
+  const playerSpeedDelta = playerSpeed - playerBaseSpeed;
+  const enemySpeedDelta = enemySpeed - enemyBaseSpeed;
   const playerGoesFirst = playerSpeed >= enemySpeed;
-  const orderText = playerGoesFirst
-    ? `先攻 いれーな ${playerSpeed} → カイザー ${enemySpeed}`
-    : `先攻 カイザー ${enemySpeed} → いれーな ${playerSpeed}`;
+  const baseOrderPlayerFirst = playerBaseSpeed >= enemyBaseSpeed;
 
-  const cpuBuffBonus = state.enemy.isBuffed ? (state.enemy.buffDamageBonus || 125) : 0;
-  const cpuNormalBase = Math.max(15, getEffectiveAttack(state.enemy) - getEffectiveDefense(state.player)) + cpuBuffBonus;
-  const cpuNormalCrit = Math.round(cpuNormalBase * 1.5);
+  const formatSpeed = (fighter: typeof state.player, speed: number, baseSpeed: number, delta: number) => {
+    const causes = fighter.activeAilments
+      .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
+      .map(ailment => {
+        const mod = STATUS_AILMENTS[ailment.type].speedMod;
+        return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
+      })
+      .join(' / ');
+    if (delta === 0) return `${speed}`;
+    return `${speed}（${baseSpeed}→${speed}、${causes || '変化'}）`;
+  };
+
+  const playerSpeedText = formatSpeed(state.player, playerSpeed, playerBaseSpeed, playerSpeedDelta);
+  const enemySpeedText = formatSpeed(state.enemy, enemySpeed, enemyBaseSpeed, enemySpeedDelta);
+  const orderText =
+    playerSpeed === enemySpeed
+      ? '同速 → いれーな先攻'
+      : playerGoesFirst
+        ? 'いれーな先攻'
+        : 'カイザー先攻';
+  const orderChangedBySpeed =
+    playerGoesFirst !== baseOrderPlayerFirst;
+
+  const cpuDamageContext = {
+    attacker: state.enemy,
+    target: state.player,
+    config: state.battleConfig,
+    turn: state.turnNumber,
+    isActingFirst: !playerGoesFirst,
+    judgmentReady: false,
+  };
+  const cpuNormalBase = calculateNormalAttackDamage(cpuDamageContext);
+  const cpuNormalCrit = calculateNormalAttackDamage(cpuDamageContext, true);
   const evadeRate = Math.round(state.player.character.evasionRate * 100);
   const cpuEvadeRate = Math.round(state.enemy.character.evasionRate * 100);
 
@@ -96,20 +130,25 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       detail = '通常攻撃。会心20%で上限側のダメージになり、回避時は成功判定があります。';
       break;
     case 'SPECIAL':
-      impact = `${state.enemy.character.specialSkillDamage + cpuBuffBonus} DMG`;
+      const specialDamage = calculateSpecialDamage({
+        ...cpuDamageContext,
+        specialSkillId: 'FEATHER',
+      });
+      impact = `${specialDamage} DMG`;
       risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.specialSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.specialSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - specialDamage)}${state.player.currentHp <= specialDamage ? '（戦闘不能）' : ''}`;
       detail = `特殊技。命中すると${state.enemy.character.id === 'kaiser' ? '重圧' : '出血'}が付与されます。`;
       break;
     case 'ULTIMATE':
-      impact = `${state.enemy.character.ultimateSkillDamage + cpuBuffBonus} DMG`;
+      const ultimateDamage = calculateUltimateDamage(cpuDamageContext);
+      impact = `${ultimateDamage} DMG`;
       risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.ultimateSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.ultimateSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - ultimateDamage)}${state.player.currentHp <= ultimateDamage ? '（戦闘不能）' : ''}`;
       detail = '必殺技。大きな固定ダメージを受ける可能性があります。';
       break;
     case 'BUFF':
       impact = 'このターン 0 DMG';
-      risk = '次回攻撃 +125';
+      risk = `次回攻撃 +${GAME_BALANCE.BUFF_DAMAGE_BONUS}`;
       survival = `現在HP：${state.player.currentHp}`;
       detail = '強化行動。今ターンに攻めるか、次ターンの大きな反撃を警戒する場面です。';
       break;
@@ -149,9 +188,17 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>行動順</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80' }}>
             {orderText}
           </div>
+          <div style={{ marginTop: '2px', fontSize: labelSize, lineHeight: 1.4, fontWeight: 800, color: '#B7C2D3' }}>
+            SPD {playerSpeedText} vs {enemySpeedText}
+          </div>
+          {orderChangedBySpeed && (
+            <div style={{ marginTop: '2px', fontSize: labelSize, fontWeight: 900, color: '#FFE082' }}>
+              速度変化で先攻交代
+            </div>
+          )}
         </div>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>相手の影響</div>
@@ -600,6 +647,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               enemy={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
+              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
@@ -749,6 +799,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               enemy={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
+              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
@@ -759,7 +812,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         )}
 
         {/* Visual FX Overlay */}
-        <VisualEffectOverlay effect={state.visualEffect} speedMultiplier={state.battleSpeedMultiplier} />
+        <VisualEffectOverlay effects={state.visualEffects} speedMultiplier={state.battleSpeedMultiplier} />
       </div>
 
       {/* Battle Finished Result Dialog */}
