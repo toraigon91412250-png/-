@@ -260,7 +260,7 @@ export interface OverallStats {
 export const IRENA_SUPER_FALLEN_SHOT_COOLDOWN = 5;
 
 export function getIrenaSuperFallenShotMultiplier(skillLevel = 1): number {
-  return 2.8 + (Math.max(1, skillLevel) - 1) * 0.1;
+  return (2.8 + (Math.max(1, skillLevel) - 1) * 0.1) * 2;
 }
 
 export type RecruitmentRarity = 'R' | 'SR' | 'SSR' | 'UR';
