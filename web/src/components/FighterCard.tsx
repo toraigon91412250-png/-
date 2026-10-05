@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleFighter, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
+import { BattleFighter, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
 import { HpBar } from './HpBar';
 import { Zap, Sparkles, Activity, Flame, Hourglass } from 'lucide-react';
 
@@ -15,8 +15,14 @@ export const FighterCard: React.FC<FighterCardProps> = ({
   visualEffect,
 }) => {
   const isHit = isTargetOfEffect && visualEffect !== null && visualEffect.damage > 0;
+  const baseAttack = fighter.character.attack;
+  const effectiveAttack = getEffectiveAttack(fighter);
+  const baseDefense = fighter.character.defense;
+  const effectiveDefense = getEffectiveDefense(fighter);
   const baseSpeed = fighter.character.speed;
   const effectiveSpeed = getEffectiveSpeed(fighter);
+  const attackDelta = effectiveAttack - baseAttack;
+  const defenseDelta = effectiveDefense - baseDefense;
   const speedDelta = effectiveSpeed - baseSpeed;
   const speedAilmentText = fighter.activeAilments
     .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
@@ -192,6 +198,36 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           <div style={{ marginTop: '5px' }}>
             <HpBar currentHp={fighter.currentHp} maxHp={fighter.character.maxHp} />
           </div>
+          {fighter.activeAilments.length > 0 && (
+            <div
+              aria-label="状態異常反映後の実効ステータス"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '4px 8px',
+                marginTop: '5px',
+                padding: '3px 6px',
+                borderRadius: '6px',
+                backgroundColor: 'rgba(10, 16, 28, 0.78)',
+                border: '1px solid rgba(120, 144, 156, 0.28)',
+                fontSize: '9px',
+                fontWeight: 800,
+                color: '#B0BEC5',
+              }}
+            >
+              <span style={{ color: '#90CAF9', letterSpacing: '0.05em' }}>実効</span>
+              <span style={{ color: attackDelta !== 0 ? (attackDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                ATK {effectiveAttack}{attackDelta !== 0 ? ` (${attackDelta > 0 ? '+' : ''}${attackDelta})` : ''}
+              </span>
+              <span style={{ color: defenseDelta !== 0 ? (defenseDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                DEF {effectiveDefense}{defenseDelta !== 0 ? ` (${defenseDelta > 0 ? '+' : ''}${defenseDelta})` : ''}
+              </span>
+              <span style={{ color: speedDelta !== 0 ? (speedDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
+                SPD {effectiveSpeed}{speedDelta !== 0 ? ` (${speedDelta > 0 ? '+' : ''}${speedDelta})` : ''}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
