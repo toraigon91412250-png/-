@@ -634,6 +634,7 @@ export function useBattleGame(
             turn,
             isActingFirst,
             judgmentReady: judgmentActive,
+            alreadyPrepared: true,
           },
           isCritical,
         );
@@ -1054,6 +1055,7 @@ export function useBattleGame(
           isActingFirst,
           judgmentReady: judgmentActive,
           specialSkillId: specialSkillId ?? 'FEATHER',
+          alreadyPrepared: true,
         });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
@@ -1309,6 +1311,7 @@ export function useBattleGame(
           isActingFirst,
           judgmentReady: judgmentActive,
           ultimateVariant: appliedIrenaVariant,
+          alreadyPrepared: true,
         });
 
         const judgmentLevel = isActorPlayer
