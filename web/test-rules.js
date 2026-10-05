@@ -67,6 +67,27 @@ assert.strictEqual(STATUS_AILMENTS.PRESSURE.defenseMod, 0);
 assert.strictEqual(STATUS_AILMENTS.PRESSURE.attackMod, -25);
 console.log('✓ Status ailment parameters verified.');
 
+const fallenSpeedTestIrena = createInitialFighter({ ...IRENA, speed: 40 }, true);
+fallenSpeedTestIrena.currentHp = 2000;
+const fallenSpeedAdjusted = applyDynamicAbilityModifiers(
+  fallenSpeedTestIrena,
+  { kaiserLevel: 10, abilities: [{ id: 'FALLEN', level: 1 }] },
+  1,
+);
+assert.strictEqual(fallenSpeedAdjusted.character.speed, 80);
+assert.strictEqual(getEffectiveSpeed({
+  ...fallenSpeedAdjusted,
+  activeAilments: [{ type: 'BLEED', remainingTurns: 3 }],
+}), 60);
+
+const abyssSpeedAdjusted = applyDynamicAbilityModifiers(
+  createInitialFighter(KAISER, false),
+  { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 4 }] },
+  2,
+);
+assert.strictEqual(abyssSpeedAdjusted.character.speed, 76);
+console.log('✓ Dynamic speed modifiers remain visible to effective-speed calculations.');
+
 const fighterIrena = createInitialFighter(IRENA, true);
 assert.strictEqual(getEffectiveSpeed(fighterIrena), 240);
 fighterIrena.activeAilments.push({ type: 'BLEED', remainingTurns: 3 });
