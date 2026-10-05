@@ -18,6 +18,7 @@ register(
 );
 
 const { IRENA, KAISER, getIrenaWithSkillProgress } = await import('./src/data/characters.ts');
+const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 
@@ -123,6 +124,29 @@ assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
 assert.strictEqual(lv50FeatherDamage, 354);
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
+
+const cpuForAi = createInitialFighter(KAISER, false);
+const chargingIrena = {
+  ...createInitialFighter(IRENA, true),
+  isSuperFallenShotCharging: true,
+  ultimateGauge: 0,
+  featherChargeBonus: 0,
+};
+assert.strictEqual(
+  CpuAi.decideAction(cpuForAi, chargingIrena, 'EXPERT'),
+  'EVADE',
+  'Expert CPU should respect an explicitly charging Super Fallen Shot by choosing evade.'
+);
+
+const pressuredCpu = {
+  ...cpuForAi,
+  activeAilments: [{ type: 'PRESSURE', remainingTurns: 2 }],
+};
+assert.strictEqual(
+  CpuAi.decideAction(pressuredCpu, attackBase, 'NORMAL'),
+  'SPECIAL',
+  'A pressured Kaiser should prefer its fixed-damage special over a weakened normal attack.'
+);
 
 const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
   const kaiser = createKaiserForLevel(KAISER, level);
