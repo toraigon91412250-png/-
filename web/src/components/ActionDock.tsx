@@ -1,12 +1,12 @@
 import React from 'react';
-import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount } from '../types/game';
+import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId } from '../types/game';
 import { Flame } from 'lucide-react';
 
 interface ActionDockProps {
   player: BattleFighter;
   enemy: BattleFighter;
   isEnabled: boolean;
-  onAction: (action: BattleAction) => void;
+  onAction: (action: BattleAction, specialSkillId?: IrenaSpecialSkillId) => void;
   irenaUltimateUses?: {
     allGods: number;
     ruin: number;
@@ -24,13 +24,25 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 }) => {
   const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 125) : 0;
   const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
-  const isSpecialReady = player.specialCooldownRemaining <= 0;
+  const [selectedSpecialSkill, setSelectedSpecialSkill] = React.useState<IrenaSpecialSkillId>('FEATHER');
+  const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
+  const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
+  const isSpecialReady = player.specialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
   const isUltimateReady = player.ultimateGauge >= 3;
   const featherSkillLevel = player.character.featherSkillLevel || 1;
   const featherChargeMaxCount = getIrenaFeatherMaxChargeCount(featherSkillLevel);
   const featherChargeAtMax = player.featherChargeCount >= featherChargeMaxCount;
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
-  const specialDamagePreview = player.character.specialSkillDamage + player.featherChargeBonus;
+  const superFallenMultiplier = getIrenaSuperFallenShotMultiplier(featherSkillLevel);
+  const specialDamagePreview = selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
+    ? Math.max(0, Math.round(getEffectiveAttack(player) * superFallenMultiplier - getEffectiveDefense(enemy)))
+    : player.character.specialSkillDamage + player.featherChargeBonus;
+  React.useEffect(() => {
+    if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
+      setSelectedSpecialSkill('FEATHER');
+    }
+  }, [hasSuperFallenShot, selectedSpecialSkill]);
+
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const featherPathName =
     player.character.featherSkillPath === 'ABYSS'
@@ -185,7 +197,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ⚡【強化中】攻撃+{buffDamageBonus}
             </span>
           )}
-          {true && (
+          {selectedSpecialSkill === 'FEATHER' && (
             <span
               style={{
                 fontSize: '10px',
@@ -226,6 +238,43 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       </div>
 
       {/* Row 1: Normal Commands (いれーなは強化コマンドなし) */}
+      {hasSuperFallenShot && (
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginBottom:'6px' }}>
+          <button
+            type="button"
+            onClick={() => setSelectedSpecialSkill('FEATHER')}
+            disabled={!isEnabled || isChargingSuperFallenShot}
+            style={{
+              minHeight:'30px', borderRadius:'8px',
+              border: selectedSpecialSkill === 'FEATHER' ? '1px solid #EA80FC' : '1px solid #39445C',
+              background: selectedSpecialSkill === 'FEATHER' ? 'rgba(123,31,162,.34)' : 'rgba(16,21,32,.9)',
+              color: selectedSpecialSkill === 'FEATHER' ? '#F3E5F5' : '#98A6BC',
+              fontSize:'10px', fontWeight:900,
+              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
+            }}
+          >羽弾</button>
+          <button
+            type="button"
+            onClick={() => setSelectedSpecialSkill('SUPER_FALLEN_SHOT')}
+            disabled={!isEnabled || isChargingSuperFallenShot}
+            style={{
+              minHeight:'30px', borderRadius:'8px',
+              border: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '1px solid #FFE082' : '1px solid #39445C',
+              background: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? 'rgba(117,56,12,.34)' : 'rgba(16,21,32,.9)',
+              color: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '#FFE082' : '#98A6BC',
+              fontSize:'10px', fontWeight:900,
+              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
+            }}
+          >⚡超堕天撃</button>
+        </div>
+      )}
+
+      {isChargingSuperFallenShot && (
+        <div style={{ marginBottom:'6px', padding:'7px 9px', borderRadius:'9px', border:'1px solid rgba(255,224,130,.58)', background:'linear-gradient(90deg,rgba(65,38,11,.72),rgba(11,12,18,.9))', color:'#FFE082', fontSize:'10px', fontWeight:900, textAlign:'center' }}>
+          ⚡🪶 超堕天撃 充填中 — 次のターン自動発射 / 充填中 DEF 0
+        </div>
+      )}
+
       <div
         style={{
           display: 'grid',
@@ -290,8 +339,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
         {/* 3. 特殊 */}
         <button
-          onClick={() => onAction('SPECIAL')}
-          disabled={!isEnabled || !isSpecialReady}
+          onClick={() => onAction('SPECIAL', selectedSpecialSkill)}
+          disabled={!isEnabled || !isSpecialReady || isChargingSuperFallenShot}
           style={{
             height: '56px',
             backgroundColor: isEnabled && isSpecialReady ? '#7B1FA2' : '#281C30',
@@ -309,7 +358,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           onMouseDown={e => isEnabled && isSpecialReady && (e.currentTarget.style.transform = 'scale(0.96)')}
           onMouseUp={e => isEnabled && isSpecialReady && (e.currentTarget.style.transform = 'scale(1)')}
         >
-          <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>特殊</span>
+          <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>
+            {selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '超堕天撃' : '羽弾'}
+          </span>
           <span
             style={{
               fontSize: '10px',
@@ -318,9 +369,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               whiteSpace: 'nowrap',
             }}
           >
-            {isSpecialReady
-              ? `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
-              : `CD:${player.specialCooldownRemaining}T`}
+            {isChargingSuperFallenShot
+              ? '次ターン自動発射'
+              : isSpecialReady
+                ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
+                  ? `${specialDamagePreview}ダメ / 倍率×${superFallenMultiplier.toFixed(1)} / 1T充填`
+                  : `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
+                : `CD:${player.specialCooldownRemaining}T`}
           </span>
         </button>
       </div>
