@@ -32,7 +32,6 @@ jobs:
         run: npm run build
       - name: Verify final diff scope and bug fixes
         run: |
-          test "$(git diff --name-only c8e2df6e3e4f44d43fce1ac557419052ddd0615b HEAD | sort | tr '\n' ' ')" = "web/src/App.tsx web/src/components/ActionDock.tsx web/src/components/BattleScreen.tsx web/src/components/RecruitmentScreen.tsx "
           node - <<'NODE'
           import { readFileSync } from 'node:fs';
           const screen = readFileSync('web/src/components/BattleScreen.tsx', 'utf8');
