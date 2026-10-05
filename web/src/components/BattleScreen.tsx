@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
+import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
@@ -77,9 +78,16 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
     ? `先攻 いれーな ${playerSpeed} → カイザー ${enemySpeed}`
     : `先攻 カイザー ${enemySpeed} → いれーな ${playerSpeed}`;
 
-  const cpuBuffBonus = state.enemy.isBuffed ? (state.enemy.buffDamageBonus || 125) : 0;
-  const cpuNormalBase = Math.max(15, getEffectiveAttack(state.enemy) - getEffectiveDefense(state.player)) + cpuBuffBonus;
-  const cpuNormalCrit = Math.round(cpuNormalBase * 1.5);
+  const cpuDamageContext = {
+    attacker: state.enemy,
+    target: state.player,
+    config: state.battleConfig,
+    turn: state.turnNumber,
+    isActingFirst: !playerGoesFirst,
+    judgmentReady: false,
+  };
+  const cpuNormalBase = calculateNormalAttackDamage(cpuDamageContext);
+  const cpuNormalCrit = calculateNormalAttackDamage(cpuDamageContext, true);
   const evadeRate = Math.round(state.player.character.evasionRate * 100);
   const cpuEvadeRate = Math.round(state.enemy.character.evasionRate * 100);
 
@@ -96,15 +104,20 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       detail = '通常攻撃。会心20%で上限側のダメージになり、回避時は成功判定があります。';
       break;
     case 'SPECIAL':
-      impact = `${state.enemy.character.specialSkillDamage + cpuBuffBonus} DMG`;
+      const specialDamage = calculateSpecialDamage({
+        ...cpuDamageContext,
+        specialSkillId: 'FEATHER',
+      });
+      impact = `${specialDamage} DMG`;
       risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.specialSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.specialSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - specialDamage)}${state.player.currentHp <= specialDamage ? '（戦闘不能）' : ''}`;
       detail = `特殊技。命中すると${state.enemy.character.id === 'kaiser' ? '重圧' : '出血'}が付与されます。`;
       break;
     case 'ULTIMATE':
-      impact = `${state.enemy.character.ultimateSkillDamage + cpuBuffBonus} DMG`;
+      const ultimateDamage = calculateUltimateDamage(cpuDamageContext);
+      impact = `${ultimateDamage} DMG`;
       risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.ultimateSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.ultimateSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - ultimateDamage)}${state.player.currentHp <= ultimateDamage ? '（戦闘不能）' : ''}`;
       detail = '必殺技。大きな固定ダメージを受ける可能性があります。';
       break;
     case 'BUFF':
@@ -600,6 +613,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               enemy={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
+              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
@@ -749,6 +765,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               enemy={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
+              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
@@ -759,7 +778,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         )}
 
         {/* Visual FX Overlay */}
-        <VisualEffectOverlay effect={state.visualEffect} speedMultiplier={state.battleSpeedMultiplier} />
+        <VisualEffectOverlay effects={state.visualEffects} speedMultiplier={state.battleSpeedMultiplier} />
       </div>
 
       {/* Battle Finished Result Dialog */}
