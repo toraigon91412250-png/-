@@ -560,7 +560,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               maxWidth: '520px',
               width: '100%',
               margin: '0 auto',
-              overflow: 'hidden',
+              overflowY: 'auto',
+              minHeight: 0,
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             {/* 1. Enemy Card */}
