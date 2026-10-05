@@ -2,6 +2,7 @@ import React from 'react';
 import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, IrenaSpecialSkillId } from '../types/game';
 import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { GAME_BALANCE } from '../data/gameBalance';
 
 interface ActionDockProps {
   player: BattleFighter;
@@ -42,7 +43,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
     isActingFirst: playerActsFirst,
     judgmentReady,
   };
-  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 125) : 0;
+  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS) : 0;
   const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
   const [selectedSpecialSkill, setSelectedSpecialSkill] = React.useState<IrenaSpecialSkillId>('FEATHER');
