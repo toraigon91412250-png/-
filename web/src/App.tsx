@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
@@ -35,10 +35,10 @@ export const App: React.FC = () => {
 
   // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
   // does not have to start a fresh image decode during the attack.
-  const battleImagePreloadCache = new Map<string, Promise<void>>();
+  const battleImagePreloadCacheRef = useRef(new Map<string, Promise<void>>());
 
   const preloadBattleImage = (src: string) => {
-    const cached = battleImagePreloadCache.get(src);
+    const cached = battleImagePreloadCacheRef.current.get(src);
     if (cached) return cached;
 
     const promise = new Promise<void>(resolve => {
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
       }
     });
 
-    battleImagePreloadCache.set(src, promise);
+    battleImagePreloadCacheRef.current.set(src, promise);
     return promise;
   };
 

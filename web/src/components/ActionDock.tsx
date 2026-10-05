@@ -11,6 +11,8 @@ interface ActionDockProps {
   turnNumber: number;
   judgmentReady?: boolean;
   isEnabled: boolean;
+  selectedSpecialSkill: IrenaSpecialSkillId;
+  onSelectedSpecialSkillChange: (skillId: IrenaSpecialSkillId) => void;
   onAction: (
     action: BattleAction,
     ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
@@ -30,6 +32,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   turnNumber,
   judgmentReady = false,
   isEnabled,
+  selectedSpecialSkill,
+  onSelectedSpecialSkillChange,
   onAction,
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
@@ -46,7 +50,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS) : 0;
   const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
-  const [selectedSpecialSkill, setSelectedSpecialSkill] = React.useState<IrenaSpecialSkillId>('FEATHER');
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
   const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
   const isSpecialReady = player.specialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
@@ -62,7 +65,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   });
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
-      setSelectedSpecialSkill('FEATHER');
+      onSelectedSpecialSkillChange('FEATHER');
     }
   }, [hasSuperFallenShot, selectedSpecialSkill]);
 
@@ -266,7 +269,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginBottom:'6px' }}>
           <button
             type="button"
-            onClick={() => setSelectedSpecialSkill('FEATHER')}
+            onClick={() => onSelectedSpecialSkillChange('FEATHER')}
             disabled={!isEnabled || isChargingSuperFallenShot}
             style={{
               minHeight:'30px', borderRadius:'8px',
@@ -279,7 +282,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >羽弾</button>
           <button
             type="button"
-            onClick={() => setSelectedSpecialSkill('SUPER_FALLEN_SHOT')}
+            onClick={() => onSelectedSpecialSkillChange('SUPER_FALLEN_SHOT')}
             disabled={!isEnabled || isChargingSuperFallenShot}
             style={{
               minHeight:'30px', borderRadius:'8px',

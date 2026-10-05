@@ -237,6 +237,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 }) => {
   const [isWide, setIsWide] = useState(window.innerWidth >= 680);
   const [screenShake, setScreenShake] = useState(false);
+  const [selectedSpecialSkill, setSelectedSpecialSkill] = useState<IrenaSpecialSkillId>('FEATHER');
   const [irenaUltimateUses, setIrenaUltimateUses] = useState({
     allGods: 0,
     ruin: 0,
@@ -292,7 +293,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       } else if (e.key === '2') {
         if (isEnabled) onAction('EVADE');
       } else if (e.key === '4') {
-        if (isEnabled && state.player.specialCooldownRemaining <= 0) onAction('SPECIAL');
+        if (isEnabled && state.player.specialCooldownRemaining <= 0) {
+          onAction('SPECIAL', undefined, selectedSpecialSkill);
+        }
       } else if (e.key === '5') {
         if (isEnabled && state.player.ultimateGauge >= 3) {
           {
@@ -320,6 +323,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     state.player.ultimateGauge,
     state.player.character.id,
     irenaUltimateUses,
+    selectedSpecialSkill,
     onAction,
   ]);
 
@@ -651,6 +655,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               turnNumber={state.turnNumber}
               judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
+              selectedSpecialSkill={selectedSpecialSkill}
+              onSelectedSpecialSkillChange={setSelectedSpecialSkill}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
               onIrenaUltimateAction={handleIrenaUltimateAction}
@@ -803,6 +809,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               turnNumber={state.turnNumber}
               judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled}
+              selectedSpecialSkill={selectedSpecialSkill}
+              onSelectedSpecialSkillChange={setSelectedSpecialSkill}
               onAction={onAction}
               irenaUltimateUses={irenaUltimateUses}
               onIrenaUltimateAction={handleIrenaUltimateAction}
