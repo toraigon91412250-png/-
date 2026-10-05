@@ -11,6 +11,7 @@ const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
   ruinLevel: 1,
   featherPath: null,
   ruinPath: null,
+  superFallenShotUnlocked: false,
 };
 
 export const BATTLE_REWARD_WIN = 50;
@@ -305,6 +306,7 @@ function normalizeSkillProgress(parsed: Partial<IrenaSkillProgress> | null | und
     shards,
     featherPath,
     ruinPath,
+    superFallenShotUnlocked: Boolean(parsed?.superFallenShotUnlocked),
     featherLevel: Math.min(
       MAX_SKILL_LEVEL,
       Math.max(1, Math.floor(Number(parsed && parsed.featherLevel) || INITIAL_SKILL_PROGRESS.featherLevel)),
@@ -477,6 +479,7 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
   const draws: RecruitmentDraw[] = [];
   let nextTickets = current.tickets - normalizedCount;
   let abilityProgress = loadAbilityProgress();
+  let skillProgress = loadSkillProgress();
 
   const addAbilityReward = (abilityId: AbilityId, amount: number) => {
     abilityProgress = {
@@ -490,24 +493,31 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
     };
   };
 
+  const addSkillReward = (amount: number) => {
+    skillProgress = {
+      ...skillProgress,
+      shards: skillProgress.shards + Math.max(0, Math.floor(amount)),
+    };
+  };
+
   for (let index = 0; index < normalizedCount; index += 1) {
     let reward = getRecruitmentRewardForPull(current.totalPulls + index + 1);
 
-    // Prototype ten-pull guarantee: if the batch has no ability core, the last slot
-    // becomes an ability core so a ten-pull always reveals meaningful progression.
+    // Ten-pulls guarantee at least one SR-or-better result.
     if (
       normalizedCount === 10 &&
       index === normalizedCount - 1 &&
-      !draws.some(draw => draw.reward.kind === 'ABILITY_CORE')
+      !draws.some(draw => draw.reward.rarity !== 'R')
     ) {
-      reward = getRecruitmentRewardForPull(-1, true);
+      reward = getRecruitmentRewardForPull(-1, false, true);
     }
 
     const isNew = !collected.has(reward.id);
     if (isNew) collected.add(reward.id);
 
     let shardGain = 0;
-    if (reward.kind === 'ABILITY_CORE') {
+
+    if (reward.kind === 'ABILITY_CORE' && reward.abilityId) {
       if (isNew) {
         abilityProgress = {
           levels: {
@@ -520,9 +530,22 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
         shardGain = reward.duplicateShards;
         addAbilityReward(reward.abilityId, shardGain);
       }
-    } else {
+    } else if (reward.kind === 'ABILITY_SHARD' && reward.abilityId) {
       shardGain = reward.shardAmount;
       addAbilityReward(reward.abilityId, shardGain);
+    } else if (reward.kind === 'SKILL_SHARD') {
+      shardGain = isNew ? reward.shardAmount : reward.duplicateShards;
+      addSkillReward(shardGain);
+    } else if (reward.kind === 'SPECIAL_SKILL' && reward.specialSkillId === 'SUPER_FALLEN_SHOT') {
+      if (isNew) {
+        skillProgress = {
+          ...skillProgress,
+          superFallenShotUnlocked: true,
+        };
+      } else {
+        shardGain = reward.duplicateShards;
+        addSkillReward(shardGain);
+      }
     }
 
     draws.push({
@@ -537,7 +560,7 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
 
   const collectionCompleted =
     collected.size >= RECRUITMENT_REWARDS.length &&
-    current.collectedIds.length < RECRUITMENT_REWARDS.length;
+    current.collectedIds.filter(id => RECRUITMENT_REWARDS.some(reward => reward.id === id)).length < RECRUITMENT_REWARDS.length;
 
   if (collectionCompleted && draws.length > 0) {
     draws[draws.length - 1] = {
@@ -547,6 +570,7 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
   }
 
   persistAbilityProgress(abilityProgress);
+  persistSkillProgress(skillProgress);
   const nextProgress = persistRecruitmentProgress({
     ...current,
     tickets: nextTickets,
