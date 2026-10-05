@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   BattleAction,
   BattleFighter,
@@ -21,6 +21,8 @@ import {
   StatusAilmentType,
 } from '../types/game';
 import { CpuAi } from '../utils/ai';
+import { GAME_BALANCE } from '../data/gameBalance';
+import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import {
@@ -84,6 +86,8 @@ export function useBattleGame(
     ],
     phase: 'SELECT_ACTION',
     visualEffect: null,
+    visualEffects: [],
+    judgmentReady: false,
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
@@ -102,13 +106,45 @@ export function useBattleGame(
   const updateState = useCallback((updater: (prev: BattleUiState) => BattleUiState) => {
     setState(prev => {
       const next = updater(prev);
-      stateRef.current = next;
-      return next;
+      const previousEffects = prev.visualEffects ?? [];
+      let visualEffects = previousEffects;
+
+      if (next.visualEffect) {
+        if (!previousEffects.some(effect => effect.effectId === next.visualEffect?.effectId)) {
+          visualEffects = [...previousEffects, next.visualEffect];
+        }
+      } else if (prev.visualEffect) {
+        visualEffects = previousEffects.filter(effect => effect.effectId !== prev.visualEffect?.effectId);
+      }
+
+      const normalizedNext: BattleUiState = {
+        ...next,
+        visualEffects,
+      };
+      stateRef.current = normalizedNext;
+      return normalizedNext;
     });
   }, []);
 
   const nextLogId = useRef(2);
   const nextVisualEffectId = useRef(0);
+  const battleRunIdRef = useRef(0);
+  const pendingSleepCancellersRef = useRef(new Map<number, () => void>());
+
+  const cancelPendingBattleWork = useCallback(() => {
+    battleRunIdRef.current += 1;
+    for (const cancel of pendingSleepCancellersRef.current.values()) {
+      cancel();
+    }
+    pendingSleepCancellersRef.current.clear();
+  }, []);
+
+  const isBattleCancelled = (error: unknown): boolean =>
+    error instanceof Error && error.message === 'BATTLE_CANCELLED';
+
+  useEffect(() => () => {
+    cancelPendingBattleWork();
+  }, [cancelPendingBattleWork]);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
   const judgmentMarksRef = useRef(0);
@@ -144,7 +180,28 @@ export function useBattleGame(
     );
   }, [addLog]);
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const sleep = useCallback((ms: number) => {
+    const runId = battleRunIdRef.current;
+    return new Promise<void>((resolve, reject) => {
+      let timerId = 0;
+      const cancel = () => {
+        window.clearTimeout(timerId);
+        pendingSleepCancellersRef.current.delete(timerId);
+        reject(new Error('BATTLE_CANCELLED'));
+      };
+
+      timerId = window.setTimeout(() => {
+        pendingSleepCancellersRef.current.delete(timerId);
+        if (runId !== battleRunIdRef.current) {
+          reject(new Error('BATTLE_CANCELLED'));
+        } else {
+          resolve();
+        }
+      }, Math.max(0, ms));
+
+      pendingSleepCancellersRef.current.set(timerId, cancel);
+    });
+  }, []);
 
   const toggleSound = useCallback(() => {
     updateState(prev => {
@@ -176,6 +233,7 @@ export function useBattleGame(
     if (judgmentMarksRef.current >= threshold) {
       judgmentReadyRef.current = true;
       judgmentMarksRef.current = threshold;
+      updateState(prev => ({ ...prev, judgmentReady: true }));
       addLog(
         `⚖️【断罪準備完了】断罪の刻が満ちた！ 次の攻撃が「断罪執行」になる。`,
         'PASSIVE_TRIGGER',
@@ -241,6 +299,7 @@ export function useBattleGame(
     fallenKingSurvivalCountRef.current = 0;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
+    cancelPendingBattleWork();
 
     const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
 
@@ -260,6 +319,8 @@ export function useBattleGame(
       ],
       phase: 'SELECT_ACTION',
       visualEffect: null,
+      visualEffects: [],
+      judgmentReady: false,
       winnerIsPlayer: null,
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
