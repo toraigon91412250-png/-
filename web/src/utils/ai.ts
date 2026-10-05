@@ -43,7 +43,6 @@ function predictPlayerAction(
     scores[toKey(action)] += ((index + 1) / totalRecencyWeight) * 2.6;
   });
 
-  // Repeating the same player action twice is a strong signal.
   if (recent.length >= 2 && recent[recent.length - 1] === recent[recent.length - 2]) {
     scores[toKey(recent[recent.length - 1])] += 1.4;
   }
@@ -58,18 +57,29 @@ function predictPlayerAction(
   );
 }
 
-function chooseReadableVariation(
-  candidates: BattleAction[],
-  best: BattleAction,
+function chooseWeightedAction(
+  scores: Array<{ action: BattleAction; score: number }>,
   difficulty: CpuDifficulty
 ): BattleAction {
-  if (candidates.length <= 1) return best;
+  const sorted = scores
+    .filter(entry => Number.isFinite(entry.score))
+    .sort((a, b) => b.score - a.score);
 
-  // Randomness is constrained to strategically close alternatives.
-  const variationChance = difficulty === 'EXPERT' ? 0.12 : 0.22;
-  if (Math.random() >= variationChance) return best;
+  const best = sorted[0]?.action ?? 'ATTACK';
+  if (sorted.length <= 1) return best;
 
-  return candidates[Math.floor(Math.random() * candidates.length)] ?? best;
+  const topScore = sorted[0].score;
+  const runnerUpScore = sorted[1].score;
+  const closeEnough = sorted.filter(entry => entry.score >= topScore - Math.max(8, topScore * 0.18));
+
+  const variationChance = difficulty === 'EXPERT' ? 0.08 : 0.16;
+  const shouldVary = Math.random() < variationChance && closeEnough.length > 1 && topScore - runnerUpScore <= 18;
+
+  if (shouldVary) {
+    return closeEnough[Math.floor(Math.random() * closeEnough.length)]?.action ?? best;
+  }
+
+  return best;
 }
 
 export const CpuAi = {
@@ -101,6 +111,8 @@ export const CpuAi = {
     const lethalSpecial = player.currentHp <= specialDamage;
     const lethalUltimate = player.currentHp <= ultimateDamage;
 
+    // How dangerous the next player turn is. This is deliberately based on the
+    // actions the player can actually take now, rather than hidden future state.
     const playerBurstThreat =
       player.ultimateGauge >= 3 ||
       (player.specialCooldownRemaining <= 0 && player.featherChargeBonus >= 70);
@@ -110,94 +122,139 @@ export const CpuAi = {
       prediction.SPECIAL * 0.92 +
       prediction.ULTIMATE;
 
-    const candidates: BattleAction[] = [];
-    const addCandidate = (action: BattleAction) => {
-      if (!candidates.includes(action)) candidates.push(action);
-    };
+    const recentSamePlayerAction =
+      recentPlayerActions.length >= 2 &&
+      recentPlayerActions[recentPlayerActions.length - 1] === recentPlayerActions[recentPlayerActions.length - 2];
 
-    // Guaranteed finishers come first. This prevents the anti-repeat rules
-    // from ever throwing away an actual winning move.
+    const lastCpuAction = recentCpuActions[recentCpuActions.length - 1];
+    const secondLastCpuAction = recentCpuActions[recentCpuActions.length - 2];
+    const cpuRepeated = Boolean(
+      lastCpuAction &&
+      secondLastCpuAction &&
+      lastCpuAction === secondLastCpuAction
+    );
+
+    // Finishers are never sacrificed for variety.
     if (cpu.ultimateGauge >= 3 && lethalUltimate) return 'ULTIMATE';
     if (cpu.specialCooldownRemaining <= 0 && lethalSpecial) return 'SPECIAL';
     if (lethalNormal) return 'ATTACK';
 
-    // Predict and answer burst turns.
-    if (
-      playerBurstThreat &&
-      prediction.SPECIAL + prediction.ULTIMATE >= 0.40 &&
-      player.currentHp >= cpu.character.maxHp * 0.45
-    ) {
-      return 'EVADE';
+    const scores: Array<{ action: BattleAction; score: number }> = [
+      { action: 'ATTACK', score: 42 },
+      { action: 'EVADE', score: 18 },
+      { action: 'BUFF', score: 0 },
+      { action: 'SPECIAL', score: -Infinity },
+      { action: 'ULTIMATE', score: -Infinity },
+    ];
+
+    const scoreOf = (action: BattleAction) =>
+      scores.find(entry => entry.action === action)!;
+
+    // ATTACK: reliable pressure, but bad into a strongly telegraphed evade pattern.
+    scoreOf('ATTACK').score += prediction.ATTACK * 18;
+    scoreOf('ATTACK').score += prediction.BUFF * 16;
+    scoreOf('ATTACK').score -= prediction.EVADE * 34;
+    if (player.currentHp <= player.character.maxHp * 0.35) {
+      scoreOf('ATTACK').score += 14;
     }
 
-    // If the player repeatedly chooses an offensive/defensive pattern,
-    // select the response that makes that pattern less profitable.
-    if (prediction.EVADE >= 0.48) {
-      if (!cpu.isBuffed && cpu.currentHp > cpu.character.maxHp * 0.45) {
-        addCandidate('BUFF');
-      }
-      addCandidate('ATTACK');
-    } else if (prediction.BUFF >= 0.40) {
-      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
-      addCandidate('ATTACK');
-    } else if (prediction.ATTACK >= 0.48) {
-      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
-      addCandidate('ATTACK');
-    } else {
-      addCandidate('ATTACK');
-      if (cpu.specialCooldownRemaining <= 0) addCandidate('SPECIAL');
+    // EVADE: strongest response to an imminent burst, but it should not become
+    // the default defensive loop.
+    scoreOf('EVADE').score += prediction.SPECIAL * 26;
+    scoreOf('EVADE').score += prediction.ULTIMATE * 34;
+    scoreOf('EVADE').score += playerBurstThreat ? 32 : 0;
+    scoreOf('EVADE').score -= prediction.EVADE * 20;
+    if (cpu.currentHp <= cpu.character.maxHp * 0.30) {
+      scoreOf('EVADE').score += 8;
     }
 
-    // Build pressure instead of spending a strong action on a bad timing.
+    // BUFF: use it when the player is likely to spend a low-pressure turn.
     if (!cpu.isBuffed && player.currentHp > player.character.maxHp * 0.40) {
-      const defensivePlayer =
-        prediction.EVADE + prediction.BUFF >= 0.34;
-      if (defensivePlayer || cpu.specialCooldownRemaining > 0) {
-        addCandidate('BUFF');
+      const defensiveSignal = prediction.EVADE + prediction.BUFF;
+      scoreOf('BUFF').score =
+        24 +
+        defensiveSignal * 28 +
+        (cpu.specialCooldownRemaining > 0 ? 18 : 0) -
+        prediction.ULTIMATE * 20 -
+        prediction.SPECIAL * 10;
+    }
+
+    // SPECIAL: spend it when it is ready and likely to connect for meaningful
+    // pressure. A predicted evade strongly discounts it.
+    if (cpu.specialCooldownRemaining <= 0) {
+      scoreOf('SPECIAL').score =
+        34 +
+        prediction.ATTACK * 24 +
+        prediction.BUFF * 20 +
+        playerOffenseSignal * 12 -
+        prediction.EVADE * 36;
+
+      if (player.currentHp <= specialDamage * 1.15) {
+        scoreOf('SPECIAL').score += 16;
       }
     }
 
-    // Situational defense. Expert reacts more often and uses the longer memory.
-    if (playerBurstThreat) {
-      addCandidate('EVADE');
-    }
-
-    // Ultimate is valuable, but should feel like a committed decision rather than
-    // an automatic gauge dump against a full-health player.
+    // ULTIMATE: commit when it is dangerous to hold or when the prediction says
+    // the player is about to attack. Otherwise, saving the gauge remains valid.
     if (cpu.ultimateGauge >= 3) {
-      const ultimateThreshold = difficulty === 'EXPERT' ? 0.68 : 0.60;
-      if (
-        player.currentHp <= player.character.maxHp * ultimateThreshold ||
-        prediction.ATTACK + prediction.SPECIAL >= 0.55
-      ) {
-        addCandidate('ULTIMATE');
+      const hpPressure = 1 - player.currentHp / Math.max(1, player.character.maxHp);
+      scoreOf('ULTIMATE').score =
+        20 +
+        hpPressure * 42 +
+        playerOffenseSignal * 34 +
+        (lethalUltimate ? 120 : 0) -
+        prediction.EVADE * 28;
+
+      if (difficulty === 'EXPERT') {
+        scoreOf('ULTIMATE').score += playerBurstThreat ? 12 : 0;
       }
     }
 
-    // Repetition breaker: a CPU that used the same action for two rounds in a row
-    // strongly prefers a different family of action unless it has lethal.
-    const lastCpuAction = recentCpuActions[recentCpuActions.length - 1];
-    const secondLastCpuAction = recentCpuActions[recentCpuActions.length - 2];
-    if (lastCpuAction && lastCpuAction === secondLastCpuAction) {
-      const filtered = candidates.filter(action => action !== lastCpuAction);
-      if (filtered.length > 0) {
-        return chooseReadableVariation(filtered, filtered[0], difficulty);
+    // Learning from repeated player habits is the central second-stage change:
+    // strong current patterns directly move the CPU toward a counter-action.
+    if (recentSamePlayerAction) {
+      const repeated = recentPlayerActions[recentPlayerActions.length - 1];
+      if (repeated === 'ATTACK') {
+        scoreOf('EVADE').score += difficulty === 'EXPERT' ? 14 : 9;
+        scoreOf('SPECIAL').score += 7;
+      } else if (repeated === 'SPECIAL' || repeated === 'ULTIMATE') {
+        scoreOf('EVADE').score += difficulty === 'EXPERT' ? 18 : 11;
+      } else if (repeated === 'EVADE') {
+        scoreOf('BUFF').score += 12;
+        scoreOf('ATTACK').score += 8;
+      } else if (repeated === 'BUFF') {
+        scoreOf('ATTACK').score += difficulty === 'EXPERT' ? 18 : 12;
+        scoreOf('SPECIAL').score += 9;
       }
     }
 
-    const filteredLast = lastCpuAction
-      ? candidates.filter(action => action !== lastCpuAction)
-      : candidates;
-
-    if (filteredLast.length > 0) {
-      return chooseReadableVariation(filteredLast, filteredLast[0], difficulty);
+    // Avoid mindless CPU loops while retaining tactical exceptions above.
+    if (cpuRepeated && lastCpuAction) {
+      scoreOf(lastCpuAction).score -= difficulty === 'EXPERT' ? 16 : 22;
     }
 
-    // Absolute fallback: valid and deterministic enough to remain debuggable.
-    if (cpu.specialCooldownRemaining <= 0 && playerOffenseSignal > 0.55) {
-      return 'SPECIAL';
+    // Expert keeps a little more weight on prediction; Normal remains readable
+    // and somewhat fallible so the telegraph is useful without being perfect.
+    if (difficulty === 'EXPERT') {
+      if (prediction.ATTACK >= 0.45) scoreOf('SPECIAL').score += 6;
+      if (prediction.EVADE >= 0.42) scoreOf('BUFF').score += 8;
+      if (playerBurstThreat) scoreOf('EVADE').score += 8;
     }
 
-    return 'ATTACK';
+    // Never select an unavailable action.
+    const legalScores = scores.filter(entry => {
+      if (entry.action === 'SPECIAL') return cpu.specialCooldownRemaining <= 0;
+      if (entry.action === 'ULTIMATE') return cpu.ultimateGauge >= 3;
+      if (entry.action === 'BUFF') return !cpu.isBuffed;
+      return true;
+    });
+
+    const best = legalScores
+      .filter(entry => Number.isFinite(entry.score))
+      .sort((a, b) => b.score - a.score)[0];
+
+    if (!best) return 'ATTACK';
+
+    return chooseWeightedAction(legalScores, difficulty);
   },
 };
