@@ -587,8 +587,8 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
             <div style={{ display:'flex', alignItems:'center', gap:7, color:'#B7AFC0', fontSize:9, fontWeight:900 }}>
               <Zap size={14} /> 召喚の意味
             </div>
-            <div style={{ marginTop:4, color:'#FFF', fontSize:13, fontWeight:900 }}>引いた権能 → 欠片でLv.UP</div>
-            <div style={{ marginTop:4, color:'#7F8490', fontSize:9, lineHeight:1.5 }}>権能本体は解放、重複本体と専用欠片はその権能のLv強化へ。</div>
+            <div style={{ marginTop:4, color:'#FFF', fontSize:13, fontWeight:900 }}>欠片 → 強化 / 本体 → 解放 / UR → 技追加</div>
+            <div style={{ marginTop:4, color:'#7F8490', fontSize:9, lineHeight:1.5 }}>Rは技強化、SRは権能強化、SSRは権能本体、URは超堕天撃を解放。重複URは技強化の欠片に変換。</div>
           </div>
         </section>
 
@@ -598,7 +598,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
             border:`1px solid ${selectedMeta.border}`,
             background:`radial-gradient(circle at 50% 0%, ${selectedMeta.glow}, rgba(7,9,14,.97) 58%)`,
             boxShadow:`0 10px 42px ${selectedMeta.glow}`,
-            animation:'revealCard .34s ease-out both',
+            animation:lastResult.reward.rarity === 'UR' ? 'urPulse .9s ease-in-out both' : 'revealCard .34s ease-out both',
             textAlign:'center',
           }}>
             <div style={{
@@ -627,10 +627,10 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
                 border:'1px solid rgba(255,213,79,.42)', background:'rgba(65,49,12,.25)', color:'#FFE082',
               }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, fontSize:11, fontWeight:950 }}>
-                  <Gift size={14} /> 権能コレクション COMPLETE
+                  <Gift size={14} /> 報酬コレクション COMPLETE
                 </div>
                 <div style={{ marginTop:4, fontSize:10, color:'#D2BE7A' }}>
-                  5権能の本体と欠片報酬をすべて記録しました。
+                  技強化・権能・UR特殊技の全報酬を記録しました。
                 </div>
               </div>
             )}
@@ -647,7 +647,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
                     background:'rgba(3,5,9,.55)',
                   }}>
                     <div style={{ fontSize:8, color:rarityMeta[draw.reward.rarity].accent, fontWeight:950 }}>
-                      {draw.reward.rarity} ・ {draw.reward.kind === 'ABILITY_CORE' ? '本体' : '欠片'}
+                      {draw.reward.rarity} ・ {getRewardKindLabel(draw.reward)}
                     </div>
                     <div style={{ marginTop:3, fontSize:10, color:'#FFF', fontWeight:900 }}>
                       {draw.reward.name}
