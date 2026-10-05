@@ -1,0 +1,21 @@
+name: temp-game-check-20261005
+
+on:
+  push:
+    branches:
+      - fix/all-current-game-cleanup-20261005
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm test
+      - run: npm run build
