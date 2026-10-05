@@ -44,15 +44,16 @@ jobs:
             hook.includes('getEffectiveSpeed(preparedEnemy)'),
             'Turn order must use dynamic ability-adjusted fighters.'
           );
-          assert.match(
-            battle,
-            /overflowY: 'auto',[\\s\\S]*minHeight: 0,[\\s\\S]*WebkitOverflowScrolling: 'touch'/,
+          assert.ok(
+            battle.includes("overflowY: 'auto'") &&
+            battle.includes('minHeight: 0') &&
+            battle.includes("WebkitOverflowScrolling: 'touch'"),
             'Mobile battle content must remain scrollable on short screens.'
           );
-          assert.match(
-            battle,
-            /const forecastPlayer = applyDynamicAbilityModifiers/,
-            'Battle forecast must use dynamic ability-adjusted player speed.'
+          assert.ok(
+            battle.includes('const forecastPlayer = applyDynamicAbilityModifiers(') &&
+            battle.includes('const forecastEnemy = applyDynamicAbilityModifiers('),
+            'Battle forecast must use dynamic ability-adjusted speed.'
           );
           assert.ok(
             action.includes('const effectivePlayer = applyDynamicAbilityModifiers(') &&
@@ -60,10 +61,10 @@ jobs:
             action.includes('const playerActsFirst = getEffectiveSpeed(effectivePlayer) >= getEffectiveSpeed(effectiveEnemy);'),
             'Action preview order must use dynamic speed.'
           );
-          assert.match(
-            card,
-            /const displayFighter = applyDynamicAbilityModifiers/,
-            'Fighter cards must display dynamic battle stats.'
+          assert.ok(
+            card.includes('const displayFighter = applyDynamicAbilityModifiers(') &&
+            card.includes('const actualDotDamage = ailment.dotDamage ?? def.dotDamage'),
+            'Fighter cards must display dynamic battle stats and actual bleed damage.'
           );
 
           console.log('✓ Battle audit wiring checks passed.');
