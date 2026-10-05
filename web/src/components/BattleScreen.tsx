@@ -85,32 +85,38 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
 
   let impact = '';
   let risk = '';
+  let survival = '';
   let detail = '';
 
   switch (state.cpuIntent) {
     case 'ATTACK':
       impact = `約${cpuNormalBase}〜${cpuNormalCrit} DMG`;
       risk = `回避選択：${evadeRate}%`;
+      survival = `被弾後HP：約${Math.max(0, state.player.currentHp - cpuNormalCrit)}〜${Math.max(0, state.player.currentHp - cpuNormalBase)}`;
       detail = '通常攻撃。会心20%で上限側のダメージになり、回避時は成功判定があります。';
       break;
     case 'SPECIAL':
       impact = `${state.enemy.character.specialSkillDamage + cpuBuffBonus} DMG`;
       risk = `回避選択：${evadeRate}%`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.specialSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.specialSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
       detail = `特殊技。命中すると${state.enemy.character.id === 'kaiser' ? '重圧' : '出血'}が付与されます。`;
       break;
     case 'ULTIMATE':
       impact = `${state.enemy.character.ultimateSkillDamage + cpuBuffBonus} DMG`;
       risk = `回避選択：${evadeRate}%`;
+      survival = `被弾後HP：${Math.max(0, state.player.currentHp - (state.enemy.character.ultimateSkillDamage + cpuBuffBonus))}${state.player.currentHp <= state.enemy.character.ultimateSkillDamage + cpuBuffBonus ? '（戦闘不能）' : ''}`;
       detail = '必殺技。大きな固定ダメージを受ける可能性があります。';
       break;
     case 'BUFF':
       impact = 'このターン 0 DMG';
       risk = '次回攻撃 +125';
+      survival = `現在HP：${state.player.currentHp}`;
       detail = '強化行動。今ターンに攻めるか、次ターンの大きな反撃を警戒する場面です。';
       break;
     case 'EVADE':
       impact = '直接ダメージ 0';
-      risk = `CPU回避率：${cpuEvadeRate}%`;
+      risk = `攻撃命中率：${100 - cpuEvadeRate}%`;
+      survival = `現在HP：${state.player.currentHp}`;
       detail = '回避構え。攻撃系は回避判定を受けますが、行動そのものは失われません。';
       break;
   }
@@ -154,9 +160,12 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
           </div>
         </div>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
-          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避・対処</div>
+          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避・耐久</div>
           <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: '#D5DEEB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {risk}
+          </div>
+          <div style={{ marginTop: '2px', fontSize: labelSize, fontWeight: 800, color: '#98A6BC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {survival}
           </div>
         </div>
       </div>
