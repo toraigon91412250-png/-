@@ -20,11 +20,11 @@ type SummonPhase = 'IDLE' | 'SUMMONING' | 'RESULT';
 type SummonStep = 'BLACKOUT' | 'GATE' | 'GATE_OPEN' | 'PRESENCE' | 'OMEN' | 'WINGS_FLASH' | 'REVEAL';
 
 const RECRUITMENT_ASSETS = {
-  gate: '/assets/recruitment/開く直前の門.jpg',
-  redEyes: '/assets/recruitment/1791110297970.jpg',
-  wingFrame: '/assets/recruitment/1791110298431.jpg',
-  irena: '/assets/recruitment/1791110298566.jpg',
-  wingedOmen: '/assets/recruitment/1791110298323.jpg',
+  gate: `${import.meta.env.BASE_URL}assets/recruitment/開く直前の門.jpg`,
+  redEyes: `${import.meta.env.BASE_URL}assets/recruitment/1791110297970.jpg`,
+  wingFrame: `${import.meta.env.BASE_URL}assets/recruitment/1791110298431.jpg`,
+  irena: `${import.meta.env.BASE_URL}assets/recruitment/1791110298566.jpg`,
+  wingedOmen: `${import.meta.env.BASE_URL}assets/recruitment/1791110298323.jpg`,
 } as const;
 
 const getRewardKindLabel = (reward: RecruitmentRewardDef): string => {
