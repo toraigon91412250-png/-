@@ -19,6 +19,12 @@ register(
 
 const { IRENA, KAISER, getIrenaWithSkillProgress } = await import('./src/data/characters.ts');
 
+const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
+
+assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
+assert.strictEqual(getIrenaSuperFallenShotMultiplier(10), 7.4);
+console.log('✓ Super Fallen Shot power is doubled.');
+
 console.log('--- Testing Web Version Game Logic & Rules ---');
 
 assert.strictEqual(IRENA.maxHp, 4000);
