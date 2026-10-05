@@ -34,6 +34,10 @@ jobs:
         working-directory: web
         run: npm install
 
+      - name: Run web game tests
+        working-directory: web
+        run: npm run test --if-present
+
       - name: Build web game
         working-directory: web
         env:
