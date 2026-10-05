@@ -85,6 +85,7 @@ export interface CharacterDef {
   specialSkillDamage: number;
   specialSkillCooldown: number;
   specialSkillDescription: string;
+  hasSuperFallenShot?: boolean;
   ultimateSkillName: string;
   ultimateSkillDamage: number;
   ultimateSlogan: string;
@@ -109,6 +110,7 @@ export interface BattleFighter {
   buffDamageBonus: number; // 0 when not buffed; default buff is 50
   featherChargeBonus: number; // 0 until Irena's normal attacks build Feather power
   featherChargeCount: number; // number of successful Irena normal attacks since last Feather
+  isSuperFallenShotCharging: boolean;
   isEvading: boolean;
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];
@@ -125,6 +127,7 @@ export function getEffectiveAttack(fighter: BattleFighter): number {
 }
 
 export function getEffectiveDefense(fighter: BattleFighter): number {
+  if (fighter.isSuperFallenShotCharging) return 0;
   const mod = fighter.activeAilments.reduce((sum, a) => sum + STATUS_AILMENTS[a.type].defenseMod, 0);
   return Math.max(0, fighter.character.defense + mod);
 }
@@ -212,6 +215,7 @@ export interface BattleSetupConfig {
 }
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';
+export type IrenaSpecialSkillId = 'FEATHER' | 'SUPER_FALLEN_SHOT';
 export type FeatherSkillPath = 'ABYSS' | 'JUDGMENT' | 'CHARGE';
 export type RuinSkillPath = 'EXECUTION' | 'ANNIHILATION';
 
@@ -221,6 +225,7 @@ export interface IrenaSkillProgress {
   ruinLevel: number;
   featherPath: FeatherSkillPath | null;
   ruinPath: RuinSkillPath | null;
+  superFallenShotUnlocked?: boolean;
 }
 
 export type BattlePhase = 'SELECT_ACTION' | 'EXECUTING_TURNS' | 'BATTLE_FINISHED';
@@ -250,7 +255,11 @@ export interface OverallStats {
 }
 
 
-export type RecruitmentRarity = 'R' | 'SR' | 'SSR';
+export function getIrenaSuperFallenShotMultiplier(skillLevel = 1): number {
+  return 2.8 + (Math.max(1, skillLevel) - 1) * 0.1;
+}
+
+export type RecruitmentRarity = 'R' | 'SR' | 'SSR' | 'UR';
 
 export interface RecruitmentProgress {
   tickets: number;
