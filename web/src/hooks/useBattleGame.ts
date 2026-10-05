@@ -805,8 +805,6 @@ export function useBattleGame(
             );
           }
 
-          gainUltimateGauge(isActorPlayer, actor.character.name, '特殊技『超堕天撃』発射', turn);
-
           if (target.isEvading) {
             const isEvaded = Math.random() < target.character.evasionRate;
             if (isEvaded) {
