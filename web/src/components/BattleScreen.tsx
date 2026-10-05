@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed, STATUS_AILMENTS } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -74,10 +74,35 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
 
   const playerSpeed = getEffectiveSpeed(state.player);
   const enemySpeed = getEffectiveSpeed(state.enemy);
+  const playerBaseSpeed = state.player.character.speed;
+  const enemyBaseSpeed = state.enemy.character.speed;
+  const playerSpeedDelta = playerSpeed - playerBaseSpeed;
+  const enemySpeedDelta = enemySpeed - enemyBaseSpeed;
   const playerGoesFirst = playerSpeed >= enemySpeed;
-  const orderText = playerGoesFirst
-    ? `先攻 いれーな ${playerSpeed} → カイザー ${enemySpeed}`
-    : `先攻 カイザー ${enemySpeed} → いれーな ${playerSpeed}`;
+  const baseOrderPlayerFirst = playerBaseSpeed >= enemyBaseSpeed;
+
+  const formatSpeed = (fighter: typeof state.player, speed: number, baseSpeed: number, delta: number) => {
+    const causes = fighter.activeAilments
+      .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
+      .map(ailment => {
+        const mod = STATUS_AILMENTS[ailment.type].speedMod;
+        return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
+      })
+      .join(' / ');
+    if (delta === 0) return `${speed}`;
+    return `${speed}（${baseSpeed}→${speed}、${causes || '変化'}）`;
+  };
+
+  const playerSpeedText = formatSpeed(state.player, playerSpeed, playerBaseSpeed, playerSpeedDelta);
+  const enemySpeedText = formatSpeed(state.enemy, enemySpeed, enemyBaseSpeed, enemySpeedDelta);
+  const orderText =
+    playerSpeed === enemySpeed
+      ? '同速 → いれーな先攻'
+      : playerGoesFirst
+        ? 'いれーな先攻'
+        : 'カイザー先攻';
+  const orderChangedBySpeed =
+    playerGoesFirst !== baseOrderPlayerFirst;
 
   const cpuDamageContext = {
     attacker: state.enemy,
@@ -163,9 +188,17 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>行動順</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80' }}>
             {orderText}
           </div>
+          <div style={{ marginTop: '2px', fontSize: labelSize, lineHeight: 1.4, fontWeight: 800, color: '#B7C2D3' }}>
+            SPD {playerSpeedText} vs {enemySpeedText}
+          </div>
+          {orderChangedBySpeed && (
+            <div style={{ marginTop: '2px', fontSize: labelSize, fontWeight: 900, color: '#FFE082' }}>
+              速度変化で先攻交代
+            </div>
+          )}
         </div>
         <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
           <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>相手の影響</div>
