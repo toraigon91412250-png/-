@@ -99,6 +99,11 @@ export const App: React.FC = () => {
     setScreen('DEV_TOOLS');
   };
 
+  const getBattleCpuOpponent = () =>
+    CPU_CHARACTERS.find(c => c.id !== upgradedIrena.id)
+    || CPU_CHARACTERS.find(c => c.id === KAISER.id)
+    || KAISER;
+
   const handleStartBattle = (config: BattleSetupConfig) => {
     setBattleSetup(config);
     const sources = [
@@ -112,18 +117,17 @@ export const App: React.FC = () => {
     ].filter((src): src is string => Boolean(src));
 
     setCpuDifficulty(difficulty);
-    const cpuOpponent = CPU_CHARACTERS.find(c => c.id !== upgradedIrena.id) || CPU_CHARACTERS.find(c => c.id === KAISER.id) || KAISER;
+    const cpuOpponent = getBattleCpuOpponent();
     restartBattle(upgradedIrena, cpuOpponent, difficulty, config);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
-    const startedAt = Date.now();
     const minimumDeployMs = 1100;
 
-    Promise.all(sources.map(preloadBattleImage)).then(() => {
-      const remainingMs = Math.max(0, minimumDeployMs - (Date.now() - startedAt));
-      setTimeout(() => setIsBattleDeploying(false), remainingMs);
-    });
+    // Image preloading is best-effort only. Do not block battle visibility on
+    // an image decode that may never settle.
+    void Promise.all(sources.map(preloadBattleImage)).catch(() => {});
+    window.setTimeout(() => setIsBattleDeploying(false), minimumDeployMs);
   };
   const handleUpgradeSkill = (skillId: 'FEATHER' | 'RUIN') => {
     const next = upgradeIrenaSkill(skillId);
@@ -291,7 +295,7 @@ export const App: React.FC = () => {
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle(upgradedIrena, KAISER, difficulty, battleSetup)}
+          onRestart={() => restartBattle(upgradedIrena, getBattleCpuOpponent(), difficulty, battleSetup)}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}

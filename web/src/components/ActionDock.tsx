@@ -39,8 +39,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
   const superFallenMultiplier = getIrenaSuperFallenShotMultiplier(featherSkillLevel);
   const specialDamagePreview = selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
-    ? Math.max(0, Math.round(getEffectiveAttack(player) * superFallenMultiplier - getEffectiveDefense(enemy)))
-    : player.character.specialSkillDamage + player.featherChargeBonus;
+    ? Math.max(0, Math.round(getEffectiveAttack(player) * superFallenMultiplier - getEffectiveDefense(enemy))) + buffDamageBonus
+    : player.character.specialSkillDamage + player.featherChargeBonus + buffDamageBonus;
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
       setSelectedSpecialSkill('FEATHER');
