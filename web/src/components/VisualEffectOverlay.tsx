@@ -927,7 +927,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
             ⚡ POWER UP!! 強化完了！
           </div>
           <div style={{ fontSize: '11px', fontWeight: 700, color: '#FFF9C4' }}>
-            次の攻撃行動のダメージ +50
+            次の攻撃行動のダメージ +125
           </div>
         </div>
       )}
@@ -978,7 +978,7 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
                 boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
               }}
             >
-              {effect.statusAilmentName === '出血' ? '🩸 出血付与！ (毎T -50)' : '🌀 重圧付与！ (速度/攻撃-25)'}
+              {effect.statusAilmentName === '出血' ? '🩸 出血付与！ (3T / 速度-20 / 防御-20)' : '🌀 重圧付与！ (速度/攻撃-25)'}
             </div>
           )}
 
