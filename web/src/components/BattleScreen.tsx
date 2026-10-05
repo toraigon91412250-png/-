@@ -5,6 +5,7 @@ import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { GAME_BALANCE } from '../data/gameBalance';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 
@@ -122,7 +123,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       break;
     case 'BUFF':
       impact = 'このターン 0 DMG';
-      risk = '次回攻撃 +125';
+      risk = `次回攻撃 +${GAME_BALANCE.BUFF_DAMAGE_BONUS}`;
       survival = `現在HP：${state.player.currentHp}`;
       detail = '強化行動。今ターンに攻めるか、次ターンの大きな反撃を警戒する場面です。';
       break;
