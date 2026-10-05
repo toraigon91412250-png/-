@@ -130,7 +130,7 @@ export function calculateSpecialDamage(context: DamageContext): number {
   const skillLevel = attacker.character.featherSkillLevel || 1;
   const skillPath = attacker.character.featherSkillPath || null;
   const featherChargeBonus = isIrenaSpecial ? attacker.featherChargeBonus : 0;
-  let damage = attacker.character.specialSkillDamage + featherChargeBonus;
+  let damage = Math.max(0, attacker.character.specialSkillDamage + featherChargeBonus - getEffectiveDefense(target));
 
   if (attacker.isBuffed) {
     damage += attacker.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
