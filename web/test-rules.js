@@ -2,6 +2,7 @@ import assert from 'assert';
 import { register } from 'node:module';
 import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffectiveDefense, STATUS_AILMENTS } from './src/types/game.ts';
 import { createKaiserForLevel } from './src/utils/abilitySystem.ts';
+import { getIrenaWithSkillProgress } from './src/data/characters.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
 
@@ -96,7 +97,13 @@ assert.strictEqual(calculateNormalAttackDamage({
 
 const lv50Kaiser = createKaiserForLevel(KAISER, 50);
 const maxSkillIrena = createInitialFighter(
-  { ...IRENA, featherSkillLevel: 10 },
+  getIrenaWithSkillProgress({
+    shards: 0,
+    featherLevel: 10,
+    ruinLevel: 1,
+    featherPath: null,
+    ruinPath: null,
+  }),
   true,
 );
 const lv50FeatherDamage = calculateSpecialDamage({
