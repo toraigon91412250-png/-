@@ -1174,22 +1174,18 @@ export function useBattleGame(
                 ? '全能の一撃'
                 : actor.character.ultimateSkillName
           : actor.character.ultimateSkillName;
-        let baseDamage =
-          appliedIrenaVariant === 'ALL_GODS'
-            ? 0
-            : appliedIrenaVariant === 'RUIN'
-              ? Math.max(900, actor.character.ultimateSkillDamage)
-              : appliedIrenaVariant === 'OMNIPOTENCE'
-                ? 1500
-                : actor.character.ultimateSkillDamage;
+        const buffDamageBonus = actor.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
 
         if (isIrena && appliedIrenaVariant === 'RUIN') {
           const ruinLevel = actor.character.ruinSkillLevel || 1;
           const ruinPath = actor.character.ruinSkillPath || null;
-          if (ruinLevel >= 4 && ruinPath === 'EXECUTION' && target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)) {
+          if (
+            ruinLevel >= 4 &&
+            ruinPath === 'EXECUTION' &&
+            target.currentHp <= target.character.maxHp * (ruinLevel >= 10 ? 0.5 : ruinLevel >= 7 ? 0.45 : 0.4)
+          ) {
             claimPathMasteryReward('RUIN_EXECUTION', '破壊・処刑', turn);
             const executionBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
-            baseDamage += executionBonus;
             addLog(
               `☠️【破壊・処刑】瀕死の敵を断ち切る！ 追加ダメージ+${executionBonus}`,
               isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
@@ -1202,7 +1198,6 @@ export function useBattleGame(
           ) {
             claimPathMasteryReward('RUIN_ANNIHILATION', '破壊・殲滅', turn);
             const annihilationBonus = 150 + Math.max(0, ruinLevel - 4) * 30;
-            baseDamage += annihilationBonus;
             addLog(
               `🩸【破壊・殲滅】出血した敵へ権能が共鳴！ 追加ダメージ+${annihilationBonus}`,
               isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
@@ -1212,8 +1207,11 @@ export function useBattleGame(
         }
 
         if (hadBuff) {
-          baseDamage += buffDamageBonus;
-          addLog(`⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！（計: ${baseDamage}）`, 'BUFF_PLAYER', turn);
+          addLog(
+            `⚡【強化消費】強化の効果で必殺技『${skillName}』のダメージ+${buffDamageBonus}！`,
+            'BUFF_PLAYER',
+            turn
+          );
         }
 
         // Reset ultimate gauge to 0
@@ -1302,50 +1300,21 @@ export function useBattleGame(
           }
         }
 
-        let finalDamage = baseDamage;
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const finalDamage = calculateUltimateDamage({
+          attacker: actor,
+          target,
+          config: stateRef.current.battleConfig,
+          turn,
+          isActingFirst,
+          judgmentReady: judgmentActive,
+          ultimateVariant: appliedIrenaVariant,
+        });
 
-        if (isIrena && appliedIrenaVariant === 'OMNIPOTENCE') {
-          const superBuff = 500;
-          updateState(prev => (isActorPlayer
-            ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: superBuff } }
-            : { ...prev, enemy: { ...prev.enemy, isBuffed: true, buffDamageBonus: superBuff } }
-          ));
-          addLog(
-            `👑【全能の一撃】${actor.character.name}は全ての権能を統合した！ 次の攻撃系行動のダメージ+${superBuff}！`,
-            isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
-            turn
-          );
-        }
-
-        soundManager.playCritical();
-        if (actor.character.id === 'irena') {
-          soundManager.playFeatherShot();
-        } else {
-          soundManager.playHeavyStrike();
-        }
-
-        const slogan = isIrena
-          ? appliedIrenaVariant === 'RUIN'
-            ? '破壊の権能を解放する一撃！'
-            : appliedIrenaVariant === 'OMNIPOTENCE'
-              ? '全ての権能を統合した一撃！'
-              : actor.character.ultimateSlogan
-          : actor.character.ultimateSlogan;
-        addLog(
-          `🌟🔥【必殺技】${actor.character.name}は${skillName}を放った！ ${slogan}`,
-          isActorPlayer ? 'ULTIMATE_PLAYER' : 'ULTIMATE_ENEMY',
-          turn
-        );
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
-        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         if (judgmentActive) {
-          const damageTarget = applyJudgmentDefense(target, judgmentLevel);
-          const defenseReductionBonus =
-            Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(damageTarget));
-          finalDamage += defenseReductionBonus;
-          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel));
           addLog(
             `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
@@ -1361,7 +1330,6 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
           addLog('🩸【堕天・終局】5%以下のいれーなが、必殺技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
