@@ -22,14 +22,13 @@ export const MAX_SKILL_LEVEL = 10;
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
 
 const INITIAL_ABILITY_PROGRESS: AbilityProgress = {
-  // Prototype convenience: all five powers start unlocked at Lv.1 so the new battle
-  // selection can be tested immediately. Their higher levels still require summons.
+  // 権能は召喚で本体を入手した時点でLv.1解放される。
   levels: {
-    ABYSS: 1,
-    FALLEN: 1,
-    BLACK_WING: 1,
-    FALLEN_KING: 1,
-    JUDGMENT: 1,
+    ABYSS: 0,
+    FALLEN: 0,
+    BLACK_WING: 0,
+    FALLEN_KING: 0,
+    JUDGMENT: 0,
   },
   shards: {
     ABYSS: 0,
@@ -89,17 +88,7 @@ export function loadAbilityProgress(): AbilityProgress {
         Object.values(normalized.levels).some(level => level > 0) ||
         Object.values(normalized.shards).some(shards => shards > 0);
 
-      // Legacy/invalid empty saves could leave every power at Lv.0, making the
-      // normal battle setup permanently unable to select the required two powers.
-      // The current prototype starts with all five powers at Lv.1, so recover that
-      // invalid empty state without touching non-empty progress.
-      if (!hasAnyProgress) {
-        return {
-          levels: { ...INITIAL_ABILITY_PROGRESS.levels },
-          shards: { ...INITIAL_ABILITY_PROGRESS.shards },
-        };
-      }
-
+      // Lv.0の空セーブは現在の正規状態なので、そのまま返す。
       return normalized;
     }
   } catch {
@@ -422,6 +411,9 @@ const INITIAL_RECRUITMENT_PROGRESS: RecruitmentProgress = {
   lastResults: [],
 };
 
+const COLLECTION_COMPLETE_TICKET_BONUS = 10;
+const MAXED_ABILITY_SHARD_EXCHANGE_RATE = 2;
+
 function normalizeRecruitmentProgress(
   parsed: Partial<RecruitmentProgress> | null | undefined,
 ): RecruitmentProgress {
@@ -531,8 +523,18 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
         addAbilityReward(reward.abilityId, shardGain);
       }
     } else if (reward.kind === 'ABILITY_SHARD' && reward.abilityId) {
-      shardGain = reward.shardAmount;
-      addAbilityReward(reward.abilityId, shardGain);
+      const currentLevel = abilityProgress.levels[reward.abilityId];
+      if (currentLevel >= MAX_ABILITY_LEVEL) {
+        // MAX後の権能欠片は死に資源にせず、技強化の欠片へ自動交換する。
+        const exchangedSkillShards = Math.floor(
+          reward.shardAmount / MAXED_ABILITY_SHARD_EXCHANGE_RATE,
+        );
+        shardGain = exchangedSkillShards;
+        addSkillReward(exchangedSkillShards);
+      } else {
+        shardGain = reward.shardAmount;
+        addAbilityReward(reward.abilityId, shardGain);
+      }
     } else if (reward.kind === 'SKILL_SHARD') {
       shardGain = isNew ? reward.shardAmount : reward.duplicateShards;
       addSkillReward(shardGain);
@@ -563,9 +565,12 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
     current.collectedIds.filter(id => RECRUITMENT_REWARDS.some(reward => reward.id === id)).length < RECRUITMENT_REWARDS.length;
 
   if (collectionCompleted && draws.length > 0) {
+    const collectionReward = COLLECTION_COMPLETE_TICKET_BONUS;
+    nextTickets += collectionReward;
     draws[draws.length - 1] = {
       ...draws[draws.length - 1],
       collectionCompleted: true,
+      ticketBonus: collectionReward,
     };
   }
 
