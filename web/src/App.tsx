@@ -122,7 +122,6 @@ export const App: React.FC = () => {
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
-    const startedAt = Date.now();
     const minimumDeployMs = 1100;
 
     // Image preloading is best-effort only. Do not block battle visibility on
