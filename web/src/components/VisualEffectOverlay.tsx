@@ -320,6 +320,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
 
   return (
     <div
+      className="battle-vfx-root"
       style={{
         position: 'absolute',
         inset: 0,
