@@ -14,6 +14,7 @@ import {
   getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
   getIrenaSuperFallenShotMultiplier,
+  IRENA_SUPER_FALLEN_SHOT_COOLDOWN,
   IrenaSpecialSkillId,
   STATUS_AILMENTS,
   LogType,
@@ -735,7 +736,7 @@ export function useBattleGame(
               ? {
                   ...prev.player,
                   isSuperFallenShotCharging: true,
-                  specialCooldownRemaining: actor.character.specialSkillCooldown,
+                  specialCooldownRemaining: IRENA_SUPER_FALLEN_SHOT_COOLDOWN,
                   isEvading: false,
                 }
               : prev.player,
@@ -782,7 +783,7 @@ export function useBattleGame(
             player: {
               ...prev.player,
               isSuperFallenShotCharging: false,
-              specialCooldownRemaining: actor.character.specialSkillCooldown,
+              specialCooldownRemaining: IRENA_SUPER_FALLEN_SHOT_COOLDOWN,
             },
           }));
 
