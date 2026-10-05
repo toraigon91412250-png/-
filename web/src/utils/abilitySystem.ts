@@ -98,11 +98,11 @@ export function applyDynamicAbilityModifiers(
     let multiplier = 1;
 
     if (hpRatio <= 0.10) {
-      multiplier = 3.0;
+      multiplier = 3.0 + Math.max(0, fallenLevel - 1) * 0.20;
     } else if (hpRatio <= 0.25) {
-      multiplier = 2.5;
+      multiplier = 2.5 + Math.max(0, fallenLevel - 1) * 0.15;
     } else if (hpRatio <= 0.50) {
-      multiplier = 2.0;
+      multiplier = 2.0 + Math.max(0, fallenLevel - 1) * 0.10;
     }
 
     if (multiplier > 1) {
