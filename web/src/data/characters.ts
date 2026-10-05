@@ -20,6 +20,7 @@ export const IRENA: CharacterDef = {
   specialSkillDamage: 300,
   specialSkillCooldown: 2,
   specialSkillDescription: '必殺ゲージ+1。300ダメージを与え、100%の確率で「出血」を付与（3ターン: 毎ターン開始時30ダメージ、速度-20、防御-20）',
+  hasSuperFallenShot: false,
   ultimateSkillName: '全能の一撃',
   ultimateSkillDamage: 500,
   ultimateSlogan: '全ての権能を統合した一撃！',
@@ -49,6 +50,7 @@ export function getIrenaWithSkillProgress(progress: IrenaSkillProgress): Charact
     ruinSkillPath: progress.ruinPath,
     featherSkillLevel: featherLevel,
     ruinSkillLevel: ruinLevel,
+    hasSuperFallenShot: Boolean(progress.superFallenShotUnlocked),
   };
 }
 
