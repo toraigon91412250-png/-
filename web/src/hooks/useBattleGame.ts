@@ -13,6 +13,8 @@ import {
   getEffectiveSpeed,
   getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
+  getIrenaSuperFallenShotMultiplier,
+  IrenaSpecialSkillId,
   STATUS_AILMENTS,
   LogType,
   StatusAilmentType,
@@ -42,6 +44,7 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
     buffDamageBonus: 0,
     featherChargeBonus: 0,
     featherChargeCount: 0,
+    isSuperFallenShotCharging: false,
     isEvading: false,
     isPlayer,
     activeAilments: [],
@@ -327,7 +330,8 @@ export function useBattleGame(
     isActingFirst: boolean,
     speed: number,
     turn: number,
-    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE'
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
+    specialSkillId?: IrenaSpecialSkillId,
   ): Promise<boolean> => {
     let actor = isActorPlayer ? stateRef.current.player : stateRef.current.enemy;
     let target = isActorPlayer ? stateRef.current.enemy : stateRef.current.player;
@@ -716,7 +720,171 @@ export function useBattleGame(
       }
 
       case 'SPECIAL': {
-        const isIrenaSpecial = actor.character.id === 'irena';
+        const isSuperFallenShot =
+          isActorPlayer &&
+          actor.character.id === 'irena' &&
+          specialSkillId === 'SUPER_FALLEN_SHOT';
+
+        if (isSuperFallenShot && !actor.isSuperFallenShotCharging) {
+          const skillLevel = actor.character.featherSkillLevel || 1;
+          const multiplier = getIrenaSuperFallenShotMultiplier(skillLevel);
+
+          updateState(prev => ({
+            ...prev,
+            player: isActorPlayer
+              ? {
+                  ...prev.player,
+                  isSuperFallenShotCharging: true,
+                  specialCooldownRemaining: actor.character.specialSkillCooldown,
+                  isEvading: false,
+                }
+              : prev.player,
+          }));
+
+          gainUltimateGauge(isActorPlayer, actor.character.name, '特殊技『超堕天撃』充填開始', turn);
+          addLog(
+            `⚡🪶【超堕天撃・充填】${actor.character.name}は力を一点に集中している！ 次のターンに発射（倍率×${multiplier.toFixed(1)}）。充填中は防御力0。`,
+            'SPECIAL_PLAYER',
+            turn,
+          );
+
+          updateState(prev => ({
+            ...prev,
+            visualEffect: {
+              targetIsPlayer: true,
+              damage: 0,
+              effectType: 'SPECIAL_FEATHER',
+              isCritical: false,
+              isEvade: false,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '超堕天撃',
+              statusAilmentName: '',
+              bannerText: '⚡🪶『超堕天撃』CHARGE',
+              effectId: nextVisualEffectId.current++,
+            },
+          }));
+
+          await sleep(750 / speed);
+          updateState(prev => ({ ...prev, visualEffect: null }));
+          return true;
+        }
+
+        if (isSuperFallenShot && actor.isSuperFallenShotCharging) {
+          const skillLevel = actor.character.featherSkillLevel || 1;
+          const multiplier = getIrenaSuperFallenShotMultiplier(skillLevel);
+          const hadBuff = actor.isBuffed;
+          const buffDamageBonus = actor.buffDamageBonus || 125;
+
+          updateState(prev => ({
+            ...prev,
+            player: {
+              ...prev.player,
+              isSuperFallenShotCharging: false,
+              specialCooldownRemaining: actor.character.specialSkillCooldown,
+            },
+          }));
+
+          if (hadBuff) {
+            consumeBuff(isActorPlayer);
+          }
+
+          let finalDamage = Math.max(
+            0,
+            Math.round(getEffectiveAttack(actor) * multiplier - getEffectiveDefense(target)),
+          );
+
+          if (hadBuff) {
+            finalDamage += buffDamageBonus;
+            addLog(
+              `⚡【強化消費】『超堕天撃』のダメージ+${buffDamageBonus}！（計: ${finalDamage}）`,
+              'BUFF_PLAYER',
+              turn,
+            );
+          }
+
+          gainUltimateGauge(isActorPlayer, actor.character.name, '特殊技『超堕天撃』発射', turn);
+
+          if (target.isEvading) {
+            const isEvaded = Math.random() < target.character.evasionRate;
+            if (isEvaded) {
+              soundManager.playDefend();
+              addLog(
+                `💨【回避成功！】${target.character.name}は『超堕天撃』を完全に回避した！`,
+                'EVADE_SUCCESS_ENEMY',
+                turn
+              );
+
+              updateState(prev => ({
+                ...prev,
+                visualEffect: {
+                  targetIsPlayer: !isActorPlayer,
+                  damage: 0,
+                  effectType: 'EVADE_DODGE',
+                  isCritical: false,
+                  isEvade: true,
+                  isBuff: false,
+                  isUltimate: false,
+                  actorName: target.character.name,
+                  skillName: '回避成功',
+                  statusAilmentName: '',
+                  bannerText: '💨 回避成功！『超堕天撃』 0 DMG',
+                  effectId: nextVisualEffectId.current++,
+                },
+              }));
+
+              await sleep(850 / speed);
+              updateState(prev => ({ ...prev, visualEffect: null }));
+              return true;
+            }
+
+            addLog(
+              `⚠️【回避失敗！】${target.character.name}は『超堕天撃』を避け切れなかった！`,
+              'EVADE_FAIL_ENEMY',
+              turn
+            );
+          }
+
+          soundManager.playCritical();
+          soundManager.playFeatherShot();
+
+          addLog(
+            `⚡🪶【超堕天撃】${actor.character.name}が電撃をまとった羽弾を撃ち出す！ ${target.character.name}に ${finalDamage} ダメージ！（倍率×${multiplier.toFixed(1)}）`,
+            'SPECIAL_PLAYER',
+            turn,
+          );
+
+          const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, '超堕天撃');
+
+          updateState(prev => ({
+            ...prev,
+            player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
+            enemy: isActorPlayer ? { ...prev.enemy, currentHp: newTargetHp } : prev.enemy,
+            visualEffect: {
+              targetIsPlayer: !isActorPlayer,
+              damage: finalDamage,
+              effectType: 'SPECIAL_FEATHER',
+              isCritical: false,
+              isEvade: false,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '超堕天撃',
+              statusAilmentName: '',
+              bannerText: `⚡🪶『超堕天撃』-${finalDamage}!`,
+              effectId: nextVisualEffectId.current++,
+            },
+          }));
+
+          await sleep(1100 / speed);
+          updateState(prev => ({ ...prev, visualEffect: null }));
+
+          if (newTargetHp <= 0) return false;
+          return true;
+        }
+
+        const isIrenaSpecial = actor.character.id === 'irena';        const isIrenaSpecial = actor.character.id === 'irena';
         const irenaSkillLevel = actor.character.featherSkillLevel || 1;
         const irenaSkillPath = actor.character.featherSkillPath || null;
         const featherChargeBonus = isIrenaSpecial ? actor.featherChargeBonus : 0;
@@ -1226,12 +1394,27 @@ export function useBattleGame(
 
   const onActionSelected = useCallback(async (
     playerAction: BattleAction,
-    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE'
+    ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
+    specialSkillId?: IrenaSpecialSkillId,
   ) => {
     if (stateRef.current.phase !== 'SELECT_ACTION') return;
 
+    const player = stateRef.current.player;
+    const isForcedSuperFallenShot =
+      player.isSuperFallenShotCharging &&
+      playerAction === 'SPECIAL' &&
+      specialSkillId === 'SUPER_FALLEN_SHOT';
+
+    // The charge turn is locked: only the automatic release is accepted.
+    if (player.isSuperFallenShotCharging && !isForcedSuperFallenShot) return;
+
     // Check prerequisites
-    if (playerAction === 'SPECIAL' && stateRef.current.player.specialCooldownRemaining > 0) return;
+    if (playerAction === 'SPECIAL' && !isForcedSuperFallenShot && player.specialCooldownRemaining > 0) return;
+    if (
+      specialSkillId === 'SUPER_FALLEN_SHOT' &&
+      !isForcedSuperFallenShot &&
+      !player.character.hasSuperFallenShot
+    ) return;
     if (playerAction === 'ULTIMATE' && stateRef.current.player.ultimateGauge < 3) return;
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
@@ -1270,7 +1453,8 @@ export function useBattleGame(
         true,
         speed,
         currentTurn,
-        firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined
+        firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
+        firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
       );
       if (!continue1) {
         const winner = stateRef.current.player.currentHp > 0;
@@ -1287,7 +1471,8 @@ export function useBattleGame(
         false,
         speed,
         currentTurn,
-        !firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined
+        !firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
+        !firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
       );
       if (!continue2) {
         const winner = stateRef.current.player.currentHp > 0;
