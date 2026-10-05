@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
 import { CHARACTERS } from '../data/characters';
 
-interface VisualEffectOverlayProps {
-  effect: VisualEffect | null;
+interface SingleVisualEffectOverlayProps {
+  effect: VisualEffect;
   speedMultiplier?: number;
 }
 
@@ -519,7 +519,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
   );
 };
 
-export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
+const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ effect, speedMultiplier = 1 }) => {
   const [progress, setProgress] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastUiUpdateRef = useRef(0);
@@ -1012,3 +1012,23 @@ export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({ effect
     </div>
   );
 };
+
+interface VisualEffectOverlayProps {
+  effects: VisualEffect[];
+  speedMultiplier?: number;
+}
+
+export const VisualEffectOverlay: React.FC<VisualEffectOverlayProps> = ({
+  effects,
+  speedMultiplier = 1,
+}) => (
+  <>
+    {effects.map(effect => (
+      <SingleVisualEffectOverlay
+        key={effect.effectId}
+        effect={effect}
+        speedMultiplier={speedMultiplier}
+      />
+    ))}
+  </>
+);
