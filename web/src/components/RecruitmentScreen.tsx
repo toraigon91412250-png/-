@@ -653,7 +653,11 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
                       {draw.reward.name}
                     </div>
                     {draw.shardGain > 0 && (
-                      <div style={{ marginTop:2, fontSize:8, color:'#FFE082' }}>+{draw.shardGain} 欠片</div>
+                      <div style={{ marginTop:2, fontSize:8, color:'#FFE082' }}>
+                        +{draw.shardGain} {draw.reward.kind === 'ABILITY_SHARD' && draw.reward.abilityId && abilityProgress.levels[draw.reward.abilityId] >= 5
+                          ? '技強化の欠片（MAX交換）'
+                          : getShardLabel(draw.reward)}
+                      </div>
                     )}
                   </div>
                 ))}
