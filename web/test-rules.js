@@ -1,5 +1,7 @@
 import assert from 'assert';
 import { IRENA, KAISER } from './src/data/characters.ts';
+import { BATTLE_CHALLENGE_LEVELS } from './src/types/game.ts';
+import { createKaiserForLevel } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import {
   getEffectiveSpeed,
@@ -86,5 +88,48 @@ assert.strictEqual(calculateNormalAttackDamage({
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
-console.log('✓ Shared damage formulas and same-speed order verified.');
+const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
+  const kaiser = createKaiserForLevel(KAISER, level);
+  const player = createInitialFighter(IRENA, true);
+  const enemy = createInitialFighter(kaiser, false);
+  const playerDamage = calculateNormalAttackDamage({
+    attacker: player,
+    target: enemy,
+    config: { kaiserLevel: level, abilities: [] },
+    turn: 1,
+    isActingFirst: true,
+  });
+  const cpuDamage = calculateNormalAttackDamage({
+    attacker: enemy,
+    target: player,
+    config: { kaiserLevel: level, abilities: [] },
+    turn: 1,
+    isActingFirst: false,
+  });
+  return { level, maxHp: kaiser.maxHp, attack: kaiser.attack, defense: kaiser.defense, playerDamage, cpuDamage };
+});
+
+for (let i = 1; i < levelStats.length; i += 1) {
+  assert.ok(levelStats[i].maxHp > levelStats[i - 1].maxHp, 'Kaiser HP must rise with level.');
+  assert.ok(levelStats[i].attack > levelStats[i - 1].attack, 'Kaiser attack must rise with level.');
+  assert.ok(levelStats[i].defense > levelStats[i - 1].defense, 'Kaiser defense must rise with level.');
+  assert.ok(levelStats[i].playerDamage <= levelStats[i - 1].playerDamage, 'Higher defense must not increase Irena normal damage.');
+}
+
+const lv10 = levelStats[0];
+const lv100 = levelStats[levelStats.length - 1];
+assert.strictEqual(lv10.maxHp, KAISER.maxHp);
+assert.strictEqual(lv10.attack, KAISER.attack);
+assert.strictEqual(lv10.defense, KAISER.defense);
+assert.strictEqual(lv100.maxHp, KAISER.maxHp * 2);
+assert.strictEqual(lv100.attack, Math.round(KAISER.attack * 1.8));
+assert.strictEqual(lv100.defense, Math.round(KAISER.defense * 1.5));
+assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
+assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
+
+console.log('✓ Kaiser Lv10-Lv100 progression stays bounded and monotonic.');
+console.log(
+  'Level curve:',
+  levelStats.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage}`).join(' | ')
+);
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
