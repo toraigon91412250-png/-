@@ -885,7 +885,7 @@ export function useBattleGame(
           return true;
         }
 
-        const isIrenaSpecial = actor.character.id === 'irena';        const isIrenaSpecial = actor.character.id === 'irena';
+        const isIrenaSpecial = actor.character.id === 'irena';
         const irenaSkillLevel = actor.character.featherSkillLevel || 1;
         const irenaSkillPath = actor.character.featherSkillPath || null;
         const featherChargeBonus = isIrenaSpecial ? actor.featherChargeBonus : 0;
