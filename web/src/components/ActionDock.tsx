@@ -1,10 +1,14 @@
 import React from 'react';
-import { BattleAction, BattleFighter, getEffectiveAttack, getEffectiveDefense, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId } from '../types/game';
+import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, IrenaSpecialSkillId } from '../types/game';
 import { Flame } from 'lucide-react';
+import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 
 interface ActionDockProps {
   player: BattleFighter;
   enemy: BattleFighter;
+  battleConfig: BattleSetupConfig;
+  turnNumber: number;
+  judgmentReady?: boolean;
   isEnabled: boolean;
   onAction: (
     action: BattleAction,
@@ -21,13 +25,26 @@ interface ActionDockProps {
 export const ActionDock: React.FC<ActionDockProps> = ({
   player,
   enemy,
+  battleConfig,
+  turnNumber,
+  judgmentReady = false,
   isEnabled,
   onAction,
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
 }) => {
+  const playerActsFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(enemy);
+  const damageContext = {
+    attacker: player,
+    target: enemy,
+    config: battleConfig,
+    turn: turnNumber,
+    isActingFirst: playerActsFirst,
+    judgmentReady,
+  };
   const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || 125) : 0;
-  const estimatedAttackDamage = Math.max(15, getEffectiveAttack(player) - getEffectiveDefense(enemy)) + buffDamageBonus;
+  const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
+  const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
   const [selectedSpecialSkill, setSelectedSpecialSkill] = React.useState<IrenaSpecialSkillId>('FEATHER');
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
   const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
@@ -38,9 +55,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const featherChargeAtMax = player.featherChargeCount >= featherChargeMaxCount;
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
   const superFallenMultiplier = getIrenaSuperFallenShotMultiplier(featherSkillLevel);
-  const specialDamagePreview = selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
-    ? Math.max(0, Math.round(getEffectiveAttack(player) * superFallenMultiplier - getEffectiveDefense(enemy))) + buffDamageBonus
-    : player.character.specialSkillDamage + player.featherChargeBonus + buffDamageBonus;
+  const specialDamagePreview = calculateSpecialDamage({
+    ...damageContext,
+    specialSkillId: selectedSpecialSkill,
+  });
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
       setSelectedSpecialSkill('FEATHER');
@@ -102,9 +120,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       setCinematicVariant(null);
     }, 1300);
   };
-  const ultimateDamagePreview = hasUnlockedOmnipotence
-    ? 1500 + buffDamageBonus
-    : player.character.ultimateSkillDamage + buffDamageBonus;
+  const ultimateDamagePreview = calculateUltimateDamage({
+    ...damageContext,
+    ultimateVariant: hasUnlockedOmnipotence ? 'OMNIPOTENCE' : undefined,
+  });
 
   return (
     <div
@@ -310,7 +329,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         >
           <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>攻撃</span>
           <span style={{ fontSize: '10px', fontWeight: 700, color: isEnabled ? '#90CAF9' : '#5A6678', whiteSpace: 'nowrap' }}>
-            約{estimatedAttackDamage}ダメ
+            約{estimatedAttackDamage}〜{criticalAttackDamage}ダメ
           </span>
         </button>
 
