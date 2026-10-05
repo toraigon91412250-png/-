@@ -566,6 +566,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             {/* 1. Enemy Card */}
             <FighterCard
               fighter={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
               isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
               visualEffect={state.visualEffect}
             />
@@ -665,6 +667,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <div style={{ marginBottom: '8px' }}>
               <FighterCard
                 fighter={state.player}
+                battleConfig={state.battleConfig}
+                turnNumber={state.turnNumber}
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === true}
                 visualEffect={state.visualEffect}
               />
@@ -708,6 +712,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 </div>
                 <FighterCard
                   fighter={state.player}
+                battleConfig={state.battleConfig}
+                turnNumber={state.turnNumber}
                   isTargetOfEffect={state.visualEffect?.targetIsPlayer === true}
                   visualEffect={state.visualEffect}
                 />
@@ -723,6 +729,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               </div>
               <FighterCard
                 fighter={state.enemy}
+              battleConfig={state.battleConfig}
+              turnNumber={state.turnNumber}
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
                 visualEffect={state.visualEffect}
               />
