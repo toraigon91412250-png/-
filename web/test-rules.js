@@ -1,15 +1,23 @@
 import assert from 'assert';
-import { IRENA, KAISER } from './src/data/characters.ts';
-import { BATTLE_CHALLENGE_LEVELS } from './src/types/game.ts';
+import { register } from 'node:module';
+import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffectiveDefense, STATUS_AILMENTS } from './src/types/game.ts';
 import { createKaiserForLevel } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
-import {
-  getEffectiveSpeed,
-  getEffectiveAttack,
-  getEffectiveDefense,
-  STATUS_AILMENTS,
-} from './src/types/game.ts';
 import { calculateNormalAttackDamage } from './src/utils/battleMath.ts';
+
+register(
+  'data:text/javascript,' + encodeURIComponent(`
+    export async function load(url, context, nextLoad) {
+      if (url.endsWith('.jpg')) {
+        return { format: 'module', source: 'export default "";', shortCircuit: true };
+      }
+      return nextLoad(url, context);
+    }
+  `),
+  { parentURL: import.meta.url }
+);
+
+const { IRENA, KAISER } = await import('./src/data/characters.ts');
 
 console.log('--- Testing Web Version Game Logic & Rules ---');
 
