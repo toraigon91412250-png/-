@@ -47,7 +47,9 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
 
   if (blackWingLevel > 0 && character.id === 'irena') {
     const statMultiplier = 1 + blackWingLevel * 0.02;
-    const featherMultiplier = 1 + blackWingLevel * 0.2;
+    // Lv5's x5 effect is applied to the final Feather Shot damage in battleMath.
+    // Do not multiply the base special-skill value here as well.
+    const featherMultiplier = blackWingLevel >= 5 ? 1 : 1 + blackWingLevel * 0.2;
     next = {
       ...next,
       maxHp: Math.max(1, Math.round(next.maxHp * statMultiplier)),
@@ -89,8 +91,12 @@ export function applyDynamicAbilityModifiers(
       attack: Math.max(1, Math.round(character.attack * multiplier)),
       defense: Math.max(0, Math.round(character.defense * multiplier)),
       speed: Math.max(1, Math.round(character.speed * multiplier)),
-      specialSkillDamage: Math.max(1, Math.round(character.specialSkillDamage * multiplier)),
-      ultimateSkillDamage: Math.max(1, Math.round(character.ultimateSkillDamage * multiplier)),
+      ...(abyssLevel >= 5
+        ? {
+            specialSkillDamage: Math.max(1, Math.round(character.specialSkillDamage * multiplier)),
+            ultimateSkillDamage: Math.max(1, Math.round(character.ultimateSkillDamage * multiplier)),
+          }
+        : {}),
     };
   }
 
@@ -127,11 +133,13 @@ export function getJudgmentThreshold(level: number): number {
 }
 
 export function getJudgmentDamageMultiplier(level: number): number {
-  return 1.4 + Math.min(4, Math.max(0, level - 1)) * 0.15;
+  if (level >= 5) return 3.0;
+  return 1.4 + Math.min(3, Math.max(0, level - 1)) * 0.15;
 }
 
 export function getJudgmentDefenseIgnore(level: number): number {
-  return 0.20 + Math.min(4, Math.max(0, level - 1)) * 0.05;
+  if (level >= 5) return 0.60;
+  return 0.20 + Math.min(3, Math.max(0, level - 1)) * 0.05;
 }
 
 export function applyJudgmentDefense(target: BattleFighter, level: number): BattleFighter {
