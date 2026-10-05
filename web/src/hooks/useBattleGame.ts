@@ -1047,29 +1047,28 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        if (judgmentActive) {
-          const defenseBreakBonus = Math.round(target.character.defense * getJudgmentDefenseIgnore(judgmentLevel));
-          baseDamage += defenseBreakBonus;
-        }
-
-        let finalDamage = baseDamage;
+        const finalDamage = calculateSpecialDamage({
+          attacker: actor,
+          target,
+          config: stateRef.current.battleConfig,
+          turn,
+          isActingFirst,
+          judgmentReady: judgmentActive,
+          specialSkillId: specialSkillId ?? 'FEATHER',
+        });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
-          finalDamage = Math.round(finalDamage * 5);
           addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
         }
-
         if (isIrenaSpecial && irenaSkillLevel >= 4 && irenaSkillPath === 'ABYSS' && featherChargeBonus >= 150) {
           claimPathMasteryReward('FEATHER_ABYSS', '羽弾・深淵', turn);
           const abyssBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
-          finalDamage += abyssBonus;
           addLog(
             `🌑【羽弾・深淵】高密度の羽が炸裂！ 追加ダメージ+${abyssBonus}`,
             isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
             turn
           );
         }
-
         if (
           isIrenaSpecial &&
           irenaSkillLevel >= 4 &&
@@ -1078,16 +1077,13 @@ export function useBattleGame(
         ) {
           claimPathMasteryReward('FEATHER_JUDGMENT', '羽弾・断罪', turn);
           const judgmentBonus = 100 + Math.max(0, irenaSkillLevel - 4) * 25;
-          finalDamage += judgmentBonus;
           addLog(
             `⚖️【羽弾・断罪】出血した敵を穿つ！ 追加ダメージ+${judgmentBonus}`,
             isActorPlayer ? 'SPECIAL_PLAYER' : 'SPECIAL_ENEMY',
             turn
           );
         }
-
         if (judgmentActive) {
-          finalDamage = Math.round(finalDamage * getJudgmentDamageMultiplier(judgmentLevel)) + Math.round(target.currentHp * 0.20);
           addLog(
             `⚖️【断罪執行】特殊技にも断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
@@ -1118,8 +1114,7 @@ export function useBattleGame(
           actor.currentHp <= baseActorMaxHp * 0.05;
 
         if (fallenExecution) {
-          finalDamage = target.currentHp;
-          addLog('🩸【堕天・終局】5%以下のいれーなが、特殊技に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
+          addLog('🩸【堕天・終局】5%以下のいれーなの特殊技に即死効果が発動した！', 'PASSIVE_TRIGGER', turn);
         }
 
         const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '特殊技');
