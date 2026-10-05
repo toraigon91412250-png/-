@@ -1,7 +1,14 @@
 import assert from 'assert';
 import { register } from 'node:module';
 import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffectiveDefense, STATUS_AILMENTS } from './src/types/game.ts';
-import { createKaiserForLevel } from './src/utils/abilitySystem.ts';
+import {
+  applyDynamicAbilityModifiers,
+  applyStaticAbilityModifiers,
+  createKaiserForLevel,
+  getJudgmentDamageMultiplier,
+  getJudgmentDefenseIgnore,
+  getJudgmentThreshold,
+} from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
 
@@ -122,6 +129,61 @@ const lv50FeatherDamage = calculateSpecialDamage({
 assert.strictEqual(lv50Kaiser.defense, 171);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
 assert.strictEqual(lv50FeatherDamage, 354);
+
+assert.strictEqual(getJudgmentThreshold(1), 4);
+assert.strictEqual(getJudgmentThreshold(2), 4);
+assert.strictEqual(getJudgmentThreshold(3), 3);
+assert.strictEqual(getJudgmentThreshold(4), 3);
+assert.strictEqual(getJudgmentThreshold(5), 2);
+
+assert.strictEqual(getJudgmentDamageMultiplier(1), 1.4);
+assert.strictEqual(getJudgmentDamageMultiplier(4), 1.85);
+assert.strictEqual(getJudgmentDamageMultiplier(5), 3.0);
+assert.strictEqual(getJudgmentDefenseIgnore(1), 0.20);
+assert.strictEqual(getJudgmentDefenseIgnore(4), 0.35);
+assert.strictEqual(getJudgmentDefenseIgnore(5), 0.60);
+
+const lv4BlackWing = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10,
+  abilities: [{ id: 'BLACK_WING', level: 4 }],
+});
+const lv5BlackWing = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10,
+  abilities: [{ id: 'BLACK_WING', level: 5 }],
+});
+assert.strictEqual(lv4BlackWing.specialSkillDamage, 540);
+assert.strictEqual(lv5BlackWing.maxHp, 4400);
+assert.strictEqual(lv5BlackWing.specialSkillDamage, 300);
+
+const lv4AbyssKaiser = applyDynamicAbilityModifiers(
+  createInitialFighter(KAISER, false),
+  { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 4 }] },
+  2,
+);
+const lv5AbyssKaiser = applyDynamicAbilityModifiers(
+  createInitialFighter(KAISER, false),
+  { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 5 }] },
+  2,
+);
+assert.strictEqual(lv4AbyssKaiser.character.attack, 152);
+assert.strictEqual(lv4AbyssKaiser.character.specialSkillDamage, KAISER.specialSkillDamage);
+assert.strictEqual(lv5AbyssKaiser.character.attack, 150);
+assert.strictEqual(lv5AbyssKaiser.character.specialSkillDamage, 353);
+assert.strictEqual(lv5AbyssKaiser.character.ultimateSkillDamage, 470);
+
+const judgmentTarget = createInitialFighter(KAISER, false);
+const judgmentDamage = calculateNormalAttackDamage({
+  attacker: attackBase,
+  target: judgmentTarget,
+  config: {
+    kaiserLevel: 10,
+    abilities: [{ id: 'JUDGMENT', level: 5 }],
+  },
+  turn: 1,
+  isActingFirst: true,
+  judgmentReady: true,
+});
+assert.strictEqual(judgmentDamage, 1352);
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
