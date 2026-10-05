@@ -13,19 +13,20 @@ export function hasAbility(config: BattleSetupConfig, id: AbilityId): boolean {
 }
 
 export function getKaiserLevelMultiplier(level: BattleChallengeLevel): number {
-  // Prototype scale: Lv10 is the existing Kaiser; Lv100 is deliberately overwhelming.
-  const tier = level / 10;
-  return 1 + (tier - 1) * 0.5;
+  // Lv10 is the baseline. Growth is intentionally capped at 2x by Lv100
+  // so higher difficulty comes from a manageable stat increase rather than runaway values.
+  const progress = (level - 10) / 90;
+  return 1 + Math.min(1, Math.max(0, progress));
 }
 
 export function createKaiserForLevel(base: CharacterDef, level: BattleChallengeLevel): CharacterDef {
   const multiplier = getKaiserLevelMultiplier(level);
+  const progress = multiplier - 1;
   const scale = (value: number) => Math.max(1, Math.round(value * multiplier));
 
-  // Keep high-level Kaiser threatening through HP/offense/speed, while avoiding
-  // a defense wall that makes Irena's normal attack effectively useless too early.
-  const tierProgress = Math.max(0, level / 10 - 1);
-  const defenseMultiplier = 1 + tierProgress * 0.13;
+  // Defense grows more slowly than HP/offense so higher levels stay threatening
+  // without turning normal attacks into an excessive damage wall.
+  const defenseMultiplier = 1 + progress * 0.5;
   const scaleDefense = (value: number) => Math.max(0, Math.round(value * defenseMultiplier));
 
   return {
