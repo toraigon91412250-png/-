@@ -25,6 +25,7 @@ import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
+import { normalizeStatAllocation } from '../utils/statBuild';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -61,6 +62,11 @@ export function useBattleGame(
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
+    statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
+    statAllocation: normalizeStatAllocation(
+      initialBattleConfig.statAllocation,
+      initialBattleConfig.statPointTotal ?? 12,
+    ),
   };
 
   const [state, setState] = useState<BattleUiState>(() => {
@@ -278,10 +284,23 @@ export function useBattleGame(
     const baseP = pChar || stateRef.current.player.character;
     const baseE = eChar || stateRef.current.enemy.character;
     const nextDifficulty = difficultyOverride || stateRef.current.cpuDifficulty;
+    const nextStatPointTotal = Math.max(
+      0,
+      Math.floor(
+        battleConfigOverride?.statPointTotal
+          ?? stateRef.current.battleConfig.statPointTotal
+          ?? 12,
+      ),
+    );
     const nextConfig: BattleSetupConfig = {
       kaiserLevel: battleConfigOverride?.kaiserLevel ?? stateRef.current.battleConfig.kaiserLevel,
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
+      ),
+      statPointTotal: nextStatPointTotal,
+      statAllocation: normalizeStatAllocation(
+        battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
+        nextStatPointTotal,
       ),
     };
     const prepared = createBattleCharacters(baseP, baseE, nextConfig);
@@ -671,7 +690,7 @@ export function useBattleGame(
         }
 
         const armorNote = heavyArmorTriggered
-          ? '（カイザーの【重装】により\${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）'
+          ? `（カイザーの【重装】により${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）`
           : '';
         if (isCritical) {
           addLog(

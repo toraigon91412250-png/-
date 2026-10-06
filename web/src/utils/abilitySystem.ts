@@ -1,5 +1,6 @@
 import { AbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility } from '../types/game';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { applyStatAllocation } from './statBuild';
 
 export function getAbilityLevel(config: BattleSetupConfig, id: AbilityId): number {
   return Math.min(
@@ -22,21 +23,25 @@ export function getKaiserLevelMultiplier(level: BattleChallengeLevel): number {
 export function createKaiserForLevel(base: CharacterDef, level: BattleChallengeLevel): CharacterDef {
   const multiplier = getKaiserLevelMultiplier(level);
   const progress = multiplier - 1;
-  const scale = (value: number) => Math.max(1, Math.round(value * multiplier));
-
-  // Defense grows more slowly than HP/offense so higher levels stay threatening
-  // without turning normal attacks into an excessive damage wall.
-  const defenseMultiplier = 1 + progress * 0.5;
+  // HP is deliberately less inflated at high levels so battles do not become
+  // endurance tests. Offensive/defensive stats ramp more gently early on, then
+  // reach the existing Lv100 ceiling instead of making Lv50 disproportionately hard.
+  const hpMultiplier = 1 + progress * 0.5;
+  const combatMultiplier = 1 + progress * progress;
+  const defenseMultiplier = 1 + progress * progress * 0.5;
+  const scaleHp = (value: number) => Math.max(1, Math.round(value * hpMultiplier));
+  const scaleCombat = (value: number) => Math.max(1, Math.round(value * combatMultiplier));
   const scaleDefense = (value: number) => Math.max(0, Math.round(value * defenseMultiplier));
+  const scaleSpeed = (value: number) => Math.max(1, Math.round(value * multiplier));
 
   return {
     ...base,
-    maxHp: scale(base.maxHp),
-    attack: scale(base.attack),
+    maxHp: scaleHp(base.maxHp),
+    attack: scaleCombat(base.attack),
     defense: scaleDefense(base.defense),
-    speed: scale(base.speed),
-    specialSkillDamage: scale(base.specialSkillDamage),
-    ultimateSkillDamage: scale(base.ultimateSkillDamage),
+    speed: scaleSpeed(base.speed),
+    specialSkillDamage: scaleCombat(base.specialSkillDamage),
+    ultimateSkillDamage: scaleCombat(base.ultimateSkillDamage),
   };
 }
 
@@ -160,7 +165,10 @@ export function createBattleCharacters(
 ): { player: CharacterDef; enemy: CharacterDef } {
   const levelKaiser = createKaiserForLevel(kaiser, config.kaiserLevel);
   return {
-    player: applyStaticAbilityModifiers(player, config),
+    player: applyStaticAbilityModifiers(
+      applyStatAllocation(player, config.statAllocation, config.statPointTotal),
+      config,
+    ),
     enemy: levelKaiser,
   };
 }

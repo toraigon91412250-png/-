@@ -4,6 +4,7 @@ import { Skull, RotateCcw, ArrowLeft } from 'lucide-react';
 import battleBackground from '../assets/戦闘中背景.png';
 import irenaVictoryImage from '../assets/いれーな勝利演出.jpg';
 import SkillUpgradeModal from './SkillUpgradeModal';
+import { STAT_POINTS_PER_WIN } from '../utils/storage';
 
 interface BattleResultModalProps {
   state: BattleUiState;
@@ -348,6 +349,11 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               {state.lastBattleMasteryReward > 0 && (
                 <span style={{ marginLeft: '2px', color: '#B39DDB', fontSize: '10px' }}>
                   （戦術達成 +{state.lastBattleMasteryReward}）
+                </span>
+              )}
+              {playerWon && (
+                <span style={{ marginLeft: '7px', color: '#FFE082', fontSize: '10px' }}>
+                  ＋ステータスポイント {STAT_POINTS_PER_WIN}P
                 </span>
               )}
             </div>

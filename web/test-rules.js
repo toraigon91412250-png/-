@@ -4,6 +4,7 @@ import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffe
 import {
   applyDynamicAbilityModifiers,
   applyStaticAbilityModifiers,
+  createBattleCharacters,
   createKaiserForLevel,
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
@@ -11,6 +12,7 @@ import {
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
+import { applyStatAllocation, createStatPreset, getAbilityBuildMatchPercent, getRemainingStatPoints } from './src/utils/statBuild.ts';
 
 register(
   'data:text/javascript,' + encodeURIComponent(`
@@ -28,6 +30,8 @@ const { IRENA, KAISER, getIrenaWithSkillProgress } = await import('./src/data/ch
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
+const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
+const { performRecruitment } = await import('./src/utils/storage.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
@@ -99,6 +103,10 @@ fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
 assert.strictEqual(getEffectiveSpeed(fighterKaiser), 55);
 assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
 
+const aiSpecialDamageReference = Math.max(0, KAISER.specialSkillDamage - IRENA.defense);
+assert.strictEqual(aiSpecialDamageReference, 175);
+
+
 const config = { kaiserLevel: 10, abilities: [] };
 const attackBase = createInitialFighter(IRENA, true);
 const attackTarget = createInitialFighter(KAISER, false);
@@ -147,9 +155,14 @@ const lv50FeatherDamage = calculateSpecialDamage({
   turn: 1,
   isActingFirst: true,
 });
-assert.strictEqual(lv50Kaiser.defense, 171);
+assert.strictEqual(lv50Kaiser.maxHp, 2933);
+assert.strictEqual(lv50Kaiser.attack, 192);
+assert.strictEqual(lv50Kaiser.defense, 154);
+assert.strictEqual(lv50Kaiser.speed, 116);
+assert.strictEqual(lv50Kaiser.specialSkillDamage, 449);
+assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 599);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
-assert.strictEqual(lv50FeatherDamage, 354);
+assert.strictEqual(lv50FeatherDamage, 371);
 
 assert.strictEqual(getJudgmentThreshold(1), 4);
 assert.strictEqual(getJudgmentThreshold(2), 4);
@@ -206,6 +219,57 @@ const judgmentDamage = calculateNormalAttackDamage({
 });
 assert.strictEqual(judgmentDamage, 1432);
 
+const buildAllocation = { maxHp: 3, attack: 4, defense: 2, speed: 3 };
+const allocatedIrena = applyStatAllocation(IRENA, buildAllocation);
+assert.strictEqual(allocatedIrena.maxHp, 4600);
+assert.strictEqual(allocatedIrena.attack, 408);
+assert.strictEqual(allocatedIrena.defense, 212);
+assert.strictEqual(allocatedIrena.speed, 258);
+
+const allocatedBattleCharacters = createBattleCharacters(IRENA, KAISER, {
+  kaiserLevel: 10,
+  abilities: [],
+  statAllocation: buildAllocation,
+});
+assert.strictEqual(allocatedBattleCharacters.player.maxHp, 4600);
+assert.strictEqual(allocatedBattleCharacters.player.attack, 408);
+assert.strictEqual(allocatedBattleCharacters.player.defense, 212);
+assert.strictEqual(allocatedBattleCharacters.player.speed, 258);
+
+assert.strictEqual(getAbilityBuildMatchPercent('JUDGMENT', { maxHp: 0, attack: 6, defense: 0, speed: 6 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 6, attack: 0, defense: 6, speed: 0 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('ABYSS', { maxHp: 0, attack: 0, defense: 0, speed: 12 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 12, attack: 0, defense: 0, speed: 0 }), 100);
+
+const extendedAllocation = { maxHp: 8, attack: 8, defense: 7, speed: 7 };
+assert.strictEqual(getRemainingStatPoints(extendedAllocation, 30), 0);
+const offensePreset = createStatPreset('OFFENSE', 20);
+assert.strictEqual(getRemainingStatPoints(offensePreset, 20), 0);
+assert.ok(offensePreset.attack >= offensePreset.speed);
+const speedPreset = createStatPreset('SPEED', 20);
+assert.strictEqual(getRemainingStatPoints(speedPreset, 20), 0);
+assert.ok(speedPreset.speed > speedPreset.defense);
+
+for (let i = 0; i < 20; i += 1) {
+  assert.strictEqual(getRecruitmentRewardForPull(-1, true).kind, 'ABILITY_CORE');
+}
+console.log('✓ Stat presets and summon guarantee helper remain consistent.');
+
+const storageValues = new Map();
+globalThis.localStorage = {
+  getItem: key => storageValues.has(key) ? storageValues.get(key) : null,
+  setItem: (key, value) => storageValues.set(key, String(value)),
+  removeItem: key => storageValues.delete(key),
+  clear: () => storageValues.clear(),
+};
+for (let i = 0; i < 8; i += 1) {
+  storageValues.set('duel_arena_recruitment_progress', JSON.stringify({ tickets: 10, totalPulls: i * 10, collectedIds: [], lastResults: [] }));
+  const drawResult = performRecruitment(10);
+  assert.ok(drawResult, '10-pull should be available with 10 tickets.');
+  assert.ok(drawResult.results.some(draw => draw.reward.kind === 'ABILITY_CORE'), `10-pull ${i + 1} must contain an ability core.`);
+}
+console.log('✓ Actual 10-pull execution preserves the ability-core guarantee.');
+
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
 const cpuForAi = createInitialFighter(KAISER, false);
@@ -249,7 +313,17 @@ const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
     turn: 1,
     isActingFirst: false,
   });
-  return { level, maxHp: kaiser.maxHp, attack: kaiser.attack, defense: kaiser.defense, playerDamage, cpuDamage };
+  return {
+    level,
+    maxHp: kaiser.maxHp,
+    attack: kaiser.attack,
+    defense: kaiser.defense,
+    speed: kaiser.speed,
+    specialSkillDamage: kaiser.specialSkillDamage,
+    ultimateSkillDamage: kaiser.ultimateSkillDamage,
+    playerDamage,
+    cpuDamage,
+  };
 });
 
 for (let i = 1; i < levelStats.length; i += 1) {
@@ -319,9 +393,12 @@ const lv100 = levelStats[levelStats.length - 1];
 assert.strictEqual(lv10.maxHp, KAISER.maxHp);
 assert.strictEqual(lv10.attack, KAISER.attack);
 assert.strictEqual(lv10.defense, KAISER.defense);
-assert.strictEqual(lv100.maxHp, KAISER.maxHp * 2);
+assert.strictEqual(lv100.maxHp, Math.round(KAISER.maxHp * 1.5));
 assert.strictEqual(lv100.attack, KAISER.attack * 2);
 assert.strictEqual(lv100.defense, Math.round(KAISER.defense * 1.5));
+assert.strictEqual(lv100.speed, KAISER.speed * 2);
+assert.strictEqual(lv100.specialSkillDamage, KAISER.specialSkillDamage * 2);
+assert.strictEqual(lv100.ultimateSkillDamage, KAISER.ultimateSkillDamage * 2);
 assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
 assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
 
@@ -331,3 +408,5 @@ console.log(
   battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
 );
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
+
+

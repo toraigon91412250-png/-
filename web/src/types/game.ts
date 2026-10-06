@@ -209,9 +209,19 @@ export interface EquippedAbility {
   level: number;
 }
 
+export interface StatAllocation {
+  maxHp: number;
+  attack: number;
+  defense: number;
+  speed: number;
+}
+
 export interface BattleSetupConfig {
   kaiserLevel: BattleChallengeLevel;
   abilities: EquippedAbility[];
+  // Optional for backwards compatibility with older saved/config objects.
+  statAllocation?: StatAllocation;
+  statPointTotal?: number;
 }
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';

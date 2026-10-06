@@ -4,13 +4,14 @@ import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
 import battleBackground from './assets/戦闘中背景.png';
 import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
+import { normalizeStatAllocation } from './utils/statBuild';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
@@ -19,7 +20,13 @@ export const App: React.FC = () => {
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
-  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({ kaiserLevel: 10, abilities: [] });
+  const [availableStatPoints, setAvailableStatPoints] = useState(() => loadStatPoints());
+  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
+    kaiserLevel: 10,
+    abilities: [],
+    statAllocation: normalizeStatAllocation(),
+    statPointTotal: loadStatPoints(),
+  });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
@@ -78,6 +85,7 @@ export const App: React.FC = () => {
       setSkillProgress(loadSkillProgress());
       setRecruitmentProgress(loadRecruitmentProgress());
       setAbilityProgress(loadAbilityProgress());
+      setAvailableStatPoints(loadStatPoints());
     }
   }, [battleState.phase]);
 
@@ -86,11 +94,20 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
+    const currentStatPoints = loadStatPoints();
+    setAvailableStatPoints(currentStatPoints);
+    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
   };
 
   const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
     refreshProgress();
-    if (prefill) setBattleSetup(prefill);
+    const currentStatPoints = loadStatPoints();
+    setAvailableStatPoints(currentStatPoints);
+    if (prefill) {
+      setBattleSetup({ ...prefill, statPointTotal: currentStatPoints });
+    } else {
+      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+    }
     setScreen('BATTLE_SETUP');
   };
 
@@ -201,7 +218,13 @@ export const App: React.FC = () => {
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
     setAbilityProgress(reset.abilityProgress);
-    setBattleSetup({ kaiserLevel: 10, abilities: [] });
+    setAvailableStatPoints(loadStatPoints());
+    setBattleSetup({
+      kaiserLevel: 10,
+      abilities: [],
+      statAllocation: normalizeStatAllocation(),
+      statPointTotal: loadStatPoints(),
+    });
   };
 
   return (
@@ -286,6 +309,7 @@ export const App: React.FC = () => {
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
           abilityProgress={abilityProgress}
+          availableStatPoints={availableStatPoints}
           initialConfig={battleSetup}
           onBack={() => setScreen('SELECT')}
           onStartBattle={handleStartBattle}
