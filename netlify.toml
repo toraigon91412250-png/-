@@ -5,6 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  VITE_BASE_PATH = "/"
 
 # Serve index.html for any unknown path (SPA fallback)
 [[redirects]]
