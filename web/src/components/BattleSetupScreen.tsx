@@ -3,7 +3,8 @@ import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
 import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, StatAllocation } from '../types/game';
-import { getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey } from '../utils/statBuild';
+import { IRENA } from '../data/characters';
+import { createStatPreset, getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey, StatPresetId } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
@@ -37,8 +38,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       return normalizeStatAllocation({
         ...current,
         [key]: current[key] + delta,
-      });
+      }, availableStatPoints);
     });
+  };
+
+  const applyPreset = (preset: StatPresetId) => {
+    setStatAllocation(createStatPreset(preset, availableStatPoints));
   };
 
   const toggleAbility = (id: AbilityId) => {
@@ -184,12 +189,42 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
               <div style={{ marginTop: '4px', fontSize: '21px', fontWeight: 950 }}>ステータス配分</div>
             </div>
             <div style={{ fontSize: '12px', fontWeight: 900, color: getRemainingStatPoints(statAllocation, availableStatPoints) === 0 ? '#64FFDA' : '#FFCC80' }}>
-              残り {getRemainingStatPoints(statAllocation)}P / {availableStatPoints}P
+              残り {getRemainingStatPoints(statAllocation, availableStatPoints)}P / {availableStatPoints}P
             </div>
           </div>
 
           <div style={{ marginTop: '12px', fontSize: '9px', color: '#8190A8', lineHeight: 1.4 }}>
             1Pごとの上昇量: HP +{STAT_BUILD_POINT_VALUES.maxHp} / 攻撃 +{STAT_BUILD_POINT_VALUES.attack} / 防御 +{STAT_BUILD_POINT_VALUES.defense} / 素早さ +{STAT_BUILD_POINT_VALUES.speed}
+          </div>
+
+          <div style={{ marginTop: '10px' }}>
+            <div style={{ fontSize: '9px', color: '#8290A8', fontWeight: 850, marginBottom: '6px' }}>クイックビルド</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '6px' }}>
+              {([
+                ['BALANCED', '均衡'],
+                ['OFFENSE', '火力'],
+                ['DEFENSE', '耐久'],
+                ['SPEED', '先手'],
+              ] as const).map(([preset, label]) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => applyPreset(preset)}
+                  style={{
+                    minHeight: '34px',
+                    borderRadius: '8px',
+                    border: '1px solid #36445B',
+                    background: 'rgba(20,29,43,0.92)',
+                    color: '#D9E4F2',
+                    fontSize: '10px',
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div style={{ display: 'grid', gap: '8px', marginTop: '10px' }}>
@@ -201,14 +236,14 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                 speed: '素早さ',
               };
               const displayBase: Record<StatAllocationKey, number> = {
-                maxHp: 4000,
-                attack: 360,
-                defense: 200,
-                speed: 240,
+                maxHp: IRENA.maxHp,
+                attack: IRENA.attack,
+                defense: IRENA.defense,
+                speed: IRENA.speed,
               };
               const points = statAllocation[key];
               const bonus = points * STAT_BUILD_POINT_VALUES[key];
-              const remaining = getRemainingStatPoints(statAllocation);
+              const remaining = getRemainingStatPoints(statAllocation, availableStatPoints);
 
               return (
                 <div key={key} style={{
