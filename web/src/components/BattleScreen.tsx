@@ -4,7 +4,6 @@ import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
-import { GAME_BALANCE } from '../data/gameBalance';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
@@ -243,7 +242,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   ]);
 
   const isActionEnabled = state.phase === 'SELECT_ACTION' && !state.player.isSuperFallenShotCharging;
-  const cpuIntentMeta = CPU_INTENT_META[state.cpuIntent];
 
   useEffect(() => {
     if (state.phase !== 'SELECT_ACTION' || !state.player.isSuperFallenShotCharging) return;
