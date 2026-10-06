@@ -84,7 +84,6 @@ export const App: React.FC = () => {
       setSkillProgress(loadSkillProgress());
       setRecruitmentProgress(loadRecruitmentProgress());
       setAbilityProgress(loadAbilityProgress());
-    setAvailableStatPoints(loadStatPoints());
       setAvailableStatPoints(loadStatPoints());
     }
   }, [battleState.phase]);
@@ -94,6 +93,7 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
+    setAvailableStatPoints(loadStatPoints());
   };
 
   const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
