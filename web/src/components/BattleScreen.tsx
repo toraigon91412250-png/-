@@ -79,6 +79,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
   return (
     <div
       aria-label="戦況予測"
+      aria-live="polite"
       style={{
         marginTop: compact ? '4px' : '6px',
         padding: compact ? '6px 8px' : '7px 10px',
@@ -465,8 +466,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               visualEffect={state.visualEffect}
             />
 
-            
-
             <TacticalForecast state={state} compact />
 
             {/* 2. Clash Area / Banner */}
@@ -576,8 +575,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
                 visualEffect={state.visualEffect}
               />
-
-              
 
               <TacticalForecast state={state} />
 
