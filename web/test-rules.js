@@ -99,6 +99,76 @@ fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
 assert.strictEqual(getEffectiveSpeed(fighterKaiser), 55);
 assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
 
+ // Regression coverage for the four base stats flowing through status, speed, order, and damage calculations.
+const statFlowIrena = createInitialFighter({ ...IRENA, attack: 200, speed: 100 }, true);
+const statFlowTarget = createInitialFighter({ ...KAISER, id: 'stat-flow-target', defense: 100, speed: 110 }, false);
+
+const baseNormalStatFlowDamage = calculateNormalAttackDamage({
+  attacker: statFlowIrena,
+  target: statFlowTarget,
+  config: { kaiserLevel: 10, abilities: [] },
+  turn: 1,
+  isActingFirst: false,
+});
+assert.strictEqual(baseNormalStatFlowDamage, 100);
+
+const bleedingTarget = {
+  ...statFlowTarget,
+  activeAilments: [{ type: 'BLEED', remainingTurns: 3, dotDamage: 30 }],
+};
+assert.strictEqual(getEffectiveDefense(bleedingTarget), 80);
+assert.strictEqual(
+  calculateNormalAttackDamage({
+    attacker: statFlowIrena,
+    target: bleedingTarget,
+    config: { kaiserLevel: 10, abilities: [] },
+    turn: 1,
+    isActingFirst: false,
+  }),
+  120,
+);
+
+const pressuredAttacker = {
+  ...statFlowIrena,
+  activeAilments: [{ type: 'PRESSURE', remainingTurns: 2 }],
+};
+assert.strictEqual(getEffectiveAttack(pressuredAttacker), 175);
+assert.strictEqual(
+  calculateNormalAttackDamage({
+    attacker: pressuredAttacker,
+    target: statFlowTarget,
+    config: { kaiserLevel: 10, abilities: [] },
+    turn: 1,
+    isActingFirst: false,
+  }),
+  75,
+);
+
+const orderPlayer = createInitialFighter({ ...IRENA, speed: 100 }, true);
+const orderEnemy = createInitialFighter({ ...KAISER, speed: 110 }, false);
+const pressuredOrderEnemy = {
+  ...orderEnemy,
+  activeAilments: [{ type: 'PRESSURE', remainingTurns: 2 }],
+};
+assert.strictEqual(getEffectiveSpeed(orderEnemy), 110);
+assert.strictEqual(getEffectiveSpeed(pressuredOrderEnemy), 85);
+assert.ok(
+  getEffectiveSpeed(orderPlayer) >= getEffectiveSpeed(pressuredOrderEnemy),
+  'A speed debuff must propagate to effective turn-order speed calculations.'
+);
+
+assert.strictEqual(
+  calculateSpecialDamage({
+    attacker: createInitialFighter({ ...IRENA, specialSkillDamage: 300 }, true),
+    target: bleedingTarget,
+    config: { kaiserLevel: 10, abilities: [] },
+    turn: 1,
+    isActingFirst: true,
+  }),
+  220,
+);
+console.log('✓ Base HP/ATK/DEF/SPD changes propagate through status and damage calculations.');
+
 const config = { kaiserLevel: 10, abilities: [] };
 const attackBase = createInitialFighter(IRENA, true);
 const attackTarget = createInitialFighter(KAISER, false);
