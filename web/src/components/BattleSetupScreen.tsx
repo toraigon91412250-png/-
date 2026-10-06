@@ -58,6 +58,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         level: abilityProgress.levels[id],
       })),
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
+      statPointTotal: availableStatPoints,
     });
   };
 
@@ -420,7 +421,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                       {getAbilityBuildHint(ability.id)}
                       {getSpentStatPoints(statAllocation) > 0 && (
                         <span style={{ color: '#B0BEC5' }}>
-                          {' '}現在の配分との一致: {getAbilityBuildMatchPercent(ability.id, statAllocation)}%
+                          {' '}現在の配分との一致: {getAbilityBuildMatchPercent(ability.id, statAllocation, availableStatPoints)}%
                         </span>
                       )}
                     </div>
