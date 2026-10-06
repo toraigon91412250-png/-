@@ -25,7 +25,10 @@ export const EMPTY_STAT_ALLOCATION: StatAllocation = {
   speed: 0,
 };
 
-export function normalizeStatAllocation(input?: Partial<StatAllocation> | null): StatAllocation {
+export function normalizeStatAllocation(
+  input?: Partial<StatAllocation> | null,
+  pointTotal = STAT_BUILD_POINT_TOTAL,
+): StatAllocation {
   const normalized: StatAllocation = {
     maxHp: Math.max(0, Math.floor(Number(input?.maxHp) || 0)),
     attack: Math.max(0, Math.floor(Number(input?.attack) || 0)),
@@ -33,7 +36,7 @@ export function normalizeStatAllocation(input?: Partial<StatAllocation> | null):
     speed: Math.max(0, Math.floor(Number(input?.speed) || 0)),
   };
 
-  let remaining = STAT_BUILD_POINT_TOTAL;
+  let remaining = Math.max(0, Math.floor(pointTotal));
   for (const key of STAT_ALLOCATION_KEYS) {
     normalized[key] = Math.min(normalized[key], remaining);
     remaining -= normalized[key];
@@ -42,13 +45,20 @@ export function normalizeStatAllocation(input?: Partial<StatAllocation> | null):
   return normalized;
 }
 
-export function getSpentStatPoints(allocation?: Partial<StatAllocation> | null): number {
-  const normalized = normalizeStatAllocation(allocation);
+export function getSpentStatPoints(
+  allocation?: Partial<StatAllocation> | null,
+  pointTotal = STAT_BUILD_POINT_TOTAL,
+): number {
+  const normalized = normalizeStatAllocation(allocation, pointTotal);
   return STAT_ALLOCATION_KEYS.reduce((sum, key) => sum + normalized[key], 0);
 }
 
-export function getRemainingStatPoints(allocation?: Partial<StatAllocation> | null): number {
-  return STAT_BUILD_POINT_TOTAL - getSpentStatPoints(allocation);
+export function getRemainingStatPoints(
+  allocation?: Partial<StatAllocation> | null,
+  pointTotal = STAT_BUILD_POINT_TOTAL,
+): number {
+  const total = Math.max(0, Math.floor(pointTotal));
+  return Math.max(0, total - getSpentStatPoints(allocation, total));
 }
 
 export function applyStatAllocation(character: CharacterDef, allocation?: Partial<StatAllocation> | null): CharacterDef {
