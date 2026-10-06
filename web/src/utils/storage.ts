@@ -524,13 +524,14 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
       } while (draws.some(draw => draw.reward.kind === 'ABILITY_CORE' && draw.reward.abilityId === reward.abilityId));
     }
 
-    // Ten-pulls guarantee at least one SR-or-better result.
+    // Every 10-pull guarantees at least one ability core (SSR).
+    // The first 10-pull keeps its stronger two-distinct-core guarantee above.
     if (
       normalizedCount === 10 &&
       index === normalizedCount - 1 &&
-      !draws.some(draw => draw.reward.rarity !== 'R')
+      !draws.some(draw => draw.reward.kind === 'ABILITY_CORE')
     ) {
-      reward = getRecruitmentRewardForPull(-1, false, true);
+      reward = getRecruitmentRewardForPull(-1, true);
     }
 
     const isNew = !collected.has(reward.id);
