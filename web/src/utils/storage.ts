@@ -4,6 +4,7 @@ import { MAX_ABILITY_LEVEL } from '../data/abilities';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
+const STAT_POINTS_KEY = 'duel_arena_stat_points';
 
 const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
   shards: 50,
@@ -15,9 +16,31 @@ const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
 };
 
 export const BATTLE_REWARD_WIN = 50;
+export const INITIAL_STAT_POINTS = 12;
+export const STAT_POINTS_PER_WIN = 2;
 export const BATTLE_REWARD_LOSS = 20;
 export const PATH_MASTERY_REWARD = 15;
 export const MAX_SKILL_LEVEL = 10;
+
+export function loadStatPoints(): number {
+  try {
+    const raw = localStorage.getItem(STAT_POINTS_KEY);
+    const points = Number(raw);
+    return Number.isFinite(points) ? Math.max(0, Math.floor(points)) : INITIAL_STAT_POINTS;
+  } catch {
+    return INITIAL_STAT_POINTS;
+  }
+}
+
+export function addStatPoints(amount: number): number {
+  const next = loadStatPoints() + Math.max(0, Math.floor(amount));
+  try {
+    localStorage.setItem(STAT_POINTS_KEY, String(next));
+  } catch {
+    // ignore
+  }
+  return next;
+}
 
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
 
@@ -239,6 +262,7 @@ export function resetProgressForDeveloper(): {
   const skillProgress = persistSkillProgress({ ...INITIAL_SKILL_PROGRESS });
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
+    localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
   } catch {
     // ignore
   }
@@ -395,6 +419,7 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallS
 
   addSkillShards(getBattleReward(playerWon, masteryBonus));
   addRecruitmentTickets(1);
+  if (playerWon) addStatPoints(STAT_POINTS_PER_WIN);
   return updated;
 }
 
