@@ -363,3 +363,5 @@ console.log(
   battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
 );
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
+
+// Temporary CI trigger for balance regression validation.
