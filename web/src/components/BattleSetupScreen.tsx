@@ -10,6 +10,7 @@ interface BattleSetupScreenProps {
   initialConfig?: BattleSetupConfig;
   onBack: () => void;
   onStartBattle: (config: BattleSetupConfig) => void;
+  availableStatPoints: number;
 }
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
@@ -17,6 +18,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   initialConfig,
   onBack,
   onStartBattle,
+  availableStatPoints,
 }) => {
   const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(
     initialConfig?.kaiserLevel ?? 10,
@@ -25,12 +27,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     initialConfig?.abilities.map(ability => ability.id).slice(0, 2) ?? [],
   );
   const [statAllocation, setStatAllocation] = useState<StatAllocation>(() =>
-    normalizeStatAllocation(initialConfig?.statAllocation),
+    normalizeStatAllocation(initialConfig?.statAllocation, availableStatPoints),
   );
 
   const changeStat = (key: StatAllocationKey, delta: number) => {
     setStatAllocation(current => {
-      if (delta > 0 && getRemainingStatPoints(current) <= 0) return current;
+      if (delta > 0 && getRemainingStatPoints(current, availableStatPoints) <= 0) return current;
       if (delta < 0 && current[key] <= 0) return current;
       return normalizeStatAllocation({
         ...current,
@@ -180,8 +182,8 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
               <div style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.16em', color: '#90CAF9' }}>FREE STAT ALLOCATION</div>
               <div style={{ marginTop: '4px', fontSize: '21px', fontWeight: 950 }}>ステータス配分</div>
             </div>
-            <div style={{ fontSize: '12px', fontWeight: 900, color: getRemainingStatPoints(statAllocation) === 0 ? '#64FFDA' : '#FFCC80' }}>
-              残り {getRemainingStatPoints(statAllocation)}P / {STAT_BUILD_POINT_TOTAL}P
+            <div style={{ fontSize: '12px', fontWeight: 900, color: getRemainingStatPoints(statAllocation, availableStatPoints) === 0 ? '#64FFDA' : '#FFCC80' }}>
+              残り {getRemainingStatPoints(statAllocation)}P / {availableStatPoints}P
             </div>
           </div>
 
@@ -291,12 +293,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             border: '1px solid #283549',
           }}>
             <div style={{ fontSize: '10px', color: '#8EA1B9', lineHeight: 1.4 }}>
-              {getSpentStatPoints(statAllocation)}P使用中。固定職はなく、配分した数値そのものがビルドになります。
+              {getSpentStatPoints(statAllocation, availableStatPoints)}P使用中。固定職はなく、配分した数値そのものがビルドになります。
             </div>
 
             <button
               type="button"
-              onClick={() => setStatAllocation(normalizeStatAllocation())}
+              onClick={() => setStatAllocation(normalizeStatAllocation(undefined, availableStatPoints))}
               disabled={getSpentStatPoints(statAllocation) === 0}
               style={{
                 flexShrink: 0,
