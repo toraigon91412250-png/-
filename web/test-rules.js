@@ -11,6 +11,7 @@ import {
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
+import { applyStatAllocation, getAbilityBuildMatchPercent } from './src/utils/statBuild.ts';
 
 register(
   'data:text/javascript,' + encodeURIComponent(`
@@ -205,6 +206,28 @@ const judgmentDamage = calculateNormalAttackDamage({
   judgmentReady: true,
 });
 assert.strictEqual(judgmentDamage, 1432);
+
+const buildAllocation = { maxHp: 3, attack: 4, defense: 2, speed: 3 };
+const allocatedIrena = applyStatAllocation(IRENA, buildAllocation);
+assert.strictEqual(allocatedIrena.maxHp, 4600);
+assert.strictEqual(allocatedIrena.attack, 408);
+assert.strictEqual(allocatedIrena.defense, 212);
+assert.strictEqual(allocatedIrena.speed, 258);
+
+const allocatedBattleCharacters = createBattleCharacters(IRENA, KAISER, {
+  kaiserLevel: 10,
+  abilities: [],
+  statAllocation: buildAllocation,
+});
+assert.strictEqual(allocatedBattleCharacters.player.maxHp, 4600);
+assert.strictEqual(allocatedBattleCharacters.player.attack, 408);
+assert.strictEqual(allocatedBattleCharacters.player.defense, 212);
+assert.strictEqual(allocatedBattleCharacters.player.speed, 258);
+
+assert.strictEqual(getAbilityBuildMatchPercent('JUDGMENT', { maxHp: 0, attack: 6, defense: 0, speed: 6 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 6, attack: 0, defense: 6, speed: 0 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('ABYSS', { maxHp: 0, attack: 0, defense: 0, speed: 12 }), 100);
+assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 12, attack: 0, defense: 0, speed: 0 }), 100);
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
