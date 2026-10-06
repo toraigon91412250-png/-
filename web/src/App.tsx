@@ -25,6 +25,7 @@ export const App: React.FC = () => {
     kaiserLevel: 10,
     abilities: [],
     statAllocation: normalizeStatAllocation(),
+    statPointTotal: loadStatPoints(),
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
@@ -93,12 +94,20 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
-    setAvailableStatPoints(loadStatPoints());
+    const currentStatPoints = loadStatPoints();
+    setAvailableStatPoints(currentStatPoints);
+    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
   };
 
   const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
     refreshProgress();
-    if (prefill) setBattleSetup(prefill);
+    const currentStatPoints = loadStatPoints();
+    setAvailableStatPoints(currentStatPoints);
+    if (prefill) {
+      setBattleSetup({ ...prefill, statPointTotal: currentStatPoints });
+    } else {
+      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+    }
     setScreen('BATTLE_SETUP');
   };
 
@@ -214,6 +223,7 @@ export const App: React.FC = () => {
       kaiserLevel: 10,
       abilities: [],
       statAllocation: normalizeStatAllocation(),
+      statPointTotal: loadStatPoints(),
     });
   };
 
