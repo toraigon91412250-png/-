@@ -101,6 +101,10 @@ fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
 assert.strictEqual(getEffectiveSpeed(fighterKaiser), 55);
 assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
 
+const aiSpecialDamageReference = Math.max(0, KAISER.specialSkillDamage - IRENA.defense);
+assert.strictEqual(aiSpecialDamageReference, 175);
+
+
 const config = { kaiserLevel: 10, abilities: [] };
 const attackBase = createInitialFighter(IRENA, true);
 const attackTarget = createInitialFighter(KAISER, false);
