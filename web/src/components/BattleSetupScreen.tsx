@@ -33,10 +33,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     });
   };
 
-  const canStart = selectedAbilities.length === 2;
-
   const startBattle = () => {
-    if (!canStart) return;
     onStartBattle({
       kaiserLevel: selectedLevel,
       abilities: selectedAbilities.map(id => ({
@@ -170,7 +167,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             <div style={{
               fontSize: '12px',
               fontWeight: 900,
-              color: canStart ? '#64FFDA' : '#90A4AE',
+              color: selectedAbilities.length === 2 ? '#64FFDA' : '#90A4AE',
             }}>
               {selectedAbilities.length} / 2
             </div>
@@ -286,7 +283,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           </div>
           <div style={{ marginTop: '4px', fontSize: '11px', color: '#B0BEC5' }}>
             {selectedAbilities.length === 0
-              ? '権能を2つ選択してください。'
+              ? '権能なしで開始します。'
               : selectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
           </div>
         </div>
@@ -294,16 +291,15 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         <button
           type="button"
           onClick={startBattle}
-          disabled={!canStart}
           style={{
             width: '100%',
             minHeight: '56px',
             marginTop: '12px',
             borderRadius: '14px',
-            border: canStart ? '1.5px solid #FFB74D' : '1px solid #394153',
-            background: canStart ? 'linear-gradient(135deg, #E65100, #B52E00)' : '#1A1F2B',
-            color: canStart ? '#FFFFFF' : '#667085',
-            cursor: canStart ? 'pointer' : 'not-allowed',
+            border: '1.5px solid #FFB74D',
+            background: 'linear-gradient(135deg, #E65100, #B52E00)',
+            color: '#FFFFFF',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -316,7 +312,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         </button>
 
         <div style={{ marginTop: '9px', textAlign: 'center', fontSize: '9px', color: '#566176' }}>
-          権能は2つまで選択可能。組み合わせは全10通り。
+          権能は任意で0〜2個まで選択可能。権能なしでも戦闘を開始できます。
         </div>
       </div>
     </div>
