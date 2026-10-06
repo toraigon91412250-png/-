@@ -240,6 +240,20 @@ assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 6, attack
 assert.strictEqual(getAbilityBuildMatchPercent('ABYSS', { maxHp: 0, attack: 0, defense: 0, speed: 12 }), 100);
 assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 12, attack: 0, defense: 0, speed: 0 }), 100);
 
+const extendedAllocation = { maxHp: 8, attack: 8, defense: 7, speed: 7 };
+assert.strictEqual(getRemainingStatPoints(extendedAllocation, 30), 0);
+const offensePreset = createStatPreset('OFFENSE', 20);
+assert.strictEqual(getRemainingStatPoints(offensePreset, 20), 0);
+assert.ok(offensePreset.attack >= offensePreset.speed);
+const speedPreset = createStatPreset('SPEED', 20);
+assert.strictEqual(getRemainingStatPoints(speedPreset, 20), 0);
+assert.ok(speedPreset.speed > speedPreset.defense);
+
+for (let i = 0; i < 20; i += 1) {
+  assert.strictEqual(getRecruitmentRewardForPull(-1, true).kind, 'ABILITY_CORE');
+}
+console.log('✓ Stat presets and summon guarantee helper remain consistent.');
+
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
 const cpuForAi = createInitialFighter(KAISER, false);
