@@ -165,7 +165,10 @@ export function createBattleCharacters(
 ): { player: CharacterDef; enemy: CharacterDef } {
   const levelKaiser = createKaiserForLevel(kaiser, config.kaiserLevel);
   return {
-    player: applyStaticAbilityModifiers(applyStatAllocation(player, config.statAllocation), config),
+    player: applyStaticAbilityModifiers(
+      applyStatAllocation(player, config.statAllocation, config.statPointTotal),
+      config,
+    ),
     enemy: levelKaiser,
   };
 }
