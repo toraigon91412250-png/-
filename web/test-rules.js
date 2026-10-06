@@ -167,6 +167,10 @@ assert.strictEqual(
   }),
   220,
 );
+const statFlowHp = createInitialFighter({ ...IRENA, maxHp: 5000 }, true);
+assert.strictEqual(statFlowHp.character.maxHp, 5000);
+assert.strictEqual(statFlowHp.currentHp, 5000);
+
 console.log('✓ Base HP/ATK/DEF/SPD changes propagate through status and damage calculations.');
 
 const config = { kaiserLevel: 10, abilities: [] };
