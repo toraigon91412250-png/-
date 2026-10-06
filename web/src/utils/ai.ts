@@ -100,7 +100,10 @@ export const CpuAi = {
     const playerDefense = getEffectiveDefense(player);
     const buffBonus = cpu.isBuffed ? cpu.buffDamageBonus || 125 : 0;
     const normalDamage = Math.max(15, cpuAttack - playerDefense) + buffBonus;
-    const specialDamage = cpu.character.specialSkillDamage + buffBonus;
+    const specialDamage = Math.max(
+      0,
+      cpu.character.specialSkillDamage + buffBonus - playerDefense,
+    );
     const ultimateDamage = cpu.character.ultimateSkillDamage + buffBonus;
 
     const finalNormalDamage = cpu.character.id === 'kaiser'
