@@ -14,3 +14,6 @@
 
 # Netlify deploy verification trigger (latest main build is known-good)
 # Redeploy trigger for PR #69
+
+[context.deploy-preview]
+  ignore = "exit 1"
