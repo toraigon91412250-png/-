@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
 import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, StatAllocation } from '../types/game';
-import { getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_BUILD_POINT_VALUES, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_TOTAL, StatAllocationKey } from '../utils/statBuild';
+import { getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_TOTAL, STAT_BUILD_POINT_VALUES, StatAllocationKey } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
@@ -185,7 +185,11 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gap: '8px', marginTop: '12px' }}>
+          <div style={{ marginTop: '12px', fontSize: '9px', color: '#8190A8', lineHeight: 1.4 }}>
+            1Pごとの上昇量: HP +{STAT_BUILD_POINT_VALUES.maxHp} / 攻撃 +{STAT_BUILD_POINT_VALUES.attack} / 防御 +{STAT_BUILD_POINT_VALUES.defense} / 素早さ +{STAT_BUILD_POINT_VALUES.speed}
+          </div>
+
+          <div style={{ display: 'grid', gap: '8px', marginTop: '10px' }}>
             {STAT_ALLOCATION_KEYS.map(key => {
               const labels: Record<StatAllocationKey, string> = {
                 maxHp: 'HP',
@@ -201,32 +205,30 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
               };
               const points = statAllocation[key];
               const bonus = points * STAT_BUILD_POINT_VALUES[key];
+              const remaining = getRemainingStatPoints(statAllocation);
+
               return (
-                <div
-                  key={key}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'minmax(92px, 1fr) auto',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '9px 10px',
-                    borderRadius: '11px',
-                    background: 'rgba(18,25,39,0.86)',
-                    border: '1px solid #303B51',
-                  }}
-                >
+                <div key={key} style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'minmax(92px, 1fr) auto',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 10px',
+                  borderRadius: '11px',
+                  background: 'rgba(18,25,39,0.86)',
+                  border: '1px solid #303B51',
+                }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '7px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '7px', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '14px', fontWeight: 950 }}>{labels[key]}</span>
                       <span style={{ fontSize: '12px', color: '#E3F2FD', fontWeight: 800 }}>
                         {displayBase[key] + bonus}
                       </span>
-                      <span style={{ fontSize: '9px', color: '#7C879C' }}>({bonus >= 0 ? '+' : ''}{bonus})</span>
-                    </div>
-                    <div style={{ marginTop: '2px', fontSize: '9px', color: '#8190A8' }}>
-                      1P = +{STAT_BUILD_POINT_VALUES[key]}
+                      <span style={{ fontSize: '9px', color: '#7C879C' }}>配分後</span>
+                      <span style={{ fontSize: '9px', color: '#90CAF9' }}>＋{bonus}</span>
                     </div>
                   </div>
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <button
                       type="button"
@@ -247,20 +249,24 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                     >
                       <Minus size={15} />
                     </button>
-                    <div style={{ minWidth: '27px', textAlign: 'center', fontSize: '14px', fontWeight: 950 }}>{points}P</div>
+
+                    <div style={{ minWidth: '27px', textAlign: 'center', fontSize: '14px', fontWeight: 950 }}>
+                      {points}P
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => changeStat(key, 1)}
-                      disabled={getRemainingStatPoints(statAllocation) <= 0}
+                      disabled={remaining <= 0}
                       aria-label={`${labels[key]}を1P増やす`}
                       style={{
                         width: '34px',
                         height: '34px',
                         borderRadius: '9px',
                         border: '1px solid #4B647F',
-                        background: getRemainingStatPoints(statAllocation) > 0 ? '#173047' : '#111722',
-                        color: getRemainingStatPoints(statAllocation) > 0 ? '#E3F2FD' : '#4B5563',
-                        cursor: getRemainingStatPoints(statAllocation) > 0 ? 'pointer' : 'not-allowed',
+                        background: remaining > 0 ? '#173047' : '#111722',
+                        color: remaining > 0 ? '#E3F2FD' : '#4B5563',
+                        cursor: remaining > 0 ? 'pointer' : 'not-allowed',
                         display: 'grid',
                         placeItems: 'center',
                       }}
@@ -285,8 +291,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             border: '1px solid #283549',
           }}>
             <div style={{ fontSize: '10px', color: '#8EA1B9', lineHeight: 1.4 }}>
-              {getSpentStatPoints(statAllocation)}P使用中。配分は固定職ではなく、実際の数値そのものがビルドになります。
+              {getSpentStatPoints(statAllocation)}P使用中。固定職はなく、配分した数値そのものがビルドになります。
             </div>
+
             <button
               type="button"
               onClick={() => setStatAllocation(normalizeStatAllocation())}
@@ -314,6 +321,13 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           padding: '14px',
           borderRadius: '16px',
           border: '1px solid #443D5C',
+          background: 'linear-gradient(135deg, rgba(28,22,43,0.96), rgba(14,17,29,0.96))',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10px' }}>
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.16em', color: '#B39DDB' }}>FALLEN ANGEL POWERS</div>
+              <div style={{ marginTop: '4px', fontSize: '21px', fontWeight: 950 }}>権能選択</div>
+            </div>
             <div style={{
               fontSize: '12px',
               fontWeight: 900,
