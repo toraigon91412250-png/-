@@ -221,6 +221,7 @@ export interface BattleSetupConfig {
   abilities: EquippedAbility[];
   // Optional for backwards compatibility with older saved/config objects.
   statAllocation?: StatAllocation;
+  statPointTotal?: number;
 }
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';
