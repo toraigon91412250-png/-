@@ -11,6 +11,7 @@ import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
+import { normalizeStatAllocation } from './utils/statBuild';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
@@ -19,7 +20,11 @@ export const App: React.FC = () => {
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
-  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({ kaiserLevel: 10, abilities: [] });
+  const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
+    kaiserLevel: 10,
+    abilities: [],
+    statAllocation: normalizeStatAllocation(),
+  });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
   const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
@@ -201,7 +206,11 @@ export const App: React.FC = () => {
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
     setAbilityProgress(reset.abilityProgress);
-    setBattleSetup({ kaiserLevel: 10, abilities: [] });
+    setBattleSetup({
+      kaiserLevel: 10,
+      abilities: [],
+      statAllocation: normalizeStatAllocation(),
+    });
   };
 
   return (
