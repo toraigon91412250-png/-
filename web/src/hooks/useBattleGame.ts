@@ -62,7 +62,11 @@ export function useBattleGame(
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
-    statAllocation: normalizeStatAllocation(initialBattleConfig.statAllocation),
+    statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
+    statAllocation: normalizeStatAllocation(
+      initialBattleConfig.statAllocation,
+      initialBattleConfig.statPointTotal ?? 12,
+    ),
   };
 
   const [state, setState] = useState<BattleUiState>(() => {
@@ -280,10 +284,23 @@ export function useBattleGame(
     const baseP = pChar || stateRef.current.player.character;
     const baseE = eChar || stateRef.current.enemy.character;
     const nextDifficulty = difficultyOverride || stateRef.current.cpuDifficulty;
+    const nextStatPointTotal = Math.max(
+      0,
+      Math.floor(
+        battleConfigOverride?.statPointTotal
+          ?? stateRef.current.battleConfig.statPointTotal
+          ?? 12,
+      ),
+    );
     const nextConfig: BattleSetupConfig = {
       kaiserLevel: battleConfigOverride?.kaiserLevel ?? stateRef.current.battleConfig.kaiserLevel,
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
+      ),
+      statPointTotal: nextStatPointTotal,
+      statAllocation: normalizeStatAllocation(
+        battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
+        nextStatPointTotal,
       ),
     };
     const prepared = createBattleCharacters(baseP, baseE, nextConfig);
