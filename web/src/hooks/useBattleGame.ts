@@ -690,7 +690,7 @@ export function useBattleGame(
         }
 
         const armorNote = heavyArmorTriggered
-          ? '（カイザーの【重装】により\${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）'
+          ? `（カイザーの【重装】により${GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION}軽減！）`
           : '';
         if (isCritical) {
           addLog(
