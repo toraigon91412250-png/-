@@ -149,7 +149,12 @@ const lv50FeatherDamage = calculateSpecialDamage({
   turn: 1,
   isActingFirst: true,
 });
-assert.strictEqual(lv50Kaiser.defense, 171);
+assert.strictEqual(lv50Kaiser.maxHp, 2933);
+assert.strictEqual(lv50Kaiser.attack, 192);
+assert.strictEqual(lv50Kaiser.defense, 154);
+assert.strictEqual(lv50Kaiser.speed, 116);
+assert.strictEqual(lv50Kaiser.specialSkillDamage, 449);
+assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 599);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
 assert.strictEqual(lv50FeatherDamage, 354);
 
@@ -343,9 +348,12 @@ const lv100 = levelStats[levelStats.length - 1];
 assert.strictEqual(lv10.maxHp, KAISER.maxHp);
 assert.strictEqual(lv10.attack, KAISER.attack);
 assert.strictEqual(lv10.defense, KAISER.defense);
-assert.strictEqual(lv100.maxHp, KAISER.maxHp * 2);
+assert.strictEqual(lv100.maxHp, Math.round(KAISER.maxHp * 1.5));
 assert.strictEqual(lv100.attack, KAISER.attack * 2);
 assert.strictEqual(lv100.defense, Math.round(KAISER.defense * 1.5));
+assert.strictEqual(lv100.speed, KAISER.speed * 2);
+assert.strictEqual(lv100.specialSkillDamage, KAISER.specialSkillDamage * 2);
+assert.strictEqual(lv100.ultimateSkillDamage, KAISER.ultimateSkillDamage * 2);
 assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
 assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
 
