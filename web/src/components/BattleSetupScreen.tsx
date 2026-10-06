@@ -266,7 +266,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             lineHeight: 1.45,
             color: '#9288A3',
           }}>
-            権能は戦闘開始時に2つだけ装備されます。効果は現在のLvで適用されます。
+            権能は任意で0〜2個まで装備できます。選択しない場合は権能なしで戦闘を開始します。効果は選択した現在のLvで適用されます。
           </div>
         </section>
 
