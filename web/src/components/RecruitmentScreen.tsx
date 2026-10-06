@@ -775,7 +775,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
           </div>
           <div style={{ marginTop:7, color:'#8D919B', fontSize:10, lineHeight:1.7 }}>
             召喚すると、その場で報酬が抽選されます。新規報酬は収集に登録され、重複した報酬は追加の黒羽の欠片へ変換されます。
-            SSRでは権能本体、R/SRでは権能ごとの欠片が出現します。10連は最低1個の権能本体を保証します。
+            Rは技強化の欠片、SRは権能の欠片、SSRは権能本体、URは特殊技。10連は権能本体1個以上を保証します。
           </div>
         </section>
 
