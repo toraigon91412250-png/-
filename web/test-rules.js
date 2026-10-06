@@ -278,7 +278,17 @@ const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
     turn: 1,
     isActingFirst: false,
   });
-  return { level, maxHp: kaiser.maxHp, attack: kaiser.attack, defense: kaiser.defense, playerDamage, cpuDamage };
+  return {
+    level,
+    maxHp: kaiser.maxHp,
+    attack: kaiser.attack,
+    defense: kaiser.defense,
+    speed: kaiser.speed,
+    specialSkillDamage: kaiser.specialSkillDamage,
+    ultimateSkillDamage: kaiser.ultimateSkillDamage,
+    playerDamage,
+    cpuDamage,
+  };
 });
 
 for (let i = 1; i < levelStats.length; i += 1) {
@@ -364,4 +374,3 @@ console.log(
 );
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
 
-// Temporary CI trigger for balance regression validation.
