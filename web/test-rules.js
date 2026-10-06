@@ -12,7 +12,7 @@ import {
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateNormalAttackDamage, calculateSpecialDamage } from './src/utils/battleMath.ts';
-import { applyStatAllocation, getAbilityBuildMatchPercent } from './src/utils/statBuild.ts';
+import { applyStatAllocation, createStatPreset, getAbilityBuildMatchPercent, getRemainingStatPoints } from './src/utils/statBuild.ts';
 
 register(
   'data:text/javascript,' + encodeURIComponent(`
@@ -30,6 +30,7 @@ const { IRENA, KAISER, getIrenaWithSkillProgress } = await import('./src/data/ch
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
+const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
