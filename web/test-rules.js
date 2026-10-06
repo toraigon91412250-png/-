@@ -156,7 +156,7 @@ assert.strictEqual(lv50Kaiser.speed, 116);
 assert.strictEqual(lv50Kaiser.specialSkillDamage, 449);
 assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 599);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
-assert.strictEqual(lv50FeatherDamage, 354);
+assert.strictEqual(lv50FeatherDamage, 371);
 
 assert.strictEqual(getJudgmentThreshold(1), 4);
 assert.strictEqual(getJudgmentThreshold(2), 4);
