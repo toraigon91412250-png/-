@@ -1,5 +1,6 @@
 import { AbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility } from '../types/game';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { applyStatAllocation } from './statBuild';
 
 export function getAbilityLevel(config: BattleSetupConfig, id: AbilityId): number {
   return Math.min(
@@ -160,7 +161,7 @@ export function createBattleCharacters(
 ): { player: CharacterDef; enemy: CharacterDef } {
   const levelKaiser = createKaiserForLevel(kaiser, config.kaiserLevel);
   return {
-    player: applyStaticAbilityModifiers(player, config),
+    player: applyStaticAbilityModifiers(applyStatAllocation(player, config.statAllocation), config),
     enemy: levelKaiser,
   };
 }
