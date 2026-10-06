@@ -4,6 +4,7 @@ import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffe
 import {
   applyDynamicAbilityModifiers,
   applyStaticAbilityModifiers,
+  createBattleCharacters,
   createKaiserForLevel,
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
