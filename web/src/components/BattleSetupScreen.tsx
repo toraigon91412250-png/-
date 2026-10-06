@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
 import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, StatAllocation } from '../types/game';
-import { getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_TOTAL, STAT_BUILD_POINT_VALUES, StatAllocationKey } from '../utils/statBuild';
+import { getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
@@ -57,7 +57,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         id,
         level: abilityProgress.levels[id],
       })),
-      statAllocation: normalizeStatAllocation(statAllocation),
+      statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
     });
   };
 
