@@ -276,7 +276,7 @@ export const App: React.FC = () => {
           overallStats={overallStats}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
-          onStartBattle={handleOpenBattleSetup}
+          onStartBattle={() => handleOpenBattleSetup()}
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
