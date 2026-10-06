@@ -31,6 +31,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
+const { performRecruitment } = await import('./src/utils/storage.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
@@ -253,6 +254,21 @@ for (let i = 0; i < 20; i += 1) {
   assert.strictEqual(getRecruitmentRewardForPull(-1, true).kind, 'ABILITY_CORE');
 }
 console.log('✓ Stat presets and summon guarantee helper remain consistent.');
+
+const storageValues = new Map();
+globalThis.localStorage = {
+  getItem: key => storageValues.has(key) ? storageValues.get(key) : null,
+  setItem: (key, value) => storageValues.set(key, String(value)),
+  removeItem: key => storageValues.delete(key),
+  clear: () => storageValues.clear(),
+};
+for (let i = 0; i < 8; i += 1) {
+  storageValues.set('duel_arena_recruitment_progress', JSON.stringify({ tickets: 10, totalPulls: i * 10, collectedIds: [], lastResults: [] }));
+  const drawResult = performRecruitment(10);
+  assert.ok(drawResult, '10-pull should be available with 10 tickets.');
+  assert.ok(drawResult.results.some(draw => draw.reward.kind === 'ABILITY_CORE'), `10-pull ${i + 1} must contain an ability core.`);
+}
+console.log('✓ Actual 10-pull execution preserves the ability-core guarantee.');
 
 assert.ok(getEffectiveSpeed(attackBase) >= getEffectiveSpeed(attackTarget), 'Equal-speed rule must allow player first.');
 
