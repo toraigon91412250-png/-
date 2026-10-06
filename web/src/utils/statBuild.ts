@@ -61,8 +61,12 @@ export function getRemainingStatPoints(
   return Math.max(0, total - getSpentStatPoints(allocation, total));
 }
 
-export function applyStatAllocation(character: CharacterDef, allocation?: Partial<StatAllocation> | null): CharacterDef {
-  const normalized = normalizeStatAllocation(allocation);
+export function applyStatAllocation(
+  character: CharacterDef,
+  allocation?: Partial<StatAllocation> | null,
+  pointTotal = STAT_BUILD_POINT_TOTAL,
+): CharacterDef {
+  const normalized = normalizeStatAllocation(allocation, pointTotal);
 
   return {
     ...character,
@@ -106,9 +110,10 @@ export function getAbilityBuildHint(id: AbilityId): string {
 export function getAbilityBuildMatchPercent(
   id: AbilityId,
   allocation?: Partial<StatAllocation> | null,
+  pointTotal = STAT_BUILD_POINT_TOTAL,
 ): number {
-  const normalized = normalizeStatAllocation(allocation);
-  const total = getSpentStatPoints(normalized);
+  const normalized = normalizeStatAllocation(allocation, pointTotal);
+  const total = getSpentStatPoints(normalized, pointTotal);
   if (total === 0) return 0;
 
   const hint = ABILITY_STAT_HINTS[id];
