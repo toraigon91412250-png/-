@@ -25,6 +25,7 @@ import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
+import { normalizeStatAllocation } from '../utils/statBuild';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -61,6 +62,7 @@ export function useBattleGame(
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
+    statAllocation: normalizeStatAllocation(initialBattleConfig.statAllocation),
   };
 
   const [state, setState] = useState<BattleUiState>(() => {
