@@ -477,8 +477,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               visualEffect={state.visualEffect}
             />
 
-            <TacticalForecast state={state} compact />
-
             {/* 2. Clash Area / Banner */}
             <div
               style={{
@@ -525,6 +523,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 visualEffect={state.visualEffect}
               />
             </div>
+
+            <TacticalForecast state={state} compact />
 
             {/* 5. Action Command Dock */}
             <ActionDock
@@ -587,8 +587,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 visualEffect={state.visualEffect}
               />
 
-              <TacticalForecast state={state} />
-
               <div
                 style={{
                   height: '32px',
@@ -623,6 +621,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                   </div>
                 )}
               </div>
+
+              <TacticalForecast state={state} />
 
             </div>
           </div>
