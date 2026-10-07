@@ -101,14 +101,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes sfsShotCamera {
           0% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
-          8% { transform: translate3d(-5px,2px,0) scale(1.028) rotate(-0.25deg); }
-          15% { transform: translate3d(8px,-3px,0) scale(1.07) rotate(0.35deg); }
-          23% { transform: translate3d(-11px,4px,0) scale(1.11) rotate(-0.48deg); }
-          31% { transform: translate3d(9px,-2px,0) scale(1.085) rotate(0.25deg); }
-          41% { transform: translate3d(-6px,2px,0) scale(1.045) rotate(-0.18deg); }
-          54% { transform: translate3d(4px,-1px,0) scale(1.025) rotate(0.10deg); }
-          68% { transform: translate3d(-3px,1px,0) scale(1.015) rotate(-0.06deg); }
-          82% { transform: translate3d(1px,0,0) scale(1.008) rotate(0.02deg); }
+          9% { transform: translate3d(-7px,3px,0) scale(1.028) rotate(-0.24deg); }
+          17% { transform: translate3d(10px,-4px,0) scale(1.07) rotate(0.34deg); }
+          26% { transform: translate3d(-14px,5px,0) scale(1.12) rotate(-0.48deg); }
+          36% { transform: translate3d(11px,-3px,0) scale(1.085) rotate(0.28deg); }
+          48% { transform: translate3d(-8px,3px,0) scale(1.055) rotate(-0.18deg); }
+          61% { transform: translate3d(6px,-2px,0) scale(1.032) rotate(0.10deg); }
+          74% { transform: translate3d(-4px,1px,0) scale(1.017) rotate(-0.05deg); }
+          88% { transform: translate3d(2px,0,0) scale(1.006) rotate(0.02deg); }
           100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
         }
 
@@ -189,9 +189,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes sfsDamage {
           0% { transform: translate(-50%,-50%) scale(0.42) rotate(-6deg); opacity: 0; }
-          16% { transform: translate(-50%,-50%) scale(1.16) rotate(-2deg); opacity: 1; }
-          32% { transform: translate(-50%,-50%) scale(1.02) rotate(0); opacity: 1; }
-          100% { transform: translate(-50%,-54%) scale(0.98) rotate(0); opacity: 0; }
+          14% { transform: translate(-50%,-50%) scale(1.22) rotate(-2deg); opacity: 1; }
+          28% { transform: translate(-50%,-50%) scale(1.04) rotate(0); opacity: 1; }
+          52% { transform: translate(-50%,-54%) scale(0.99) rotate(0); opacity: 0.28; }
+          100% { transform: translate(-50%,-58%) scale(0.96) rotate(0); opacity: 0; }
         }
 
         @keyframes sfsTitle {
@@ -467,9 +468,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               style={{
                 position: 'absolute',
                 left: '-4%',
-                bottom: '5%',
-                width: 'min(58vw, 680px)',
-                maxHeight: '26vh',
+                bottom: '4%',
+                width: 'min(60vw, 700px)',
+                maxHeight: '25vh',
                 overflow: 'hidden',
                 clipPath: 'polygon(0 12%, 100% 0, 93% 88%, 0 100%)',
                 borderTop: '2px solid rgba(188,235,255,0.90)',
