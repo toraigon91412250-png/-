@@ -274,6 +274,24 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           }
         }
 
+        @keyframes sfsThunderFlash {
+          0%, 24% { opacity: 0; }
+          27% { opacity: 0.20; }
+          29% { opacity: 0.92; }
+          33% { opacity: 0.08; }
+          38% { opacity: 0.34; }
+          46% { opacity: 0; }
+          100% { opacity: 0; }
+        }
+
+        @keyframes sfsThunderHalo {
+          0% { transform: translate(-50%,-50%) scale(0.55); opacity: 0; }
+          24% { transform: translate(-50%,-50%) scale(0.86); opacity: 0.26; }
+          31% { transform: translate(-50%,-50%) scale(1.05); opacity: 0.78; }
+          43% { transform: translate(-50%,-50%) scale(1.34); opacity: 0.10; }
+          100% { transform: translate(-50%,-50%) scale(1.72); opacity: 0; }
+        }
+
         @keyframes sfsCameraCut {
           0%, 34% { opacity: 0; transform: scale(0.96); }
           37% { opacity: 0.82; transform: scale(1.01); }
@@ -365,6 +383,42 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           animation: `sfsElectricFlame ${d} ease-in-out infinite`,
           pointerEvents: 'none',
           zIndex: 1,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(circle at 31% 44%, rgba(236,250,255,0.56) 0%, rgba(170,232,255,0.12) 18%, rgba(79,161,255,0.06) 34%, transparent 58%)',
+          mixBlendMode: 'screen',
+          animation: `sfsThunderFlash ${d} ease-out both`,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '31%',
+          top: '44%',
+          width: '34%',
+          aspectRatio: '1',
+          transform: 'translate(-50%,-50%)',
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0.78) 0%, rgba(187,237,255,0.30) 16%, rgba(79,170,255,0.08) 46%, transparent 72%)',
+          filter: 'blur(4px)',
+          mixBlendMode: 'screen',
+          animation: `sfsThunderHalo ${d} cubic-bezier(0.08,0.9,0.12,1) both`,
+          pointerEvents: 'none',
+          zIndex: 4,
         }}
       />
 
