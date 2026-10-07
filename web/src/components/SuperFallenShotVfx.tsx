@@ -245,7 +245,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         @media (max-aspect-ratio: 4/5) {
           .super-fallen-stage {
             width: auto !important;
-            height: 76% !important;
+            height: 70% !important;
           }
         }
 
@@ -422,7 +422,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  animation: `superFallenShotReveal ${d} cubic-bezier(0.08, 0.80, 0.12, 1) calc(${d} * 0.10) both`,
+                  animation: `superFallenShotReveal calc(${d} * 0.72) cubic-bezier(0.08, 0.80, 0.12, 1) calc(${d} * 0.10) both`,
                   willChange: 'transform, clip-path, filter',
                 }}
               >
