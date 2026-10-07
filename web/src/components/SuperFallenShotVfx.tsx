@@ -36,6 +36,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const d = `${duration}ms`;
   const isShot = mode === 'SHOT';
 
+  const chargeImageOpacity = chargeFailed
+    ? 0
+    : t < 0.08
+      ? t / 0.08
+      : t > 0.94
+        ? (1 - t) / 0.06
+        : 1;
+
   const shotOpacity = isShot
     ? t < 0.13
       ? 0
