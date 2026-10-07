@@ -180,6 +180,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { transform: translate3d(9%,-4%,0) skewX(-5deg) rotate(-1deg); opacity: 0; }
         }
 
+        @keyframes sfsImpactTitle {
+          0% { transform: translate(-50%,-50%) scale(0.82); opacity: 0; }
+          24% { transform: translate(-50%,-50%) scale(1.02); opacity: 0.72; }
+          52% { transform: translate(-50%,-50%) scale(1.08); opacity: 0.24; }
+          100% { transform: translate(-50%,-56%) scale(1.14); opacity: 0; }
+        }
+
         @keyframes sfsDamage {
           0% { transform: translate(-50%,-50%) scale(0.42) rotate(-6deg); opacity: 0; }
           16% { transform: translate(-50%,-50%) scale(1.16) rotate(-2deg); opacity: 1; }
@@ -496,12 +503,33 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           )}
 
           {damageVisible && (
-            <div
-              className="sfs-motion"
-              style={{
-                position: 'absolute',
-                left: '66%',
-                top: '54%',
+            <>
+              <div
+                className="sfs-motion"
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '54%',
+                  transform: 'translate(-50%,-50%)',
+                  color: 'rgba(228,249,255,0.20)',
+                  fontSize: 'clamp(34px,8vw,84px)',
+                  fontWeight: 1000,
+                  letterSpacing: '0.18em',
+                  whiteSpace: 'nowrap',
+                  textShadow: '0 0 24px rgba(74,178,255,0.56)',
+                  animation: `sfsImpactTitle calc(${d} * 0.42) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.46) both`,
+                  pointerEvents: 'none',
+                }}
+              >
+                超堕天撃
+              </div>
+
+              <div
+                className="sfs-motion"
+                style={{
+                  position: 'absolute',
+                  left: '68%',
+                  top: '53%',
                 transform: 'translate(-50%,-50%)',
                 textAlign: 'center',
                 lineHeight: 0.82,
