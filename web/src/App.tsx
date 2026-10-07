@@ -303,7 +303,9 @@ export const App: React.FC = () => {
           onOpenRaidBoss={() => setScreen('RAID_BOSS')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
+          abilityProgress={abilityProgress}
           onUpgradeSkill={handleUpgradeSkill}
+          onUpgradeAbility={handleUpgradeAbility}
           onChooseSkillPath={handleChooseSkillPath}
         />
       ) : screen === 'BATTLE_SETUP' ? (
@@ -321,7 +323,9 @@ export const App: React.FC = () => {
           onBackToSelect={handleBackToSelect}
           onRestart={() => restartBattle(upgradedIrena, getBattleCpuOpponent(), difficulty, battleSetup)}
           skillProgress={skillProgress}
+          abilityProgress={abilityProgress}
           onUpgradeSkill={handleUpgradeSkill}
+          onUpgradeAbility={handleUpgradeAbility}
           onChooseSkillPath={handleChooseSkillPath}
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
