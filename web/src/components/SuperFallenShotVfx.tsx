@@ -161,12 +161,16 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes superFallenLaunchImage {
           0% {
-            transform: scale(1.075);
-            filter: brightness(0.78) saturate(1.02);
+            transform: scale(1.10);
+            filter: brightness(0.72) saturate(1.02);
           }
-          34% {
+          18% {
+            transform: scale(1.045);
+            filter: brightness(1.08) saturate(1.12);
+          }
+          40% {
             transform: scale(1.018);
-            filter: brightness(1.06) saturate(1.10);
+            filter: brightness(1.04) saturate(1.09);
           }
           100% {
             transform: scale(1.008);
@@ -194,9 +198,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes superFallenFlash {
-          0%, 24% { opacity: 0; }
-          29% { opacity: 0.88; }
-          37% { opacity: 0.05; }
+          0%, 27% { opacity: 0; }
+          30% { opacity: 0.95; }
+          35% { opacity: 0.06; }
           100% { opacity: 0; }
         }
 
@@ -373,7 +377,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   objectFit: 'cover',
                   objectPosition: focalPosition,
                   opacity: launchOpacity,
-                  animation: `superFallenLaunchImage calc(${d} * 0.78) cubic-bezier(0.08, 0.80, 0.16, 1) calc(${d} * 0.10) both`,
+                  animation: `superFallenLaunchImage calc(${d} * 0.72) cubic-bezier(0.08, 0.82, 0.14, 1) calc(${d} * 0.10) both`,
                   willChange: 'transform, opacity, filter',
                 }}
               />
