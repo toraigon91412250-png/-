@@ -210,6 +210,68 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { transform: translate(-50%,-8px) scale(1.02); opacity: 0; }
         }
 
+        /* Enhanced Effects */
+        @keyframes sfsChargeGlow {
+          0% { transform: translate(-50%,-50%) scale(0.6); opacity: 0; }
+          20% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.88; }
+          50% { transform: translate(-50%,-50%) scale(1.6); opacity: 0.44; }
+          100% { transform: translate(-50%,-50%) scale(2.0); opacity: 0; }
+        }
+
+        @keyframes sfsChargeRing {
+          0% { transform: translate(-50%,-50%) scale(0.3) rotate(0deg); opacity: 0.8; }
+          50% { transform: translate(-50%,-50%) scale(1.2) rotate(180deg); opacity: 0.4; }
+          100% { transform: translate(-50%,-50%) scale(1.8) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes sfsChargePulse {
+          0%, 100% { opacity: 0.2; filter: blur(4px); }
+          50% { opacity: 0.8; filter: blur(12px); }
+        }
+
+        @keyframes sfsDamageGlow {
+          0% { filter: blur(2px) brightness(1); }
+          30% { filter: blur(6px) brightness(1.6); }
+          70% { filter: blur(4px) brightness(1.2); }
+          100% { filter: blur(2px) brightness(1); }
+        }
+
+        @keyframes sfsDamagePulse {
+          0%, 100% { transform: translate(-50%,-50%) scale(1); }
+          30% { transform: translate(-50%,-50%) scale(1.08); }
+          70% { transform: translate(-50%,-50%) scale(1.02); }
+        }
+
+        @keyframes sfsTextShimmer {
+          0% { filter: drop-shadow(0 0 4px rgba(255,255,255,0)) drop-shadow(0 0 0px rgba(74,178,255,0)); }
+          50% { filter: drop-shadow(0 0 16px rgba(255,255,255,0.8)) drop-shadow(0 0 24px rgba(74,178,255,0.8)); }
+          100% { filter: drop-shadow(0 0 4px rgba(255,255,255,0)) drop-shadow(0 0 0px rgba(74,178,255,0)); }
+        }
+
+        @keyframes sfsShockwave {
+          0% { transform: translate(-50%,-50%) scale(0.2); opacity: 1; }
+          50% { opacity: 0.6; }
+          100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+        }
+
+        @keyframes sfsSparkle {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
+        }
+
+        @keyframes sfsCoreFlash {
+          0% { transform: translate(-50%,-50%) scale(1); opacity: 0.3; }
+          20% { transform: translate(-50%,-50%) scale(1.4); opacity: 0.9; }
+          40% { transform: translate(-50%,-50%) scale(1.2); opacity: 0.6; }
+          60% { transform: translate(-50%,-50%) scale(1.5); opacity: 0.7; }
+          100% { transform: translate(-50%,-50%) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes sfsElectricCrackle {
+          0%, 100% { opacity: 0.4; filter: brightness(1); }
+          50% { opacity: 1; filter: brightness(1.4); }
+        }
+
         .sfs-art {
           position: absolute;
           left: 50%;
@@ -284,6 +346,60 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             </>
           )}
 
+          {/* Enhanced Charge Glow - Multiple Layers */}
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '44%',
+              aspectRatio: '1',
+              transform: 'translate(-50%,-50%)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(100,200,255,0.92) 0%, rgba(74,178,255,0.48) 22%, rgba(50,130,255,0.16) 44%, transparent 72%)',
+              filter: 'blur(8px)',
+              animation: `sfsChargeGlow ${d} cubic-bezier(0.08,0.88,0.16,1) both`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Rotating Ring */}
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '38%',
+              aspectRatio: '1',
+              transform: 'translate(-50%,-50%)',
+              borderRadius: '50%',
+              border: '3px solid rgba(132,213,255,0.72)',
+              boxShadow: '0 0 20px rgba(132,213,255,0.88), inset 0 0 20px rgba(132,213,255,0.44)',
+              animation: `sfsChargeRing ${d} linear both`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Inner Core Pulse */}
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '28%',
+              aspectRatio: '1',
+              transform: 'translate(-50%,-50%)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.86) 0%, rgba(200,240,255,0.44) 32%, transparent 72%)',
+              filter: 'blur(4px)',
+              animation: `sfsChargePulse ${d} ease-in-out infinite`,
+              pointerEvents: 'none',
+            }}
+          />
+
           <div
             className="sfs-motion"
             style={{
@@ -338,7 +454,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               letterSpacing: '0.28em',
               textShadow: '0 0 10px rgba(104,205,255,0.80), 0 0 26px rgba(68,132,255,0.34)',
               opacity: Math.max(0, Math.min(1, (t - 0.60) / 0.16)) * Math.max(0, Math.min(1, (0.98 - t) / 0.20)),
-              animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both`,
+              animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both, sfsTextShimmer calc(${d} * 0.6) ease-in-out infinite`,
               pointerEvents: 'none',
             }}
           >
@@ -410,6 +526,26 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             </>
           )}
 
+          {/* Enhanced Core Shockwave */}
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '45%',
+              aspectRatio: '1',
+              transform: 'translate(-50%,-50%)',
+              borderRadius: '50%',
+              border: '2px solid rgba(255,255,255,0.8)',
+              background: 'radial-gradient(circle, rgba(100,200,255,0.4) 0%, transparent 70%)',
+              boxShadow: '0 0 30px rgba(132,213,255,0.6), inset 0 0 30px rgba(132,213,255,0.3)',
+              animation: `sfsShockwave ${d} cubic-bezier(0.06,0.88,0.14,1) both`,
+              willChange: 'transform, opacity',
+            }}
+          />
+
+          {/* Core Flash Burst */}
           <div
             className="sfs-motion"
             style={{
@@ -422,7 +558,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               borderRadius: '50%',
               background: 'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(190,236,255,0.44) 16%, rgba(75,166,255,0.11) 43%, transparent 74%)',
               filter: 'blur(2px)',
-              animation: `sfsOrigin ${d} cubic-bezier(0.06,0.88,0.14,1) both`,
+              animation: `sfsCoreFlash ${d} cubic-bezier(0.06,0.88,0.14,1) both`,
               willChange: 'transform, opacity',
             }}
           />
@@ -438,7 +574,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               transformOrigin: 'left center',
               background: 'linear-gradient(90deg, rgba(255,255,255,0.04), rgba(224,247,255,0.94) 18%, rgba(83,184,255,0.82) 66%, rgba(83,184,255,0) 100%)',
               boxShadow: '0 0 10px rgba(132,213,255,0.86), 0 0 23px rgba(80,160,255,0.34)',
-              clipPath: 'polygon(0 44%, 7% 9%, 14% 71%, 21% 23%, 29% 79%, 38% 18%, 48% 78%, 61% 18%, 74% 73%, 86% 22%, 100% 43%, 86% 66%, 73% 47%, 60% 94%, 47% 50%, 34% 86%, 21% 47%, 11% 90%, 5% 51%)',
+              clipPath: 'polygon(0 44%, 7% 9%, 14% 71%, 21% 23%, 29% 79%, 38% 18%, 48% 78%, 61% 18%, 74% 73%, 86% 22%, 100% 43%, 86% 66%, 73% 47%, 60% 94%, 47% 50%, 34% 86%, 21% 47%, 11% 90%, 5% 50%)',
               animation: `sfsBoltA calc(${d} * 0.48) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.12) both`,
               pointerEvents: 'none',
             }}
@@ -457,6 +593,24 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               boxShadow: '0 0 8px rgba(112,203,255,0.60)',
               clipPath: 'polygon(0 42%, 9% 8%, 17% 67%, 28% 20%, 39% 80%, 51% 16%, 64% 73%, 78% 23%, 100% 42%, 85% 68%, 66% 49%, 54% 94%, 39% 50%, 24% 88%, 12% 49%, 4% 82%)',
               animation: `sfsBoltB calc(${d} * 0.45) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.14) both`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Additional Electric Crackle Layer */}
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '52%',
+              height: '5px',
+              transformOrigin: 'left center',
+              background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(200,230,255,0.6) 30%, rgba(100,200,255,0.4) 70%, rgba(100,200,255,0) 100%)',
+              boxShadow: '0 0 14px rgba(150,220,255,0.8)',
+              clipPath: 'polygon(0 45%, 8% 15%, 16% 65%, 25% 25%, 35% 75%, 45% 20%, 55% 70%, 68% 22%, 82% 68%, 100% 45%, 82% 65%, 68% 48%, 55% 80%, 42% 45%, 28% 82%, 16% 50%, 8% 80%)',
+              animation: `sfsBoltA calc(${d} * 0.52) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.16) both`,
               pointerEvents: 'none',
             }}
           />
@@ -484,10 +638,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 maxHeight: '25vh',
                 overflow: 'hidden',
                 clipPath: 'polygon(0 12%, 100% 0, 93% 88%, 0 100%)',
-                borderTop: '2px solid rgba(188,235,255,0.90)',
-                borderBottom: '2px solid rgba(71,157,255,0.28)',
-                background: 'rgba(2,8,22,0.92)',
-                boxShadow: '0 0 36px rgba(70,168,255,0.24)',
+                borderTop: '3px solid rgba(188,235,255,0.98)',
+                borderBottom: '2px solid rgba(71,157,255,0.48)',
+                background: 'linear-gradient(90deg, rgba(2,8,22,0.96), rgba(8,24,48,0.88))',
+                boxShadow: '0 0 36px rgba(70,168,255,0.32), inset 0 2px 12px rgba(132,200,255,0.16)',
                 animation: `sfsCutin ${d} cubic-bezier(0.08,0.88,0.12,1) calc(${d} * 0.40) both`,
               }}
             >
@@ -500,15 +654,16 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   display: 'block',
                   width: '100%',
                   height: 'auto',
-                  opacity: 0.96,
+                  opacity: 0.98,
                   userSelect: 'none',
+                  filter: 'brightness(1.05) contrast(1.08)',
                 }}
               />
               <div
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  background: 'linear-gradient(90deg, rgba(1,7,17,0.34), rgba(1,7,17,0) 78%)',
+                  background: 'linear-gradient(90deg, rgba(1,7,17,0.48), rgba(1,7,17,0) 78%)',
                 }}
               />
             </div>
@@ -516,6 +671,23 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
           {damageVisible && (
             <>
+              {/* Damage Shockwave Ring */}
+              <div
+                className="sfs-motion"
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  top: '53%',
+                  width: '42%',
+                  aspectRatio: '1',
+                  transform: 'translate(-50%,-50%)',
+                  border: '3px solid rgba(255,180,100,0.6)',
+                  borderRadius: '50%',
+                  animation: `sfsShockwave ${d} cubic-bezier(0.08,0.88,0.14,1) calc(${d} * 0.48) both`,
+                  pointerEvents: 'none',
+                }}
+              />
+
               <div
                 className="sfs-motion"
                 style={{
@@ -523,12 +695,12 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   left: '50%',
                   top: '54%',
                   transform: 'translate(-50%,-50%)',
-                  color: 'rgba(228,249,255,0.20)',
+                  color: 'rgba(228,249,255,0.24)',
                   fontSize: 'clamp(34px,8vw,84px)',
                   fontWeight: 1000,
                   letterSpacing: '0.18em',
                   whiteSpace: 'nowrap',
-                  textShadow: '0 0 24px rgba(74,178,255,0.56)',
+                  textShadow: '0 0 24px rgba(74,178,255,0.56), 0 0 8px rgba(132,213,255,0.48)',
                   animation: `sfsImpactTitle calc(${d} * 0.42) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.46) both`,
                   pointerEvents: 'none',
                 }}
@@ -542,38 +714,42 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   position: 'absolute',
                   left: '68%',
                   top: '53%',
-                transform: 'translate(-50%,-50%)',
-                textAlign: 'center',
-                lineHeight: 0.82,
-                animation: `sfsDamage calc(${d} * 0.48) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
-                pointerEvents: 'none',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 'clamp(64px,18vw,186px)',
-                  fontWeight: 1000,
-                  letterSpacing: '-0.075em',
-                  color: '#FFFFFF',
-                  WebkitTextStroke: '1px rgba(190,236,255,0.72)',
-                  textShadow: '0 0 9px rgba(255,255,255,0.98), 0 0 26px rgba(74,178,255,0.98), 7px 8px 0 rgba(3,10,24,0.96)',
+                  transform: 'translate(-50%,-50%)',
+                  textAlign: 'center',
+                  lineHeight: 0.82,
+                  animation: `sfsDamage calc(${d} * 0.48) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
+                  pointerEvents: 'none',
                 }}
               >
-                −{damage}
+                <div
+                  style={{
+                    fontSize: 'clamp(64px,18vw,186px)',
+                    fontWeight: 1000,
+                    letterSpacing: '-0.075em',
+                    color: '#FFFFFF',
+                    WebkitTextStroke: '2px rgba(190,236,255,0.88)',
+                    textShadow: '0 0 12px rgba(255,255,255,0.98), 0 0 32px rgba(74,178,255,0.98), 0 0 48px rgba(100,200,255,0.64), 12px 14px 0 rgba(3,10,24,0.96)',
+                    filter: 'drop-shadow(0 0 8px rgba(255,200,100,0.44))',
+                    animation: `sfsDamageGlow calc(${d} * 0.48) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
+                  }}
+                >
+                  −{damage}
+                </div>
+                <div
+                  style={{
+                    marginTop: '8px',
+                    fontSize: 'clamp(10px,2.2vw,18px)',
+                    fontWeight: 1000,
+                    color: '#DFF7FF',
+                    letterSpacing: '0.26em',
+                    textShadow: '0 0 12px rgba(105,198,255,0.94), 0 0 24px rgba(74,178,255,0.64)',
+                    filter: 'drop-shadow(0 0 6px rgba(132,213,255,0.56))',
+                    animation: `sfsTextShimmer calc(${d} * 0.48) ease-in-out calc(${d} * 0.50)`,
+                  }}
+                >
+                  超堕天撃
+                </div>
               </div>
-              <div
-                style={{
-                  marginTop: '8px',
-                  fontSize: 'clamp(10px,2.2vw,18px)',
-                  fontWeight: 1000,
-                  color: '#DFF7FF',
-                  letterSpacing: '0.26em',
-                  textShadow: '0 0 12px rgba(105,198,255,0.94)',
-                }}
-              >
-                超堕天撃
-              </div>
-            </div>
             </>
           )}
 
@@ -588,8 +764,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 fontSize: 'clamp(24px,5vw,48px)',
                 fontWeight: 1000,
                 color: '#fff',
-                textShadow: '0 0 14px rgba(105,198,255,0.92), 0 2px 8px rgba(0,0,0,0.96)',
-                animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
+                textShadow: '0 0 14px rgba(105,198,255,0.92), 0 0 20px rgba(255,150,100,0.64), 0 2px 8px rgba(0,0,0,0.96)',
+                animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both, sfsTextShimmer calc(${d} * 0.36) ease-in-out calc(${d} * 0.50)`,
               }}
             >
               MISS!! 超堕天撃回避
