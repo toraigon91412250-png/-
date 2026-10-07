@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats } from '../types/game';
+import { AbilityId, AbilityProgress, CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { Swords, Trophy, Play, CheckCircle, Sparkles } from 'lucide-react';
@@ -13,7 +13,9 @@ interface CharacterSelectScreenProps {
   onOpenRaidBoss: () => void;
   onOpenRecruitment: () => void;
   skillProgress: IrenaSkillProgress;
+  abilityProgress: AbilityProgress;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
+  onUpgradeAbility: (abilityId: AbilityId) => void;
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
 }
 
@@ -25,7 +27,9 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onOpenRaidBoss,
   onOpenRecruitment,
   skillProgress,
+  abilityProgress,
   onUpgradeSkill,
+  onUpgradeAbility,
   onChooseSkillPath,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
@@ -383,7 +387,9 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
       {upgradeOpen && (
         <SkillUpgradeModal
           progress={skillProgress}
+          abilityProgress={abilityProgress}
           onUpgrade={onUpgradeSkill}
+          onUpgradeAbility={onUpgradeAbility}
           onChoosePath={onChooseSkillPath}
           onClose={() => setUpgradeOpen(false)}
         />
