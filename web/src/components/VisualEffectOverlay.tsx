@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
 import { CHARACTERS } from '../data/characters';
+import { SuperFallenShotVfx } from './SuperFallenShotVfx';
 
 interface SingleVisualEffectOverlayProps {
   effect: VisualEffect;
@@ -536,15 +537,21 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
     lastUiUpdateRef.current = 0;
     const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
     const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
+    const isSuperFallenCharge = effect.effectType === 'SUPER_FALLEN_CHARGE';
+    const isSuperFallenShot = effect.effectType === 'SUPER_FALLEN_SHOT';
     const duration = effect.effectType === 'BLEED_TICK'
       ? 850
-      : isAllGods
-        ? 1300
-        : isRuin
-          ? RUIN_SEQUENCE_DURATION_MS / Math.max(0.1, speedMultiplier)
-          : effect.isUltimate
-            ? 700
-            : 450;
+      : isSuperFallenCharge
+        ? 760 / Math.max(0.1, speedMultiplier)
+        : isSuperFallenShot
+          ? 980 / Math.max(0.1, speedMultiplier)
+          : isAllGods
+            ? 1300
+            : isRuin
+              ? RUIN_SEQUENCE_DURATION_MS / Math.max(0.1, speedMultiplier)
+              : effect.isUltimate
+                ? 700
+                : 450;
     const startTime = performance.now();
     let animId: number;
 
@@ -645,70 +652,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
         ctx.stroke();
       }
 
-      // 3. 超堕天撃: focused convergence and impact ring.
-      else if (isSuperFallenShot) {
-        const size = Math.max(w, h);
-        const pulse = Math.sin(Math.min(1, t) * Math.PI);
-        const center = targetCenter;
-        const ringRadius = size * (0.05 + 0.18 * Math.min(1, t));
-        const alpha = Math.max(0, 1 - t);
-
-        const flash = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, size * 0.28);
-        flash.addColorStop(0, 'rgba(255,255,255,' + (0.95 * pulse) + ')');
-        flash.addColorStop(0.3, 'rgba(224,64,251,' + (0.55 * pulse) + ')');
-        flash.addColorStop(1, 'rgba(224,64,251,0)');
-        ctx.fillStyle = flash;
-        ctx.beginPath();
-        ctx.arc(center.x, center.y, size * 0.28, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(224,242,255,' + (alpha * 0.95) + ')';
-        ctx.lineWidth = Math.max(3, size * 0.006);
-        ctx.beginPath();
-        ctx.arc(center.x, center.y, ringRadius, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.strokeStyle = 'rgba(224,64,251,' + (alpha * 0.75) + ')';
-        ctx.lineWidth = Math.max(2, size * 0.003);
-        ctx.beginPath();
-        ctx.arc(center.x, center.y, ringRadius * 0.72, 0, Math.PI * 2);
-        ctx.stroke();
-
-        for (let i = 0; i < 18; i += 1) {
-          const angle = (i / 18) * Math.PI * 2 + effect.effectId * 0.13;
-          const length = size * (0.12 + 0.18 * t) * (0.75 + (i % 4) * 0.08);
-          const startX = center.x + Math.cos(angle) * size * 0.055;
-          const startY = center.y + Math.sin(angle) * size * 0.055;
-          const endX = center.x + Math.cos(angle) * (size * 0.055 + length);
-          const endY = center.y + Math.sin(angle) * (size * 0.055 + length);
-          ctx.strokeStyle = 'rgba(180,245,255,' + (alpha * (0.55 + (i % 3) * 0.12)) + ')';
-          ctx.lineWidth = Math.max(1.5, size * 0.002);
-          ctx.beginPath();
-          ctx.moveTo(startX, startY);
-          ctx.lineTo(endX, endY);
-          ctx.stroke();
-        }
-
-        for (let i = 0; i < 10; i += 1) {
-          const angle = (i / 10) * Math.PI * 2 + effect.effectId * 0.19;
-          const distance = size * (0.24 + t * 0.15);
-          const x = center.x + Math.cos(angle) * distance;
-          const y = center.y + Math.sin(angle) * distance;
-          const featherSize = Math.max(8, size * (0.012 + (i % 3) * 0.003));
-          ctx.save();
-          ctx.translate(x, y);
-          ctx.rotate(angle + Math.PI / 2);
-          ctx.fillStyle = 'rgba(224,64,251,' + (alpha * 0.9) + ')';
-          ctx.beginPath();
-          ctx.moveTo(0, -featherSize);
-          ctx.lineTo(featherSize * 0.38, featherSize * 0.2);
-          ctx.lineTo(0, featherSize);
-          ctx.lineTo(-featherSize * 0.38, featherSize * 0.2);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-        }
-      }
+      // 3. 超堕天撃専用VFXはCSS/画像レイヤーで描画します。
 
       // 4. Migrated 技一・全神の権能 VFX
       else if (isAllGods) {
@@ -918,7 +862,8 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
   const t = progress;
   const isAllGods = effect.isUltimate && effect.skillName === '全神の権能';
   const isRuin = effect.isUltimate && effect.skillName === '破壊の権能';
-  const isSuperFallenShot = effect.effectType === 'SPECIAL_FEATHER' && effect.skillName === '超堕天撃';
+  const isSuperFallenCharge = effect.effectType === 'SUPER_FALLEN_CHARGE';
+  const isSuperFallenShot = effect.effectType === 'SUPER_FALLEN_SHOT';
   const isGenericUltimate = effect.isUltimate && !isAllGods && !isRuin && effect.effectType === 'ULTIMATE_BLAST';
 
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
@@ -1022,8 +967,28 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
         }}
       />
 
+      {/* Dedicated 超堕天撃 VFX */}
+      {isSuperFallenCharge && (
+        <SuperFallenShotVfx
+          key={`super-fallen-charge-${effect.effectId}`}
+          mode="CHARGE"
+          progress={t}
+          durationMs={760 / Math.max(0.1, speedMultiplier)}
+        />
+      )}
+      {isSuperFallenShot && (
+        <SuperFallenShotVfx
+          key={`super-fallen-shot-${effect.effectId}`}
+          mode="SHOT"
+          progress={t}
+          durationMs={980 / Math.max(0.1, speedMultiplier)}
+          damage={effect.damage}
+          isEvade={effect.isEvade}
+        />
+      )}
+
       {/* Special Skill Cut-In (e.g. いれーな『羽弾』) */}
-      {cutInSrc && (
+      {cutInSrc && !isSuperFallenCharge && !isSuperFallenShot && (
         <SpecialCutIn
           key={effect.effectId}
           imageSrc={cutInSrc}
@@ -1087,7 +1052,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
       )}
 
       {/* Floating Damage Numbers */}
-      {effect.damage > 0 && !isRuin && (
+      {effect.damage > 0 && !isRuin && !isSuperFallenCharge && !isSuperFallenShot && (
         <div
           style={{
             position: 'absolute',
