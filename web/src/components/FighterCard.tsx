@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BattleFighter, BattleSetupConfig, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import { HpBar } from './HpBar';
@@ -38,6 +38,45 @@ export const FighterCard: React.FC<FighterCardProps> = ({
     })
     .join(' / ');
 
+  const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
+
+  const detailEntries = new Map<string, { title: string; description: string }>();
+
+  if (fighter.isBuffed) {
+    detailEntries.set('buff', {
+      title: '強化中',
+      description: '次の攻撃ダメージが +' + fighter.buffDamageBonus + ' されます。',
+    });
+  }
+
+  fighter.activeAilments.forEach(ailment => {
+    const def = STATUS_AILMENTS[ailment.type];
+    const actualDotDamage = ailment.dotDamage ?? def.dotDamage;
+    const effectParts = [
+      def.dotDamage > 0 ? 'HP-' + actualDotDamage : '',
+      def.speedMod !== 0 ? '速度' + (def.speedMod > 0 ? '+' : '') + def.speedMod : '',
+      def.attackMod !== 0 ? '攻撃' + (def.attackMod > 0 ? '+' : '') + def.attackMod : '',
+      def.defenseMod !== 0 ? '防御' + (def.defenseMod > 0 ? '+' : '') + def.defenseMod : '',
+    ].filter(Boolean).join(' / ');
+    const description = ailment.type === 'BLEED'
+      ? '各ターン開始時に' + actualDotDamage + 'ダメージ。' + effectParts + '。'
+      : def.description + (effectParts ? '（' + effectParts + '）' : '');
+
+    detailEntries.set('ailment-' + ailment.type, {
+      title: def.displayName + ' ' + ailment.remainingTurns + 'T',
+      description,
+    });
+  });
+
+  detailEntries.set('passive', {
+    title: '固有: ' + fighter.character.passiveName,
+    description: fighter.character.passiveDescription,
+  });
+
+  const selectedDetail = selectedDetailId ? detailEntries.get(selectedDetailId) ?? null : null;
+  const toggleDetail = (detailId: string) => {
+    setSelectedDetailId(current => current === detailId ? null : detailId);
+  };
   let borderStyle = `1px solid ${fighter.character.primaryColor}CC`;
   if (fighter.isBuffed) {
     borderStyle = '2px solid #FFB300';
@@ -241,7 +280,12 @@ export const FighterCard: React.FC<FighterCardProps> = ({
       {(fighter.isBuffed || fighter.activeAilments.length > 0) && (
         <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
           {fighter.isBuffed && (
-            <div
+            <button
+              type="button"
+              onClick={() => toggleDetail('buff')}
+              aria-expanded={selectedDetailId === 'buff'}
+              aria-label="強化中の詳細を表示"
+              title="タップで詳細"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -249,58 +293,93 @@ export const FighterCard: React.FC<FighterCardProps> = ({
                 backgroundColor: 'rgba(230, 81, 0, 0.4)',
                 border: '1px solid #FFB300',
                 borderRadius: '5px',
-                padding: '2px 6px',
+                padding: '3px 6px',
                 fontSize: '10px',
                 fontWeight: 700,
                 color: '#FFE082',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
               }}
             >
               <Sparkles size={11} color="#FFD54F" />
-              <span>強化中(+125)</span>
-            </div>
+              <span>強化中</span>
+            </button>
           )}
 
           {fighter.activeAilments.map(ailment => {
             const def = STATUS_AILMENTS[ailment.type];
             const isBleed = ailment.type === 'BLEED';
-            const actualDotDamage = ailment.dotDamage ?? def.dotDamage;
-            const effectParts = [
-              def.dotDamage > 0 ? `HP-${actualDotDamage}` : '',
-              def.speedMod !== 0 ? `速度${def.speedMod > 0 ? '+' : ''}${def.speedMod}` : '',
-              def.attackMod !== 0 ? `攻撃${def.attackMod > 0 ? '+' : ''}${def.attackMod}` : '',
-              def.defenseMod !== 0 ? `防御${def.defenseMod > 0 ? '+' : ''}${def.defenseMod}` : '',
-            ].filter(Boolean).join(' / ');
-            const statusDescription = isBleed
-              ? `各ターン開始時に${actualDotDamage}ダメージ、速度-20、防御-20`
-              : def.description;
+            const detailId = 'ailment-' + ailment.type;
             return (
-              <div
+              <button
                 key={ailment.type}
-                title={statusDescription}
+                type="button"
+                onClick={() => toggleDetail(detailId)}
+                aria-expanded={selectedDetailId === detailId}
+                aria-label={def.displayName + ' ' + ailment.remainingTurns + 'ターンの詳細を表示'}
+                title="タップで詳細"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  flexWrap: 'wrap',
                   backgroundColor: isBleed ? 'rgba(183, 28, 28, 0.4)' : 'rgba(74, 20, 140, 0.4)',
-                  border: `1px solid ${isBleed ? '#EF5350' : '#AB47BC'}`,
+                  border: '1px solid ' + (isBleed ? '#EF5350' : '#AB47BC'),
                   borderRadius: '5px',
                   padding: '3px 6px',
                   fontSize: '10px',
                   fontWeight: 700,
                   color: isBleed ? '#FFCDD2' : '#F3E5F5',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
                 }}
               >
                 <span>{def.displayName} {ailment.remainingTurns}T</span>
-                <span style={{ fontSize: '9px', color: isBleed ? '#FFE5E5' : '#E8D7FF' }}>
-                  {effectParts}
-                </span>
-              </div>
+              </button>
             );
           })}
         </div>
       )}
 
+      {selectedDetail && (
+        <div
+          aria-live="polite"
+          style={{
+            marginTop: '5px',
+            padding: '6px 8px',
+            borderRadius: '7px',
+            backgroundColor: 'rgba(10, 16, 28, 0.9)',
+            border: '1px solid rgba(144, 202, 249, 0.28)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 900, color: '#D5DEEB' }}>
+              {selectedDetail.title}
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedDetailId(null)}
+              aria-label="詳細を閉じる"
+              style={{
+                width: '20px',
+                height: '20px',
+                padding: 0,
+                border: '1px solid rgba(255,255,255,0.18)',
+                borderRadius: '5px',
+                backgroundColor: 'rgba(255,255,255,0.05)',
+                color: '#AEB9CB',
+                fontSize: '14px',
+                lineHeight: 1,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              ×
+            </button>
+          </div>
+          <div style={{ marginTop: '3px', fontSize: '9px', lineHeight: 1.45, fontWeight: 700, color: '#AEB9CB' }}>
+            {selectedDetail.description}
+          </div>
+        </div>
+      )}
       {/* Bottom info row: Passive + Skill CD + Ultimate Gauge */}
       <div
         style={{
@@ -312,9 +391,14 @@ export const FighterCard: React.FC<FighterCardProps> = ({
         }}
       >
         {/* Passive badge */}
-        <div
+        <button
+          type="button"
+          onClick={() => toggleDetail('passive')}
+          aria-expanded={selectedDetailId === 'passive'}
+          aria-label={'固有スキル ' + fighter.character.passiveName + ' の詳細を表示'}
+          title="タップで詳細"
           style={{
-            backgroundColor: '#261D33',
+            backgroundColor: selectedDetailId === 'passive' ? '#302240' : '#261D33',
             border: '1px solid rgba(126, 87, 194, 0.6)',
             borderRadius: '5px',
             padding: '2px 6px',
@@ -322,11 +406,15 @@ export const FighterCard: React.FC<FighterCardProps> = ({
             fontWeight: 600,
             color: '#D1C4E9',
             whiteSpace: 'nowrap',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
-          title={fighter.character.passiveDescription}
         >
           固有: {fighter.character.passiveName}
-        </div>
+        </button>
 
         {/* Special Cooldown */}
         <div

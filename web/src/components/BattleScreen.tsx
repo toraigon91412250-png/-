@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed, STATUS_AILMENTS } from '../types/game';
+import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
-import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
-import { GAME_BALANCE } from '../data/gameBalance';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
@@ -28,44 +26,32 @@ interface BattleScreenProps {
 
 const CPU_INTENT_META: Record<BattleAction, {
   label: string;
-  description: string;
-  counterplay: string;
-  alert: string;
+  hint: string;
   accent: string;
 }> = {
   ATTACK: {
     label: '通常攻撃',
-    description: '直接攻撃を狙っている',
-    counterplay: '回避で受け流す／攻撃で応戦',
-    alert: '警戒：中',
+    hint: '攻撃を仕掛けている',
     accent: '#64B5F6',
   },
   EVADE: {
     label: '回避',
-    description: '攻撃を避ける構え',
-    counterplay: '攻撃系は回避判定に注意',
-    alert: '警戒：低',
+    hint: '攻撃系は回避判定を受ける',
     accent: '#4DD0E1',
   },
   BUFF: {
     label: '強化',
-    description: '次の攻撃に向けて力を溜める',
-    counterplay: '今ターンの攻めが通りやすい',
-    alert: '警戒：中',
+    hint: '次の攻撃が強化される',
     accent: '#FFD54F',
   },
   SPECIAL: {
-    label: '重撃',
-    description: '特殊技を放つ',
-    counterplay: '回避で対処可能／命中時は状態異常',
-    alert: '警戒：高',
+    label: '特殊技',
+    hint: '命中すると状態異常が付く',
     accent: '#CE93D8',
   },
   ULTIMATE: {
-    label: '超重撃',
-    description: '必殺技を解放する',
-    counterplay: '大ダメージに注意／回避も選択肢',
-    alert: '警戒：最高',
+    label: '必殺技',
+    hint: '大ダメージ。回避で対処可能',
     accent: '#FF8A65',
   },
 };
@@ -75,173 +61,91 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
 
   const forecastPlayer = applyDynamicAbilityModifiers(state.player, state.battleConfig, state.turnNumber);
   const forecastEnemy = applyDynamicAbilityModifiers(state.enemy, state.battleConfig, state.turnNumber);
-  const playerSpeed = getEffectiveSpeed(forecastPlayer);
-  const enemySpeed = getEffectiveSpeed(forecastEnemy);
-  const playerBaseSpeed = state.player.character.speed;
-  const enemyBaseSpeed = state.enemy.character.speed;
-  const playerSpeedDelta = playerSpeed - playerBaseSpeed;
-  const enemySpeedDelta = enemySpeed - enemyBaseSpeed;
-  const playerGoesFirst = playerSpeed >= enemySpeed;
-  const baseOrderPlayerFirst = playerBaseSpeed >= enemyBaseSpeed;
+  const playerGoesFirst = getEffectiveSpeed(forecastPlayer) >= getEffectiveSpeed(forecastEnemy);
+  const intentMeta = CPU_INTENT_META[state.cpuIntent];
 
-  const formatSpeed = (
-    fighter: typeof state.player,
-    speed: number,
-    baseSpeed: number,
-    delta: number,
-    dynamicBaseSpeed: number,
-  ) => {
-    const causes = fighter.activeAilments
-      .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
-      .map(ailment => {
-        const mod = STATUS_AILMENTS[ailment.type].speedMod;
-        return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
-      })
-      .join(' / ');
-    const hasDynamicSpeedChange = dynamicBaseSpeed !== baseSpeed;
-    const causeText = [causes, hasDynamicSpeedChange ? '能力補正' : ''].filter(Boolean).join(' / ');
-    if (delta === 0) return `${speed}`;
-    return `${speed}（${baseSpeed}→${speed}、${causeText || '変化'}）`;
-  };
+  const evasionInfo =
+    state.cpuIntent === 'EVADE'
+      ? { target: '相手', rate: Math.round(state.enemy.character.evasionRate * 100) }
+      : state.cpuIntent === 'BUFF'
+        ? null
+        : { target: '自分', rate: Math.round(state.player.character.evasionRate * 100) };
 
-  const playerSpeedText = formatSpeed(
-    state.player,
-    playerSpeed,
-    playerBaseSpeed,
-    playerSpeedDelta,
-    forecastPlayer.character.speed,
-  );
-  const enemySpeedText = formatSpeed(
-    state.enemy,
-    enemySpeed,
-    enemyBaseSpeed,
-    enemySpeedDelta,
-    forecastEnemy.character.speed,
-  );
-  const orderText =
-    playerSpeed === enemySpeed
-      ? '同速 → いれーな先攻'
-      : playerGoesFirst
-        ? 'いれーな先攻'
-        : 'カイザー先攻';
-  const orderChangedBySpeed =
-    playerGoesFirst !== baseOrderPlayerFirst;
-
-  const cpuDamageContext = {
-    attacker: state.enemy,
-    target: state.player,
-    config: state.battleConfig,
-    turn: state.turnNumber,
-    isActingFirst: !playerGoesFirst,
-    judgmentReady: false,
-  };
-  const cpuNormalBase = calculateNormalAttackDamage(cpuDamageContext);
-  const cpuNormalCrit = calculateNormalAttackDamage(cpuDamageContext, true);
-  const evadeRate = Math.round(state.player.character.evasionRate * 100);
-  const cpuEvadeRate = Math.round(state.enemy.character.evasionRate * 100);
-
-  let impact = '';
-  let risk = '';
-  let survival = '';
-  let detail = '';
-
-  switch (state.cpuIntent) {
-    case 'ATTACK':
-      impact = `約${cpuNormalBase}〜${cpuNormalCrit} DMG`;
-      risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：約${Math.max(0, state.player.currentHp - cpuNormalCrit)}〜${Math.max(0, state.player.currentHp - cpuNormalBase)}`;
-      detail = '通常攻撃。会心20%で上限側のダメージになり、回避時は成功判定があります。';
-      break;
-    case 'SPECIAL':
-      const specialDamage = calculateSpecialDamage({
-        ...cpuDamageContext,
-        specialSkillId: 'FEATHER',
-      });
-      impact = `${specialDamage} DMG`;
-      risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - specialDamage)}${state.player.currentHp <= specialDamage ? '（戦闘不能）' : ''}`;
-      detail = `特殊技。命中すると${state.enemy.character.id === 'kaiser' ? '重圧' : '出血'}が付与されます。`;
-      break;
-    case 'ULTIMATE':
-      const ultimateDamage = calculateUltimateDamage(cpuDamageContext);
-      impact = `${ultimateDamage} DMG`;
-      risk = `回避選択：${evadeRate}%`;
-      survival = `被弾後HP：${Math.max(0, state.player.currentHp - ultimateDamage)}${state.player.currentHp <= ultimateDamage ? '（戦闘不能）' : ''}`;
-      detail = '必殺技。大きな固定ダメージを受ける可能性があります。';
-      break;
-    case 'BUFF':
-      impact = 'このターン 0 DMG';
-      risk = `次回攻撃 +${GAME_BALANCE.BUFF_DAMAGE_BONUS}`;
-      survival = `現在HP：${state.player.currentHp}`;
-      detail = '強化行動。今ターンに攻めるか、次ターンの大きな反撃を警戒する場面です。';
-      break;
-    case 'EVADE':
-      impact = '直接ダメージ 0';
-      risk = `攻撃命中率：${100 - cpuEvadeRate}%`;
-      survival = `現在HP：${state.player.currentHp}`;
-      detail = '回避構え。攻撃系は回避判定を受けますが、行動そのものは失われません。';
-      break;
-  }
-
-  const cellPadding = compact ? '4px 6px' : '5px 8px';
+  const cellPadding = compact ? '5px 7px' : '6px 9px';
   const labelSize = compact ? '7px' : '8px';
-  const valueSize = compact ? '9px' : '10px';
+  const valueSize = compact ? '12px' : '14px';
 
   return (
     <div
       aria-label="戦況予測"
+      aria-live="polite"
       style={{
         marginTop: compact ? '4px' : '6px',
-        padding: compact ? '6px 8px' : '7px 9px',
+        padding: compact ? '6px 8px' : '7px 10px',
         borderRadius: '9px',
-        border: '1px solid rgba(144, 202, 249, 0.25)',
+        border: '1px solid ' + intentMeta.accent + '55',
         background: 'linear-gradient(180deg, rgba(10, 16, 28, 0.92), rgba(8, 12, 20, 0.82))',
-        boxShadow: 'inset 0 0 18px rgba(100, 181, 246, 0.06)',
+        boxShadow: 'inset 0 0 18px ' + intentMeta.accent + '0A',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
-        <span style={{ fontSize: labelSize, fontWeight: 950, letterSpacing: '0.14em', color: '#90CAF9' }}>
-          戦況予測
-        </span>
-        <span style={{ fontSize: labelSize, fontWeight: 850, color: '#B7C2D3', whiteSpace: 'nowrap' }}>
-          予兆はこのターンに実行
-        </span>
-      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: labelSize, fontWeight: 900, letterSpacing: '0.12em', color: '#9FB0C8' }}>
+            戦況予測
+          </span>
+          <span style={{ fontSize: valueSize, fontWeight: 950, color: intentMeta.accent }}>
+            {intentMeta.label}
+          </span>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
-        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
-          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>行動順</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80' }}>
-            {orderText}
-          </div>
-          <div style={{ marginTop: '2px', fontSize: labelSize, lineHeight: 1.4, fontWeight: 800, color: '#B7C2D3' }}>
-            SPD {playerSpeedText} vs {enemySpeedText}
-          </div>
-          {orderChangedBySpeed && (
-            <div style={{ marginTop: '2px', fontSize: labelSize, fontWeight: 900, color: '#FFE082' }}>
-              速度変化で先攻交代
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6', whiteSpace: 'nowrap' }}>
+            行動順
+          </span>
+
+          {[playerGoesFirst, !playerGoesFirst].map((playerFirst, index) => (
+            <React.Fragment key={playerFirst ? 'player' : 'enemy'}>
+              {index > 0 && (
+                <span aria-hidden="true" style={{ fontSize: labelSize, fontWeight: 900, color: '#6F7E95' }}>
+                  →
+                </span>
+              )}
+              <div
+                style={{
+                  padding: cellPadding,
+                  borderRadius: '7px',
+                  background: playerFirst ? 'rgba(255, 213, 79, 0.13)' : 'rgba(255,255,255,0.045)',
+                  border: playerFirst ? '1px solid rgba(255, 213, 79, 0.48)' : '1px solid rgba(255,255,255,0.08)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#FFE082' : '#D5DEEB' }}>
+                  {index === 0 ? '①' : '②'} {playerFirst ? 'いれーな' : 'カイザー'}
+                </span>
+              </div>
+            </React.Fragment>
+          ))}
+
+          {evasionInfo && (
+            <div
+              style={{
+                padding: cellPadding,
+                borderRadius: '7px',
+                background: 'rgba(255,255,255,0.045)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避 </span>
+              <span style={{ fontSize: labelSize, fontWeight: 950, color: '#D5DEEB' }}>
+                {evasionInfo.target} {evasionInfo.rate}%
+              </span>
             </div>
           )}
         </div>
-        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
-          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>相手の影響</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: CPU_INTENT_META[state.cpuIntent].accent, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {impact}
-          </div>
-        </div>
-        <div style={{ padding: cellPadding, borderRadius: '7px', background: 'rgba(255,255,255,0.035)' }}>
-          <div style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避・耐久</div>
-          <div style={{ marginTop: '2px', fontSize: valueSize, fontWeight: 950, color: '#D5DEEB', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {risk}
-          </div>
-          <div style={{ marginTop: '2px', fontSize: labelSize, fontWeight: 800, color: '#98A6BC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {survival}
-          </div>
-        </div>
       </div>
 
-      <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.45, fontWeight: 750, color: '#AEB9CB' }}>
-        {detail}
+      <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
+        {intentMeta.hint}
       </div>
     </div>
   );
@@ -351,7 +255,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   ]);
 
   const isActionEnabled = state.phase === 'SELECT_ACTION' && !state.player.isSuperFallenShotCharging;
-  const cpuIntentMeta = CPU_INTENT_META[state.cpuIntent];
 
   useEffect(() => {
     if (state.phase !== 'SELECT_ACTION' || !state.player.isSuperFallenShotCharging) return;
@@ -574,61 +477,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               visualEffect={state.visualEffect}
             />
 
-            {isActionEnabled && (
-              <div
-                aria-live="polite"
-                style={{
-                  marginTop: '5px',
-                  padding: '7px 10px',
-                  borderRadius: '9px',
-                  border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
-                  background: 'rgba(8, 12, 20, 0.78)',
-                  boxShadow: `inset 0 0 16px ${CPU_INTENT_META[state.cpuIntent].accent}12`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '10px',
-                }}
-              >
-                <div style={{ minWidth: 0, flex: '0 0 auto' }}>
-                  <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
-                    CPU 予兆
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '1px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 950, color: '#FFFFFF' }}>
-                      {cpuIntentMeta.label}
-                    </span>
-                    <span style={{
-                      fontSize: '8px',
-                      fontWeight: 900,
-                      color: cpuIntentMeta.accent,
-                      border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
-                      borderRadius: '999px',
-                      padding: '2px 5px',
-                    }}>
-                      {cpuIntentMeta.alert}
-                    </span>
-                  </div>
-                </div>
-                <div style={{
-                  flex: 1,
-                  minWidth: 0,
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  color: '#B7C2D3',
-                  textAlign: 'right',
-                  lineHeight: 1.45,
-                }}>
-                  <div>{cpuIntentMeta.description}</div>
-                  <div style={{ marginTop: '2px', color: '#D5DEEB', fontWeight: 800 }}>
-                    {cpuIntentMeta.counterplay}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <TacticalForecast state={state} compact />
-
             {/* 2. Clash Area / Banner */}
             <div
               style={{
@@ -675,6 +523,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 visualEffect={state.visualEffect}
               />
             </div>
+
+            <TacticalForecast state={state} compact />
 
             {/* 5. Action Command Dock */}
             <ActionDock
@@ -737,59 +587,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 visualEffect={state.visualEffect}
               />
 
-              {isActionEnabled && (
-                <div
-                  aria-live="polite"
-                  style={{
-                    marginTop: '6px',
-                    padding: '8px 10px',
-                    borderRadius: '10px',
-                    border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
-                    background: 'rgba(8, 12, 20, 0.78)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '12px',
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.14em', color: '#9FB0C8' }}>
-                      CPU 予兆
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '2px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '14px', fontWeight: 950, color: cpuIntentMeta.accent }}>
-                        {cpuIntentMeta.label}
-                      </span>
-                      <span style={{
-                        fontSize: '8px',
-                        fontWeight: 900,
-                        color: cpuIntentMeta.accent,
-                        border: `1px solid ${CPU_INTENT_META[state.cpuIntent].accent}55`,
-                        borderRadius: '999px',
-                        padding: '2px 6px',
-                      }}>
-                        {cpuIntentMeta.alert}
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{
-                    maxWidth: '52%',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    color: '#B7C2D3',
-                    textAlign: 'right',
-                    lineHeight: 1.5,
-                  }}>
-                    <div>{cpuIntentMeta.description}</div>
-                    <div style={{ marginTop: '2px', color: '#D5DEEB', fontWeight: 800 }}>
-                      {cpuIntentMeta.counterplay}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <TacticalForecast state={state} />
-
               <div
                 style={{
                   height: '32px',
@@ -824,6 +621,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                   </div>
                 )}
               </div>
+
+              <TacticalForecast state={state} />
 
             </div>
           </div>
