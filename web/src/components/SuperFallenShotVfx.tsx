@@ -215,13 +215,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         .sfs-backdrop {
-          filter: blur(20px) brightness(0.15) saturate(0.85);
-          opacity: 0.48;
+          filter: blur(20px) brightness(0.22) saturate(0.90);
+          opacity: 0.54;
           transform: translate(-50%,-50%) scale(1.18);
         }
 
         @media (max-width: 600px) {
-          .sfs-art { height: min(88dvh, 720px); }
+          .sfs-art { height: min(78dvh, 640px); }
         }
 
         @media (min-width: 1100px) {
