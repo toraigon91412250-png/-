@@ -91,11 +91,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       <style>{`
         @keyframes sfsChargeWide {
           0% { transform: translate(-50%, -50%) scale(1.01); }
-          20% { transform: translate(calc(-50% - 10px), calc(-50% + 2px)) scale(1.025); }
-          42% { transform: translate(calc(-50% + 6px), calc(-50% - 4px)) scale(1.04); }
-          64% { transform: translate(calc(-50% - 4px), calc(-50% + 3px)) scale(1.055); }
-          82% { transform: translate(calc(-50% + 5px), calc(-50% - 2px)) scale(1.07); }
-          100% { transform: translate(calc(-50% + 1px), calc(-50% - 2px)) scale(1.08); }
+          22% { transform: translate(calc(-50% - 3px), calc(-50% + 1px)) scale(1.018); }
+          46% { transform: translate(calc(-50% + 2px), calc(-50% - 2px)) scale(1.025); }
+          70% { transform: translate(calc(-50% - 2px), calc(-50% + 1px)) scale(1.032); }
+          100% { transform: translate(-50%, -50%) scale(1.038); }
         }
 
         @keyframes sfsChargeClose {
@@ -108,32 +107,32 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes sfsShotCamera {
           0% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
-          9% { transform: translate3d(-7px,3px,0) scale(1.028) rotate(-0.24deg); }
-          17% { transform: translate3d(10px,-4px,0) scale(1.07) rotate(0.34deg); }
-          26% { transform: translate3d(-14px,5px,0) scale(1.12) rotate(-0.48deg); }
-          36% { transform: translate3d(11px,-3px,0) scale(1.085) rotate(0.28deg); }
-          48% { transform: translate3d(-8px,3px,0) scale(1.055) rotate(-0.18deg); }
-          61% { transform: translate3d(6px,-2px,0) scale(1.032) rotate(0.10deg); }
-          74% { transform: translate3d(-4px,1px,0) scale(1.017) rotate(-0.05deg); }
-          88% { transform: translate3d(2px,0,0) scale(1.006) rotate(0.02deg); }
+          9% { transform: translate3d(-2px,1px,0) scale(1.012) rotate(-0.08deg); }
+          17% { transform: translate3d(3px,-1px,0) scale(1.018) rotate(0.10deg); }
+          26% { transform: translate3d(-4px,1px,0) scale(1.024) rotate(-0.12deg); }
+          36% { transform: translate3d(3px,-1px,0) scale(1.020) rotate(0.08deg); }
+          48% { transform: translate3d(-2px,1px,0) scale(1.014) rotate(-0.05deg); }
+          61% { transform: translate3d(2px,0,0) scale(1.008) rotate(0.04deg); }
+          74% { transform: translate3d(-1px,0,0) scale(1.004) rotate(-0.02deg); }
+          88% { transform: translate3d(1px,0,0) scale(1.002) rotate(0.01deg); }
           100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
         }
 
         @keyframes sfsShotWide {
-          0% { transform: translate(-50%, -50%) scale(1.045); }
-          20% { transform: translate(calc(-50% - 8px), calc(-50% + 2px)) scale(1.015); }
-          42% { transform: translate(calc(-50% + 10px), calc(-50% - 2px)) scale(1.045); }
-          65% { transform: translate(calc(-50% - 6px), calc(-50% + 2px)) scale(1.025); }
-          84% { transform: translate(calc(-50% + 5px), calc(-50% - 1px)) scale(1.01); }
+          0% { transform: translate(-50%, -50%) scale(1.018); }
+          20% { transform: translate(calc(-50% - 3px), calc(-50% + 1px)) scale(1.012); }
+          42% { transform: translate(calc(-50% + 4px), calc(-50% - 1px)) scale(1.020); }
+          65% { transform: translate(calc(-50% - 3px), calc(-50% + 1px)) scale(1.014); }
+          84% { transform: translate(calc(-50% + 2px), calc(-50% - 1px)) scale(1.008); }
           100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         @keyframes sfsShotClose {
-          0%, 20% { transform: translate(-50%, -50%) scale(1.06); opacity: 0; }
-          28% { transform: translate(calc(-50% + 4px), calc(-50% - 3px)) scale(1.20); opacity: 0.16; }
-          36% { transform: translate(calc(-50% + 8px), calc(-50% - 5px)) scale(1.34); opacity: 0.82; }
-          47% { transform: translate(calc(-50% + 5px), calc(-50% - 4px)) scale(1.27); opacity: 0.42; }
-          58% { transform: translate(-50%, -50%) scale(1.08); opacity: 0; }
+          0%, 20% { transform: translate(-50%, -50%) scale(1.02); opacity: 0; }
+          28% { transform: translate(calc(-50% + 2px), calc(-50% - 1px)) scale(1.07); opacity: 0.12; }
+          36% { transform: translate(calc(-50% + 3px), calc(-50% - 2px)) scale(1.11); opacity: 0.42; }
+          47% { transform: translate(calc(-50% + 2px), calc(-50% - 1px)) scale(1.08); opacity: 0.20; }
+          58% { transform: translate(-50%, -50%) scale(1.02); opacity: 0; }
           100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
 
@@ -290,6 +289,37 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           31% { transform: translate(-50%,-50%) scale(1.05); opacity: 0.78; }
           43% { transform: translate(-50%,-50%) scale(1.34); opacity: 0.10; }
           100% { transform: translate(-50%,-50%) scale(1.72); opacity: 0; }
+        }
+
+        @keyframes sfsStormPulse {
+          0%, 100% { opacity: 0.18; transform: scale(0.98); }
+          25% { opacity: 0.44; transform: scale(1.02); }
+          48% { opacity: 0.22; transform: scale(1.05); }
+          72% { opacity: 0.50; transform: scale(1.01); }
+        }
+
+        @keyframes sfsSpark {
+          0%, 100% { transform: translate3d(0,0,0) scale(0.55); opacity: 0; }
+          22% { opacity: 0.92; }
+          48% { transform: translate3d(0,-10px,0) scale(1); opacity: 0.58; }
+          74% { opacity: 0.16; }
+        }
+
+        @keyframes sfsBoltPulse {
+          0%, 100% { opacity: 0.14; filter: brightness(0.9); }
+          18% { opacity: 0.72; filter: brightness(1.18); }
+          27% { opacity: 0.24; }
+          44% { opacity: 0.90; filter: brightness(1.28); }
+          62% { opacity: 0.18; }
+          79% { opacity: 0.64; filter: brightness(1.12); }
+        }
+
+        @keyframes sfsThunderBurst {
+          0%, 82% { transform: scale(0.75); opacity: 0; }
+          86% { transform: scale(1.18); opacity: 0.80; }
+          90% { transform: scale(1.02); opacity: 0.30; }
+          95% { transform: scale(1.32); opacity: 0.64; }
+          100% { transform: scale(1.55); opacity: 0; }
         }
 
         @keyframes sfsCameraCut {
@@ -556,7 +586,669 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }}
       />
 
-      {mode === 'CHARGE' ? (
+      <div aria-hidden="true" style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:2}}>
+        <span
+          key="sfs-spark-0"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '7%',
+            top: '74%',
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-1"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '13%',
+            top: '59%',
+            width: '11px',
+            height: '11px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-2"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '18%',
+            top: '86%',
+            width: '16px',
+            height: '16px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-3"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '24%',
+            top: '70%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+        <span
+          key="sfs-spark-4"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '30%',
+            top: '91%',
+            width: '13px',
+            height: '13px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.76s',
+          }}
+        />
+        <span
+          key="sfs-spark-5"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '37%',
+            top: '77%',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.95s',
+          }}
+        />
+        <span
+          key="sfs-spark-6"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '44%',
+            top: '88%',
+            width: '15px',
+            height: '15px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-7"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '52%',
+            top: '72%',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-8"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '59%',
+            top: '90%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-9"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '66%',
+            top: '76%',
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+        <span
+          key="sfs-spark-10"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '73%',
+            top: '88%',
+            width: '11px',
+            height: '11px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.76s',
+          }}
+        />
+        <span
+          key="sfs-spark-11"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '79%',
+            top: '67%',
+            width: '15px',
+            height: '15px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '-0.95s',
+          }}
+        />
+        <span
+          key="sfs-spark-12"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '85%',
+            top: '82%',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-13"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '91%',
+            top: '72%',
+            width: '13px',
+            height: '13px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-14"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '95%',
+            top: '90%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-15"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '10%',
+            top: '94%',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+      </div>
+
+      <div aria-hidden="true" style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:2}}>
+        <span
+          key="sfs-spark-0"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '7%',
+            top: '74%',
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-1"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '13%',
+            top: '59%',
+            width: '11px',
+            height: '11px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-2"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '18%',
+            top: '86%',
+            width: '16px',
+            height: '16px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-3"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '24%',
+            top: '70%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+        <span
+          key="sfs-spark-4"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '30%',
+            top: '91%',
+            width: '13px',
+            height: '13px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.76s',
+          }}
+        />
+        <span
+          key="sfs-spark-5"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '37%',
+            top: '77%',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.95s',
+          }}
+        />
+        <span
+          key="sfs-spark-6"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '44%',
+            top: '88%',
+            width: '15px',
+            height: '15px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-7"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '52%',
+            top: '72%',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-8"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '59%',
+            top: '90%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-9"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '66%',
+            top: '76%',
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+        <span
+          key="sfs-spark-10"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '73%',
+            top: '88%',
+            width: '11px',
+            height: '11px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.76s',
+          }}
+        />
+        <span
+          key="sfs-spark-11"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '79%',
+            top: '67%',
+            width: '15px',
+            height: '15px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
+            animationDelay: '-0.95s',
+          }}
+        />
+        <span
+          key="sfs-spark-12"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '85%',
+            top: '82%',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
+            animationDelay: '0s',
+          }}
+        />
+        <span
+          key="sfs-spark-13"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '91%',
+            top: '72%',
+            width: '13px',
+            height: '13px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
+            animationDelay: '-0.19s',
+          }}
+        />
+        <span
+          key="sfs-spark-14"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '95%',
+            top: '90%',
+            width: '9px',
+            height: '9px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
+            animationDelay: '-0.38s',
+          }}
+        />
+        <span
+          key="sfs-spark-15"
+          className="sfs-motion"
+          style={{
+            position: 'absolute',
+            left: '10%',
+            top: '94%',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: 'rgba(220,248,255,0.96)',
+            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            transform: 'translate(-50%,-50%)',
+            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
+            animationDelay: '-0.5700000000000001s',
+          }}
+        />
+      </div>
+
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(circle at 18% 75%, rgba(122,209,255,0.18) 0 1px, transparent 2px), radial-gradient(circle at 24% 62%, rgba(219,248,255,0.24) 0 1.3px, transparent 2px), radial-gradient(circle at 32% 84%, rgba(95,188,255,0.20) 0 1px, transparent 2px), radial-gradient(circle at 42% 70%, rgba(205,245,255,0.18) 0 1.2px, transparent 2px), radial-gradient(circle at 56% 78%, rgba(102,196,255,0.20) 0 1px, transparent 2px), radial-gradient(circle at 68% 68%, rgba(210,246,255,0.20) 0 1.2px, transparent 2px), radial-gradient(circle at 78% 82%, rgba(100,192,255,0.18) 0 1px, transparent 2px), radial-gradient(circle at 88% 64%, rgba(215,247,255,0.22) 0 1.2px, transparent 2px)',
+          backgroundSize: '140px 120px, 180px 130px, 160px 150px, 190px 120px, 170px 145px, 180px 135px, 155px 120px, 175px 140px',
+          mixBlendMode: 'screen',
+          opacity: 0.78,
+          animation: `sfsStormPulse ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '4%',
+          right: '4%',
+          bottom: '5%',
+          height: '34%',
+          background:
+            'linear-gradient(118deg, transparent 0 11%, rgba(186,235,255,0.26) 11.4%, transparent 12.2% 21%, rgba(86,181,255,0.20) 21.4%, transparent 22.1% 34%, rgba(222,249,255,0.24) 34.4%, transparent 35.1% 48%, rgba(78,173,255,0.18) 48.4%, transparent 49.2% 63%, rgba(216,248,255,0.24) 63.4%, transparent 64.2% 78%, rgba(90,187,255,0.18) 78.4%, transparent 79.2% 92%, rgba(213,247,255,0.24) 92.4%, transparent 93%)',
+          filter: 'blur(0.6px)',
+          mixBlendMode: 'screen',
+          opacity: 0.62,
+          animation: `sfsStormPulse ${d} ease-in-out infinite reverse`,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '8%',
+          right: '8%',
+          bottom: '1%',
+          height: '44%',
+          background:
+            'repeating-radial-gradient(ellipse at 50% 100%, rgba(93,192,255,0.12) 0 2px, transparent 2px 26px)',
+          maskImage: 'linear-gradient(to top, black, transparent 88%)',
+          WebkitMaskImage: 'linear-gradient(to top, black, transparent 88%)',
+          mixBlendMode: 'screen',
+          opacity: 0.48,
+          animation: `sfsStormPulse ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '43%',
+          width: '72%',
+          aspectRatio: '1',
+          transform: 'translate(-50%,-50%)',
+          borderRadius: '50%',
+          border: '2px solid rgba(186,235,255,0.18)',
+          boxShadow: '0 0 28px rgba(99,186,255,0.20), 0 0 68px rgba(69,138,255,0.10)',
+          mixBlendMode: 'screen',
+          animation: `sfsThunderBurst ${d} ease-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+
+      {mode === 'CHARGE' ? (      <div
+        aria-hidden="true"
+        className="sfs-motion"
+        style={{
+          position: 'absolute',
+          left: '2%',
+          bottom: '7%',
+          width: '31%',
+          height: '34%',
+          borderTop: '3px solid rgba(228,250,255,0.70)',
+          borderRight: '2px solid rgba(84,180,255,0.30)',
+          clipPath: 'polygon(0 98%, 8% 74%, 18% 82%, 27% 52%, 36% 66%, 45% 22%, 53% 38%, 63% 6%, 72% 28%, 82% 0, 100% 16%, 88% 35%, 77% 31%, 68% 55%, 57% 43%, 47% 80%, 38% 66%, 27% 100%)',
+          boxShadow: '0 0 14px rgba(188,237,255,0.54), 0 0 28px rgba(66,157,255,0.22)',
+          animation: `sfsBoltPulse ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="sfs-motion"
+        style={{
+          position: 'absolute',
+          right: '4%',
+          bottom: '5%',
+          width: '30%',
+          height: '36%',
+          borderTop: '3px solid rgba(226,250,255,0.66)',
+          borderLeft: '2px solid rgba(84,180,255,0.26)',
+          clipPath: 'polygon(0 18%, 12% 0, 20% 28%, 31% 12%, 43% 49%, 55% 27%, 66% 70%, 77% 46%, 89% 88%, 100% 77%, 89% 100%, 75% 76%, 65% 100%, 53% 59%, 42% 72%, 30% 39%, 20% 51%, 11% 20%)',
+          boxShadow: '0 0 14px rgba(188,237,255,0.50), 0 0 30px rgba(66,157,255,0.20)',
+          animation: `sfsBoltPulse ${d} ease-in-out infinite reverse`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+
         <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
           {!chargeFailed && (
             <>
