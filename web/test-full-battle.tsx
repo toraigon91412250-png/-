@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom';
 import { IRENA, KAISER } from './src/data/characters';
 import { useBattleGame } from './src/hooks/useBattleGame';
 import { BattleScreen } from './src/components/BattleScreen';
-import { IrenaSkillProgress } from './src/types/game';
+import { AbilityProgress, IrenaSkillProgress } from './src/types/game';
 
 declare const process: { exit(code?: number): never };
 
@@ -75,6 +75,11 @@ const testSkillProgress: IrenaSkillProgress = {
   superFallenShotUnlocked: false,
 };
 
+const testAbilityProgress: AbilityProgress = {
+  levels: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+  shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+};
+
 function Harness() {
   const {
     state,
@@ -94,7 +99,9 @@ function Harness() {
       onBackToSelect={() => {}}
       onRestart={() => restartBattle()}
       skillProgress={testSkillProgress}
+      abilityProgress={testAbilityProgress}
       onUpgradeSkill={() => {}}
+      onUpgradeAbility={() => {}}
       onChooseSkillPath={() => {}}
       onToggleSound={toggleSound}
       onToggleSpeed={toggleSpeed}
