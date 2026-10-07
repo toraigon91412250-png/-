@@ -3,6 +3,7 @@ import chargeImage from '../assets/fallen_irena_charge_black.jpg';
 import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
 import shotImage from '../assets/fallen_irena_shot_gold.jpg';
+import irenaHero from '../assets/img_irena.jpg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
@@ -25,6 +26,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const [limitFailed, setLimitFailed] = useState(false);
   const [shotFailed, setShotFailed] = useState(false);
   const [cutinFailed, setCutinFailed] = useState(false);
+  const [irenaHeroFailed, setIrenaHeroFailed] = useState(false);
 
   const t = clamp01(progress);
   const duration = Math.max(1, durationMs);
@@ -114,6 +116,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           42% { transform: translate3d(-28%,-30%,0) scale(1.42); opacity: 1; }
           56% { transform: translate3d(-35%,-36%,0) scale(1.30); opacity: 0.38; }
           100% { transform: translate3d(-40%,-40%,0) scale(1.08); opacity: 0; }
+        }
+
+        @keyframes sfsIrenaHero {
+          0% { transform: translate3d(-50%,-50%,0) scale(0.94); opacity: 0; filter: brightness(0.72) saturate(0.82); }
+          16% { transform: translate3d(-50%,-50%,0) scale(1.01); opacity: 0.92; filter: brightness(0.94) saturate(0.98); }
+          56% { transform: translate3d(-50%,-50%,0) scale(1.03); opacity: 0.96; filter: brightness(1.02) saturate(1.06); }
+          100% { transform: translate3d(-50%,-50%,0) scale(1.06); opacity: 0; filter: brightness(1.10) saturate(1.10); }
         }
 
         @keyframes sfsLimit {
@@ -253,6 +262,23 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           transform: translate(-50%,-50%) scale(1.18);
         }
 
+        .sfs-irena-hero {
+          position: absolute;
+          left: 68%;
+          top: 53%;
+          width: min(42vw, 540px);
+          max-height: 86vh;
+          height: auto;
+          object-fit: contain;
+          object-position: center;
+          transform: translate(-50%,-50%);
+          user-select: none;
+          -webkit-user-select: none;
+          pointer-events: none;
+          z-index: 4;
+          filter: drop-shadow(0 0 18px rgba(80,180,255,0.36)) drop-shadow(0 0 42px rgba(30,80,210,0.24));
+        }
+
         @media (max-width: 600px) {
           .sfs-art {
             height: min(78dvh, 640px);
@@ -279,6 +305,21 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             </>
           )}
 
+          {!irenaHeroFailed && (
+            <img
+              src={irenaHero}
+              alt=""
+              draggable={false}
+              onError={(event) => { setIrenaHeroFailed(true); event.currentTarget.style.display = 'none'; }}
+              className="sfs-irena-hero sfs-motion"
+              style={{
+                opacity: Math.max(0, Math.min(1, (t - 0.12) / 0.18)) * Math.max(0, Math.min(1, (1.02 - t) / 0.26)),
+                animation: `sfsIrenaHero ${d} cubic-bezier(0.08,0.86,0.14,1) both`,
+                willChange: 'transform, opacity, filter',
+              }}
+            />
+          )}
+
           <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '48%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,255,0.92) 0%, rgba(120,180,255,0.52) 18%, rgba(60,100,180,0.16) 42%, transparent 72%)', filter: 'blur(10px)', animation: `sfsChargeGlow ${d} cubic-bezier(0.08,0.88,0.16,1) both`, pointerEvents: 'none' }} />
 
           <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '40%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', border: '3px solid rgba(135,205,255,0.82)', boxShadow: '0 0 18px rgba(135,205,255,0.88), inset 0 0 18px rgba(135,205,255,0.48)', animation: `sfsChargeRing ${d} linear both`, pointerEvents: 'none' }} />
@@ -297,6 +338,21 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
           {!limitFailed && (
             <img src={limitGif} alt="" draggable={false} onError={(event) => { setLimitFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: limitOpacity, animation: `sfsLimit calc(${d} * 0.30) cubic-bezier(0.08,0.88,0.16,1) both`, willChange: 'transform, opacity, filter' }} />
+          )}
+
+          {!irenaHeroFailed && (
+            <img
+              src={irenaHero}
+              alt=""
+              draggable={false}
+              onError={(event) => { setIrenaHeroFailed(true); event.currentTarget.style.display = 'none'; }}
+              className="sfs-irena-hero sfs-motion"
+              style={{
+                opacity: Math.max(0, Math.min(1, (t - 0.08) / 0.16)) * Math.max(0, Math.min(1, (1.02 - t) / 0.34)),
+                animation: `sfsIrenaHero ${d} cubic-bezier(0.08,0.86,0.14,1) both`,
+                willChange: 'transform, opacity, filter',
+              }}
+            />
           )}
 
           {!shotFailed && (
