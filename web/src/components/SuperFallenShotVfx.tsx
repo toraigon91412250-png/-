@@ -36,61 +36,37 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const d = `${duration}ms`;
   const isShot = mode === 'SHOT';
 
-  const damageVisible =
-    isShot &&
-    !isEvade &&
-    damage > 0 &&
-    t >= 0.54 &&
-    t <= 0.86;
-
-  const missVisible =
-    isShot &&
-    isEvade &&
-    t >= 0.54 &&
-    t <= 0.82;
-
-  const chargeImageOpacity = chargeFailed
-    ? 0
-    : t < 0.08
-      ? t / 0.08
-      : t > 0.95
-        ? (1 - t) / 0.05
-        : 1;
-
-  const limitT = clamp01((t - 0.02) / 0.22);
-  const limitOpacity = isShot && !limitFailed
-    ? limitT < 0.18
-      ? limitT / 0.18
-      : limitT > 0.82
-        ? (1 - limitT) / 0.18
-        : 1
-    : 0;
-
-  const shotOpacity = isShot && !shotFailed
-    ? t < 0.20
+  const shotReveal = clamp01((t - 0.16) / 0.18);
+  const shotOpacity = isShot
+    ? t < 0.13
       ? 0
-      : t < 0.28
-        ? (t - 0.20) / 0.08
-        : t > 0.92
-          ? (1 - t) / 0.08
+      : t < 0.22
+        ? (t - 0.13) / 0.09
+        : t > 0.94
+          ? (1 - t) / 0.06
           : 1
     : 0;
 
-  const closePunch = isShot
-    ? Math.max(0, Math.min(1, (t - 0.30) / 0.18)) *
-      Math.max(0, Math.min(1, (0.66 - t) / 0.20))
+  const limitT = clamp01((t - 0.025) / 0.22);
+  const limitOpacity = isShot && !limitFailed
+    ? limitT < 0.14
+      ? limitT / 0.14
+      : limitT > 0.78
+        ? (1 - limitT) / 0.22
+        : 1
     : 0;
 
-  const cutinOpacity =
-    isShot && !cutinFailed
-      ? t < 0.44
-        ? 0
-        : t < 0.54
-          ? (t - 0.44) / 0.10
-          : t > 0.82
-            ? (0.96 - t) / 0.14
-            : 1
-      : 0;
+  const closePunch = isShot
+    ? Math.max(0, 1 - Math.abs(t - 0.32) / 0.16)
+    : 0;
+
+  const chargeClose = !isShot
+    ? Math.max(0, 1 - Math.abs(t - 0.64) / 0.22)
+    : 0;
+
+  const cutinVisible = isShot && !cutinFailed && t >= 0.42 && t <= 0.86;
+  const damageVisible = isShot && !isEvade && damage > 0 && t >= 0.54 && t <= 0.88;
+  const missVisible = isShot && isEvade && t >= 0.54 && t <= 0.82;
 
   return (
     <div
@@ -106,187 +82,116 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       }}
     >
       <style>{`
-        @keyframes sfsChargeCamera {
-          0% { transform: translate3d(-50%, -50%, 0) scale(1); }
-          23% { transform: translate3d(calc(-50% - 14px), calc(-50% + 4px), 0) scale(1.012); }
-          48% { transform: translate3d(calc(-50% + 10px), calc(-50% - 6px), 0) scale(1.026); }
-          72% { transform: translate3d(calc(-50% - 6px), calc(-50% + 2px), 0) scale(1.038); }
-          100% { transform: translate3d(calc(-50% + 8px), calc(-50% - 3px), 0) scale(1.048); }
+        @keyframes sfsChargeWide {
+          0% { transform: translate3d(-50%,-50%,0) scale(1.01); }
+          20% { transform: translate3d(calc(-50% - 18px), calc(-50% + 3px), 0) scale(1.025); }
+          42% { transform: translate3d(calc(-50% + 10px), calc(-50% - 6px), 0) scale(1.04); }
+          64% { transform: translate3d(calc(-50% - 6px), calc(-50% + 4px), 0) scale(1.055); }
+          82% { transform: translate3d(calc(-50% + 8px), calc(-50% - 2px), 0) scale(1.07); }
+          100% { transform: translate3d(calc(-50% + 2px), calc(-50% - 4px), 0) scale(1.08); }
         }
 
         @keyframes sfsChargeClose {
-          0% { transform: translate3d(-47%, -47%, 0) scale(1.04); opacity: 0; }
-          18% { opacity: 0; }
-          34% { transform: translate3d(-43%, -46%, 0) scale(1.13); opacity: 0.22; }
-          50% { transform: translate3d(-39%, -45%, 0) scale(1.20); opacity: 0.72; }
-          66% { transform: translate3d(-43%, -48%, 0) scale(1.26); opacity: 0.18; }
-          84% { opacity: 0; }
-          100% { opacity: 0; }
-        }
-
-        @keyframes sfsChargeGlow {
-          0% { transform: translate(-50%, -50%) scale(0.45); opacity: 0; }
-          22% { transform: translate(-50%, -50%) scale(0.72); opacity: 0.54; }
-          52% { transform: translate(-50%, -50%) scale(1.00); opacity: 0.20; }
-          76% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.10; }
-          100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
-        }
-
-        @keyframes sfsChargeClose {
-          0%, 26% {
-            transform: translate3d(-54%, -48%, 0) scale(1.08);
-            opacity: 0;
-          }
-          38% {
-            transform: translate3d(-49%, -46%, 0) scale(1.20);
-            opacity: 0.16;
-          }
-          50% {
-            transform: translate3d(-44%, -43%, 0) scale(1.34);
-            opacity: 0.72;
-          }
-          62% {
-            transform: translate3d(-47%, -45%, 0) scale(1.27);
-            opacity: 0.40;
-          }
-          72%, 100% {
-            transform: translate3d(-52%, -48%, 0) scale(1.10);
-            opacity: 0;
-          }
-        }
-
-        @keyframes sfsShotClose {
-          0%, 18% {
-            transform: translate3d(-49%, -47%, 0) scale(1.05);
-            opacity: 0;
-          }
-          25% {
-            transform: translate3d(-45%, -44%, 0) scale(1.17);
-            opacity: 0.20;
-          }
-          34% {
-            transform: translate3d(-40%, -41%, 0) scale(1.31);
-            opacity: 0.78;
-          }
-          44% {
-            transform: translate3d(-43%, -43%, 0) scale(1.25);
-            opacity: 0.42;
-          }
-          54% {
-            transform: translate3d(-49%, -46%, 0) scale(1.08);
-            opacity: 0;
-          }
-          100% { opacity: 0; }
+          0%, 28% { transform: translate3d(-45%,-42%,0) scale(1.05); opacity: 0; }
+          42% { transform: translate3d(-41%,-39%,0) scale(1.18); opacity: 0.18; }
+          55% { transform: translate3d(-36%,-36%,0) scale(1.30); opacity: 0.78; }
+          66% { transform: translate3d(-40%,-39%,0) scale(1.24); opacity: 0.34; }
+          76%,100% { transform: translate3d(-46%,-43%,0) scale(1.08); opacity: 0; }
         }
 
         @keyframes sfsShotCamera {
           0% { transform: translate3d(0,0,0) scale(1); }
-          8% { transform: translate3d(-6px,2px,0) scale(1.035); }
-          14% { transform: translate3d(9px,-3px,0) scale(1.08); }
-          20% { transform: translate3d(-12px,4px,0) scale(1.12); }
-          28% { transform: translate3d(9px,-3px,0) scale(1.09); }
-          38% { transform: translate3d(-5px,2px,0) scale(1.05); }
-          52% { transform: translate3d(2px,-1px,0) scale(1.025); }
-          68% { transform: translate3d(-1px,0,0) scale(1.012); }
-          84%,100% { transform: translate3d(0,0,0) scale(1); }
+          8% { transform: translate3d(-5px,2px,0) scale(1.028); }
+          15% { transform: translate3d(8px,-3px,0) scale(1.07); }
+          23% { transform: translate3d(-11px,4px,0) scale(1.11); }
+          31% { transform: translate3d(9px,-2px,0) scale(1.085); }
+          41% { transform: translate3d(-6px,2px,0) scale(1.045); }
+          54% { transform: translate3d(4px,-1px,0) scale(1.025); }
+          68% { transform: translate3d(-3px,1px,0) scale(1.015); }
+          82% { transform: translate3d(1px,0,0) scale(1.008); }
+          100% { transform: translate3d(0,0,0) scale(1); }
         }
 
-        @keyframes sfsLimitZoom {
-          0% { transform: scale(1.02); filter: contrast(1.04) brightness(0.84) saturate(0.9); }
-          100% { transform: scale(1.16); filter: contrast(1.32) brightness(1.04) saturate(1.18); }
-        }
-
-        @keyframes sfsShotImage {
-          0% {
-            transform: translate3d(2%, 3%, 0) scale(1.08);
-            filter: brightness(0.72) saturate(1.00);
-          }
-          18% {
-            transform: translate3d(-1%, 0%, 0) scale(1.035);
-            filter: brightness(1.04) saturate(1.10);
-          }
-          48% {
-            transform: translate3d(-4%, -1.5%, 0) scale(1.06);
-            filter: brightness(1.02) saturate(1.08);
-          }
-          72% {
-            transform: translate3d(1%, -2%, 0) scale(1.02);
-            filter: brightness(1) saturate(1.06);
-          }
-          100% {
-            transform: translate3d(0%, 0%, 0) scale(1);
-            filter: brightness(1) saturate(1.04);
-          }
+        @keyframes sfsShotWide {
+          0% { transform: translate3d(-50%,-50%,0) scale(1.045); }
+          20% { transform: translate3d(calc(-50% - 14px), calc(-50% + 4px),0) scale(1.015); }
+          42% { transform: translate3d(calc(-50% + 18px), calc(-50% - 3px),0) scale(1.045); }
+          65% { transform: translate3d(calc(-50% - 8px), calc(-50% + 3px),0) scale(1.025); }
+          84% { transform: translate3d(calc(-50% + 7px), calc(-50% - 2px),0) scale(1.01); }
+          100% { transform: translate3d(-50%,-50%,0) scale(1); }
         }
 
         @keyframes sfsShotClose {
-          0% { transform: translate3d(-3%, 2%, 0) scale(1.12); opacity: 0; }
-          8% { opacity: 0; }
-          18% { transform: translate3d(-10%, 1%, 0) scale(1.22); opacity: 0.34; }
-          28% { transform: translate3d(-15%, -1%, 0) scale(1.30); opacity: 0.76; }
-          38% { transform: translate3d(-8%, -2%, 0) scale(1.24); opacity: 0.35; }
-          52% { opacity: 0; }
+          0%, 20% { transform: translate3d(-44%,-41%,0) scale(1.06); opacity: 0; }
+          28% { transform: translate3d(-38%,-38%,0) scale(1.20); opacity: 0.16; }
+          36% { transform: translate3d(-32%,-34%,0) scale(1.34); opacity: 0.82; }
+          47% { transform: translate3d(-37%,-37%,0) scale(1.27); opacity: 0.42; }
+          58% { transform: translate3d(-44%,-42%,0) scale(1.08); opacity: 0; }
           100% { opacity: 0; }
+        }
+
+        @keyframes sfsLimit {
+          0% { transform: scale(1.00); filter: contrast(1.0) brightness(0.80) saturate(0.88); }
+          100% { transform: scale(1.18); filter: contrast(1.34) brightness(1.06) saturate(1.2); }
+        }
+
+        @keyframes sfsOrigin {
+          0% { transform: translate(-50%,-50%) scale(0.2); opacity: 0; }
+          17% { transform: translate(-50%,-50%) scale(0.58); opacity: 0.98; }
+          35% { transform: translate(-50%,-50%) scale(1.0); opacity: 0.52; }
+          58% { transform: translate(-50%,-50%) scale(1.46); opacity: 0.12; }
+          100% { transform: translate(-50%,-50%) scale(1.9); opacity: 0; }
+        }
+
+        @keyframes sfsBoltA {
+          0% { transform: rotate(-7deg) scaleX(0.05); opacity: 0; }
+          10% { opacity: 1; }
+          35% { transform: rotate(-9deg) scaleX(1); opacity: 0.96; }
+          65% { transform: translateX(16%) rotate(-7deg) scaleX(1.25); opacity: 0.20; }
+          100% { transform: translateX(34%) rotate(-5deg) scaleX(1.45); opacity: 0; }
+        }
+
+        @keyframes sfsBoltB {
+          0% { transform: rotate(8deg) scaleX(0.04); opacity: 0; }
+          14% { opacity: 0.92; }
+          42% { transform: translateX(10%) rotate(7deg) scaleX(1); opacity: 0.78; }
+          72% { transform: translateX(28%) rotate(5deg) scaleX(1.24); opacity: 0.16; }
+          100% { transform: translateX(42%) rotate(4deg) scaleX(1.40); opacity: 0; }
         }
 
         @keyframes sfsFlash {
           0%, 27% { opacity: 0; }
-          31% { opacity: 0.94; }
-          36% { opacity: 0.08; }
+          31% { opacity: 0.98; }
+          36% { opacity: 0.06; }
           100% { opacity: 0; }
         }
 
-        @keyframes sfsOriginBurst {
-          0% { transform: translate(-50%, -50%) scale(0.25); opacity: 0; }
-          16% { transform: translate(-50%, -50%) scale(0.62); opacity: 0.95; }
-          34% { transform: translate(-50%, -50%) scale(1.02); opacity: 0.52; }
-          62% { transform: translate(-50%, -50%) scale(1.52); opacity: 0.12; }
-          100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-        }
-
-        @keyframes sfsLightningA {
-          0% { transform: rotate(-8deg) scaleX(0.08); opacity: 0; }
-          12% { opacity: 1; }
-          36% { transform: rotate(-10deg) scaleX(1); opacity: 0.92; }
-          68% { transform: translateX(18%) rotate(-8deg) scaleX(1.30); opacity: 0.20; }
-          100% { transform: translateX(34%) rotate(-6deg) scaleX(1.5); opacity: 0; }
-        }
-
-        @keyframes sfsLightningB {
-          0% { transform: rotate(7deg) scaleX(0.04); opacity: 0; }
-          16% { opacity: 0.85; }
-          42% { transform: translateX(12%) rotate(8deg) scaleX(1); opacity: 0.72; }
-          74% { transform: translateX(28%) rotate(6deg) scaleX(1.26); opacity: 0.16; }
-          100% { transform: translateX(40%) rotate(5deg) scaleX(1.4); opacity: 0; }
-        }
-
-        @keyframes sfsLightningC {
-          0% { transform: rotate(-2deg) scaleX(0.05); opacity: 0; }
-          18% { opacity: 0.64; }
-          45% { transform: translateX(8%) rotate(-3deg) scaleX(1); opacity: 0.58; }
-          70% { transform: translateX(22%) rotate(-1deg) scaleX(1.20); opacity: 0.10; }
-          100% { transform: translateX(36%) rotate(0deg) scaleX(1.36); opacity: 0; }
-        }
-
         @keyframes sfsCutin {
-          0% { transform: translate3d(-115%, 12%, 0) skewX(-10deg) rotate(-3deg); }
-          22% { transform: translate3d(-25%, 2%, 0) skewX(-7deg) rotate(-2deg); }
-          42% { transform: translate3d(0, 0, 0) skewX(-4deg) rotate(-1deg); }
-          100% { transform: translate3d(8%, -3%, 0) skewX(-4deg) rotate(-1deg); }
+          0% { transform: translate3d(-120%, 10%, 0) skewX(-12deg) rotate(-3deg); opacity: 0; }
+          18% { opacity: 1; }
+          42% { transform: translate3d(0,0,0) skewX(-5deg) rotate(-1deg); opacity: 1; }
+          100% { transform: translate3d(9%,-4%,0) skewX(-5deg) rotate(-1deg); opacity: 0; }
         }
 
         @keyframes sfsDamage {
-          0% { transform: translate(-50%, -50%) scale(0.48) rotate(-5deg); opacity: 0; }
-          18% { transform: translate(-50%, -50%) scale(1.14) rotate(-2deg); opacity: 1; }
-          34% { transform: translate(-50%, -50%) scale(1.02) rotate(0); opacity: 1; }
-          100% { transform: translate(-50%, -54%) scale(0.98) rotate(0); opacity: 0; }
+          0% { transform: translate(-50%,-50%) scale(0.42) rotate(-6deg); opacity: 0; }
+          16% { transform: translate(-50%,-50%) scale(1.16) rotate(-2deg); opacity: 1; }
+          32% { transform: translate(-50%,-50%) scale(1.02) rotate(0); opacity: 1; }
+          100% { transform: translate(-50%,-54%) scale(0.98) rotate(0); opacity: 0; }
+        }
+
+        @keyframes sfsTitle {
+          0% { transform: translate(-50%,8px) scale(0.88); opacity: 0; }
+          26% { transform: translate(-50%,0) scale(1); opacity: 1; }
+          70% { transform: translate(-50%,-2px) scale(1.03); opacity: 1; }
+          100% { transform: translate(-50%,-8px) scale(1.02); opacity: 0; }
         }
 
         .sfs-art {
           position: absolute;
           left: 50%;
           top: 50%;
-          height: min(84vh, 760px);
+          height: min(86vh, 780px);
           width: auto;
           max-width: none;
           user-select: none;
@@ -295,31 +200,21 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         .sfs-backdrop {
-          filter: blur(18px) brightness(0.18) saturate(0.85);
-          opacity: 0.42;
-          transform: translate(-50%, -50%) scale(1.20);
-        }
-
-        .sfs-wide {
-          transform: translate(-50%, -50%);
+          filter: blur(20px) brightness(0.15) saturate(0.85);
+          opacity: 0.48;
+          transform: translate(-50%,-50%) scale(1.18);
         }
 
         @media (max-width: 600px) {
-          .sfs-art {
-            height: min(86dvh, 700px);
-          }
+          .sfs-art { height: min(88dvh, 720px); }
         }
 
         @media (min-width: 1100px) {
-          .sfs-art {
-            height: min(88vh, 780px);
-          }
+          .sfs-art { height: min(90vh, 800px); }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .sfs-motion {
-            animation: none !important;
-          }
+          .sfs-motion { animation: none !important; }
         }
       `}</style>
 
@@ -333,17 +228,17 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 draggable={false}
                 onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-backdrop"
-                style={{ animation: `sfsChargeCamera ${d} ease-out both` }}
+                style={{ animation: `sfsChargeWide ${d} ease-out both` }}
               />
               <img
                 src={chargeImage}
                 alt=""
                 draggable={false}
                 onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
-                className="sfs-art sfs-wide sfs-motion"
+                className="sfs-art sfs-motion"
                 style={{
                   opacity: chargeImageOpacity,
-                  animation: `sfsChargeCamera ${d} cubic-bezier(0.16,0.80,0.20,1) both`,
+                  animation: `sfsChargeWide ${d} cubic-bezier(0.16,0.80,0.20,1) both`,
                   willChange: 'transform, opacity',
                 }}
               />
@@ -354,20 +249,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-motion"
                 style={{
+                  opacity: chargeClose,
+                  filter: 'brightness(1.08) saturate(1.08)',
                   animation: `sfsChargeClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
-                  filter: 'brightness(1.05) saturate(1.08)',
                   willChange: 'transform, opacity, filter',
-                }}
-              />
-              <img
-                src={chargeImage}
-                alt=""
-                draggable={false}
-                onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
-                className="sfs-art sfs-wide sfs-motion"
-                style={{
-                  animation: `sfsChargeClose ${d} cubic-bezier(0.10,0.82,0.18,1) both`,
-                  willChange: 'transform, opacity',
                 }}
               />
             </>
@@ -381,9 +266,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               top: '45%',
               width: '30%',
               aspectRatio: '1',
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate(-50%,-50%)',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.30) 0%, rgba(174,226,255,0.12) 25%, rgba(104,100,195,0.05) 50%, transparent 72%)',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.32) 0%, rgba(175,228,255,0.13) 24%, rgba(104,102,195,0.04) 50%, transparent 72%)',
               filter: 'blur(9px)',
               animation: `sfsChargeGlow ${d} ease-out both`,
               willChange: 'transform, opacity',
@@ -394,32 +279,25 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             style={{
               position: 'absolute',
               inset: 0,
-              background: 'radial-gradient(circle at 52% 46%, transparent 34%, rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.76) 100%)',
+              background: 'radial-gradient(circle at 50% 44%, transparent 30%, rgba(0,0,0,0.18) 58%, rgba(0,0,0,0.76) 100%)',
               pointerEvents: 'none',
             }}
           />
 
           <div
+            className="sfs-motion"
             style={{
               position: 'absolute',
-              inset: 0,
-              background: '#000',
-              opacity: Math.max(0, 0.40 - t * 0.26),
-              pointerEvents: 'none',
-            }}
-          />
-
-          <div
-            style={{
-              position: 'absolute',
-              right: '6%',
-              bottom: '8%',
-              color: 'rgba(224,242,255,0.76)',
-              fontSize: 'clamp(10px, 1.8vw, 15px)',
-              fontWeight: 900,
+              left: '50%',
+              top: '14%',
+              color: '#EAF8FF',
+              fontSize: 'clamp(18px,4.5vw,48px)',
+              fontWeight: 1000,
               letterSpacing: '0.28em',
-              textShadow: '0 0 12px rgba(105,198,255,0.72)',
-              opacity: Math.max(0, Math.min(1, (t - 0.42) / 0.30)),
+              textShadow: '0 0 10px rgba(104,205,255,0.80), 0 0 26px rgba(68,132,255,0.34)',
+              opacity: Math.max(0, Math.min(1, (t - 0.60) / 0.16)) * Math.max(0, Math.min(1, (0.98 - t) / 0.20)),
+              animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both`,
+              pointerEvents: 'none',
             }}
           >
             超堕天撃
@@ -441,7 +319,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             draggable={false}
             onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
             className="sfs-art sfs-backdrop"
-            style={{ animation: `sfsShotImage ${d} cubic-bezier(0.10,0.76,0.18,1) both` }}
+            style={{ animation: `sfsShotWide ${d} ease-out both` }}
           />
 
           {!limitFailed && (
@@ -450,10 +328,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               alt=""
               draggable={false}
               onError={(event) => { setLimitFailed(true); event.currentTarget.style.display = 'none'; }}
-              className="sfs-art sfs-wide sfs-motion"
+              className="sfs-art sfs-motion"
               style={{
                 opacity: limitOpacity,
-                animation: `sfsLimitZoom calc(${d} * 0.38) cubic-bezier(0.08,0.88,0.16,1) both`,
+                animation: `sfsLimit calc(${d} * 0.30) cubic-bezier(0.08,0.88,0.16,1) both`,
                 willChange: 'transform, opacity, filter',
               }}
             />
@@ -466,10 +344,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 alt=""
                 draggable={false}
                 onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
-                className="sfs-art sfs-wide sfs-motion"
+                className="sfs-art sfs-motion"
                 style={{
                   opacity: shotOpacity,
-                  animation: `sfsShotImage ${d} cubic-bezier(0.10,0.76,0.18,1) both`,
+                  animation: `sfsShotWide ${d} cubic-bezier(0.10,0.76,0.18,1) both`,
                   willChange: 'transform, opacity, filter',
                 }}
               />
@@ -480,22 +358,11 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-motion"
                 style={{
-                  animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
-                  filter: 'brightness(1.10) saturate(1.10)',
-                  willChange: 'transform, opacity, filter',
-                }}
-              />
-              <img
-                src={shotImage}
-                alt=""
-                draggable={false}
-                onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
-                className="sfs-art sfs-wide sfs-motion"
-                style={{
                   opacity: closePunch * 0.78,
                   height: 'min(100vh, 900px)',
+                  filter: 'brightness(1.10) saturate(1.10)',
                   animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
-                  willChange: 'transform, opacity',
+                  willChange: 'transform, opacity, filter',
                 }}
               />
             </>
@@ -507,13 +374,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               position: 'absolute',
               left: '31%',
               top: '44%',
-              width: '34%',
+              width: '35%',
               aspectRatio: '1',
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate(-50%,-50%)',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(188,235,255,0.42) 16%, rgba(74,163,255,0.12) 42%, transparent 74%)',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(190,236,255,0.44) 16%, rgba(75,166,255,0.11) 43%, transparent 74%)',
               filter: 'blur(2px)',
-              animation: `sfsOriginBurst ${d} cubic-bezier(0.06,0.88,0.14,1) both`,
+              animation: `sfsOrigin ${d} cubic-bezier(0.06,0.88,0.14,1) both`,
+              willChange: 'transform, opacity',
             }}
           />
 
@@ -523,13 +391,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               position: 'absolute',
               left: '31%',
               top: '44%',
-              width: '70%',
-              height: '7px',
+              width: '68%',
+              height: '6px',
               transformOrigin: 'left center',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(224,247,255,0.96) 18%, rgba(98,190,255,0.86) 64%, rgba(98,190,255,0) 100%)',
-              boxShadow: '0 0 10px rgba(132,213,255,0.86), 0 0 25px rgba(80,160,255,0.36)',
-              clipPath: 'polygon(0 44%, 5% 10%, 13% 70%, 20% 24%, 28% 78%, 36% 20%, 47% 76%, 60% 18%, 73% 70%, 86% 20%, 100% 42%, 86% 67%, 72% 48%, 59% 94%, 46% 50%, 34% 86%, 21% 48%, 11% 90%, 5% 51%)',
-              animation: `sfsLightningA calc(${d} * 0.55) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.10) both`,
+              background: 'linear-gradient(90deg, rgba(255,255,255,0.04), rgba(224,247,255,0.94) 18%, rgba(83,184,255,0.82) 66%, rgba(83,184,255,0) 100%)',
+              boxShadow: '0 0 10px rgba(132,213,255,0.86), 0 0 23px rgba(80,160,255,0.34)',
+              clipPath: 'polygon(0 44%, 7% 9%, 14% 71%, 21% 23%, 29% 79%, 38% 18%, 48% 78%, 61% 18%, 74% 73%, 86% 22%, 100% 43%, 86% 66%, 73% 47%, 60% 94%, 47% 50%, 34% 86%, 21% 47%, 11% 90%, 5% 51%)',
+              animation: `sfsBoltA calc(${d} * 0.48) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.12) both`,
               pointerEvents: 'none',
             }}
           />
@@ -540,29 +408,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               position: 'absolute',
               left: '31%',
               top: '47%',
-              width: '60%',
-              height: '5px',
+              width: '58%',
+              height: '4px',
               transformOrigin: 'left center',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(214,245,255,0.84) 24%, rgba(74,166,255,0.72) 68%, rgba(74,166,255,0) 100%)',
-              boxShadow: '0 0 8px rgba(112,203,255,0.64)',
-              clipPath: 'polygon(0 42%, 9% 8%, 17% 68%, 28% 20%, 39% 79%, 51% 16%, 64% 74%, 78% 24%, 100% 42%, 85% 68%, 66% 49%, 54% 94%, 39% 50%, 24% 88%, 12% 49%, 4% 82%)',
-              animation: `sfsLightningB calc(${d} * 0.50) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.13) both`,
-              pointerEvents: 'none',
-            }}
-          />
-
-          <div
-            className="sfs-motion"
-            style={{
-              position: 'absolute',
-              left: '31%',
-              top: '45%',
-              width: '56%',
-              height: '3px',
-              transformOrigin: 'left center',
-              background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(233,249,255,0.75) 30%, rgba(120,205,255,0.54) 70%, rgba(120,205,255,0) 100%)',
-              clipPath: 'polygon(0 44%, 14% 8%, 24% 68%, 37% 22%, 49% 78%, 61% 18%, 73% 68%, 88% 26%, 100% 42%, 85% 64%, 72% 49%, 60% 92%, 48% 51%, 35% 86%, 22% 48%, 11% 82%)',
-              animation: `sfsLightningC calc(${d} * 0.46) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.16) both`,
+              background: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(220,246,255,0.82) 22%, rgba(75,170,255,0.70) 70%, rgba(75,170,255,0) 100%)',
+              boxShadow: '0 0 8px rgba(112,203,255,0.60)',
+              clipPath: 'polygon(0 42%, 9% 8%, 17% 67%, 28% 20%, 39% 80%, 51% 16%, 64% 73%, 78% 23%, 100% 42%, 85% 68%, 66% 49%, 54% 94%, 39% 50%, 24% 88%, 12% 49%, 4% 82%)',
+              animation: `sfsBoltB calc(${d} * 0.45) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.14) both`,
               pointerEvents: 'none',
             }}
           />
@@ -579,80 +431,86 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             }}
           />
 
-          {damageVisible && (
-            <>
+          {cutinVisible && !cutinFailed && (
+            <div
+              className="sfs-motion"
+              style={{
+                position: 'absolute',
+                left: '-4%',
+                bottom: '5%',
+                width: 'min(58vw, 680px)',
+                maxHeight: '26vh',
+                overflow: 'hidden',
+                clipPath: 'polygon(0 12%, 100% 0, 93% 88%, 0 100%)',
+                borderTop: '2px solid rgba(188,235,255,0.90)',
+                borderBottom: '2px solid rgba(71,157,255,0.28)',
+                background: 'rgba(2,8,22,0.92)',
+                boxShadow: '0 0 36px rgba(70,168,255,0.24)',
+                animation: `sfsCutin ${d} cubic-bezier(0.08,0.88,0.12,1) calc(${d} * 0.40) both`,
+              }}
+            >
+              <img
+                src={irenaCutin}
+                alt=""
+                draggable={false}
+                onError={() => setCutinFailed(true)}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  opacity: 0.96,
+                  userSelect: 'none',
+                }}
+              />
               <div
-                className="sfs-motion"
                 style={{
                   position: 'absolute',
-                  left: '-5%',
-                  bottom: '6%',
-                  width: 'min(62vw, 700px)',
-                  maxHeight: '25vh',
-                  overflow: 'hidden',
-                  clipPath: 'polygon(0 11%, 100% 0, 92% 89%, 0 100%)',
-                  borderTop: '2px solid rgba(184,233,255,0.92)',
-                  borderBottom: '2px solid rgba(72,151,255,0.30)',
-                  background: 'rgba(2,8,22,0.90)',
-                  boxShadow: '0 0 34px rgba(70,168,255,0.24)',
-                  animation: `sfsCutin calc(${d} * 0.62) cubic-bezier(0.08,0.86,0.14,1) calc(${d} * 0.40) both`,
+                  inset: 0,
+                  background: 'linear-gradient(90deg, rgba(1,7,17,0.34), rgba(1,7,17,0) 78%)',
                 }}
-              >
-                {!cutinFailed && (
-                  <img
-                    src={irenaCutin}
-                    alt=""
-                    draggable={false}
-                    onError={() => setCutinFailed(true)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      height: 'auto',
-                      opacity: cutinOpacity,
-                      userSelect: 'none',
-                    }}
-                  />
-                )}
-              </div>
+              />
+            </div>
+          )}
 
+          {damageVisible && (
+            <div
+              className="sfs-motion"
+              style={{
+                position: 'absolute',
+                left: '66%',
+                top: '54%',
+                transform: 'translate(-50%,-50%)',
+                textAlign: 'center',
+                lineHeight: 0.82,
+                animation: `sfsDamage calc(${d} * 0.48) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
+                pointerEvents: 'none',
+              }}
+            >
               <div
-                className="sfs-motion"
                 style={{
-                  position: 'absolute',
-                  left: '66%',
-                  top: '53%',
-                  transform: 'translate(-50%, -50%)',
-                  textAlign: 'center',
-                  lineHeight: 0.84,
-                  animation: `sfsDamage calc(${d} * 0.55) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.40) both`,
+                  fontSize: 'clamp(64px,18vw,186px)',
+                  fontWeight: 1000,
+                  letterSpacing: '-0.075em',
+                  color: '#FFFFFF',
+                  WebkitTextStroke: '1px rgba(190,236,255,0.72)',
+                  textShadow: '0 0 9px rgba(255,255,255,0.98), 0 0 26px rgba(74,178,255,0.98), 7px 8px 0 rgba(3,10,24,0.96)',
                 }}
               >
-                <div
-                  style={{
-                    fontSize: 'clamp(62px, 17vw, 170px)',
-                    fontWeight: 1000,
-                    letterSpacing: '-0.07em',
-                    color: '#FFFFFF',
-                    WebkitTextStroke: '1px rgba(190,236,255,0.66)',
-                    textShadow: '0 0 8px rgba(255,255,255,0.98), 0 0 24px rgba(74,178,255,0.96), 7px 8px 0 rgba(3,10,24,0.94)',
-                  }}
-                >
-                  −{damage}
-                </div>
-                <div
-                  style={{
-                    marginTop: '10px',
-                    fontSize: 'clamp(10px, 2.2vw, 18px)',
-                    fontWeight: 1000,
-                    color: '#DFF7FF',
-                    letterSpacing: '0.26em',
-                    textShadow: '0 0 12px rgba(105,198,255,0.92)',
-                  }}
-                >
-                  超堕天撃
-                </div>
+                −{damage}
               </div>
-            </>
+              <div
+                style={{
+                  marginTop: '8px',
+                  fontSize: 'clamp(10px,2.2vw,18px)',
+                  fontWeight: 1000,
+                  color: '#DFF7FF',
+                  letterSpacing: '0.26em',
+                  textShadow: '0 0 12px rgba(105,198,255,0.94)',
+                }}
+              >
+                超堕天撃
+              </div>
+            </div>
           )}
 
           {missVisible && (
@@ -662,15 +520,15 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 position: 'absolute',
                 left: '50%',
                 top: '76%',
-                transform: 'translate(-50%, -50%)',
-                fontSize: 'clamp(24px, 5vw, 46px)',
+                transform: 'translate(-50%,-50%)',
+                fontSize: 'clamp(24px,5vw,48px)',
                 fontWeight: 1000,
                 color: '#fff',
                 textShadow: '0 0 14px rgba(105,198,255,0.92), 0 2px 8px rgba(0,0,0,0.96)',
-                animation: `sfsDamage calc(${d} * 0.40) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.30) both`,
+                animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`,
               }}
             >
-              MISS!!  超堕天撃回避
+              MISS!! 超堕天撃回避
             </div>
           )}
         </div>
