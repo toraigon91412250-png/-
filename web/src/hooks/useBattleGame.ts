@@ -893,7 +893,7 @@ export function useBattleGame(
               addLog(
                 `💨【回避成功！】${target.character.name}は『超堕天撃』を完全に回避した！`,
                 'EVADE_SUCCESS_ENEMY',
-                turn,
+                turn
               );
             } else {
               addLog(
