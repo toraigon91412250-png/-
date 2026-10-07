@@ -87,29 +87,30 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes superFallenChargeImage {
           0% {
-            transform: scale(1.015);
+            transform: scale(1.00);
             opacity: 0;
-            filter: brightness(0.72) contrast(1.02);
+            filter: brightness(0.68) contrast(1.02);
           }
-          13% {
+          10% {
             opacity: 1;
           }
-          70% {
-            transform: scale(1.035);
+          88% {
+            transform: scale(1.028);
             opacity: 1;
-            filter: brightness(0.91) contrast(1.05);
+            filter: brightness(0.94) contrast(1.05);
           }
           100% {
-            transform: scale(1.05);
+            transform: scale(1.035);
             opacity: 0;
-            filter: brightness(0.76) contrast(1.02);
+            filter: brightness(0.70) contrast(1.02);
           }
         }
 
         @keyframes superFallenChargeVignette {
-          0% { opacity: 0.90; }
-          50% { opacity: 0.74; }
-          100% { opacity: 0.96; }
+          0% { opacity: 0.92; }
+          18% { opacity: 0.58; }
+          70% { opacity: 0.62; }
+          100% { opacity: 0.86; }
         }
 
         @keyframes superFallenChargePulse {
@@ -169,23 +170,23 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         @keyframes superFallenShotReveal {
           0% {
             clip-path: circle(0% at 31% 43%);
-            transform: scale(1.09);
-            filter: brightness(0.82) saturate(1.02);
+            transform: scale(1.08);
           }
-          21% {
-            clip-path: circle(62% at 31% 43%);
+          16% {
+            clip-path: circle(48% at 31% 43%);
             transform: scale(1.04);
-            filter: brightness(1.02) saturate(1.10);
           }
-          42% {
-            clip-path: circle(116% at 31% 43%);
+          32% {
+            clip-path: circle(110% at 31% 43%);
             transform: scale(1.018);
-            filter: brightness(1.08) saturate(1.16);
+          }
+          55% {
+            clip-path: circle(135% at 31% 43%);
+            transform: scale(1.012);
           }
           100% {
-            clip-path: circle(125% at 31% 43%);
-            transform: scale(1);
-            filter: brightness(1) saturate(1.06);
+            clip-path: circle(140% at 31% 43%);
+            transform: scale(1.01);
           }
         }
 
@@ -233,7 +234,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         @media (max-aspect-ratio: 4/5) {
           .super-fallen-stage {
             width: auto !important;
-            height: 70% !important;
+            height: min(88dvh, 760px) !important;
+            max-height: 88vh !important;
+          }
+        }
+
+        @media (min-aspect-ratio: 5/4) {
+          .super-fallen-stage {
+            width: min(100vw, 1264px) !important;
           }
         }
 
@@ -260,7 +268,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               position: 'absolute',
               left: '50%',
               top: '50%',
-              width: 'min(96%, 1264px)',
+              width: 'min(100vw, 1264px)',
               aspectRatio: '3 / 2',
               transform: 'translate(-50%, -50%)',
               overflow: 'hidden',
@@ -343,17 +351,11 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 inset: 0,
                 background:
                   'radial-gradient(circle at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.28) 74%, rgba(0,0,0,0.70) 100%)',
-                opacity: 0.96,
+                opacity: 0.82,
                 pointerEvents: 'none',
               }}
             />
 
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: '#000',
-                opacity: 0.42,
                 pointerEvents: 'none',
               }}
             />
@@ -375,7 +377,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               position: 'absolute',
               left: '50%',
               top: '50%',
-              width: 'min(100%, 1264px)',
+              width: 'min(100vw, 1264px)',
               aspectRatio: '3 / 2',
               transform: 'translate(-50%, -50%)',
               overflow: 'hidden',
