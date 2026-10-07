@@ -1,11 +1,14 @@
 import React from 'react';
 import { ArrowLeft, Sparkles, Flame, Crosshair, Droplets, Layers3, Skull, Swords } from 'lucide-react';
-import { FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, RuinSkillPath } from '../types/game';
-import { BATTLE_REWARD_LOSS, BATTLE_REWARD_WIN, PATH_MASTERY_REWARD, getSkillUpgradeCost, MAX_SKILL_LEVEL } from '../utils/storage';
+import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, RuinSkillPath } from '../types/game';
+import { BATTLE_REWARD_LOSS, BATTLE_REWARD_WIN, PATH_MASTERY_REWARD, getAbilityUpgradeCost, getSkillUpgradeCost, MAX_SKILL_LEVEL } from '../utils/storage';
 
 interface Props {
   progress: IrenaSkillProgress;
+  abilityProgress: AbilityProgress;
   onUpgrade: (skillId: IrenaSkillId) => void;
+  onUpgradeAbility: (abilityId: AbilityId) => void;
   onChoosePath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
   onClose: () => void;
 }
@@ -23,7 +26,7 @@ const RUIN_PATHS: PathInfo[] = [
   { id: 'ANNIHILATION', name: '殲滅', icon: <Swords size={16} />, text: '出血中の敵へ追加ダメージ。羽弾との連携に特化。' },
 ];
 
-export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, onClose }: Props) {
+export default function SkillUpgradeModal({ progress, abilityProgress, onUpgrade, onUpgradeAbility, onChoosePath, onClose }: Props) {
   const levelOf = (id: IrenaSkillId) => id === 'FEATHER' ? progress.featherLevel : progress.ruinLevel;
   const pathOf = (id: IrenaSkillId) => id === 'FEATHER' ? progress.featherPath : progress.ruinPath;
   const baseDamage = (id: IrenaSkillId, level: number) => id === 'FEATHER' ? 300 + (level - 1) * 25 : 900 + (level - 1) * 75;
@@ -107,6 +110,72 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
     );
   };
 
+
+  const renderAbility = (definition: (typeof ABILITY_DEFINITIONS)[number]) => {
+    const level = abilityProgress.levels[definition.id];
+    const shards = abilityProgress.shards[definition.id];
+    const maxed = level >= MAX_ABILITY_LEVEL;
+    const cost = getAbilityUpgradeCost(level);
+    const locked = level <= 0;
+    const canUpgrade = !locked && !maxed && shards >= cost;
+    const currentEffect = level > 0
+      ? definition.levelDescriptions[Math.max(0, Math.min(MAX_ABILITY_LEVEL - 1, level - 1))]
+      : '召喚で本体を入手するとLv.1で解放';
+
+    return (
+      <div
+        key={definition.id}
+        style={{
+          padding: '12px',
+          borderRadius: '14px',
+          background: 'rgba(12,19,33,0.94)',
+          border: maxed ? '1px solid rgba(255,224,130,0.7)' : '1px solid #31405E',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+          <div style={{
+            width: '36px', height: '36px', flexShrink: 0, display: 'grid', placeItems: 'center',
+            borderRadius: '10px', background: 'rgba(126,87,194,0.18)', fontSize: '19px',
+          }}>{definition.symbol}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '15px', fontWeight: 950 }}>{definition.name}</span>
+              <span style={{ fontSize: '10px', color: level > 0 ? '#FFE082' : '#7C879C', fontWeight: 900 }}>
+                {level > 0 ? 'Lv.' + level : '未解放'}
+              </span>
+            </div>
+            <div style={{ marginTop: '3px', fontSize: '9px', lineHeight: 1.4, color: '#A9B5C8' }}>
+              {definition.shortDescription}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '8px', padding: '8px 9px', borderRadius: '9px', background: 'rgba(255,255,255,0.035)' }}>
+          <div style={{ fontSize: '9px', color: '#D1C4E9', fontWeight: 850 }}>
+            {currentEffect}
+          </div>
+          <div style={{ marginTop: '4px', fontSize: '9px', color: '#8FA0B6' }}>
+            権能欠片 {shards} / 必要 {maxed ? '－' : cost}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onUpgradeAbility(definition.id)}
+          disabled={!canUpgrade}
+          style={{
+            marginTop: '8px', width: '100%', height: '40px', borderRadius: '9px',
+            border: canUpgrade ? '1px solid #CE93D8' : '1px solid #38435A',
+            background: maxed ? 'rgba(120,96,28,0.35)' : canUpgrade ? 'linear-gradient(90deg,#6A1B9A,#8E24AA)' : 'rgba(37,45,63,0.7)',
+            color: maxed ? '#FFE082' : canUpgrade ? '#FFFFFF' : '#7D8798',
+            fontSize: '12px', fontWeight: 950, cursor: canUpgrade ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {maxed ? 'MAXまで強化済み' : locked ? '召喚で解放' : '強化する　✦ ' + cost + '欠片'}
+        </button>
+      </div>
+    );
+  };
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 220, background: 'rgba(2,4,10,0.9)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px' }}>
       <div style={{ width: '100%', maxWidth: '540px', maxHeight: '92vh', overflowY: 'auto', boxSizing: 'border-box', padding: '18px', borderRadius: '20px', background: 'linear-gradient(180deg,#171D2D,#0D1220)', border: '1px solid rgba(206,147,216,0.65)', boxShadow: '0 18px 60px rgba(0,0,0,0.7)', color: '#FFFFFF' }}>
@@ -125,6 +194,16 @@ export default function SkillUpgradeModal({ progress, onUpgrade, onChoosePath, o
         <div style={{ marginTop: '14px', display: 'grid', gap: '10px' }}>
           {renderSkill('FEATHER', '羽弾', <Sparkles size={19} />, FEATHER_PATHS)}
           {renderSkill('RUIN', '破壊の権能', <Flame size={19} />, RUIN_PATHS)}
+        </div>
+
+        <div style={{ marginTop: '14px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 950, color: '#E1BEE7' }}>権能強化候補</div>
+          <div style={{ marginTop: '3px', fontSize: '9px', color: '#8FA0B6', lineHeight: 1.4 }}>
+            現在実装されている権能だけを表示しています。未解放の権能は召喚後に強化できます。
+          </div>
+          <div style={{ marginTop: '8px', display: 'grid', gap: '8px' }}>
+            {ABILITY_DEFINITIONS.map(renderAbility)}
+          </div>
         </div>
 
         <div style={{ marginTop: '13px', padding: '10px 12px', borderRadius: '11px', background: 'rgba(38,166,154,0.08)', border: '1px solid rgba(128,203,196,0.22)', color: '#B7C8D5', fontSize: '10px', lineHeight: 1.5 }}>
