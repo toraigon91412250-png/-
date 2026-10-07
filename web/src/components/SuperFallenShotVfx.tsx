@@ -247,6 +247,33 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           74% { transform: scale(0.98); opacity: 0.22; }
         }
 
+        @keyframes sfsElectricFlame {
+          0% {
+            transform: translate3d(-50%, 6%, 0) scaleY(0.72);
+            opacity: 0.10;
+          }
+          18% {
+            transform: translate3d(-48%, 0, 0) scaleY(0.92);
+            opacity: 0.30;
+          }
+          36% {
+            transform: translate3d(-53%, -2%, 0) scaleY(1.04);
+            opacity: 0.16;
+          }
+          54% {
+            transform: translate3d(-47%, -5%, 0) scaleY(0.88);
+            opacity: 0.28;
+          }
+          74% {
+            transform: translate3d(-51%, -8%, 0) scaleY(1.10);
+            opacity: 0.12;
+          }
+          100% {
+            transform: translate3d(-50%, -13%, 0) scaleY(1.16);
+            opacity: 0;
+          }
+        }
+
         @keyframes sfsCameraCut {
           0%, 34% { opacity: 0; transform: scale(0.96); }
           37% { opacity: 0.82; transform: scale(1.01); }
@@ -319,6 +346,27 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           .sfs-motion { animation: none !important; }
         }
       `}</style>
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '50%',
+          bottom: '-1%',
+          width: '74%',
+          height: '30%',
+          transform: 'translateX(-50%)',
+          background:
+            'radial-gradient(ellipse at 18% 100%, rgba(82,181,255,0.16) 0%, transparent 34%), radial-gradient(ellipse at 38% 100%, rgba(188,239,255,0.12) 0%, transparent 31%), radial-gradient(ellipse at 58% 100%, rgba(81,168,255,0.18) 0%, transparent 36%), radial-gradient(ellipse at 80% 100%, rgba(190,238,255,0.11) 0%, transparent 32%)',
+          filter: 'blur(11px)',
+          mixBlendMode: 'screen',
+          clipPath: 'polygon(0 100%, 7% 76%, 14% 92%, 22% 54%, 30% 86%, 39% 42%, 47% 82%, 56% 50%, 65% 88%, 73% 46%, 82% 84%, 90% 60%, 100% 100%)',
+          animation: `sfsElectricFlame ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
 
       <div
         className="sfs-motion"
