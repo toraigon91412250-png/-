@@ -1049,7 +1049,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         >⚡</span>
       </div>
 
-      {mode === 'CHARGE' ? (      <div
+      <div
         aria-hidden="true"
         className="sfs-motion"
         style={{
@@ -1088,7 +1088,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       />
 
 
-        <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
+
+      {mode === 'CHARGE' ? (        <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
           {!chargeFailed && (
             <>
               <img
