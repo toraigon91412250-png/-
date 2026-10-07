@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import chargeImage from '../assets/IMG_1148.jpeg';
+import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
 import shotImage from '../assets/IMG_1149.jpeg';
 
@@ -37,7 +38,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   // Both supplied hero images have the same visual axis: the emitting hand
   // sits left of center while the face anchors the composition near center.
   // 45% x / 44% y keeps both readable on portrait crops.
-  const focalPosition = '45% 44%';
+  const focalPosition = '50% 50%';
 
   const chargeVisible = chargeFailed
     ? 0
@@ -95,9 +96,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
     >
       <style>{`
         @keyframes superFallenChargeCamera {
-          0% { transform: scale(1); }
-          72% { transform: scale(1.018); }
-          100% { transform: scale(1.032); }
+          0%, 100% { transform: scale(1); }
+          55% { transform: scale(1.012); }
+          88% { transform: scale(1.025); }
         }
 
         @keyframes superFallenChargeImage {
@@ -141,13 +142,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes superFallenShotCamera {
-          0%, 100% { transform: scale(1); }
-          8% { transform: translate3d(-3px, 1px, 0) scale(1.012); }
-          14% { transform: translate3d(5px, -2px, 0) scale(1.020); }
-          21% { transform: translate3d(-7px, 2px, 0) scale(1.028); }
-          30% { transform: translate3d(6px, -2px, 0) scale(1.020); }
-          42% { transform: translate3d(-3px, 1px, 0) scale(1.012); }
-          58% { transform: translate3d(1px, 0, 0) scale(1.006); }
+          0% { transform: scale(1); }
+          7% { transform: translate3d(-4px, 1px, 0) scale(1.05); }
+          12% { transform: translate3d(7px, -2px, 0) scale(1.11); }
+          18% { transform: translate3d(-9px, 3px, 0) scale(1.13); }
+          25% { transform: translate3d(7px, -3px, 0) scale(1.08); }
+          34% { transform: translate3d(-4px, 1px, 0) scale(1.035); }
+          46% { transform: translate3d(2px, -1px, 0) scale(1.015); }
+          62%, 100% { transform: scale(1); }
         }
 
         @keyframes superFallenLimitImage {
@@ -228,6 +230,66 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             opacity: 0;
           }
         }
+
+        @keyframes superFallenCutinIn {
+          0% {
+            transform: translate3d(-115%, 0, 0) skewX(-10deg) rotate(-3deg);
+            opacity: 0;
+          }
+          18% {
+            opacity: 1;
+          }
+          44% {
+            transform: translate3d(0, 0, 0) skewX(-4deg) rotate(-1deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate3d(8%, 0, 0) skewX(-4deg) rotate(-1deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes superFallenDamagePop {
+          0% {
+            transform: translate(-50%, -50%) scale(0.55) rotate(-4deg);
+            opacity: 0;
+          }
+          20% {
+            transform: translate(-50%, -50%) scale(1.12) rotate(-2deg);
+            opacity: 1;
+          }
+          38% {
+            transform: translate(-50%, -50%) scale(1.02) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -58%) scale(1) rotate(0deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes superFallenLightning {
+          0% {
+            transform: translate(-50%, -50%) scale(0.2) rotate(-8deg);
+            opacity: 0;
+          }
+          18% {
+            opacity: 0.95;
+          }
+          34% {
+            transform: translate(-50%, -50%) scale(1.05) rotate(2deg);
+            opacity: 0.9;
+          }
+          58% {
+            transform: translate(-50%, -50%) scale(1.35) rotate(-2deg);
+            opacity: 0.22;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1.65) rotate(4deg);
+            opacity: 0;
+          }
+        }
+
 
         .super-fallen-fullstage {
           width: 100vw;
@@ -349,7 +411,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   inset: 0,
                   width: '100%',
                   height: '100%',
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                   objectPosition: focalPosition,
                   opacity: limitOpacity,
                   animation: `superFallenLimitImage calc(${d} * 0.42) cubic-bezier(0.08, 0.86, 0.16, 1) both`,
@@ -370,7 +432,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                   inset: 0,
                   width: '100%',
                   height: '100%',
-                  objectFit: 'cover',
+                  objectFit: 'contain',
                   objectPosition: focalPosition,
                   opacity: launchOpacity,
                   animation: `superFallenLaunchImage calc(${d} * 0.72) cubic-bezier(0.08, 0.82, 0.14, 1) calc(${d} * 0.10) both`,
@@ -378,6 +440,25 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 }}
               />
             )}
+
+            <div
+              className="super-fallen-motion"
+              style={{
+                position: 'absolute',
+                left: '31%',
+                top: '43%',
+                width: '42%',
+                aspectRatio: '1',
+                transform: 'translate(-50%, -50%)',
+                borderRadius: '50%',
+                background:
+                  'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(185,235,255,0.58) 13%, rgba(55,145,255,0.22) 35%, transparent 70%)',
+                filter: 'blur(1px)',
+                animation: `superFallenLightning calc(${d} * 0.58) cubic-bezier(0.10, 0.86, 0.14, 1) calc(${d} * 0.14) both`,
+                pointerEvents: 'none',
+                willChange: 'transform, opacity',
+              }}
+            />
 
             <div
               className="super-fallen-motion"
@@ -436,25 +517,103 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             />
           </div>
 
-          {(showDamage || showMiss) && (
+          {showDamage && (
+            <>
+              <div
+                className="super-fallen-motion"
+                style={{
+                  position: 'absolute',
+                  left: '-4%',
+                  top: '54%',
+                  width: 'min(76vw, 720px)',
+                  maxHeight: '30vh',
+                  objectFit: 'cover',
+                  transform: 'rotate(-6deg)',
+                  borderTop: '3px solid rgba(160,220,255,0.78)',
+                  borderBottom: '3px solid rgba(160,220,255,0.26)',
+                  boxShadow: '0 0 28px rgba(90,180,255,0.24)',
+                  clipPath: 'polygon(0 8%, 100% 0, 93% 92%, 0 100%)',
+                  overflow: 'hidden',
+                  background: 'rgba(3,10,24,0.76)',
+                  animation: `superFallenCutinIn calc(${d} * 0.60) cubic-bezier(0.10, 0.86, 0.14, 1) calc(${d} * 0.26) both`,
+                }}
+              >
+                <img
+                  src={irenaCutin}
+                  alt=""
+                  draggable={false}
+                  onError={(event) => { event.currentTarget.style.display = 'none'; }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '30vh',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    opacity: 0.92,
+                    userSelect: 'none',
+                  }}
+                />
+              </div>
+
+              <div
+                className="super-fallen-motion"
+                style={{
+                  position: 'absolute',
+                  left: '52%',
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  whiteSpace: 'nowrap',
+                  textAlign: 'center',
+                  lineHeight: 0.88,
+                  animation: `superFallenDamagePop calc(${d} * 0.56) cubic-bezier(0.10, 0.82, 0.16, 1) calc(${d} * 0.30) both`,
+                  pointerEvents: 'none',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 'clamp(44px, 14vw, 126px)',
+                    fontWeight: 1000,
+                    color: '#FFFFFF',
+                    letterSpacing: '-0.055em',
+                    textShadow: '0 0 8px rgba(255,255,255,0.95), 0 0 24px rgba(86,190,255,0.9), 5px 6px 0 rgba(5,12,28,0.9)',
+                  }}
+                >
+                  −{damage}
+                </div>
+                <div
+                  style={{
+                    marginTop: '10px',
+                    fontSize: 'clamp(10px, 2.4vw, 18px)',
+                    fontWeight: 1000,
+                    color: '#D7F4FF',
+                    letterSpacing: '0.24em',
+                    textShadow: '0 0 10px rgba(105,198,255,0.9)',
+                  }}
+                >
+                  SUPER FALLEN SHOT
+                </div>
+              </div>
+            </>
+          )}
+
+          {showMiss && (
             <div
               className="super-fallen-motion"
               style={{
                 position: 'absolute',
                 left: '50%',
-                top: '88%',
+                top: '76%',
                 transform: 'translate(-50%, -50%)',
                 whiteSpace: 'nowrap',
                 color: '#FFFFFF',
-                fontSize: 'clamp(18px, 3.8vw, 34px)',
-                fontWeight: 950,
-                letterSpacing: '0.08em',
-                textShadow: '0 0 12px rgba(110,203,255,0.85), 0 2px 8px rgba(0,0,0,0.96)',
-                animation: `superFallenImpactText calc(${d} * 0.34) cubic-bezier(0.12, 0.80, 0.20, 1) calc(${d} * 0.28) both`,
-                pointerEvents: 'none',
+                fontSize: 'clamp(22px, 5vw, 44px)',
+                fontWeight: 1000,
+                textShadow: '0 0 12px rgba(105,198,255,0.92), 0 2px 8px rgba(0,0,0,0.96)',
+                animation: `superFallenDamagePop calc(${d} * 0.40) cubic-bezier(0.10, 0.82, 0.16, 1) calc(${d} * 0.28) both`,
               }}
             >
-              {showMiss ? 'MISS!!  超堕天撃回避' : `−${damage} DMG`}
+              MISS!!  超堕天撃回避
             </div>
           )}
         </>
