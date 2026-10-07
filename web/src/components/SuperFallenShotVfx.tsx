@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import chargeImage from '../assets/IMG_1148.jpeg';
 import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
-import shotImage from '../assets/いれーな勝利演出.jpg';
+import shotImage from '../assets/IMG_1149.jpeg';
 import irenaHero from '../assets/img_irena_select.jpg';
 
 interface SuperFallenShotVfxProps {
