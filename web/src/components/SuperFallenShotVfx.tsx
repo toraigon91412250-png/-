@@ -291,6 +291,21 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { transform: translate(-50%,-50%) scale(1.72); opacity: 0; }
         }
 
+        @keyframes sfsGlyphFloat {
+          0%, 100% { transform: translate3d(0,0,0) scale(0.88) rotate(-6deg); opacity: 0.12; }
+          28% { transform: translate3d(2px,-8px,0) scale(1) rotate(2deg); opacity: 0.68; }
+          52% { transform: translate3d(-3px,-14px,0) scale(1.06) rotate(-2deg); opacity: 0.24; }
+          74% { transform: translate3d(3px,-20px,0) scale(0.94) rotate(4deg); opacity: 0.60; }
+        }
+
+        @keyframes sfsGlyphFlash {
+          0%, 70% { opacity: 0.10; }
+          74% { opacity: 0.84; }
+          78% { opacity: 0.18; }
+          83% { opacity: 0.58; }
+          90%, 100% { opacity: 0.10; }
+        }
+
         @keyframes sfsStormPulse {
           0%, 100% { opacity: 0.18; transform: scale(0.98); }
           25% { opacity: 0.44; transform: scale(1.02); }
@@ -863,352 +878,176 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
       <div aria-hidden="true" style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:2}}>
         <span
-          key="sfs-spark-0"
+          key="sfs-glyph-0"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '7%',
-            top: '74%',
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '6%',
+            top: '68%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(24px, 34vw, 46px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
-            animationDelay: '0s',
+            animation: `sfsGlyphFloat calc(${d} * 0.64) ease-in-out infinite`,
+            animationDelay: '-0.4s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-1"
+          key="sfs-glyph-1"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '13%',
-            top: '59%',
-            width: '11px',
-            height: '11px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '15%',
+            top: '84%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(32px, 45vw, 61px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
-            animationDelay: '-0.19s',
+            animation: `sfsGlyphFloat calc(${d} * 0.76) ease-in-out infinite`,
+            animationDelay: '-1.2s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-2"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '18%',
-            top: '86%',
-            width: '16px',
-            height: '16px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
-            animationDelay: '-0.38s',
-          }}
-        />
-        <span
-          key="sfs-spark-3"
+          key="sfs-glyph-2"
           className="sfs-motion"
           style={{
             position: 'absolute',
             left: '24%',
-            top: '70%',
-            width: '9px',
-            height: '9px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            top: '74%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(19px, 27vw, 36px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
-            animationDelay: '-0.5700000000000001s',
+            animation: `sfsGlyphFloat calc(${d} * 0.88) ease-in-out infinite`,
+            animationDelay: '-0.8s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-4"
+          key="sfs-glyph-3"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '30%',
+            left: '34%',
             top: '91%',
-            width: '13px',
-            height: '13px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            color: '#E8FAFF',
+            fontSize: 'clamp(27px, 38vw, 51px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
-            animationDelay: '-0.76s',
+            animation: `sfsGlyphFloat calc(${d} * 1) ease-in-out infinite`,
+            animationDelay: '-1.8s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-5"
+          key="sfs-glyph-4"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '37%',
-            top: '77%',
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '64%',
+            top: '86%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(22px, 31vw, 42px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
-            animationDelay: '-0.95s',
+            animation: `sfsGlyphFloat calc(${d} * 0.64) ease-in-out infinite`,
+            animationDelay: '-0.6s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-6"
+          key="sfs-glyph-5"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '44%',
-            top: '88%',
-            width: '15px',
-            height: '15px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
-            animationDelay: '0s',
-          }}
-        />
-        <span
-          key="sfs-spark-7"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '52%',
+            left: '74%',
             top: '72%',
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            color: '#E8FAFF',
+            fontSize: 'clamp(30px, 42vw, 57px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
-            animationDelay: '-0.19s',
+            animation: `sfsGlyphFloat calc(${d} * 0.76) ease-in-out infinite`,
+            animationDelay: '-1.4s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-8"
+          key="sfs-glyph-6"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '59%',
+            left: '84%',
             top: '90%',
-            width: '9px',
-            height: '9px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            color: '#E8FAFF',
+            fontSize: 'clamp(20px, 28vw, 38px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
-            animationDelay: '-0.38s',
+            animation: `sfsGlyphFloat calc(${d} * 0.88) ease-in-out infinite`,
+            animationDelay: '-2.1s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-9"
+          key="sfs-glyph-7"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '66%',
-            top: '76%',
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '93%',
+            top: '70%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(28px, 39vw, 53px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
-            animationDelay: '-0.5700000000000001s',
+            animation: `sfsGlyphFloat calc(${d} * 1) ease-in-out infinite`,
+            animationDelay: '-1.0s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-10"
+          key="sfs-glyph-8"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '73%',
-            top: '88%',
-            width: '11px',
-            height: '11px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '11%',
+            top: '52%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(18px, 25vw, 34px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
-            animationDelay: '-0.76s',
+            animation: `sfsGlyphFloat calc(${d} * 0.64) ease-in-out infinite`,
+            animationDelay: '-2.4s',
           }}
-        />
+        >⚡</span>
         <span
-          key="sfs-spark-11"
+          key="sfs-glyph-9"
           className="sfs-motion"
           style={{
             position: 'absolute',
-            left: '79%',
-            top: '67%',
-            width: '15px',
-            height: '15px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
+            left: '89%',
+            top: '54%',
+            color: '#E8FAFF',
+            fontSize: 'clamp(19px, 27vw, 36px)',
+            lineHeight: 1,
+            fontWeight: 1000,
+            textShadow: '0 0 6px rgba(234,251,255,0.98), 0 0 16px rgba(84,187,255,0.90), 0 0 30px rgba(56,126,255,0.52)',
             transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.45) ease-in-out infinite `,
-            animationDelay: '-0.95s',
+            animation: `sfsGlyphFloat calc(${d} * 0.76) ease-in-out infinite`,
+            animationDelay: '-0.9s',
           }}
-        />
-        <span
-          key="sfs-spark-12"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '85%',
-            top: '82%',
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.52) ease-in-out infinite `,
-            animationDelay: '0s',
-          }}
-        />
-        <span
-          key="sfs-spark-13"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '91%',
-            top: '72%',
-            width: '13px',
-            height: '13px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.5900000000000001) ease-in-out infinite `,
-            animationDelay: '-0.19s',
-          }}
-        />
-        <span
-          key="sfs-spark-14"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '95%',
-            top: '90%',
-            width: '9px',
-            height: '9px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.66) ease-in-out infinite `,
-            animationDelay: '-0.38s',
-          }}
-        />
-        <span
-          key="sfs-spark-15"
-          className="sfs-motion"
-          style={{
-            position: 'absolute',
-            left: '10%',
-            top: '94%',
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            background: 'rgba(220,248,255,0.96)',
-            boxShadow: '0 0 6px rgba(154,226,255,0.95), 0 0 14px rgba(73,163,255,0.54)',
-            transform: 'translate(-50%,-50%)',
-            animation: `sfsSpark calc(${d} * 0.38) ease-in-out infinite `,
-            animationDelay: '-0.5700000000000001s',
-          }}
-        />
+        >⚡</span>
       </div>
-
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(circle at 18% 75%, rgba(122,209,255,0.18) 0 1px, transparent 2px), radial-gradient(circle at 24% 62%, rgba(219,248,255,0.24) 0 1.3px, transparent 2px), radial-gradient(circle at 32% 84%, rgba(95,188,255,0.20) 0 1px, transparent 2px), radial-gradient(circle at 42% 70%, rgba(205,245,255,0.18) 0 1.2px, transparent 2px), radial-gradient(circle at 56% 78%, rgba(102,196,255,0.20) 0 1px, transparent 2px), radial-gradient(circle at 68% 68%, rgba(210,246,255,0.20) 0 1.2px, transparent 2px), radial-gradient(circle at 78% 82%, rgba(100,192,255,0.18) 0 1px, transparent 2px), radial-gradient(circle at 88% 64%, rgba(215,247,255,0.22) 0 1.2px, transparent 2px)',
-          backgroundSize: '140px 120px, 180px 130px, 160px 150px, 190px 120px, 170px 145px, 180px 135px, 155px 120px, 175px 140px',
-          mixBlendMode: 'screen',
-          opacity: 0.78,
-          animation: `sfsStormPulse ${d} ease-in-out infinite`,
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
-
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          left: '4%',
-          right: '4%',
-          bottom: '5%',
-          height: '34%',
-          background:
-            'linear-gradient(118deg, transparent 0 11%, rgba(186,235,255,0.26) 11.4%, transparent 12.2% 21%, rgba(86,181,255,0.20) 21.4%, transparent 22.1% 34%, rgba(222,249,255,0.24) 34.4%, transparent 35.1% 48%, rgba(78,173,255,0.18) 48.4%, transparent 49.2% 63%, rgba(216,248,255,0.24) 63.4%, transparent 64.2% 78%, rgba(90,187,255,0.18) 78.4%, transparent 79.2% 92%, rgba(213,247,255,0.24) 92.4%, transparent 93%)',
-          filter: 'blur(0.6px)',
-          mixBlendMode: 'screen',
-          opacity: 0.62,
-          animation: `sfsStormPulse ${d} ease-in-out infinite reverse`,
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
-
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          left: '8%',
-          right: '8%',
-          bottom: '1%',
-          height: '44%',
-          background:
-            'repeating-radial-gradient(ellipse at 50% 100%, rgba(93,192,255,0.12) 0 2px, transparent 2px 26px)',
-          maskImage: 'linear-gradient(to top, black, transparent 88%)',
-          WebkitMaskImage: 'linear-gradient(to top, black, transparent 88%)',
-          mixBlendMode: 'screen',
-          opacity: 0.48,
-          animation: `sfsStormPulse ${d} ease-in-out infinite`,
-          pointerEvents: 'none',
-          zIndex: 1,
-        }}
-      />
-
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '43%',
-          width: '72%',
-          aspectRatio: '1',
-          transform: 'translate(-50%,-50%)',
-          borderRadius: '50%',
-          border: '2px solid rgba(186,235,255,0.18)',
-          boxShadow: '0 0 28px rgba(99,186,255,0.20), 0 0 68px rgba(69,138,255,0.10)',
-          mixBlendMode: 'screen',
-          animation: `sfsThunderBurst ${d} ease-out infinite`,
-          pointerEvents: 'none',
-          zIndex: 2,
-        }}
-      />
 
       {mode === 'CHARGE' ? (      <div
         aria-hidden="true"
