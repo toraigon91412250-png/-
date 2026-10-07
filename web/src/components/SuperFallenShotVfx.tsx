@@ -34,30 +34,55 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const d = `${duration}ms`;
   const isShot = mode === 'SHOT';
 
-  /*
-   * Artwork coordinates, not viewport coordinates.
-   * Both supplied JPEGs place the face near the center and the emitting hand
-   * around x=31%, y=43%. All light/origin effects follow that composition.
-   */
-  const originX = '31%';
-  const originY = '43%';
+  // Both supplied hero images have the same visual axis: the emitting hand
+  // sits left of center while the face anchors the composition near center.
+  // 45% x / 44% y keeps both readable on portrait crops.
+  const focalPosition = '45% 44%';
 
+  const chargeVisible = chargeFailed
+    ? 0
+    : t < 0.08
+      ? t / 0.08
+      : t > 0.93
+        ? (1 - t) / 0.07
+        : 1;
+
+  // The source GIF is ~300ms (3 x 100ms). It is intentionally shown for a
+  // little longer than one loop, then immediately yields to the launch art.
+  const limitT = clamp01((t - 0.015) / 0.18);
   const limitOpacity = isShot && !limitFailed
-    ? Math.sin(clamp01((t - 0.015) / 0.19) * Math.PI)
+    ? limitT < 0.24
+      ? limitT / 0.24
+      : limitT > 0.82
+        ? (1 - limitT) / 0.18
+        : 1
     : 0;
 
-  const impactTextVisible =
+  // Launch art starts while the negative-frame impact is still present.
+  // It expands from the same hand-origin instead of sliding in as a panel.
+  const revealT = clamp01((t - 0.18) / 0.36);
+  const launchOpacity = isShot && !shotFailed
+    ? revealT < 0.08
+      ? revealT / 0.08
+      : 1
+    : 0;
+
+  const impactPulse = isShot
+    ? Math.max(0, 1 - Math.abs(t - 0.28) / 0.12)
+    : 0;
+
+  const showDamage =
     isShot &&
     !isEvade &&
     damage > 0 &&
-    t >= 0.34 &&
-    t <= 0.78;
+    t >= 0.31 &&
+    t <= 0.80;
 
-  const missTextVisible =
+  const showMiss =
     isShot &&
     isEvade &&
-    t >= 0.28 &&
-    t <= 0.70;
+    t >= 0.30 &&
+    t <= 0.72;
 
   return (
     <div
@@ -67,29 +92,23 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         inset: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
-        zIndex: 60,
-        isolation: 'isolate',
+        zIndex: 999,
         background: '#000',
+        isolation: 'isolate',
       }}
     >
       <style>{`
         @keyframes superFallenChargeCamera {
-          0% {
-            transform: translate(-50%, -50%) scale(1);
-          }
-          70% {
-            transform: translate(-50%, -50%) scale(1.018);
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(1.032);
-          }
+          0% { transform: scale(1); }
+          72% { transform: scale(1.018); }
+          100% { transform: scale(1.032); }
         }
 
         @keyframes superFallenChargeImage {
           0% {
-            transform: scale(1.00);
+            transform: scale(1);
             opacity: 0;
-            filter: brightness(0.68) contrast(1.02);
+            filter: brightness(0.70) contrast(1.02);
           }
           10% {
             opacity: 1;
@@ -97,131 +116,110 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           88% {
             transform: scale(1.028);
             opacity: 1;
-            filter: brightness(0.94) contrast(1.05);
+            filter: brightness(0.94) contrast(1.06);
           }
           100% {
-            transform: scale(1.035);
+            transform: scale(1.04);
             opacity: 0;
-            filter: brightness(0.70) contrast(1.02);
+            filter: brightness(0.72) contrast(1.03);
           }
         }
 
-        @keyframes superFallenChargeVignette {
-          0% { opacity: 0.92; }
-          18% { opacity: 0.58; }
-          70% { opacity: 0.62; }
-          100% { opacity: 0.86; }
-        }
-
-        @keyframes superFallenChargePulse {
+        @keyframes superFallenChargeGlow {
           0% {
-            transform: translate(-50%, -50%) scale(0.48);
+            transform: translate(-50%, -50%) scale(0.45);
             opacity: 0;
           }
           24% {
-            transform: translate(-50%, -50%) scale(0.86);
-            opacity: 0.64;
+            transform: translate(-50%, -50%) scale(0.82);
+            opacity: 0.46;
           }
-          68% {
-            transform: translate(-50%, -50%) scale(1.04);
+          66% {
+            transform: translate(-50%, -50%) scale(1.06);
             opacity: 0.18;
           }
           100% {
-            transform: translate(-50%, -50%) scale(1.26);
+            transform: translate(-50%, -50%) scale(1.28);
             opacity: 0;
           }
         }
 
         @keyframes superFallenShotCamera {
-          0%, 100% {
-            transform: translate(-50%, -50%) scale(1.03);
-          }
-          11% {
-            transform: translate(calc(-50% - 3px), calc(-50% + 1px)) scale(1.045);
-          }
-          18% {
-            transform: translate(calc(-50% + 6px), calc(-50% - 2px)) scale(1.055);
-          }
-          25% {
-            transform: translate(calc(-50% - 7px), calc(-50% + 2px)) scale(1.06);
-          }
-          33% {
-            transform: translate(calc(-50% + 5px), calc(-50% - 1px)) scale(1.045);
-          }
-          46% {
-            transform: translate(calc(-50% - 2px), -50%) scale(1.035);
-          }
-          100% {
-            transform: translate(-50%, -50%) scale(1.03);
-          }
+          0%, 100% { transform: scale(1); }
+          8% { transform: translate3d(-3px, 1px, 0) scale(1.012); }
+          14% { transform: translate3d(5px, -2px, 0) scale(1.020); }
+          21% { transform: translate3d(-7px, 2px, 0) scale(1.028); }
+          30% { transform: translate3d(6px, -2px, 0) scale(1.020); }
+          42% { transform: translate3d(-3px, 1px, 0) scale(1.012); }
+          58% { transform: translate3d(1px, 0, 0) scale(1.006); }
         }
 
         @keyframes superFallenLimitImage {
-          0% {
-            transform: scale(1);
-            filter: contrast(1.02) brightness(0.96);
-          }
-          100% {
-            transform: scale(1.08);
-            filter: contrast(1.16) brightness(1.02);
-          }
+          0% { transform: scale(1); }
+          100% { transform: scale(1.055); }
         }
 
-        @keyframes superFallenShotReveal {
+        @keyframes superFallenLaunchImage {
           0% {
-            clip-path: circle(0% at 31% 43%);
-            transform: scale(1.08);
+            transform: scale(1.075);
+            filter: brightness(0.78) saturate(1.02);
           }
-          16% {
-            clip-path: circle(48% at 31% 43%);
-            transform: scale(1.04);
-          }
-          32% {
-            clip-path: circle(110% at 31% 43%);
+          34% {
             transform: scale(1.018);
-          }
-          55% {
-            clip-path: circle(135% at 31% 43%);
-            transform: scale(1.012);
+            filter: brightness(1.06) saturate(1.10);
           }
           100% {
-            clip-path: circle(140% at 31% 43%);
-            transform: scale(1.01);
+            transform: scale(1.008);
+            filter: brightness(1) saturate(1.05);
           }
         }
 
-        @keyframes superFallenShotFlash {
-          0%, 26% { opacity: 0; }
-          32% { opacity: 0.92; }
-          40% { opacity: 0.08; }
+        @keyframes superFallenLaunchBloom {
+          0% {
+            transform: translate(-50%, -50%) scale(0.28);
+            opacity: 0;
+          }
+          34% {
+            transform: translate(-50%, -50%) scale(0.86);
+            opacity: 0.88;
+          }
+          62% {
+            transform: translate(-50%, -50%) scale(1.36);
+            opacity: 0.20;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(1.72);
+            opacity: 0;
+          }
+        }
+
+        @keyframes superFallenFlash {
+          0%, 24% { opacity: 0; }
+          29% { opacity: 0.88; }
+          37% { opacity: 0.05; }
           100% { opacity: 0; }
         }
 
-        @keyframes superFallenOriginBloom {
+        @keyframes superFallenEnergyTravel {
           0% {
-            transform: translate(-50%, -50%) scale(0.35);
+            transform: translate3d(16%, 5%, 0) scaleX(0.70);
             opacity: 0;
           }
-          48% {
-            transform: translate(-50%, -50%) scale(0.9);
-            opacity: 0.92;
-          }
-          68% {
-            transform: translate(-50%, -50%) scale(1.42);
-            opacity: 0.18;
+          18% {
+            opacity: 0.72;
           }
           100% {
-            transform: translate(-50%, -50%) scale(1.8);
+            transform: translate3d(-18%, -3%, 0) scaleX(1.18);
             opacity: 0;
           }
         }
 
         @keyframes superFallenImpactText {
           0% {
-            transform: translate(-50%, -50%) scale(0.78);
+            transform: translate(-50%, -50%) scale(0.76);
             opacity: 0;
           }
-          34% {
+          26% {
             transform: translate(-50%, -50%) scale(1.04);
             opacity: 1;
           }
@@ -231,17 +229,16 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           }
         }
 
-        @media (max-aspect-ratio: 4/5) {
-          .super-fallen-stage {
-            width: auto !important;
-            height: min(88dvh, 760px) !important;
-            max-height: 88vh !important;
-          }
+        .super-fallen-fullstage {
+          width: 100vw;
+          height: 100vh;
+          min-width: 100%;
+          min-height: 100%;
         }
 
-        @media (min-aspect-ratio: 5/4) {
-          .super-fallen-stage {
-            width: min(100vw, 1264px) !important;
+        @media (max-aspect-ratio: 4/5) {
+          .super-fallen-art {
+            object-position: 45% 44% !important;
           }
         }
 
@@ -253,136 +250,90 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       `}</style>
 
       {mode === 'CHARGE' ? (
-        <>
+        <div
+          className="super-fallen-fullstage super-fallen-motion"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: '#000',
+            animation: `superFallenChargeCamera ${d} cubic-bezier(0.18, 0.80, 0.22, 1) both`,
+            willChange: 'transform',
+          }}
+        >
+          {!chargeFailed && (
+            <img
+              src={chargeImage}
+              alt=""
+              draggable={false}
+              onError={() => setChargeFailed(true)}
+              className="super-fallen-art super-fallen-motion"
+              style={{
+                display: 'block',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: focalPosition,
+                opacity: chargeVisible,
+                animation: `superFallenChargeImage ${d} cubic-bezier(0.14, 0.80, 0.24, 1) both`,
+                willChange: 'transform, opacity, filter',
+                userSelect: 'none',
+              }}
+            />
+          )}
+
           <div
             style={{
               position: 'absolute',
               inset: 0,
-              background: '#000',
+              background:
+                'radial-gradient(circle at 45% 44%, rgba(100,150,200,0.035) 0%, rgba(0,0,0,0.08) 38%, rgba(0,0,0,0.62) 100%)',
+              pointerEvents: 'none',
             }}
           />
 
           <div
-            className="super-fallen-stage super-fallen-motion"
+            className="super-fallen-motion"
             style={{
               position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: 'min(100vw, 1264px)',
-              aspectRatio: '3 / 2',
+              left: '31%',
+              top: '43%',
+              width: '30%',
+              aspectRatio: '1',
               transform: 'translate(-50%, -50%)',
-              overflow: 'hidden',
-              background: '#000',
-              boxShadow: '0 0 80px rgba(76, 115, 170, 0.10)',
-              animation: `superFallenChargeCamera ${d} cubic-bezier(0.18, 0.78, 0.22, 1) both`,
-              willChange: 'transform',
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(255,255,255,0.30) 0%, rgba(184,230,255,0.13) 22%, rgba(105,105,190,0.05) 46%, transparent 72%)',
+              filter: 'blur(8px)',
+              animation: `superFallenChargeGlow ${d} ease-out both`,
+              pointerEvents: 'none',
+              willChange: 'transform, opacity',
             }}
-          >
-            {!chargeFailed && (
-              <img
-                src={chargeImage}
-                alt=""
-                draggable={false}
-                onError={() => setChargeFailed(true)}
-                className="super-fallen-motion"
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  userSelect: 'none',
-                  animation: `superFallenChargeImage ${d} cubic-bezier(0.15, 0.80, 0.25, 1) both`,
-                  willChange: 'transform, opacity, filter',
-                }}
-              />
-            )}
+          />
 
-            <div
-              className="super-fallen-motion"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(circle at 31% 43%, rgba(255,255,255,0.06) 0%, rgba(128,174,220,0.03) 24%, transparent 55%)',
-                animation: `superFallenChargeVignette ${d} ease-in-out both`,
-                pointerEvents: 'none',
-              }}
-            />
-
-            <div
-              className="super-fallen-motion"
-              style={{
-                position: 'absolute',
-                left: originX,
-                top: originY,
-                width: '30%',
-                aspectRatio: '1',
-                transform: 'translate(-50%, -50%)',
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(circle, rgba(255,255,255,0.34) 0%, rgba(184,230,255,0.14) 22%, rgba(111,123,201,0.06) 44%, transparent 72%)',
-                filter: 'blur(7px)',
-                animation: `superFallenChargePulse ${d} ease-out both`,
-                pointerEvents: 'none',
-                willChange: 'transform, opacity',
-              }}
-            />
-
-            <div
-              style={{
-                position: 'absolute',
-                left: originX,
-                top: originY,
-                width: '11%',
-                aspectRatio: '1',
-                transform: 'translate(-50%, -50%)',
-                borderRadius: '50%',
-                border: '1px solid rgba(224,242,255,0.34)',
-                boxShadow: '0 0 24px rgba(191,235,255,0.13)',
-                opacity: Math.max(0, Math.sin(t * Math.PI) * 0.58),
-                pointerEvents: 'none',
-              }}
-            />
-
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  'radial-gradient(circle at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.28) 74%, rgba(0,0,0,0.70) 100%)',
-                opacity: 0.82,
-                pointerEvents: 'none',
-              }}
-            />
-
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
-        </>
+          <div
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '43%',
+              width: '9%',
+              aspectRatio: '1',
+              transform: 'translate(-50%, -50%)',
+              borderRadius: '50%',
+              boxShadow: '0 0 28px rgba(207,240,255,0.18)',
+              opacity: Math.max(0, Math.sin(t * Math.PI) * 0.42),
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
       ) : (
         <>
           <div
+            className="super-fallen-fullstage super-fallen-motion"
             style={{
               position: 'absolute',
               inset: 0,
               background: '#000',
-            }}
-          />
-
-          <div
-            className="super-fallen-stage super-fallen-motion"
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: 'min(100vw, 1264px)',
-              aspectRatio: '3 / 2',
-              transform: 'translate(-50%, -50%)',
-              overflow: 'hidden',
-              background: '#000',
-              animation: `superFallenShotCamera ${d} cubic-bezier(0.16, 0.82, 0.20, 1) both`,
+              animation: `superFallenShotCamera ${d} cubic-bezier(0.14, 0.84, 0.20, 1) both`,
               willChange: 'transform',
             }}
           >
@@ -392,61 +343,71 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 alt=""
                 draggable={false}
                 onError={() => setLimitFailed(true)}
-                className="super-fallen-motion"
+                className="super-fallen-art super-fallen-motion"
                 style={{
-                  display: 'block',
+                  position: 'absolute',
+                  inset: 0,
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center',
+                  objectPosition: focalPosition,
                   opacity: limitOpacity,
-                  animation: `superFallenLimitImage calc(${d} * 0.25) cubic-bezier(0.08, 0.86, 0.16, 1) both`,
+                  animation: `superFallenLimitImage calc(${d} * 0.42) cubic-bezier(0.08, 0.86, 0.16, 1) both`,
                   willChange: 'transform, opacity',
                 }}
               />
             )}
 
             {!shotFailed && (
-              <div
-                className="super-fallen-motion"
+              <img
+                src={shotImage}
+                alt=""
+                draggable={false}
+                onError={() => setShotFailed(true)}
+                className="super-fallen-art super-fallen-motion"
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  animation: `superFallenShotReveal calc(${d} * 0.72) cubic-bezier(0.08, 0.80, 0.12, 1) calc(${d} * 0.10) both`,
-                  willChange: 'transform, clip-path, filter',
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: focalPosition,
+                  opacity: launchOpacity,
+                  animation: `superFallenLaunchImage calc(${d} * 0.78) cubic-bezier(0.08, 0.80, 0.16, 1) calc(${d} * 0.10) both`,
+                  willChange: 'transform, opacity, filter',
                 }}
-              >
-                <img
-                  src={shotImage}
-                  alt=""
-                  draggable={false}
-                  onError={() => setShotFailed(true)}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    objectPosition: 'center',
-                    userSelect: 'none',
-                  }}
-                />
-              </div>
+              />
             )}
 
             <div
               className="super-fallen-motion"
               style={{
                 position: 'absolute',
-                left: originX,
-                top: originY,
-                width: '28%',
+                left: '31%',
+                top: '43%',
+                width: '34%',
                 aspectRatio: '1',
                 transform: 'translate(-50%, -50%)',
                 borderRadius: '50%',
                 background:
-                  'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(189,235,255,0.42) 18%, rgba(92,168,255,0.10) 45%, transparent 72%)',
+                  'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(189,235,255,0.42) 18%, rgba(84,165,255,0.10) 45%, transparent 72%)',
                 filter: 'blur(2px)',
-                animation: `superFallenOriginBloom ${d} cubic-bezier(0.10, 0.84, 0.20, 1) both`,
+                animation: `superFallenLaunchBloom ${d} cubic-bezier(0.08, 0.84, 0.16, 1) both`,
+                pointerEvents: 'none',
+                willChange: 'transform, opacity',
+              }}
+            />
+
+            <div
+              className="super-fallen-motion"
+              style={{
+                position: 'absolute',
+                inset: '-20%',
+                background:
+                  'linear-gradient(112deg, transparent 42%, rgba(203,239,255,0.12) 46%, rgba(255,255,255,0.40) 49%, rgba(203,239,255,0.10) 52%, transparent 57%)',
+                mixBlendMode: 'screen',
+                opacity: Math.max(0, Math.min(0.70, t * 1.65)),
+                animation: `superFallenEnergyTravel calc(${d} * 0.68) cubic-bezier(0.10, 0.88, 0.16, 1) calc(${d} * 0.13) both`,
                 pointerEvents: 'none',
                 willChange: 'transform, opacity',
               }}
@@ -458,7 +419,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 position: 'absolute',
                 inset: 0,
                 background: '#fff',
-                animation: `superFallenShotFlash ${d} ease-out both`,
+                opacity: 0,
+                animation: `superFallenFlash ${d} ease-out both`,
                 pointerEvents: 'none',
               }}
             />
@@ -468,38 +430,36 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 position: 'absolute',
                 inset: 0,
                 background:
-                  'radial-gradient(circle at 46% 45%, rgba(255,255,255,0) 30%, rgba(0,0,0,0.14) 64%, rgba(0,0,0,0.46) 100%)',
+                  'radial-gradient(circle at 46% 45%, rgba(255,255,255,0) 28%, rgba(0,0,0,0.08) 62%, rgba(0,0,0,0.42) 100%)',
                 pointerEvents: 'none',
               }}
             />
           </div>
 
-          {(impactTextVisible || missTextVisible) && (
+          {(showDamage || showMiss) && (
             <div
               className="super-fallen-motion"
               style={{
                 position: 'absolute',
                 left: '50%',
-                top: '86%',
+                top: '88%',
                 transform: 'translate(-50%, -50%)',
                 whiteSpace: 'nowrap',
                 color: '#FFFFFF',
-                fontSize: 'clamp(18px, 3.6vw, 34px)',
+                fontSize: 'clamp(18px, 3.8vw, 34px)',
                 fontWeight: 950,
                 letterSpacing: '0.08em',
-                textShadow:
-                  '0 0 12px rgba(118,202,255,0.80), 0 2px 8px rgba(0,0,0,0.96)',
-                animation: `superFallenImpactText calc(${d} * 0.42) cubic-bezier(0.12, 0.80, 0.20, 1) calc(${d} * 0.28) both`,
+                textShadow: '0 0 12px rgba(110,203,255,0.85), 0 2px 8px rgba(0,0,0,0.96)',
+                animation: `superFallenImpactText calc(${d} * 0.34) cubic-bezier(0.12, 0.80, 0.20, 1) calc(${d} * 0.28) both`,
                 pointerEvents: 'none',
               }}
             >
-              {missTextVisible ? 'MISS!!  超堕天撃回避' : `−${damage} DMG`}
+              {showMiss ? 'MISS!!  超堕天撃回避' : `−${damage} DMG`}
             </div>
           )}
         </>
       )}
     </div>
   );
-};
 
 export { SuperFallenShotVfx };
