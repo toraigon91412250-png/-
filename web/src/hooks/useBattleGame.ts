@@ -847,7 +847,7 @@ export function useBattleGame(
             },
           }));
 
-          await sleep(760 / speed);
+          await sleep(1800 / speed);
           updateState(prev => ({ ...prev, visualEffect: null }));
           return true;
         }
@@ -927,8 +927,8 @@ export function useBattleGame(
 
           // The visual peaks before the hit lands, so the damage application
           // happens on the launch beat rather than when the animation begins.
-          const impactDelay = 300 / speed;
-          const totalDuration = 980 / speed;
+          const impactDelay = 700 / speed;
+          const totalDuration = 2400 / speed;
           const remainingDuration = Math.max(0, totalDuration - impactDelay);
 
           await sleep(impactDelay);
