@@ -173,6 +173,29 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { opacity: 0; }
         }
 
+        @keyframes sfsCrackle {
+          0%, 100% { opacity: 0; transform: scaleY(0.55) rotate(-7deg); }
+          9% { opacity: 0.85; }
+          13% { opacity: 0.18; }
+          19% { opacity: 0.92; }
+          25% { opacity: 0.10; }
+          34% { opacity: 0.76; transform: scaleY(1) rotate(-3deg); }
+          48% { opacity: 0.18; }
+          62% { opacity: 0.70; transform: scaleY(0.78) rotate(4deg); }
+          76% { opacity: 0.08; }
+          88% { opacity: 0.54; transform: scaleY(1.05) rotate(-2deg); }
+        }
+
+        @keyframes sfsCrackle2 {
+          0%, 100% { opacity: 0; transform: scaleY(0.4) rotate(9deg); }
+          12% { opacity: 0.58; }
+          24% { opacity: 0.08; }
+          38% { opacity: 0.84; transform: scaleY(1) rotate(5deg); }
+          52% { opacity: 0.14; }
+          66% { opacity: 0.70; transform: scaleY(0.72) rotate(-4deg); }
+          82% { opacity: 0.16; }
+        }
+
         @keyframes sfsCameraCut {
           0%, 34% { opacity: 0; transform: scale(0.96); }
           37% { opacity: 0.82; transform: scale(1.01); }
@@ -213,11 +236,11 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         .sfs-art {
           position: absolute;
           left: 50%;
-          top: 50%;
-          width: min(135vw, 1700px);
+          top: 46%;
+          width: min(149vw, 1870px);
           height: auto;
-          max-width: 135vw;
-          max-height: 86vh;
+          max-width: 149vw;
+          max-height: 94vh;
           object-fit: contain;
           object-position: center center;
           transform: translate(-50%, -50%);
@@ -234,20 +257,57 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @media (max-width: 600px) {
           .sfs-art {
-            width: min(135vw, 900px);
-            max-width: 135vw;
-            max-height: 82dvh;
+            width: min(149vw, 990px);
+            max-width: 149vw;
+            max-height: 90dvh;
           }
         }
 
-        @media (min-width: 1100px) {
-          .sfs-art { height: min(90vh, 800px); }
-        }
 
         @media (prefers-reduced-motion: reduce) {
           .sfs-motion { animation: none !important; }
         }
       `}</style>
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '7%',
+          bottom: '-2%',
+          width: '38%',
+          height: '42%',
+          borderLeft: '3px solid rgba(183,233,255,0.46)',
+          borderBottom: '2px solid rgba(93,182,255,0.24)',
+          clipPath: 'polygon(0 100%, 8% 68%, 18% 74%, 28% 34%, 37% 48%, 49% 12%, 58% 28%, 70% 0, 78% 25%, 89% 18%, 100% 0, 90% 38%, 79% 32%, 68% 54%, 59% 46%, 48% 88%, 38% 72%, 28% 100%)',
+          boxShadow: '0 0 12px rgba(117,205,255,0.55), 0 0 28px rgba(73,157,255,0.22)',
+          filter: 'drop-shadow(0 0 8px rgba(184,237,255,0.34))',
+          animation: `sfsCrackle ${d} linear infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          right: '6%',
+          bottom: '-3%',
+          width: '34%',
+          height: '38%',
+          borderRight: '3px solid rgba(180,230,255,0.42)',
+          borderBottom: '2px solid rgba(87,176,255,0.22)',
+          clipPath: 'polygon(0 98%, 12% 72%, 23% 84%, 31% 48%, 43% 54%, 54% 16%, 63% 28%, 75% 4%, 86% 34%, 100% 18%, 90% 48%, 77% 43%, 65% 61%, 53% 52%, 43% 88%, 30% 77%, 18% 100%)',
+          boxShadow: '0 0 12px rgba(117,205,255,0.52), 0 0 28px rgba(73,157,255,0.20)',
+          filter: 'drop-shadow(0 0 8px rgba(184,237,255,0.30))',
+          animation: `sfsCrackle2 ${d} linear infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
 
       {mode === 'CHARGE' ? (
         <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
