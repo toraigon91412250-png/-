@@ -847,7 +847,7 @@ export function useBattleGame(
             },
           }));
 
-          await sleep(750 / speed);
+          await sleep(760 / speed);
           updateState(prev => ({ ...prev, visualEffect: null }));
           return true;
         }
