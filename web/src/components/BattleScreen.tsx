@@ -89,7 +89,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-        <div style={{ minWidth: 0, display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: labelSize, fontWeight: 900, letterSpacing: '0.12em', color: '#9FB0C8' }}>
             戦況予測
           </span>
@@ -99,19 +99,32 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-          <div
-            style={{
-              padding: cellPadding,
-              borderRadius: '7px',
-              background: 'rgba(255,255,255,0.045)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>先攻 </span>
-            <span style={{ fontSize: labelSize, fontWeight: 950, color: playerGoesFirst ? '#B3E5FC' : '#FFCC80' }}>
-              {playerGoesFirst ? 'いれーな' : 'カイザー'}
-            </span>
-          </div>
+          <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6', whiteSpace: 'nowrap' }}>
+            行動順
+          </span>
+
+          {[playerGoesFirst, !playerGoesFirst].map((playerFirst, index) => (
+            <React.Fragment key={playerFirst ? 'player' : 'enemy'}>
+              {index > 0 && (
+                <span aria-hidden="true" style={{ fontSize: labelSize, fontWeight: 900, color: '#6F7E95' }}>
+                  →
+                </span>
+              )}
+              <div
+                style={{
+                  padding: cellPadding,
+                  borderRadius: '7px',
+                  background: playerFirst ? 'rgba(144, 202, 249, 0.13)' : 'rgba(255,255,255,0.045)',
+                  border: playerFirst ? '1px solid rgba(144, 202, 249, 0.38)' : '1px solid rgba(255,255,255,0.08)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#B3E5FC' : '#D5DEEB' }}>
+                  {index + 1} {playerFirst ? 'いれーな' : 'カイザー'}
+                </span>
+              </div>
+            </React.Fragment>
+          ))}
 
           {evasionInfo && (
             <div
