@@ -834,7 +834,7 @@ export function useBattleGame(
             visualEffect: {
               targetIsPlayer: true,
               damage: 0,
-              effectType: 'SPECIAL_FEATHER',
+              effectType: 'SUPER_FALLEN_CHARGE',
               isCritical: false,
               isEvade: false,
               isBuff: false,
@@ -885,8 +885,9 @@ export function useBattleGame(
             );
           }
 
+          let isEvaded = false;
           if (target.isEvading) {
-            const isEvaded = Math.random() < target.character.evasionRate;
+            isEvaded = Math.random() < target.character.evasionRate;
             if (isEvaded) {
               soundManager.playDefend();
               addLog(
@@ -894,35 +895,48 @@ export function useBattleGame(
                 'EVADE_SUCCESS_ENEMY',
                 turn
               );
-
-              updateState(prev => ({
-                ...prev,
-                visualEffect: {
-                  targetIsPlayer: !isActorPlayer,
-                  damage: 0,
-                  effectType: 'EVADE_DODGE',
-                  isCritical: false,
-                  isEvade: true,
-                  isBuff: false,
-                  isUltimate: false,
-                  actorName: target.character.name,
-                  skillName: '回避成功',
-                  statusAilmentName: '',
-                  bannerText: '💨 回避成功！『超堕天撃』 0 DMG',
-                  effectId: nextVisualEffectId.current++,
-                },
-              }));
-
-              await sleep(850 / speed);
-              updateState(prev => ({ ...prev, visualEffect: null }));
-              return true;
+            } else {
+              addLog(
+                `⚠️【回避失敗！】${target.character.name}は『超堕天撃』を避け切れなかった！`,
+                'EVADE_FAIL_ENEMY',
+                turn
+              );
             }
+          }
 
-            addLog(
-              `⚠️【回避失敗！】${target.character.name}は『超堕天撃』を避け切れなかった！`,
-              'EVADE_FAIL_ENEMY',
-              turn
-            );
+          const effectId = nextVisualEffectId.current++;
+          updateState(prev => ({
+            ...prev,
+            visualEffect: {
+              targetIsPlayer: !isActorPlayer,
+              damage: isEvaded ? 0 : finalDamage,
+              effectType: 'SUPER_FALLEN_SHOT',
+              isCritical: false,
+              isEvade: isEvaded,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '超堕天撃',
+              statusAilmentName: '',
+              bannerText: isEvaded
+                ? '💨『超堕天撃』MISS!'
+                : `⚡🪶『超堕天撃』-${finalDamage}!`,
+              effectId,
+            },
+          }));
+
+          // Keep the hit registered at the visual launch peak, not before the
+          // second-stage impact image has had time to appear.
+          const impactDelay = 300 / speed;
+          const totalDuration = 980 / speed;
+          const remainingDuration = Math.max(0, totalDuration - impactDelay);
+
+          await sleep(impactDelay);
+
+          if (isEvaded) {
+            await sleep(remainingDuration);
+            updateState(prev => ({ ...prev, visualEffect: null }));
+            return true;
           }
 
           soundManager.playCritical();
@@ -940,23 +954,9 @@ export function useBattleGame(
             ...prev,
             player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
             enemy: isActorPlayer ? { ...prev.enemy, currentHp: newTargetHp } : prev.enemy,
-            visualEffect: {
-              targetIsPlayer: !isActorPlayer,
-              damage: finalDamage,
-              effectType: 'SPECIAL_FEATHER',
-              isCritical: false,
-              isEvade: false,
-              isBuff: false,
-              isUltimate: false,
-              actorName: actor.character.name,
-              skillName: '超堕天撃',
-              statusAilmentName: '',
-              bannerText: `⚡🪶『超堕天撃』-${finalDamage}!`,
-              effectId: nextVisualEffectId.current++,
-            },
           }));
 
-          await sleep(1100 / speed);
+          await sleep(remainingDuration);
           updateState(prev => ({ ...prev, visualEffect: null }));
 
           if (newTargetHp <= 0) return false;
