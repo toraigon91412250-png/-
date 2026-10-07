@@ -132,6 +132,53 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
         }
 
+        @keyframes sfsChargeClose {
+          0%, 26% {
+            transform: translate3d(-54%, -48%, 0) scale(1.08);
+            opacity: 0;
+          }
+          38% {
+            transform: translate3d(-49%, -46%, 0) scale(1.20);
+            opacity: 0.16;
+          }
+          50% {
+            transform: translate3d(-44%, -43%, 0) scale(1.34);
+            opacity: 0.72;
+          }
+          62% {
+            transform: translate3d(-47%, -45%, 0) scale(1.27);
+            opacity: 0.40;
+          }
+          72%, 100% {
+            transform: translate3d(-52%, -48%, 0) scale(1.10);
+            opacity: 0;
+          }
+        }
+
+        @keyframes sfsShotClose {
+          0%, 18% {
+            transform: translate3d(-49%, -47%, 0) scale(1.05);
+            opacity: 0;
+          }
+          25% {
+            transform: translate3d(-45%, -44%, 0) scale(1.17);
+            opacity: 0.20;
+          }
+          34% {
+            transform: translate3d(-40%, -41%, 0) scale(1.31);
+            opacity: 0.78;
+          }
+          44% {
+            transform: translate3d(-43%, -43%, 0) scale(1.25);
+            opacity: 0.42;
+          }
+          54% {
+            transform: translate3d(-49%, -46%, 0) scale(1.08);
+            opacity: 0;
+          }
+          100% { opacity: 0; }
+        }
+
         @keyframes sfsShotCamera {
           0% { transform: translate3d(0,0,0) scale(1); }
           8% { transform: translate3d(-6px,2px,0) scale(1.035); }
@@ -305,6 +352,18 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 alt=""
                 draggable={false}
                 onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
+                className="sfs-art sfs-motion"
+                style={{
+                  animation: `sfsChargeClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
+                  filter: 'brightness(1.05) saturate(1.08)',
+                  willChange: 'transform, opacity, filter',
+                }}
+              />
+              <img
+                src={chargeImage}
+                alt=""
+                draggable={false}
+                onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-wide sfs-motion"
                 style={{
                   animation: `sfsChargeClose ${d} cubic-bezier(0.10,0.82,0.18,1) both`,
@@ -411,6 +470,18 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 style={{
                   opacity: shotOpacity,
                   animation: `sfsShotImage ${d} cubic-bezier(0.10,0.76,0.18,1) both`,
+                  willChange: 'transform, opacity, filter',
+                }}
+              />
+              <img
+                src={shotImage}
+                alt=""
+                draggable={false}
+                onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
+                className="sfs-art sfs-motion"
+                style={{
+                  animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
+                  filter: 'brightness(1.10) saturate(1.10)',
                   willChange: 'transform, opacity, filter',
                 }}
               />
