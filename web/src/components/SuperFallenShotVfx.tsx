@@ -36,7 +36,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const d = `${duration}ms`;
   const isShot = mode === 'SHOT';
 
-  const shotReveal = clamp01((t - 0.16) / 0.18);
   const shotOpacity = isShot
     ? t < 0.13
       ? 0
