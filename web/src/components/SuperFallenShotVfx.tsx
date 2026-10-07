@@ -54,10 +54,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
     ? Math.sin(clamp01((t - 0.015) / 0.19) * Math.PI)
     : 0;
 
-  const launchBloom = isShot
-    ? Math.max(0, 1 - Math.abs(t - 0.30) / 0.16)
-    : 0;
-
   const impactTextVisible =
     isShot &&
     !isEvade &&
@@ -202,9 +198,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes superFallenShotFlash {
-          0%, 46% { opacity: 0; }
-          51% { opacity: 0.92; }
-          59% { opacity: 0.10; }
+          0%, 26% { opacity: 0; }
+          32% { opacity: 0.92; }
+          40% { opacity: 0.08; }
           100% { opacity: 0; }
         }
 
@@ -468,7 +464,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 position: 'absolute',
                 inset: 0,
                 background: '#fff',
-                opacity: launchBloom,
                 animation: `superFallenShotFlash ${d} ease-out both`,
                 pointerEvents: 'none',
               }}
