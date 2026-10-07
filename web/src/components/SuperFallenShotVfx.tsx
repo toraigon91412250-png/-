@@ -42,14 +42,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const originX = '31%';
   const originY = '43%';
 
-  const chargeOpacity = chargeFailed
-    ? 0
-    : t < 0.10
-      ? t / 0.10
-      : t > 0.90
-        ? (1 - t) / 0.10
-        : 1;
-
   const limitOpacity = isShot && !limitFailed
     ? Math.sin(clamp01((t - 0.015) / 0.19) * Math.PI)
     : 0;
