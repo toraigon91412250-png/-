@@ -100,16 +100,16 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes sfsShotCamera {
-          0% { transform: translate3d(0,0,0) scale(1); }
-          8% { transform: translate3d(-5px,2px,0) scale(1.028); }
-          15% { transform: translate3d(8px,-3px,0) scale(1.07); }
-          23% { transform: translate3d(-11px,4px,0) scale(1.11); }
-          31% { transform: translate3d(9px,-2px,0) scale(1.085); }
-          41% { transform: translate3d(-6px,2px,0) scale(1.045); }
-          54% { transform: translate3d(4px,-1px,0) scale(1.025); }
-          68% { transform: translate3d(-3px,1px,0) scale(1.015); }
-          82% { transform: translate3d(1px,0,0) scale(1.008); }
-          100% { transform: translate3d(0,0,0) scale(1); }
+          0% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+          8% { transform: translate3d(-5px,2px,0) scale(1.028) rotate(-0.25deg); }
+          15% { transform: translate3d(8px,-3px,0) scale(1.07) rotate(0.35deg); }
+          23% { transform: translate3d(-11px,4px,0) scale(1.11) rotate(-0.48deg); }
+          31% { transform: translate3d(9px,-2px,0) scale(1.085) rotate(0.25deg); }
+          41% { transform: translate3d(-6px,2px,0) scale(1.045) rotate(-0.18deg); }
+          54% { transform: translate3d(4px,-1px,0) scale(1.025) rotate(0.10deg); }
+          68% { transform: translate3d(-3px,1px,0) scale(1.015) rotate(-0.06deg); }
+          82% { transform: translate3d(1px,0,0) scale(1.008) rotate(0.02deg); }
+          100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
         }
 
         @keyframes sfsShotWide {
