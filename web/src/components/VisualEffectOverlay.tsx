@@ -542,9 +542,9 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
     const duration = effect.effectType === 'BLEED_TICK'
       ? 850
       : isSuperFallenCharge
-        ? 2200 / Math.max(0.1, speedMultiplier)
+        ? 2800 / Math.max(0.1, speedMultiplier)
         : isSuperFallenShot
-          ? 3000 / Math.max(0.1, speedMultiplier)
+          ? 5600 / Math.max(0.1, speedMultiplier)
           : isAllGods
             ? 1300
             : isRuin
@@ -954,7 +954,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
           key={`super-fallen-charge-${effect.effectId}`}
           mode="CHARGE"
           progress={t}
-          durationMs={2200 / Math.max(0.1, speedMultiplier)}
+          durationMs={2800 / Math.max(0.1, speedMultiplier)}
         />
       )}
       {isSuperFallenShot && (
@@ -962,7 +962,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
           key={`super-fallen-shot-${effect.effectId}`}
           mode="SHOT"
           progress={t}
-          durationMs={3000 / Math.max(0.1, speedMultiplier)}
+          durationMs={5600 / Math.max(0.1, speedMultiplier)}
           damage={effect.damage}
           isEvade={effect.isEvade}
         />
