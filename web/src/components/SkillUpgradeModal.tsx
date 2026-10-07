@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Sparkles, Flame, Crosshair, Droplets, Layers3, Skull, Swords } from 'lucide-react';
+import { ABILITY_DEFINITIONS, MAX_ABILITY_LEVEL } from '../data/abilities';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, RuinSkillPath } from '../types/game';
 import { BATTLE_REWARD_LOSS, BATTLE_REWARD_WIN, PATH_MASTERY_REWARD, getAbilityUpgradeCost, getSkillUpgradeCost, MAX_SKILL_LEVEL } from '../utils/storage';
