@@ -194,6 +194,41 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           52% { opacity: 0.14; }
           66% { opacity: 0.70; transform: scaleY(0.72) rotate(-4deg); }
           82% { opacity: 0.16; }
+
+        }
+
+        @keyframes sfsArcA {
+          0%, 7% { opacity: 0; transform: translate3d(-10%, 4%, 0) rotate(-16deg) scale(0.78); }
+          11% { opacity: 0.94; }
+          18% { opacity: 0.12; }
+          27% { opacity: 0.88; transform: translate3d(4%, -2%, 0) rotate(-8deg) scale(1); }
+          38% { opacity: 0.08; }
+          52% { opacity: 0.76; transform: translate3d(8%, -5%, 0) rotate(-3deg) scale(1.08); }
+          68% { opacity: 0.06; }
+          82% { opacity: 0.66; transform: translate3d(18%, -10%, 0) rotate(4deg) scale(1.18); }
+          100% { opacity: 0; transform: translate3d(26%, -14%, 0) rotate(8deg) scale(1.25); }
+        }
+
+        @keyframes sfsArcB {
+          0%, 10% { opacity: 0; transform: translate3d(9%, 5%, 0) rotate(12deg) scale(0.70); }
+          15% { opacity: 0.82; }
+          25% { opacity: 0.10; }
+          34% { opacity: 0.76; transform: translate3d(-2%, -1%, 0) rotate(6deg) scale(0.96); }
+          48% { opacity: 0.06; }
+          61% { opacity: 0.70; transform: translate3d(-8%, -4%, 0) rotate(1deg) scale(1.08); }
+          76% { opacity: 0.08; }
+          90% { opacity: 0.58; transform: translate3d(-18%, -9%, 0) rotate(-5deg) scale(1.18); }
+          100% { opacity: 0; transform: translate3d(-26%, -13%, 0) rotate(-8deg) scale(1.24); }
+        }
+
+        @keyframes sfsArcC {
+          0%, 16% { opacity: 0; transform: translate3d(0, 10%, 0) rotate(-2deg) scaleX(0.2); }
+          22% { opacity: 0.72; }
+          36% { opacity: 0.12; }
+          50% { opacity: 0.82; transform: translate3d(3%, -5%, 0) rotate(-1deg) scaleX(0.9); }
+          66% { opacity: 0.08; }
+          82% { opacity: 0.58; transform: translate3d(6%, -12%, 0) rotate(2deg) scaleX(1.25); }
+          100% { opacity: 0; transform: translate3d(10%, -18%, 0) rotate(4deg) scaleX(1.45); }
         }
 
         @keyframes sfsCameraCut {
@@ -284,6 +319,64 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           boxShadow: '0 0 12px rgba(117,205,255,0.55), 0 0 28px rgba(73,157,255,0.22)',
           filter: 'drop-shadow(0 0 8px rgba(184,237,255,0.34))',
           animation: `sfsCrackle ${d} linear infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '26%',
+          bottom: '3%',
+          width: '30%',
+          height: '34%',
+          borderTop: '3px solid rgba(216,247,255,0.64)',
+          borderRight: '2px solid rgba(95,189,255,0.24)',
+          clipPath: 'polygon(0 100%, 10% 80%, 18% 84%, 30% 58%, 36% 66%, 50% 32%, 57% 42%, 69% 4%, 77% 20%, 89% 0, 100% 12%, 88% 30%, 76% 26%, 66% 52%, 56% 44%, 45% 78%, 36% 66%, 24% 100%)',
+          boxShadow: '0 0 12px rgba(170,234,255,0.52), 0 0 32px rgba(72,157,255,0.18)',
+          animation: `sfsArcA ${d} linear infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          right: '25%',
+          bottom: '2%',
+          width: '28%',
+          height: '32%',
+          borderTop: '3px solid rgba(203,243,255,0.58)',
+          borderLeft: '2px solid rgba(84,182,255,0.22)',
+          clipPath: 'polygon(0 12%, 11% 0, 19% 22%, 31% 14%, 41% 43%, 52% 34%, 63% 71%, 73% 58%, 83% 84%, 91% 76%, 100% 100%, 88% 92%, 78% 100%, 68% 80%, 57% 92%, 47% 57%, 36% 67%, 24% 35%, 12% 44%)',
+          boxShadow: '0 0 12px rgba(170,234,255,0.46), 0 0 30px rgba(72,157,255,0.16)',
+          animation: `sfsArcB ${d} linear infinite`,
+          pointerEvents: 'none',
+          zIndex: 3,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '29%',
+          top: '41%',
+          width: '42%',
+          height: '5px',
+          transformOrigin: 'left center',
+          background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(231,250,255,0.96) 18%, rgba(92,196,255,0.82) 54%, rgba(92,196,255,0) 100%)',
+          boxShadow: '0 0 10px rgba(186,238,255,0.82), 0 0 24px rgba(76,162,255,0.38)',
+          clipPath: 'polygon(0 50%, 8% 5%, 18% 72%, 29% 18%, 42% 88%, 54% 12%, 66% 76%, 78% 22%, 89% 68%, 100% 46%, 91% 62%, 80% 40%, 67% 95%, 54% 48%, 42% 82%, 28% 51%, 17% 90%, 7% 52%)',
+          animation: `sfsArcC ${d} linear infinite`,
+          mixBlendMode: 'screen',
           pointerEvents: 'none',
           zIndex: 3,
         }}
