@@ -892,21 +892,12 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
         justifyContent: 'center',
         zIndex: 50,
         overflow: 'hidden',
-        animation: isSuperFallenShot
-          ? 'superFallenImpactShake 560ms cubic-bezier(0.2, 0.8, 0.2, 1)'
-          : isGenericUltimate
-            ? 'ultimateImpactShake 680ms cubic-bezier(0.2, 0.8, 0.2, 1)'
-            : undefined,
+        animation: isGenericUltimate
+          ? 'ultimateImpactShake 680ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+          : undefined,
       }}
     >
       <style>{[
-        '@keyframes superFallenImpactShake {',
-        '  0%, 100% { transform: translate3d(0,0,0); }',
-        '  18% { transform: translate3d(-7px,2px,0) scale(1.01); }',
-        '  34% { transform: translate3d(8px,-3px,0) scale(1.015); }',
-        '  52% { transform: translate3d(-5px,2px,0); }',
-        '  70% { transform: translate3d(3px,-1px,0); }',
-        '}',
         '@keyframes ultimateImpactShake {',
         '  0%, 100% { transform: translate3d(0,0,0); }',
         '  16% { transform: translate3d(-5px,1px,0) scale(1.008); }',
@@ -918,17 +909,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
         '  .battle-vfx-root { animation: none !important; }',
         '}',
       ].join('\n')}</style>
-      {/* Dedicated special / ultimate impact flashes */}
-      {isSuperFallenShot && t > 0.04 && t < 0.42 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'radial-gradient(circle at 50% 48%, rgba(255,255,255,0.82) 0%, rgba(224,64,251,0.24) 30%, rgba(224,64,251,0) 72%)',
-            opacity: Math.max(0, 1 - Math.abs(t - 0.16) / 0.26),
-          }}
-        />
-      )}
+      {/* Dedicated ultimate impact flash */}
       {isGenericUltimate && t > 0.08 && t < 0.56 && (
         <div
           style={{
