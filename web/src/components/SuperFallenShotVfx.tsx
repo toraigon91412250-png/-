@@ -90,20 +90,20 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
     >
       <style>{`
         @keyframes sfsChargeWide {
-          0% { transform: translate3d(-50%,-50%,0) scale(1.01); }
-          20% { transform: translate3d(calc(-50% - 18px), calc(-50% + 3px), 0) scale(1.025); }
-          42% { transform: translate3d(calc(-50% + 10px), calc(-50% - 6px), 0) scale(1.04); }
-          64% { transform: translate3d(calc(-50% - 6px), calc(-50% + 4px), 0) scale(1.055); }
-          82% { transform: translate3d(calc(-50% + 8px), calc(-50% - 2px), 0) scale(1.07); }
-          100% { transform: translate3d(calc(-50% + 2px), calc(-50% - 4px), 0) scale(1.08); }
+          0% { transform: translate(-50%, -50%) scale(1.01); }
+          20% { transform: translate(calc(-50% - 10px), calc(-50% + 2px)) scale(1.025); }
+          42% { transform: translate(calc(-50% + 6px), calc(-50% - 4px)) scale(1.04); }
+          64% { transform: translate(calc(-50% - 4px), calc(-50% + 3px)) scale(1.055); }
+          82% { transform: translate(calc(-50% + 5px), calc(-50% - 2px)) scale(1.07); }
+          100% { transform: translate(calc(-50% + 1px), calc(-50% - 2px)) scale(1.08); }
         }
 
         @keyframes sfsChargeClose {
-          0%, 28% { transform: translate3d(-45%,-42%,0) scale(1.05); opacity: 0; }
-          42% { transform: translate3d(-41%,-39%,0) scale(1.18); opacity: 0.18; }
-          55% { transform: translate3d(-36%,-36%,0) scale(1.30); opacity: 0.78; }
-          66% { transform: translate3d(-40%,-39%,0) scale(1.24); opacity: 0.34; }
-          76%,100% { transform: translate3d(-46%,-43%,0) scale(1.08); opacity: 0; }
+          0%, 28% { transform: translate(-50%, -50%) scale(1.05); opacity: 0; }
+          42% { transform: translate(calc(-50% - 5px), calc(-50% - 2px)) scale(1.18); opacity: 0.18; }
+          55% { transform: translate(calc(-50% + 3px), calc(-50% - 3px)) scale(1.30); opacity: 0.78; }
+          66% { transform: translate(calc(-50% - 3px), calc(-50% - 2px)) scale(1.24); opacity: 0.34; }
+          76%,100% { transform: translate(-50%, -50%) scale(1.08); opacity: 0; }
         }
 
         @keyframes sfsShotCamera {
@@ -120,21 +120,21 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes sfsShotWide {
-          0% { transform: translate3d(-50%,-50%,0) scale(1.045); }
-          20% { transform: translate3d(calc(-50% - 14px), calc(-50% + 4px),0) scale(1.015); }
-          42% { transform: translate3d(calc(-50% + 18px), calc(-50% - 3px),0) scale(1.045); }
-          65% { transform: translate3d(calc(-50% - 8px), calc(-50% + 3px),0) scale(1.025); }
-          84% { transform: translate3d(calc(-50% + 7px), calc(-50% - 2px),0) scale(1.01); }
-          100% { transform: translate3d(-50%,-50%,0) scale(1); }
+          0% { transform: translate(-50%, -50%) scale(1.045); }
+          20% { transform: translate(calc(-50% - 8px), calc(-50% + 2px)) scale(1.015); }
+          42% { transform: translate(calc(-50% + 10px), calc(-50% - 2px)) scale(1.045); }
+          65% { transform: translate(calc(-50% - 6px), calc(-50% + 2px)) scale(1.025); }
+          84% { transform: translate(calc(-50% + 5px), calc(-50% - 1px)) scale(1.01); }
+          100% { transform: translate(-50%, -50%) scale(1); }
         }
 
         @keyframes sfsShotClose {
-          0%, 20% { transform: translate3d(-44%,-41%,0) scale(1.06); opacity: 0; }
-          28% { transform: translate3d(-38%,-38%,0) scale(1.20); opacity: 0.16; }
-          36% { transform: translate3d(-32%,-34%,0) scale(1.34); opacity: 0.82; }
-          47% { transform: translate3d(-37%,-37%,0) scale(1.27); opacity: 0.42; }
-          58% { transform: translate3d(-44%,-42%,0) scale(1.08); opacity: 0; }
-          100% { opacity: 0; }
+          0%, 20% { transform: translate(-50%, -50%) scale(1.06); opacity: 0; }
+          28% { transform: translate(calc(-50% + 4px), calc(-50% - 3px)) scale(1.20); opacity: 0.16; }
+          36% { transform: translate(calc(-50% + 8px), calc(-50% - 5px)) scale(1.34); opacity: 0.82; }
+          47% { transform: translate(calc(-50% + 5px), calc(-50% - 4px)) scale(1.27); opacity: 0.42; }
+          58% { transform: translate(-50%, -50%) scale(1.08); opacity: 0; }
+          100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
 
         @keyframes sfsLimit {
@@ -214,9 +214,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           position: absolute;
           left: 50%;
           top: 50%;
-          height: min(86vh, 780px);
-          width: auto;
-          max-width: none;
+          width: min(94vw, 1180px);
+          height: auto;
+          max-width: 94vw;
+          max-height: 86vh;
+          object-fit: contain;
+          object-position: center center;
+          transform: translate(-50%, -50%);
           user-select: none;
           -webkit-user-select: none;
           pointer-events: none;
@@ -230,8 +234,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @media (max-width: 600px) {
           .sfs-art {
-            height: min(78dvh, 640px);
-            left: 53%;
+            width: min(94vw, 640px);
+            max-width: 94vw;
+            max-height: 82dvh;
           }
         }
 
@@ -401,7 +406,12 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 className="sfs-art sfs-motion"
                 style={{
                   opacity: closePunch,
-                  height: 'min(100vh, 900px)',
+                  width: 'min(94vw, 1180px)',
+                  height: 'auto',
+                  maxWidth: '94vw',
+                  maxHeight: '86vh',
+                  objectFit: 'contain',
+                  objectPosition: 'center center',
                   filter: 'brightness(1.10) saturate(1.10)',
                   animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
                   willChange: 'transform, opacity, filter',
