@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import chargeImage from '../assets/IMG_1148.jpeg';
 import irenaCutin from '../assets/img_irena_cutin.jpg';
-import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
 import shotImage from '../assets/IMG_1149.jpeg';
 
@@ -38,7 +37,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
   // Both supplied hero images have the same visual axis: the emitting hand
   // sits left of center while the face anchors the composition near center.
-  // 45% x / 44% y keeps both readable on portrait crops.
+  // The main artwork uses contain, so the whole composition remains visible on portrait screens.
   const focalPosition = '50% 50%';
 
   const chargeVisible = chargeFailed
