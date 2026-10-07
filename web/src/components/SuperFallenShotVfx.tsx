@@ -256,7 +256,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         @media (max-width: 600px) {
           .sfs-art {
             height: min(78dvh, 640px);
-            left: 53%;
+            left: 50%;
           }
         }
 
