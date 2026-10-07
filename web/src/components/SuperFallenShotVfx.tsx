@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import chargeImage from '../assets/fallen_irena_charge_black.jpg';
-import irenaCutin from '../assets/img_irena_cutin.jpg';
+import chargeImage from '../assets/img_irena_select.jpg';
+import irenaCutin from '../assets/raid_irena_cutin.svg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
-import shotImage from '../assets/fallen_irena_shot_gold.jpg';
-import irenaHero from '../assets/img_irena.jpg';
+import shotImage from '../assets/いれーな勝利演出.jpg';
+import irenaHero from '../assets/img_irena_select.jpg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
@@ -264,10 +264,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         .sfs-irena-hero {
           position: absolute;
-          left: 68%;
+          left: 64%;
           top: 53%;
-          width: min(42vw, 540px);
-          max-height: 86vh;
+          width: min(54vw, 700px);
+          max-height: 90vh;
           height: auto;
           object-fit: contain;
           object-position: center;
@@ -282,7 +282,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         @media (max-width: 600px) {
           .sfs-art {
             height: min(78dvh, 640px);
-            left: 53%;
+            left: 55%;
           }
         }
 
