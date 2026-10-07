@@ -172,6 +172,8 @@ export type EffectType =
   | 'EVADE_DODGE'
   | 'BUFF_POWER'
   | 'SPECIAL_FEATHER'
+  | 'SUPER_FALLEN_CHARGE'
+  | 'SUPER_FALLEN_SHOT'
   | 'SPECIAL_SMASH'
   | 'ULTIMATE_BLAST'
   | 'BLEED_TICK'
