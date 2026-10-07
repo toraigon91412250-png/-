@@ -214,9 +214,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           position: absolute;
           left: 50%;
           top: 50%;
-          width: min(94vw, 1180px);
+          width: min(135vw, 1700px);
           height: auto;
-          max-width: 94vw;
+          max-width: 135vw;
           max-height: 86vh;
           object-fit: contain;
           object-position: center center;
@@ -234,8 +234,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @media (max-width: 600px) {
           .sfs-art {
-            width: min(94vw, 640px);
-            max-width: 94vw;
+            width: min(135vw, 900px);
+            max-width: 135vw;
             max-height: 82dvh;
           }
         }
@@ -406,9 +406,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 className="sfs-art sfs-motion"
                 style={{
                   opacity: closePunch,
-                  width: 'min(94vw, 1180px)',
+                  width: 'min(135vw, 1700px)',
                   height: 'auto',
-                  maxWidth: '94vw',
+                  maxWidth: '135vw',
                   maxHeight: '86vh',
                   objectFit: 'contain',
                   objectPosition: 'center center',
