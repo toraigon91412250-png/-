@@ -175,9 +175,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
         @keyframes sfsCutin {
           0% { transform: translate3d(-120%, 10%, 0) skewX(-12deg) rotate(-3deg); opacity: 0; }
-          18% { opacity: 1; }
-          42% { transform: translate3d(0,0,0) skewX(-5deg) rotate(-1deg); opacity: 1; }
-          100% { transform: translate3d(9%,-4%,0) skewX(-5deg) rotate(-1deg); opacity: 0; }
+          16% { opacity: 1; }
+          36% { transform: translate3d(-8%,1%,0) skewX(-5deg) rotate(-1.5deg); opacity: 1; }
+          54% { transform: translate3d(8%,-2%,0) skewX(-4deg) rotate(-1deg); opacity: 1; }
+          100% { transform: translate3d(18%,-5%,0) skewX(-4deg) rotate(-1deg); opacity: 0; }
         }
 
         @keyframes sfsImpactTitle {
@@ -221,7 +222,10 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @media (max-width: 600px) {
-          .sfs-art { height: min(78dvh, 640px); }
+          .sfs-art {
+            height: min(78dvh, 640px);
+            left: 53%;
+          }
         }
 
         @media (min-width: 1100px) {
