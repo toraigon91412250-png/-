@@ -66,10 +66,10 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
 
   const evasionInfo =
     state.cpuIntent === 'EVADE'
-      ? '相手回避 ' + Math.round(state.enemy.character.evasionRate * 100) + '%'
+      ? { target: '相手', rate: Math.round(state.enemy.character.evasionRate * 100) }
       : state.cpuIntent === 'BUFF'
         ? null
-        : '自分回避 ' + Math.round(state.player.character.evasionRate * 100) + '%';
+        : { target: '自分', rate: Math.round(state.player.character.evasionRate * 100) };
 
   const cellPadding = compact ? '5px 7px' : '6px 9px';
   const labelSize = compact ? '7px' : '8px';
@@ -114,13 +114,13 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
                 style={{
                   padding: cellPadding,
                   borderRadius: '7px',
-                  background: playerFirst ? 'rgba(144, 202, 249, 0.13)' : 'rgba(255,255,255,0.045)',
-                  border: playerFirst ? '1px solid rgba(144, 202, 249, 0.38)' : '1px solid rgba(255,255,255,0.08)',
+                  background: playerFirst ? 'rgba(255, 213, 79, 0.13)' : 'rgba(255,255,255,0.045)',
+                  border: playerFirst ? '1px solid rgba(255, 213, 79, 0.48)' : '1px solid rgba(255,255,255,0.08)',
                   whiteSpace: 'nowrap',
                 }}
               >
-                <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#B3E5FC' : '#D5DEEB' }}>
-                  {index + 1} {playerFirst ? 'いれーな' : 'カイザー'}
+                <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#FFE082' : '#D5DEEB' }}>
+                  {index === 0 ? '①' : '②'} {playerFirst ? 'いれーな' : 'カイザー'}
                 </span>
               </div>
             </React.Fragment>
@@ -137,7 +137,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
             >
               <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避 </span>
               <span style={{ fontSize: labelSize, fontWeight: 950, color: '#D5DEEB' }}>
-                {evasionInfo}
+                {evasionInfo.target} {evasionInfo.rate}%
               </span>
             </div>
           )}
