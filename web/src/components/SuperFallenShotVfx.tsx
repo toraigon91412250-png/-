@@ -465,5 +465,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       )}
     </div>
   );
+};
 
 export { SuperFallenShotVfx };
