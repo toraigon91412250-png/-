@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import chargeImage from '../assets/IMG_1148.jpeg';
+import chargeImage from '../assets/fallen_irena_charge_black.jpg';
 import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
-import shotImage from '../assets/IMG_1149.jpeg';
+import shotImage from '../assets/fallen_irena_shot_gold.jpg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
@@ -168,25 +168,25 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         }
 
         @keyframes sfsImpactTitle {
-          0% { transform: translate(-50%,-50%) scale(0.82); opacity: 0; }
-          20% { transform: translate(-50%,-50%) scale(1.02); opacity: 0.74; }
-          48% { transform: translate(-50%,-50%) scale(1.1); opacity: 0.28; }
-          100% { transform: translate(-50%,-58%) scale(1.16); opacity: 0; }
+          0% { transform: translate(-50%,-50%) scale(0.72); opacity: 0; }
+          16% { transform: translate(-50%,-50%) scale(1.08); opacity: 0.8; }
+          44% { transform: translate(-50%,-50%) scale(1.14); opacity: 0.32; }
+          100% { transform: translate(-50%,-60%) scale(1.2); opacity: 0; }
         }
 
         @keyframes sfsDamage {
-          0% { transform: translate(-50%,-50%) scale(0.42) rotate(-5deg); opacity: 0; }
-          12% { transform: translate(-50%,-50%) scale(1.18) rotate(-2deg); opacity: 1; }
-          28% { transform: translate(-50%,-50%) scale(1.04) rotate(0); opacity: 1; }
-          52% { transform: translate(-50%,-54%) scale(0.98) rotate(0); opacity: 0.28; }
-          100% { transform: translate(-50%,-58%) scale(0.96) rotate(0); opacity: 0; }
+          0% { transform: translate(-50%,-50%) scale(0.40) rotate(-5deg); opacity: 0; }
+          10% { transform: translate(-50%,-50%) scale(1.24) rotate(-1deg); opacity: 1; }
+          26% { transform: translate(-50%,-50%) scale(1.06) rotate(0); opacity: 1; }
+          50% { transform: translate(-50%,-54%) scale(1) rotate(0); opacity: 0.32; }
+          100% { transform: translate(-50%,-60%) scale(0.94) rotate(0); opacity: 0; }
         }
 
         @keyframes sfsTitle {
-          0% { transform: translate(-50%,8px) scale(0.88); opacity: 0; }
-          24% { transform: translate(-50%,0) scale(1); opacity: 1; }
-          74% { transform: translate(-50%,-2px) scale(1.04); opacity: 1; }
-          100% { transform: translate(-50%,-8px) scale(1.02); opacity: 0; }
+          0% { transform: translate(-50%,12px) scale(0.84); opacity: 0; }
+          22% { transform: translate(-50%,2px) scale(1.02); opacity: 1; }
+          76% { transform: translate(-50%,-2px) scale(1.06); opacity: 1; }
+          100% { transform: translate(-50%,-10px) scale(1.04); opacity: 0; }
         }
 
         @keyframes sfsChargeGlow {
@@ -287,7 +287,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 44%, transparent 30%, rgba(0,0,0,0.18) 58%, rgba(0,0,0,0.76) 100%)', pointerEvents: 'none' }} />
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '14%', color: '#EAF8FF', fontSize: 'clamp(18px,4.5vw,48px)', fontWeight: 1000, letterSpacing: '0.28em', textShadow: '0 0 10px rgba(104,205,255,0.80), 0 0 26px rgba(68,132,255,0.34)', opacity: Math.max(0, Math.min(1, (t - 0.60) / 0.16)) * Math.max(0, Math.min(1, (0.98 - t) / 0.20)), animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both, sfsTextShimmer calc(${d} * 0.6) ease-in-out infinite`, pointerEvents: 'none' }}>
+          <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '14%', color: '#EAF8FF', fontSize: 'clamp(28px,6.2vw,56px)', fontWeight: 1000, letterSpacing: '0.32em', textShadow: '0 0 12px rgba(104,205,255,0.80), 0 0 32px rgba(68,132,255,0.48), 0 0 48px rgba(40,80,200,0.32)', opacity: Math.max(0, Math.min(1, (t - 0.60) / 0.16)) * Math.max(0, Math.min(1, (0.98 - t) / 0.20)), animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both, sfsTextShimmer calc(${d} * 0.6) ease-in-out infinite`, pointerEvents: 'none' }}>
             超堕天撃
           </div>
         </div>
@@ -329,15 +329,15 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
             <>
               <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '53%', width: '40%', aspectRatio: '1', transform: 'translate(-50%,-50%)', border: '3px solid rgba(255,200,120,0.6)', borderRadius: '50%', animation: `sfsShockwave ${d} cubic-bezier(0.08,0.88,0.14,1) calc(${d} * 0.48) both`, pointerEvents: 'none' }} />
 
-              <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '54%', transform: 'translate(-50%,-50%)', color: 'rgba(228,249,255,0.22)', fontSize: 'clamp(34px,8vw,84px)', fontWeight: 1000, letterSpacing: '0.18em', whiteSpace: 'nowrap', textShadow: '0 0 24px rgba(74,178,255,0.56), 0 0 8px rgba(132,213,255,0.48)', animation: `sfsImpactTitle calc(${d} * 0.42) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.46) both`, pointerEvents: 'none' }}>
+              <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '52%', transform: 'translate(-50%,-50%)', color: 'rgba(228,249,255,0.2)', fontSize: 'clamp(42px,10vw,96px)', fontWeight: 1000, letterSpacing: '0.16em', whiteSpace: 'nowrap', textShadow: '0 0 26px rgba(74,178,255,0.56), 0 0 12px rgba(132,213,255,0.48)', animation: `sfsImpactTitle calc(${d} * 0.40) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.44) both`, pointerEvents: 'none' }}>
                 超堕天撃
               </div>
 
-              <div className="sfs-motion" style={{ position: 'absolute', left: '68%', top: '53%', transform: 'translate(-50%,-50%)', textAlign: 'center', lineHeight: 0.82, animation: `sfsDamage calc(${d} * 0.48) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both`, pointerEvents: 'none' }}>
-                <div style={{ fontSize: 'clamp(64px,18vw,186px)', fontWeight: 1000, letterSpacing: '-0.075em', color: '#FFFFFF', WebkitTextStroke: '2px rgba(190,236,255,0.88)', textShadow: '0 0 12px rgba(255,255,255,0.98), 0 0 32px rgba(74,178,255,0.98), 0 0 48px rgba(100,200,255,0.64), 12px 14px 0 rgba(3,10,24,0.96)', filter: 'drop-shadow(0 0 8px rgba(255,200,100,0.44))', animation: `sfsTextShimmer calc(${d} * 0.48) ease-in-out calc(${d} * 0.50)` }}>
+              <div className="sfs-motion" style={{ position: 'absolute', left: '68%', top: '53%', transform: 'translate(-50%,-50%)', textAlign: 'center', lineHeight: 0.80, animation: `sfsDamage calc(${d} * 0.46) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.48) both`, pointerEvents: 'none' }}>
+                <div style={{ fontSize: 'clamp(72px,20vw,200px)', fontWeight: 1000, letterSpacing: '-0.075em', color: '#FFFFFF', WebkitTextStroke: '2px rgba(190,236,255,0.88)', textShadow: '0 0 12px rgba(255,255,255,0.98), 0 0 32px rgba(74,178,255,0.98), 0 0 48px rgba(100,200,255,0.64), 12px 14px 0 rgba(3,10,24,0.96)', filter: 'drop-shadow(0 0 8px rgba(255,200,100,0.44))', animation: `sfsTextShimmer calc(${d} * 0.46) ease-in-out calc(${d} * 0.48)` }}>
                   −{damage}
                 </div>
-                <div style={{ marginTop: '8px', fontSize: 'clamp(10px,2.2vw,18px)', fontWeight: 1000, color: '#DFF7FF', letterSpacing: '0.26em', textShadow: '0 0 12px rgba(105,198,255,0.94), 0 0 24px rgba(74,178,255,0.64)', filter: 'drop-shadow(0 0 6px rgba(132,213,255,0.56))', animation: `sfsTextShimmer calc(${d} * 0.48) ease-in-out calc(${d} * 0.50)` }}>
+                <div style={{ marginTop: '8px', fontSize: 'clamp(12px,2.4vw,20px)', fontWeight: 1000, color: '#DFF7FF', letterSpacing: '0.24em', textShadow: '0 0 12px rgba(105,198,255,0.94), 0 0 24px rgba(74,178,255,0.64)', filter: 'drop-shadow(0 0 6px rgba(132,213,255,0.56))', animation: `sfsTextShimmer calc(${d} * 0.46) ease-in-out calc(${d} * 0.48)` }}>
                   超堕天撃
                 </div>
               </div>
@@ -345,7 +345,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           )}
 
           {missVisible && (
-            <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '76%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(24px,5vw,48px)', fontWeight: 1000, color: '#fff', textShadow: '0 0 14px rgba(105,198,255,0.92), 0 0 20px rgba(255,150,100,0.64), 0 2px 8px rgba(0,0,0,0.96)', animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both, sfsTextShimmer calc(${d} * 0.36) ease-in-out calc(${d} * 0.50)` }}>
+            <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '76%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(28px,6vw,52px)', fontWeight: 1000, color: '#fff', textShadow: '0 0 14px rgba(105,198,255,0.92), 0 0 20px rgba(255,150,100,0.64), 0 2px 8px rgba(0,0,0,0.96)', animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both, sfsTextShimmer calc(${d} * 0.36) ease-in-out calc(${d} * 0.50)` }}>
               MISS!! 超堕天撃回避
             </div>
           )}
