@@ -267,38 +267,46 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         </div>
       </div>
 
-      {/* Row 1: Normal Commands (いれーなは強化コマンドなし) */}
+      {/* Row 1: Special Skill Selection */}
       {hasSuperFallenShot && (
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginBottom:'6px' }}>
-          <button
-            type="button"
-            onClick={() => onSelectedSpecialSkillChange('FEATHER')}
-            disabled={!isEnabled || isChargingSuperFallenShot}
-            style={{
-              minHeight:'30px', borderRadius:'8px',
-              border: selectedSpecialSkill === 'FEATHER' ? '1px solid #EA80FC' : '1px solid #39445C',
-              background: selectedSpecialSkill === 'FEATHER' ? 'rgba(123,31,162,.34)' : 'rgba(16,21,32,.9)',
-              color: selectedSpecialSkill === 'FEATHER' ? '#F3E5F5' : '#98A6BC',
-              fontSize:'10px', fontWeight:900,
-              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
-            }}
-          >羽弾</button>
-          <button
-            type="button"
-            onClick={() => onSelectedSpecialSkillChange('SUPER_FALLEN_SHOT')}
-            disabled={!isEnabled || isChargingSuperFallenShot}
-            style={{
-              minHeight:'30px', borderRadius:'8px',
-              border: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '1px solid #FFE082' : '1px solid #39445C',
-              background: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? 'rgba(117,56,12,.34)' : 'rgba(16,21,32,.9)',
-              color: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '#FFE082' : '#98A6BC',
-              fontSize:'10px', fontWeight:900,
-              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
-            }}
-          >⚡超堕天撃</button>
+        <div
+          role="radiogroup"
+          aria-label="特殊技の採用選択"
+          style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginBottom:'6px' }}
+        >
+          {([
+            ['FEATHER', '羽弾', '#EA80FC', 'rgba(123,31,162,.34)'],
+            ['SUPER_FALLEN_SHOT', '⚡超堕天撃', '#FFE082', 'rgba(117,56,12,.34)'],
+          ] as const).map(([skillId, label, activeBorder, activeBackground]) => {
+            const selected = selectedSpecialSkill === skillId;
+            const disabled = !isEnabled || isChargingSuperFallenShot;
+            return (
+              <button
+                key={skillId}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                aria-label={label + (selected ? 'を採用中' : 'を採用する')}
+                onClick={() => onSelectedSpecialSkillChange(skillId)}
+                disabled={disabled}
+                style={{
+                  minHeight:'34px',
+                  borderRadius:'8px',
+                  border: selected ? '1px solid ' + activeBorder : '1px solid #39445C',
+                  background: selected ? activeBackground : 'rgba(16,21,32,.9)',
+                  color: selected ? (skillId === 'FEATHER' ? '#F3E5F5' : '#FFE082') : '#98A6BC',
+                  fontSize:'10px',
+                  fontWeight:900,
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  fontFamily:'inherit',
+                }}
+              >
+                {label} {selected ? '・採用中' : ''}
+              </button>
+            );
+          })}
         </div>
       )}
-
       {isChargingSuperFallenShot && (
         <div style={{ marginBottom:'6px', padding:'7px 9px', borderRadius:'9px', border:'1px solid rgba(255,224,130,.58)', background:'linear-gradient(90deg,rgba(65,38,11,.72),rgba(11,12,18,.9))', color:'#FFE082', fontSize:'10px', fontWeight:900, textAlign:'center' }}>
           ⚡🪶 超堕天撃 充填中 — 次のターン自動発射 / 充填中 DEF 0
