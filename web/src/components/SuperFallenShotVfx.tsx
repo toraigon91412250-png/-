@@ -565,7 +565,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               >
                 超堕天撃
               </div>
-            </div>
+            </>
           )}
 
           {missVisible && (
