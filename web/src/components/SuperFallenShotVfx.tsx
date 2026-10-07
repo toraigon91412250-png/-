@@ -231,6 +231,22 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { opacity: 0; transform: translate3d(10%, -18%, 0) rotate(4deg) scaleX(1.45); }
         }
 
+        @keyframes sfsSparkField {
+          0% { transform: translate3d(0, 8%, 0) scale(0.92); opacity: 0.10; }
+          20% { opacity: 0.42; }
+          38% { transform: translate3d(-2%, 2%, 0) scale(1.02); opacity: 0.18; }
+          58% { opacity: 0.48; }
+          76% { transform: translate3d(2%, -4%, 0) scale(1.08); opacity: 0.16; }
+          100% { transform: translate3d(0, -10%, 0) scale(1.12); opacity: 0.04; }
+        }
+
+        @keyframes sfsPlasmaPulse {
+          0%, 100% { transform: scale(0.86); opacity: 0.08; }
+          28% { transform: scale(1.02); opacity: 0.24; }
+          52% { transform: scale(1.12); opacity: 0.12; }
+          74% { transform: scale(0.98); opacity: 0.22; }
+        }
+
         @keyframes sfsCameraCut {
           0%, 34% { opacity: 0; transform: scale(0.96); }
           37% { opacity: 0.82; transform: scale(1.01); }
@@ -359,6 +375,42 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           animation: `sfsArcB ${d} linear infinite`,
           pointerEvents: 'none',
           zIndex: 3,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: '-5%',
+          background:
+            'radial-gradient(circle at 12% 78%, rgba(107,203,255,0.22) 0 1.3px, transparent 2px), radial-gradient(circle at 22% 64%, rgba(188,239,255,0.16) 0 1px, transparent 1.7px), radial-gradient(circle at 36% 82%, rgba(81,176,255,0.20) 0 1.2px, transparent 2px), radial-gradient(circle at 61% 86%, rgba(183,235,255,0.18) 0 1.1px, transparent 1.8px), radial-gradient(circle at 76% 68%, rgba(84,186,255,0.22) 0 1.3px, transparent 2px), radial-gradient(circle at 89% 80%, rgba(196,242,255,0.15) 0 1px, transparent 1.7px), radial-gradient(circle at 48% 72%, rgba(123,210,255,0.18) 0 1px, transparent 1.8px)',
+          backgroundSize: '170px 150px, 130px 120px, 190px 160px, 160px 130px, 175px 145px, 140px 115px, 155px 125px',
+          mixBlendMode: 'screen',
+          animation: `sfsSparkField ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+
+      <div
+        className="sfs-motion"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '71%',
+          width: '76%',
+          height: '26%',
+          transform: 'translate(-50%,-50%)',
+          borderRadius: '50%',
+          background:
+            'radial-gradient(ellipse at center, rgba(75,170,255,0.16) 0%, rgba(83,179,255,0.08) 34%, rgba(75,170,255,0) 72%)',
+          filter: 'blur(20px)',
+          animation: `sfsPlasmaPulse ${d} ease-in-out infinite`,
+          pointerEvents: 'none',
+          zIndex: 1,
         }}
       />
 
