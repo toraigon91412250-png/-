@@ -67,10 +67,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
       : 1
     : 0;
 
-  const impactPulse = isShot
-    ? Math.max(0, 1 - Math.abs(t - 0.28) / 0.12)
-    : 0;
-
   const showDamage =
     isShot &&
     !isEvade &&
