@@ -166,6 +166,13 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           100% { opacity: 0; }
         }
 
+        @keyframes sfsCameraCut {
+          0%, 34% { opacity: 0; transform: scale(0.96); }
+          37% { opacity: 0.82; transform: scale(1.01); }
+          42% { opacity: 0; transform: scale(1.04); }
+          100% { opacity: 0; }
+        }
+
         @keyframes sfsCutin {
           0% { transform: translate3d(-120%, 10%, 0) skewX(-12deg) rotate(-3deg); opacity: 0; }
           18% { opacity: 1; }
@@ -237,7 +244,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-motion"
                 style={{
-                  opacity: chargeImageOpacity,
+                  opacity: chargeImageOpacity * (1 - chargeClose * 0.92),
                   animation: `sfsChargeWide ${d} cubic-bezier(0.16,0.80,0.20,1) both`,
                   willChange: 'transform, opacity',
                 }}
@@ -257,6 +264,22 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               />
             </>
           )}
+
+          <div
+            className="sfs-motion"
+            style={{
+              position: 'absolute',
+              left: '31%',
+              top: '44%',
+              width: '34%',
+              aspectRatio: '1',
+              transform: 'translate(-50%,-50%)',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.86) 0%, rgba(173,228,255,0.30) 26%, transparent 72%)',
+              animation: `sfsCameraCut ${d} ease-out both`,
+              pointerEvents: 'none',
+            }}
+          />
 
           <div
             className="sfs-motion"
@@ -346,7 +369,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-motion"
                 style={{
-                  opacity: shotOpacity,
+                  opacity: shotOpacity * (1 - closePunch * 0.92),
                   animation: `sfsShotWide ${d} cubic-bezier(0.10,0.76,0.18,1) both`,
                   willChange: 'transform, opacity, filter',
                 }}
@@ -358,7 +381,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
                 onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }}
                 className="sfs-art sfs-motion"
                 style={{
-                  opacity: closePunch * 0.78,
+                  opacity: closePunch,
                   height: 'min(100vh, 900px)',
                   filter: 'brightness(1.10) saturate(1.10)',
                   animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`,
