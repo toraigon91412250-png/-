@@ -8,8 +8,6 @@ import {
   CharacterDef,
   CpuDifficulty,
   EffectType,
-  getEffectiveAttack,
-  getEffectiveDefense,
   getEffectiveSpeed,
   getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
@@ -897,7 +895,6 @@ export function useBattleGame(
           });
 
           if (hadBuff) {
-            finalDamage += buffDamageBonus;
             addLog(
               `⚡【強化消費】『超堕天撃』のダメージ+${buffDamageBonus}！（計: ${finalDamage}）`,
               'BUFF_PLAYER',
