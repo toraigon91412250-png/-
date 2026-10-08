@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import chargeImage from '../assets/fallen_irena_charge_black.jpg';
+import chargeImage from '../assets/IMG_1148.jpeg';
 import irenaCutin from '../assets/img_irena_cutin.jpg';
 import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
-import shotImage from '../assets/fallen_irena_shot_gold.jpg';
+import shotImage from '../assets/IMG_1149.jpeg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
