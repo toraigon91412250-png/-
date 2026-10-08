@@ -226,6 +226,19 @@ export function useBattleGame(
     updateState(prev => ({ ...prev, cpuDifficulty: diff }));
   }, [updateState]);
 
+  const cancelBattle = useCallback(() => {
+    cancelPendingBattleWork();
+    updateState(prev => ({
+      ...prev,
+      phase: prev.phase === 'EXECUTING_TURNS' ? 'SELECT_ACTION' : prev.phase,
+      isAnimating: false,
+      visualEffect: null,
+      visualEffects: [],
+      player: { ...prev.player, isEvading: false },
+      enemy: { ...prev.enemy, isEvading: false },
+    }));
+  }, [cancelPendingBattleWork, updateState]);
+
   const addJudgmentMarks = (amount: number, turn: number) => {
     const config = stateRef.current.battleConfig;
     const level = getAbilityLevel(config, 'JUDGMENT');
@@ -654,6 +667,7 @@ export function useBattleGame(
             isActingFirst,
             judgmentReady: judgmentActive,
             alreadyPrepared: true,
+            baseAttackerMaxHp,
           },
           isCritical,
         );
@@ -871,10 +885,16 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
-          let finalDamage = Math.max(
-            0,
-            Math.round(getEffectiveAttack(actor) * multiplier - getEffectiveDefense(target)),
-          );
+          const finalDamage = calculateSpecialDamage({
+            attacker: actor,
+            target,
+            config: stateRef.current.battleConfig,
+            turn,
+            isActingFirst,
+            specialSkillId: 'SUPER_FALLEN_SHOT',
+            alreadyPrepared: true,
+            baseAttackerMaxHp,
+          });
 
           if (hadBuff) {
             finalDamage += buffDamageBonus;
@@ -1105,6 +1125,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           specialSkillId: specialSkillId ?? 'FEATHER',
           alreadyPrepared: true,
+          baseAttackerMaxHp,
         });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
@@ -1359,6 +1380,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           ultimateVariant: appliedIrenaVariant,
           alreadyPrepared: true,
+          baseAttackerMaxHp,
         });
 
         const judgmentLevel = isActorPlayer
@@ -1624,6 +1646,7 @@ export function useBattleGame(
     state,
     onActionSelected,
     restartBattle,
+    cancelBattle,
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,
