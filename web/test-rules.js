@@ -165,6 +165,49 @@ assert.ok(
   'Fallen must not execute an enemy when current HP is above 5% of the unmodified max HP.',
 );
 
+const fallenSpecialDamageAboveFivePercent = calculateSpecialDamage({
+  attacker: preparedFallenAtTwelvePointFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+});
+assert.ok(
+  fallenSpecialDamageAboveFivePercent < fallenTarget.currentHp,
+  'Fallen must not execute through Feather at 12.5% HP.',
+);
+
+const fallenSuperShotDamageAboveFivePercent = calculateSpecialDamage({
+  attacker: preparedFallenAtTwelvePointFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  specialSkillId: 'SUPER_FALLEN_SHOT',
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+});
+assert.ok(
+  fallenSuperShotDamageAboveFivePercent > fallenTarget.currentHp,
+  'Super Fallen Shot must keep its calculated damage when HP is above the execution threshold.',
+);
+
+const fallenUltimateDamageAboveFivePercent = calculateUltimateDamage({
+  attacker: preparedFallenAtTwelvePointFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+});
+assert.ok(
+  fallenUltimateDamageAboveFivePercent < fallenTarget.currentHp,
+  'Fallen must not execute through an ultimate at 12.5% HP.',
+);
+
 const fallenAtFivePercent = createInitialFighter(IRENA, true);
 fallenAtFivePercent.currentHp = 200;
 const preparedFallenAtFivePercent = applyDynamicAbilityModifiers(fallenAtFivePercent, fallenConfig, 1);
@@ -177,6 +220,37 @@ assert.strictEqual(calculateNormalAttackDamage({
   alreadyPrepared: true,
   baseAttackerMaxHp: IRENA.maxHp,
 }), fallenTarget.currentHp, 'Fallen execution must trigger at exactly 5% HP.');
+
+assert.strictEqual(calculateSpecialDamage({
+  attacker: preparedFallenAtFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+}), fallenTarget.currentHp, 'Feather must use the same 5% execution threshold.');
+
+assert.strictEqual(calculateSpecialDamage({
+  attacker: preparedFallenAtFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  specialSkillId: 'SUPER_FALLEN_SHOT',
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+}), fallenTarget.currentHp, 'Super Fallen Shot must use the same 5% execution threshold.');
+
+assert.strictEqual(calculateUltimateDamage({
+  attacker: preparedFallenAtFivePercent,
+  target: fallenTarget,
+  config: fallenConfig,
+  turn: 1,
+  isActingFirst: false,
+  alreadyPrepared: true,
+  baseAttackerMaxHp: IRENA.maxHp,
+}), fallenTarget.currentHp, 'Ultimates must use the same 5% execution threshold.');
 
 const buffed = { ...attackBase, isBuffed: true, buffDamageBonus: 125 };
 assert.strictEqual(calculateNormalAttackDamage({
