@@ -645,4 +645,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   );
 };
 
+{/* Preview retry marker: no runtime behavior change. */}
+
 export { SuperFallenShotVfx };
