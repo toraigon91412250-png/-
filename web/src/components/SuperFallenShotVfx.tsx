@@ -65,9 +65,6 @@ const RAYS = Array.from({ length: 12 }, (_, index) => ({
 // This reduces the chance that the first Super Fallen Shot is missing frames
 // simply because the browser has not decoded the JPEGs yet.
 
-const VIEW_W = 160;
-const VIEW_H = 90;
-
 const ProceduralChargeFx: React.FC<{ t: number }> = ({ t }) => {
   const charge = smooth(between(t, 0.08, 0.90));
   const pulse = 0.5 + 0.5 * Math.sin(t * Math.PI * 12);
