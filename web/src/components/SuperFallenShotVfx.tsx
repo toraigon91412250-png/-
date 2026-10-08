@@ -64,6 +64,250 @@ const RAYS = Array.from({ length: 12 }, (_, index) => ({
 // Start loading the real cinematic assets as soon as this module is imported.
 // This reduces the chance that the first Super Fallen Shot is missing frames
 // simply because the browser has not decoded the JPEGs yet.
+
+const VIEW_W = 160;
+const VIEW_H = 90;
+
+const ProceduralChargeFx: React.FC<{ t: number }> = ({ t }) => {
+  const charge = smooth(between(t, 0.08, 0.90));
+  const pulse = 0.5 + 0.5 * Math.sin(t * Math.PI * 12);
+  const cx = ORIGIN_X * 1.6;
+  const cy = ORIGIN_Y * 0.9;
+  const radius = 7 + charge * 15;
+  const outer = radius + 5 + pulse * 2;
+  const spin = charge * 260;
+  const orbit = charge * 360;
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 90"
+      preserveAspectRatio="none"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 3,
+        mixBlendMode: 'screen',
+      }}
+    >
+      <defs>
+        <radialGradient id="sf-charge-core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="18%" stopColor="#FFE9B0" stopOpacity="0.78" />
+          <stop offset="48%" stopColor="#8CCBFF" stopOpacity="0.30" />
+          <stop offset="100%" stopColor="#72BFFF" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="sf-charge-arc" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#7CC8FF" stopOpacity="0" />
+          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#A7D9FF" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <g transform={'translate(' + cx + ' ' + cy + ')'}>
+        <circle r={radius * 0.82} fill="url(#sf-charge-core)" opacity={0.20 + charge * 0.45} />
+
+        {[0, 1, 2].map((index) => {
+          const ringRadius = radius + index * 4;
+          const dash = 16 + index * 7;
+          return (
+            <circle
+              key={index}
+              r={ringRadius}
+              fill="none"
+              stroke="url(#sf-charge-arc)"
+              strokeWidth={0.7 + charge * 0.5}
+              strokeDasharray={dash + ' ' + (42 - index * 4)}
+              strokeDashoffset={-spin * (index % 2 === 0 ? 1 : -1) - index * 6}
+              opacity={(0.24 + charge * 0.56) - index * 0.10}
+            />
+          );
+        })}
+
+        <ellipse
+          rx={outer}
+          ry={outer * 0.36}
+          fill="none"
+          stroke="#9ED8FF"
+          strokeWidth={0.7 + charge * 0.7}
+          strokeDasharray="3 3.8"
+          strokeDashoffset={-orbit}
+          opacity={charge * 0.62}
+          transform="rotate(-10)"
+        />
+
+        <ellipse
+          rx={outer + 4}
+          ry={(outer + 4) * 0.20}
+          fill="none"
+          stroke="#FFF5D0"
+          strokeWidth="0.45"
+          strokeDasharray="1.8 5.2"
+          strokeDashoffset={orbit * 0.8}
+          opacity={charge * 0.42}
+          transform="rotate(18)"
+        />
+
+        {[0, 1, 2, 3, 4, 5].map((index) => {
+          const a = (index / 6) * Math.PI * 2 + orbit * 0.012;
+          const rr = radius + 5 + (index % 2) * 3;
+          const px = Math.cos(a) * rr;
+          const py = Math.sin(a) * rr * 0.68;
+          const size = 0.45 + (index % 3) * 0.22;
+          return (
+            <circle
+              key={index}
+              cx={px}
+              cy={py}
+              r={size}
+              fill={index % 2 === 0 ? '#FFFFFF' : '#9AD6FF'}
+              opacity={charge * (0.48 + pulse * 0.30)}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
+const ProceduralShotFx: React.FC<{ t: number }> = ({ t }) => {
+  const beamP = easeOutCubic(between(t, 0.08, 0.56));
+  const contact = easeOutCubic(between(t, 0.535, 0.74));
+  const impact = between(t, 0.535, 0.86);
+  const cx1 = ORIGIN_X * 1.6;
+  const cy1 = ORIGIN_Y * 0.9;
+  const cx2 = IMPACT_X * 1.6;
+  const cy2 = IMPACT_Y * 0.9;
+  const flow = t * 240;
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 90"
+      preserveAspectRatio="none"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 8,
+        mixBlendMode: 'screen',
+      }}
+    >
+      <defs>
+        <linearGradient id="sf-shot-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
+          <stop offset="10%" stopColor="#DDF3FF" stopOpacity="0.56" />
+          <stop offset="38%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="84%" stopColor="#9FD8FF" stopOpacity="0.94" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="sf-shot-impact" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="16%" stopColor="#FFF4C9" stopOpacity="0.96" />
+          <stop offset="42%" stopColor="#9ED8FF" stopOpacity="0.32" />
+          <stop offset="100%" stopColor="#7EC9FF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      <g opacity={beamP}>
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="#79C7FF"
+          strokeWidth={2.8 + beamP * 3.8}
+          strokeLinecap="round"
+          opacity={0.16 + beamP * 0.20}
+          strokeDasharray="100 7"
+          strokeDashoffset={-flow}
+        />
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="url(#sf-shot-beam)"
+          strokeWidth={0.95 + beamP * 1.85}
+          strokeLinecap="round"
+          strokeDasharray="100 100"
+          strokeDashoffset={100 - beamP * 100}
+        />
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="#FFFFFF"
+          strokeWidth={0.24 + beamP * 0.42}
+          strokeLinecap="round"
+          strokeDasharray="7 5"
+          strokeDashoffset={-flow * 1.8}
+          opacity={0.58 + beamP * 0.30}
+        />
+      </g>
+
+      <g transform={'translate(' + cx1 + ' ' + cy1 + ')'} opacity={beamP * 0.95}>
+        <circle r={2.2 + beamP * 3.5} fill="url(#sf-shot-impact)" opacity="0.52" />
+        <circle r={0.65 + beamP * 1.2} fill="#FFFFFF" opacity="0.96" />
+      </g>
+
+      <g transform={'translate(' + cx2 + ' ' + cy2 + ')'}>
+        <circle r={4 + contact * 22} fill="url(#sf-shot-impact)" opacity={contact * 0.82} />
+
+        <circle
+          r={3 + contact * 23}
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth={1.1 - contact * 0.65}
+          opacity={contact * (1 - contact * 0.52)}
+        />
+
+        <circle
+          r={7 + contact * 36}
+          fill="none"
+          stroke="#A8DDFF"
+          strokeWidth={0.65 - contact * 0.30}
+          strokeDasharray="5 3.8"
+          strokeDashoffset={-flow * 1.4}
+          opacity={contact * 0.78}
+        />
+
+        {Array.from({ length: 10 }, (_, index) => {
+          const a = (index / 10) * Math.PI * 2 + t * 5.5;
+          const inner = 4 + contact * 7;
+          const outer = inner + 8 + contact * 17 + (index % 3) * 3;
+          const x1 = Math.cos(a) * inner;
+          const y1 = Math.sin(a) * inner * 0.72;
+          const x2 = Math.cos(a) * outer;
+          const y2 = Math.sin(a) * outer * 0.72;
+          return (
+            <line
+              key={index}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={index % 2 === 0 ? '#FFFFFF' : '#8FD4FF'}
+              strokeWidth={0.45 + contact * 0.55}
+              strokeLinecap="round"
+              opacity={impact * (1 - contact * 0.70) * 0.86}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
 const preloadSources = [
   beamImage,
   backgroundImage,
@@ -194,6 +438,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           />
         )}
 
+        <ProceduralChargeFx t={t} />
+
         <div
           style={{
             position: 'absolute',
@@ -293,7 +539,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const controlledOpacity = controlledA * (1 - strongA * 0.58) * 0.86;
   const strongOpacity = strongA * 0.98;
   const beamOpacity = assetReady && !assetsFailed.beam
-    ? (0.18 + beamFast * 0.82) * (1 - finalFade * 0.72)
+    ? (0.10 + beamFast * 0.38) * (1 - finalFade * 0.72)
     : 0;
 
   return (
@@ -314,6 +560,8 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
         inset: 0,
         background: 'radial-gradient(ellipse at 48% 50%, rgba(36,83,146,0.15), rgba(0,0,0,0.74) 52%, #000 100%)',
       }} />
+
+      <ProceduralShotFx t={visualT} />
 
       <div
         style={{
