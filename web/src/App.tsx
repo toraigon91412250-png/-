@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
@@ -12,6 +12,7 @@ import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { normalizeStatAllocation } from './utils/statBuild';
+import { preloadAllGameImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
@@ -40,43 +41,9 @@ export const App: React.FC = () => {
     setCpuDifficulty,
   } = useBattleGame(IRENA, KAISER, difficulty, battleSetup);
 
-  // Battle-only image preload cache. Keep strong references so the first VFX/cut-in
-  // does not have to start a fresh image decode during the attack.
-  const battleImagePreloadCacheRef = useRef(new Map<string, Promise<void>>());
-
-  const preloadBattleImage = (src: string) => {
-    const cached = battleImagePreloadCacheRef.current.get(src);
-    if (cached) return cached;
-
-    const promise = new Promise<void>(resolve => {
-      const image = new Image();
-      let finished = false;
-
-      const finish = () => {
-        if (finished) return;
-        finished = true;
-
-        if (typeof image.decode === 'function') {
-          image.decode().catch(() => {}).finally(() => resolve());
-        } else {
-          resolve();
-        }
-      };
-
-      image.decoding = 'async';
-      image.setAttribute('fetchpriority', 'high');
-      image.onload = finish;
-      image.onerror = () => resolve();
-      image.src = src;
-
-      if (image.complete) {
-        finish();
-      }
-    });
-
-    battleImagePreloadCacheRef.current.set(src, promise);
-    return promise;
-  };
+  useEffect(() => {
+    void preloadAllGameImages();
+  }, []);
 
   // Reload stats whenever battle is finished
   useEffect(() => {
@@ -123,16 +90,6 @@ export const App: React.FC = () => {
 
   const handleStartBattle = (config: BattleSetupConfig) => {
     setBattleSetup(config);
-    const sources = [
-      battleBackground,
-      IRENA.imageSrc,
-      IRENA.iconImageSrc,
-      IRENA.specialCutInSrc,
-      KAISER.imageSrc,
-      KAISER.iconImageSrc,
-      KAISER.specialCutInSrc,
-    ].filter((src): src is string => Boolean(src));
-
     setCpuDifficulty(difficulty);
     const cpuOpponent = getBattleCpuOpponent();
     restartBattle(upgradedIrena, cpuOpponent, difficulty, config);
@@ -143,7 +100,6 @@ export const App: React.FC = () => {
 
     // Image preloading is best-effort only. Do not block battle visibility on
     // an image decode that may never settle.
-    void Promise.all(sources.map(preloadBattleImage)).catch(() => {});
     window.setTimeout(() => setIsBattleDeploying(false), minimumDeployMs);
   };
   const handleUpgradeSkill = (skillId: 'FEATHER' | 'RUIN') => {
