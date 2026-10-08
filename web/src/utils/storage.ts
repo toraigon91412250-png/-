@@ -25,6 +25,7 @@ export const MAX_SKILL_LEVEL = 10;
 export function loadStatPoints(): number {
   try {
     const raw = localStorage.getItem(STAT_POINTS_KEY);
+    if (raw === null) return INITIAL_STAT_POINTS;
     const points = Number(raw);
     return Number.isFinite(points) ? Math.max(0, Math.floor(points)) : INITIAL_STAT_POINTS;
   } catch {
