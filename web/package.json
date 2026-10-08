@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000 --host 0.0.0.0",
-    "test": "node test-rules.js",
+    "test": "npx --yes tsx@4.23.15 test-rules.js",
     "build": "tsc && vite build",
     "preview": "vite preview --port 3000 --host 0.0.0.0"
   },
