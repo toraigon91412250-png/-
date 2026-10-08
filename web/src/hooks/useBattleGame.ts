@@ -665,7 +665,7 @@ export function useBattleGame(
             isActingFirst,
             judgmentReady: judgmentActive,
             alreadyPrepared: true,
-            baseAttackerMaxHp,
+            baseAttackerMaxHp: baseActorMaxHp,
           },
           isCritical,
         );
@@ -891,7 +891,7 @@ export function useBattleGame(
             isActingFirst,
             specialSkillId: 'SUPER_FALLEN_SHOT',
             alreadyPrepared: true,
-            baseAttackerMaxHp,
+            baseAttackerMaxHp: baseActorMaxHp,
           });
 
           if (hadBuff) {
@@ -1122,7 +1122,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           specialSkillId: specialSkillId ?? 'FEATHER',
           alreadyPrepared: true,
-          baseAttackerMaxHp,
+          baseAttackerMaxHp: baseActorMaxHp,
         });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
@@ -1377,7 +1377,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           ultimateVariant: appliedIrenaVariant,
           alreadyPrepared: true,
-          baseAttackerMaxHp,
+          baseAttackerMaxHp: baseActorMaxHp,
         });
 
         const judgmentLevel = isActorPlayer
