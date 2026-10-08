@@ -164,6 +164,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 }) => {
   const [isWide, setIsWide] = useState(window.innerWidth >= 680);
   const [screenShake, setScreenShake] = useState(false);
+  const [isUltimateCinematicActive, setIsUltimateCinematicActive] = useState(false);
   const [selectedSpecialSkill, setSelectedSpecialSkill] = useState<IrenaSpecialSkillId>('FEATHER');
   const [irenaUltimateUses, setIrenaUltimateUses] = useState({
     allGods: 0,
@@ -214,7 +215,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   // Keyboard shortcut listener for PC players
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isEnabled = state.phase === 'SELECT_ACTION';
+      const isEnabled = state.phase === 'SELECT_ACTION' && !isUltimateCinematicActive;
       if (e.key === '1') {
         if (isEnabled) onAction('ATTACK');
       } else if (e.key === '2') {
@@ -246,6 +247,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
     state.phase,
+    isUltimateCinematicActive,
     state.player.specialCooldownRemaining,
     state.player.ultimateGauge,
     state.player.character.id,
@@ -533,7 +535,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               battleConfig={state.battleConfig}
               turnNumber={state.turnNumber}
               judgmentReady={state.judgmentReady}
-              isEnabled={isActionEnabled}
+              isEnabled={isActionEnabled && !isUltimateCinematicActive}
+              onCinematicActiveChange={setIsUltimateCinematicActive}
               selectedSpecialSkill={selectedSpecialSkill}
               onSelectedSpecialSkillChange={setSelectedSpecialSkill}
               onAction={onAction}
