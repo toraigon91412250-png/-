@@ -268,11 +268,11 @@ const drawAllGodsVfx=(ctx:CanvasRenderingContext2D,w:number,h:number,t:number)=>
 const RUIN_SEQUENCE_DURATION_MS = 5600;
 
 const RUIN_ASSETS = {
-  "feather": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_一本の巨大な黒い羽根、堕天使を連想させる不吉で神秘的な雰...毛、鋭く美...細な羽毛の質感、わずかな赤い光の反射、ダークファンタジー、ゲームの必殺技演 142180.png",
-  "cloud": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_漆黒の巨大な黒雲、重く渦巻く暗い雲、雲の内部に無数の細か...っている、...かな赤い光が見える、不吉で神秘的な雰囲気、堕天使を思わせるダークファンタジ 142180.png",
-  "intro": "https://raw.githubusercontent.com/toraigon91412250-png/-/b3e223fdbfa4c66e95bc47b6df0f07322795c36f/irena_ruin_intro.jpg",
-  "hand": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/1790944467835.jpg",
-  "cracks": "https://raw.githubusercontent.com/toraigon91412250-png/-/main/Firefly_現実の空間がガラスのように大きくひび割れ、中央部分から崩...ダークフ...ァ表現。_画面中央に大きな不規則な亀裂、その周囲にも細かな亀裂が広がっている 142180.png"
+  feather: import.meta.env.BASE_URL + 'assets/recruitment/black-feather.png',
+  cloud: import.meta.env.BASE_URL + 'assets/recruitment/black-cloud.png',
+  intro: import.meta.env.BASE_URL + 'assets/recruitment/irena-summon-1.jpg',
+  hand: import.meta.env.BASE_URL + 'assets/recruitment/irena-summon-2.jpg',
+  cracks: import.meta.env.BASE_URL + 'assets/recruitment/space-crack.png',
 };
 
 const ruinPhaseAlpha = (t: number, start: number, end: number, fade = 0.08) => {
@@ -283,25 +283,6 @@ const ruinPhaseAlpha = (t: number, start: number, end: number, fade = 0.08) => {
 };
 
 const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = ({ progress, effectDamage }) => {
-  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    let cancelled = false;
-    (Object.entries(RUIN_ASSETS) as Array<[string, string]>).forEach(([key, src]) => {
-      const image = new Image();
-      image.onload = () => {
-        if (!cancelled) setLoaded(prev => ({ ...prev, [key]: true }));
-      };
-      image.onerror = () => {
-        if (!cancelled) setLoaded(prev => ({ ...prev, [key]: false }));
-      };
-      image.src = src;
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const t = progress;
   const featherA = ruinPhaseAlpha(t, 0.08, 0.25, 0.08);
   const cloudA = ruinPhaseAlpha(t, 0.20, 0.39, 0.10);
@@ -346,7 +327,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
 
       <div style={{ position: 'absolute', inset: 0, background: '#000000', opacity: 0.96 }} />
 
-      {loaded.feather && featherA > 0 && (
+      {featherA > 0 && (
         <img
           src={RUIN_ASSETS.feather}
           alt=""
@@ -364,7 +345,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
         />
       )}
 
-      {loaded.cloud && cloudA > 0 && (
+      {cloudA > 0 && (
         <img
           src={RUIN_ASSETS.cloud}
           alt=""
@@ -400,7 +381,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
         />
       ))}
 
-      {loaded.intro && introA > 0 && (
+      {introA > 0 && (
         <div
           style={{
             position: 'absolute',
@@ -424,7 +405,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
         </div>
       )}
 
-      {loaded.hand && handA > 0 && (
+      {handA > 0 && (
         <div
           style={{
             position: 'absolute',
@@ -448,7 +429,7 @@ const RuinAuthorityVfx: React.FC<{ progress: number; effectDamage: number }> = (
         </div>
       )}
 
-      {loaded.cracks && crackA > 0 && (
+      {crackA > 0 && (
         <img
           src={RUIN_ASSETS.cracks}
           alt=""
@@ -579,7 +560,8 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
 
   // Canvas drawing for slashes, bursts, projectiles, shockwaves
   useEffect(() => {
-    if (!effect || !canvasRef.current) return;
+    const usesDedicatedVfx = effect.effectType === 'SUPER_FALLEN_CHARGE' || effect.effectType === 'SUPER_FALLEN_SHOT' || (effect.isUltimate && effect.skillName === '破壊の権能');
+    if (!effect || !canvasRef.current || usesDedicatedVfx) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -865,6 +847,7 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
   const isSuperFallenCharge = effect.effectType === 'SUPER_FALLEN_CHARGE';
   const isSuperFallenShot = effect.effectType === 'SUPER_FALLEN_SHOT';
   const isGenericUltimate = effect.isUltimate && !isAllGods && !isRuin && effect.effectType === 'ULTIMATE_BLAST';
+  const usesDedicatedVfx = isSuperFallenCharge || isSuperFallenShot || isRuin;
 
   const critFlashAlpha = effect.isCritical && t >= 0.08 && t <= 0.24
     ? (1 - Math.abs(t - 0.16) / 0.08) * 0.25
@@ -935,18 +918,20 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
 
       {/* Particle Canvas */}
       {isRuin && <RuinAuthorityVfx key={effect.effectId} progress={t} effectDamage={effect.damage} />}
-      <canvas
-        ref={canvasRef}
-        width={typeof window !== 'undefined' ? window.innerWidth || 800 : 800}
-        height={typeof window !== 'undefined' ? window.innerHeight || 800 : 800}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-        }}
-      />
+      {!usesDedicatedVfx && (
+        <canvas
+          ref={canvasRef}
+          width={typeof window !== 'undefined' ? window.innerWidth || 800 : 800}
+          height={typeof window !== 'undefined' ? window.innerHeight || 800 : 800}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       {/* Dedicated 超堕天撃 VFX */}
       {isSuperFallenCharge && (
