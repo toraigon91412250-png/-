@@ -62,7 +62,7 @@ const AFTERMATH_SHARDS = [
 const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   mode,
   progress,
-  durationMs,
+  durationMs: _durationMs,
   damage = 0,
   isEvade = false,
 }) => {
