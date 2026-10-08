@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import chargeImage from '../assets/fallen_irena_charge_black.jpg';
-import irenaCutin from '../assets/img_irena_cutin.jpg';
-import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
-import shotImage from '../assets/fallen_irena_shot_gold.jpg';
+import React, { useEffect, useMemo, useState } from 'react';
+import beamImage from '../assets/IMG_1151.jpeg';
+import backgroundImage from '../assets/IMG_1152.jpeg';
+import controlledShotImage from '../assets/IMG_1154.jpeg';
+import strongShotImage from '../assets/IMG_1155.jpeg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
@@ -13,346 +13,883 @@ interface SuperFallenShotVfxProps {
 }
 
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+const smooth = (value: number) => {
+  const t = clamp01(value);
+  return t * t * (3 - 2 * t);
+};
+const easeOutCubic = (value: number) => {
+  const t = clamp01(value);
+  return 1 - Math.pow(1 - t, 3);
+};
+const easeInCubic = (value: number) => {
+  const t = clamp01(value);
+  return t * t * t;
+};
+const between = (t: number, start: number, end: number) => {
+  if (t <= start || t >= end) return 0;
+  return clamp01((t - start) / Math.max(0.0001, end - start));
+};
+const peak = (t: number, start: number, center: number, end: number) => {
+  if (t <= start || t >= end) return 0;
+  if (t <= center) return clamp01((t - start) / Math.max(0.0001, center - start));
+  return clamp01((end - t) / Math.max(0.0001, end - center));
+};
+
+const HERO_FRAME = {
+  width: 'min(100vw, 177.7778vh)',
+  height: 'min(56.25vw, 100vh)',
+};
+
+const IMPACT_X = 88;
+const IMPACT_Y = 50;
+const ORIGIN_X = 32;
+const ORIGIN_Y = 50;
+
+const PARTICLES = Array.from({ length: 26 }, (_, index) => {
+  const angle = ((index * 137.5) % 360) * (Math.PI / 180);
+  const distance = 14 + (index % 7) * 5.5;
+  const size = 0.20 + (index % 5) * 0.08;
+  const start = 0.57 + (index % 6) * 0.012;
+  const end = 0.81 + (index % 4) * 0.025;
+  return { angle, distance, size, start, end };
+});
+
+const RAYS = Array.from({ length: 12 }, (_, index) => ({
+  angle: (index / 12) * Math.PI * 2,
+  length: 10 + (index % 4) * 4,
+  width: 0.12 + (index % 3) * 0.05,
+  offset: (index % 5) * 0.006,
+}));
+
+// Start loading the real cinematic assets as soon as this module is imported.
+// This reduces the chance that the first Super Fallen Shot is missing frames
+// simply because the browser has not decoded the JPEGs yet.
+
+const ProceduralChargeFx: React.FC<{ t: number }> = ({ t }) => {
+  const charge = smooth(between(t, 0.08, 0.90));
+  const pulse = 0.5 + 0.5 * Math.sin(t * Math.PI * 12);
+  const cx = ORIGIN_X * 1.6;
+  const cy = ORIGIN_Y * 0.9;
+  const radius = 7 + charge * 15;
+  const outer = radius + 5 + pulse * 2;
+  const spin = charge * 260;
+  const orbit = charge * 360;
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 90"
+      preserveAspectRatio="none"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 3,
+        mixBlendMode: 'screen',
+      }}
+    >
+      <defs>
+        <radialGradient id="sf-charge-core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="18%" stopColor="#FFE9B0" stopOpacity="0.78" />
+          <stop offset="48%" stopColor="#8CCBFF" stopOpacity="0.30" />
+          <stop offset="100%" stopColor="#72BFFF" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="sf-charge-arc" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#7CC8FF" stopOpacity="0" />
+          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#A7D9FF" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <g transform={'translate(' + cx + ' ' + cy + ')'}>
+        <circle r={radius * 0.82} fill="url(#sf-charge-core)" opacity={0.20 + charge * 0.45} />
+
+        {[0, 1, 2].map((index) => {
+          const ringRadius = radius + index * 4;
+          const dash = 16 + index * 7;
+          return (
+            <circle
+              key={index}
+              r={ringRadius}
+              fill="none"
+              stroke="url(#sf-charge-arc)"
+              strokeWidth={0.7 + charge * 0.5}
+              strokeDasharray={dash + ' ' + (42 - index * 4)}
+              strokeDashoffset={-spin * (index % 2 === 0 ? 1 : -1) - index * 6}
+              opacity={(0.24 + charge * 0.56) - index * 0.10}
+            />
+          );
+        })}
+
+        <ellipse
+          rx={outer}
+          ry={outer * 0.36}
+          fill="none"
+          stroke="#9ED8FF"
+          strokeWidth={0.7 + charge * 0.7}
+          strokeDasharray="3 3.8"
+          strokeDashoffset={-orbit}
+          opacity={charge * 0.62}
+          transform="rotate(-10)"
+        />
+
+        <ellipse
+          rx={outer + 4}
+          ry={(outer + 4) * 0.20}
+          fill="none"
+          stroke="#FFF5D0"
+          strokeWidth="0.45"
+          strokeDasharray="1.8 5.2"
+          strokeDashoffset={orbit * 0.8}
+          opacity={charge * 0.42}
+          transform="rotate(18)"
+        />
+
+        {[0, 1, 2, 3, 4, 5].map((index) => {
+          const a = (index / 6) * Math.PI * 2 + orbit * 0.012;
+          const rr = radius + 5 + (index % 2) * 3;
+          const px = Math.cos(a) * rr;
+          const py = Math.sin(a) * rr * 0.68;
+          const size = 0.45 + (index % 3) * 0.22;
+          return (
+            <circle
+              key={index}
+              cx={px}
+              cy={py}
+              r={size}
+              fill={index % 2 === 0 ? '#FFFFFF' : '#9AD6FF'}
+              opacity={charge * (0.48 + pulse * 0.30)}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
+const ProceduralShotFx: React.FC<{ t: number }> = ({ t }) => {
+  const beamP = easeOutCubic(between(t, 0.08, 0.56));
+  const contact = easeOutCubic(between(t, 0.535, 0.74));
+  const impact = between(t, 0.535, 0.86);
+  const cx1 = ORIGIN_X * 1.6;
+  const cy1 = ORIGIN_Y * 0.9;
+  const cx2 = IMPACT_X * 1.6;
+  const cy2 = IMPACT_Y * 0.9;
+  const flow = t * 240;
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 90"
+      preserveAspectRatio="none"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 8,
+        mixBlendMode: 'screen',
+      }}
+    >
+      <defs>
+        <linearGradient id="sf-shot-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
+          <stop offset="10%" stopColor="#DDF3FF" stopOpacity="0.56" />
+          <stop offset="38%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="84%" stopColor="#9FD8FF" stopOpacity="0.94" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="sf-shot-impact" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="16%" stopColor="#FFF4C9" stopOpacity="0.96" />
+          <stop offset="42%" stopColor="#9ED8FF" stopOpacity="0.32" />
+          <stop offset="100%" stopColor="#7EC9FF" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      <g opacity={beamP}>
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="#79C7FF"
+          strokeWidth={2.8 + beamP * 3.8}
+          strokeLinecap="round"
+          opacity={0.16 + beamP * 0.20}
+          strokeDasharray="100 7"
+          strokeDashoffset={-flow}
+        />
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="url(#sf-shot-beam)"
+          strokeWidth={0.95 + beamP * 1.85}
+          strokeLinecap="round"
+          strokeDasharray="100 100"
+          strokeDashoffset={100 - beamP * 100}
+        />
+        <line
+          x1={cx1}
+          y1={cy1}
+          x2={cx2}
+          y2={cy2}
+          pathLength="100"
+          stroke="#FFFFFF"
+          strokeWidth={0.24 + beamP * 0.42}
+          strokeLinecap="round"
+          strokeDasharray="7 5"
+          strokeDashoffset={-flow * 1.8}
+          opacity={0.58 + beamP * 0.30}
+        />
+      </g>
+
+      <g transform={'translate(' + cx1 + ' ' + cy1 + ')'} opacity={beamP * 0.95}>
+        <circle r={2.2 + beamP * 3.5} fill="url(#sf-shot-impact)" opacity="0.52" />
+        <circle r={0.65 + beamP * 1.2} fill="#FFFFFF" opacity="0.96" />
+      </g>
+
+      <g transform={'translate(' + cx2 + ' ' + cy2 + ')'}>
+        <circle r={4 + contact * 22} fill="url(#sf-shot-impact)" opacity={contact * 0.82} />
+
+        <circle
+          r={3 + contact * 23}
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth={1.1 - contact * 0.65}
+          opacity={contact * (1 - contact * 0.52)}
+        />
+
+        <circle
+          r={7 + contact * 36}
+          fill="none"
+          stroke="#A8DDFF"
+          strokeWidth={0.65 - contact * 0.30}
+          strokeDasharray="5 3.8"
+          strokeDashoffset={-flow * 1.4}
+          opacity={contact * 0.78}
+        />
+
+        {Array.from({ length: 10 }, (_, index) => {
+          const a = (index / 10) * Math.PI * 2 + t * 5.5;
+          const inner = 4 + contact * 7;
+          const outer = inner + 8 + contact * 17 + (index % 3) * 3;
+          const x1 = Math.cos(a) * inner;
+          const y1 = Math.sin(a) * inner * 0.72;
+          const x2 = Math.cos(a) * outer;
+          const y2 = Math.sin(a) * outer * 0.72;
+          return (
+            <line
+              key={index}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={index % 2 === 0 ? '#FFFFFF' : '#8FD4FF'}
+              strokeWidth={0.45 + contact * 0.55}
+              strokeLinecap="round"
+              opacity={impact * (1 - contact * 0.70) * 0.86}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
+const preloadSources = [
+  beamImage,
+  backgroundImage,
+  controlledShotImage,
+  strongShotImage,
+];
+
+if (typeof window !== 'undefined') {
+  preloadSources.forEach((src) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.src = src;
+    if (typeof image.decode === 'function') {
+      image.decode().catch(() => undefined);
+    }
+  });
+}
 
 const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   mode,
   progress,
-  durationMs,
+  durationMs: _durationMs,
   damage = 0,
   isEvade = false,
 }) => {
-  const [chargeFailed, setChargeFailed] = useState(false);
-  const [limitFailed, setLimitFailed] = useState(false);
-  const [shotFailed, setShotFailed] = useState(false);
-  const [cutinFailed, setCutinFailed] = useState(false);
+  const [assetsFailed, setAssetsFailed] = useState<Record<string, boolean>>({});
+  const [decoded, setDecoded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all(
+      preloadSources.map((src) => {
+        const image = new Image();
+        image.src = src;
+        if (typeof image.decode === 'function') {
+          return image.decode().catch(() => undefined);
+        }
+        return Promise.resolve();
+      }),
+    ).finally(() => {
+      if (!cancelled) setDecoded(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const markFailed = (key: string) => {
+    setAssetsFailed(prev => (prev[key] ? prev : { ...prev, [key]: true }));
+  };
 
   const t = clamp01(progress);
-  const duration = Math.max(1, durationMs);
-  const d = `${duration}ms`;
   const isShot = mode === 'SHOT';
 
-  const chargeImageOpacity = chargeFailed
-    ? 0
-    : t < 0.08
-      ? t / 0.08
-      : t > 0.94
-        ? (1 - t) / 0.06
-        : 1;
+  const assetReady = useMemo(
+    () => decoded || Object.keys(assetsFailed).length > 0,
+    [decoded, assetsFailed],
+  );
 
-  const shotOpacity = isShot
-    ? t < 0.13
-      ? 0
-      : t < 0.22
-        ? (t - 0.13) / 0.09
-        : t > 0.94
-          ? (1 - t) / 0.06
-          : 1
+  if (!isShot) {
+    const controlledA = between(t, 0.04, 0.90);
+    const controlledHold = peak(t, 0.24, 0.60, 0.91);
+    const chargeGlow = peak(t, 0.12, 0.72, 0.96);
+    const finalWhite = peak(t, 0.88, 0.955, 1.00);
+
+    return (
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          zIndex: 999,
+          background: '#000',
+          isolation: 'isolate',
+        }}
+      >
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#000',
+          opacity: 1 - controlledA * 0.58,
+        }} />
+
+        {!assetsFailed.background && (
+          <img
+            src={backgroundImage}
+            alt=""
+            draggable={false}
+            onError={() => markFailed('background')}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              ...HERO_FRAME,
+              objectFit: 'cover',
+              objectPosition: 'center',
+              transform: `translate(-50%,-50%) scale(${1.03 + controlledHold * 0.04})`,
+              opacity: controlledA * 0.26,
+              filter: 'brightness(0.45) saturate(0.72) contrast(1.04)',
+              userSelect: 'none',
+            }}
+          />
+        )}
+
+        {!assetsFailed.controlled && (
+          <img
+            src={controlledShotImage}
+            alt=""
+            draggable={false}
+            onError={() => markFailed('controlled')}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              ...HERO_FRAME,
+              objectFit: 'contain',
+              objectPosition: 'center',
+              transform: `translate(-50%,-50%) scale(${0.98 + controlledHold * 0.06})`,
+              opacity: assetReady ? controlledA * (0.48 + controlledHold * 0.40) : 0,
+              filter: `brightness(${0.72 + controlledHold * 0.34}) contrast(${1.02 + controlledHold * 0.12}) saturate(${0.82 + controlledHold * 0.22})`,
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+            }}
+          />
+        )}
+
+        <ProceduralChargeFx t={t} />
+
+        <div
+          style={{
+            position: 'absolute',
+            left: '31%',
+            top: '50%',
+            width: `${8 + chargeGlow * 34}%`,
+            aspectRatio: '1',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.92) 0%, rgba(255,225,147,0.48) 18%, rgba(72,156,255,0.18) 44%, transparent 74%)',
+            opacity: 0.30 + chargeGlow * 0.70,
+            transform: `translate(-50%,-50%) scale(${0.55 + chargeGlow * 1.12})`,
+            filter: `blur(${Math.max(2, 11 - chargeGlow * 7)}px)`,
+            mixBlendMode: 'screen',
+          }}
+        />
+
+        {[0, 1, 2].map((ring) => {
+          const ringT = smooth(between(t, 0.18 + ring * 0.07, 0.82));
+          return (
+            <div
+              key={ring}
+              style={{
+                position: 'absolute',
+                left: '31%',
+                top: '50%',
+                width: `${25 + ring * 10 + ringT * 17}%`,
+                aspectRatio: '1 / 0.43',
+                borderRadius: '50%',
+                border: `${2 + ring}px solid rgba(231,244,255,${0.34 + chargeGlow * 0.45 - ring * 0.06})`,
+                boxShadow: `0 0 ${12 + ring * 8}px rgba(73,158,255,${0.50 + chargeGlow * 0.30}), inset 0 0 ${10 + ring * 5}px rgba(255,223,143,0.28)`,
+                transform: `translate(-50%,-50%) rotate(${-16 + ring * 19 + ringT * 32}deg) scale(${0.30 + ringT * 1.20})`,
+                opacity: ringT * (0.78 - ring * 0.10),
+                mixBlendMode: 'screen',
+              }}
+            />
+          );
+        })}
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 31% 50%, transparent 18%, rgba(0,0,0,0.24) 55%, rgba(0,0,0,0.78) 100%)',
+            opacity: 0.72,
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '12%',
+            transform: 'translateX(-50%)',
+            color: '#F1FAFF',
+            fontSize: 'clamp(26px, 5.8vw, 54px)',
+            fontWeight: 1000,
+            letterSpacing: '0.28em',
+            textShadow: '0 0 14px rgba(115,208,255,0.90), 0 0 30px rgba(71,118,255,0.48), 0 2px 9px rgba(0,0,0,0.96)',
+            opacity: between(t, 0.52, 0.72) * (1 - between(t, 0.78, 0.95)),
+            whiteSpace: 'nowrap',
+          }}
+        >
+          超堕天撃
+        </div>
+
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#fff',
+          opacity: finalWhite * 0.78,
+          mixBlendMode: 'screen',
+        }} />
+      </div>
+    );
+  }
+
+  const visualT = t >= 0.535 && t <= 0.5485 ? 0.535 : t;
+
+  const controlledA = between(visualT, 0.00, 0.48);
+  const strongA = between(visualT, 0.32, 0.66);
+  const beamReveal = between(visualT, 0.15, 0.57);
+  const beamFast = easeOutCubic(beamReveal);
+  const launchSnap = easeInCubic(between(visualT, 0.44, 0.57));
+  const contactFlash = peak(t, 0.535, 0.546, 0.595);
+  const contactBurst = easeOutCubic(between(visualT, 0.535, 0.70));
+  const firstShockwave = between(visualT, 0.545, 0.72);
+  const secondShockwave = between(visualT, 0.57, 0.80);
+  const damageP = between(t, 0.575, 0.72);
+  const aftermathA = between(visualT, 0.62, 0.87);
+  const finalFade = between(t, 0.84, 1.00);
+
+  const cameraPulse = peak(t, 0.535, 0.565, 0.70);
+  const cameraX = Math.sin(t * 560) * cameraPulse * 5.5;
+  const cameraY = Math.cos(t * 490) * cameraPulse * 3.4;
+  const cameraScale = 1 + cameraPulse * 0.025 + launchSnap * 0.012;
+
+  const controlledOpacity = controlledA * (1 - strongA * 0.58) * 0.86;
+  const strongOpacity = strongA * 0.98;
+  const beamOpacity = assetReady && !assetsFailed.beam
+    ? (0.10 + beamFast * 0.38) * (1 - finalFade * 0.72)
     : 0;
-
-  const limitT = clamp01((t - 0.025) / 0.22);
-  const limitOpacity = isShot && !limitFailed
-    ? limitT < 0.14
-      ? limitT / 0.14
-      : limitT > 0.78
-        ? (1 - limitT) / 0.22
-        : 1
-    : 0;
-
-  const closePunch = isShot
-    ? Math.max(0, 1 - Math.abs(t - 0.32) / 0.16)
-    : 0;
-
-  const chargeClose = !isShot
-    ? Math.max(0, 1 - Math.abs(t - 0.64) / 0.22)
-    : 0;
-
-  const cutinVisible = isShot && !cutinFailed && t >= 0.42 && t <= 0.86;
-  const damageVisible = isShot && !isEvade && damage > 0 && t >= 0.54 && t <= 0.88;
-  const missVisible = isShot && isEvade && t >= 0.54 && t <= 0.82;
 
   return (
-    <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 999, background: '#000', isolation: 'isolate' }}>
-      <style>{`
-        @keyframes sfsChargeWide {
-          0% { transform: translate3d(-50%,-50%,0) scale(1.00); }
-          20% { transform: translate3d(calc(-50% - 14px), calc(-50% + 2px), 0) scale(1.05); }
-          40% { transform: translate3d(calc(-50% + 8px), calc(-50% - 5px), 0) scale(1.08); }
-          60% { transform: translate3d(calc(-50% - 7px), calc(-50% + 4px), 0) scale(1.12); }
-          82% { transform: translate3d(calc(-50% + 6px), calc(-50% - 2px), 0) scale(1.09); }
-          100% { transform: translate3d(calc(-50% + 1px), calc(-50% - 2px), 0) scale(1.07); }
-        }
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        zIndex: 999,
+        background: '#000',
+        isolation: 'isolate',
+      }}
+    >
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(ellipse at 48% 50%, rgba(36,83,146,0.15), rgba(0,0,0,0.74) 52%, #000 100%)',
+      }} />
 
-        @keyframes sfsChargeClose {
-          0%, 24% { transform: translate3d(-46%,-42%,0) scale(1.10); opacity: 0; }
-          38% { transform: translate3d(-38%,-38%,0) scale(1.26); opacity: 0.2; }
-          58% { transform: translate3d(-31%,-32%,0) scale(1.36); opacity: 1; }
-          72% { transform: translate3d(-38%,-37%,0) scale(1.22); opacity: 0.35; }
-          100% { transform: translate3d(-46%,-42%,0) scale(1.08); opacity: 0; }
-        }
+      <ProceduralShotFx t={visualT} />
 
-        @keyframes sfsShotCamera {
-          0% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
-          10% { transform: translate3d(-8px,3px,0) scale(1.02) rotate(-0.12deg); }
-          18% { transform: translate3d(10px,-4px,0) scale(1.06) rotate(0.24deg); }
-          34% { transform: translate3d(-16px,5px,0) scale(1.12) rotate(-0.32deg); }
-          52% { transform: translate3d(11px,-4px,0) scale(1.08) rotate(0.2deg); }
-          72% { transform: translate3d(-7px,2px,0) scale(1.04) rotate(-0.08deg); }
-          100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
-        }
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transform: `translate3d(${cameraX}px,${cameraY}px,0) scale(${cameraScale})`,
+          transformOrigin: 'center center',
+          willChange: 'transform',
+        }}
+      >
+        {!assetsFailed.controlled && (
+          <img
+            src={controlledShotImage}
+            alt=""
+            draggable={false}
+            onError={() => markFailed('controlled')}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              ...HERO_FRAME,
+              objectFit: 'contain',
+              objectPosition: 'center',
+              transform: `translate(-50%,-50%) scale(${1.00 + controlledA * 0.035})`,
+              opacity: controlledOpacity,
+              filter: `brightness(${0.70 + controlledA * 0.22}) contrast(${1.04 + controlledA * 0.08}) saturate(${0.88 + controlledA * 0.16})`,
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+            }}
+          />
+        )}
 
-        @keyframes sfsShotWide {
-          0% { transform: translate3d(-50%,-50%,0) scale(1.04); }
-          20% { transform: translate3d(calc(-50% - 10px), calc(-50% + 4px), 0) scale(1.02); }
-          42% { transform: translate3d(calc(-50% + 16px), calc(-50% - 2px), 0) scale(1.06); }
-          68% { transform: translate3d(calc(-50% - 7px), calc(-50% + 4px), 0) scale(1.04); }
-          100% { transform: translate3d(-50%,-50%,0) scale(1); }
-        }
+        {!assetsFailed.strong && (
+          <img
+            src={strongShotImage}
+            alt=""
+            draggable={false}
+            onError={() => markFailed('strong')}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              ...HERO_FRAME,
+              objectFit: 'contain',
+              objectPosition: 'center',
+              transform: `translate(-50%,-50%) scale(${0.98 + strongA * 0.055 + launchSnap * 0.02})`,
+              opacity: strongOpacity,
+              filter: `brightness(${0.70 + strongA * 0.46 + contactFlash * 0.24}) contrast(${1.04 + strongA * 0.12}) saturate(${0.90 + strongA * 0.30})`,
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+              willChange: 'transform, opacity, filter',
+            }}
+          />
+        )}
 
-        @keyframes sfsShotClose {
-          0%, 20% { transform: translate3d(-44%,-41%,0) scale(1.06); opacity: 0; }
-          29% { transform: translate3d(-36%,-35%,0) scale(1.24); opacity: 0.24; }
-          42% { transform: translate3d(-28%,-30%,0) scale(1.42); opacity: 1; }
-          56% { transform: translate3d(-35%,-36%,0) scale(1.30); opacity: 0.38; }
-          100% { transform: translate3d(-40%,-40%,0) scale(1.08); opacity: 0; }
-        }
-
-        @keyframes sfsLimit {
-          0% { transform: scale(1.00); filter: contrast(1.0) brightness(0.75) saturate(0.7) blur(0px); }
-          100% { transform: scale(1.18); filter: contrast(1.3) brightness(1.08) saturate(1.2) blur(0px); }
-        }
-
-        @keyframes sfsOrigin {
-          0% { transform: translate(-50%,-50%) scale(0.2); opacity: 0; }
-          18% { transform: translate(-50%,-50%) scale(0.6); opacity: 1; }
-          38% { transform: translate(-50%,-50%) scale(1.0); opacity: 0.7; }
-          62% { transform: translate(-50%,-50%) scale(1.4); opacity: 0.2; }
-          100% { transform: translate(-50%,-50%) scale(1.9); opacity: 0; }
-        }
-
-        @keyframes sfsBoltA {
-          0% { transform: rotate(-7deg) scaleX(0.04); opacity: 0; }
-          10% { opacity: 1; }
-          35% { transform: rotate(-9deg) scaleX(1); opacity: 0.96; }
-          68% { transform: translateX(18%) rotate(-6deg) scaleX(1.3); opacity: 0.3; }
-          100% { transform: translateX(36%) rotate(-4deg) scaleX(1.5); opacity: 0; }
-        }
-
-        @keyframes sfsBoltB {
-          0% { transform: rotate(8deg) scaleX(0.03); opacity: 0; }
-          14% { opacity: 1; }
-          42% { transform: translateX(10%) rotate(7deg) scaleX(1); opacity: 0.87; }
-          72% { transform: translateX(28%) rotate(5deg) scaleX(1.22); opacity: 0.18; }
-          100% { transform: translateX(42%) rotate(4deg) scaleX(1.36); opacity: 0; }
-        }
-
-        @keyframes sfsFlash {
-          0%, 26% { opacity: 0; }
-          30% { opacity: 0.96; }
-          40% { opacity: 0.12; }
-          100% { opacity: 0; }
-        }
-
-        @keyframes sfsCameraCut {
-          0%, 34% { opacity: 0; transform: scale(0.96); }
-          38% { opacity: 0.8; transform: scale(1.01); }
-          44% { opacity: 0; transform: scale(1.03); }
-          100% { opacity: 0; }
-        }
-
-        @keyframes sfsCutin {
-          0% { transform: translate3d(-120%, 10%, 0) skewX(-12deg) rotate(-3deg); opacity: 0; }
-          15% { opacity: 1; }
-          38% { transform: translate3d(-8%,1%,0) skewX(-5deg) rotate(-1.5deg); opacity: 1; }
-          58% { transform: translate3d(8%,-2%,0) skewX(-3deg) rotate(-1deg); opacity: 1; }
-          100% { transform: translate3d(18%,-5%,0) skewX(-3deg) rotate(-1deg); opacity: 0; }
-        }
-
-        @keyframes sfsImpactTitle {
-          0% { transform: translate(-50%,-50%) scale(0.72); opacity: 0; }
-          16% { transform: translate(-50%,-50%) scale(1.08); opacity: 0.8; }
-          44% { transform: translate(-50%,-50%) scale(1.14); opacity: 0.32; }
-          100% { transform: translate(-50%,-60%) scale(1.2); opacity: 0; }
-        }
-
-        @keyframes sfsDamage {
-          0% { transform: translate(-50%,-50%) scale(0.40) rotate(-5deg); opacity: 0; }
-          10% { transform: translate(-50%,-50%) scale(1.24) rotate(-1deg); opacity: 1; }
-          26% { transform: translate(-50%,-50%) scale(1.06) rotate(0); opacity: 1; }
-          50% { transform: translate(-50%,-54%) scale(1) rotate(0); opacity: 0.32; }
-          100% { transform: translate(-50%,-60%) scale(0.94) rotate(0); opacity: 0; }
-        }
-
-        @keyframes sfsTitle {
-          0% { transform: translate(-50%,12px) scale(0.84); opacity: 0; }
-          22% { transform: translate(-50%,2px) scale(1.02); opacity: 1; }
-          76% { transform: translate(-50%,-2px) scale(1.06); opacity: 1; }
-          100% { transform: translate(-50%,-10px) scale(1.04); opacity: 0; }
-        }
-
-        @keyframes sfsChargeGlow {
-          0% { transform: translate(-50%,-50%) scale(0.75); opacity: 0; }
-          24% { transform: translate(-50%,-50%) scale(1.15); opacity: 0.9; }
-          62% { transform: translate(-50%,-50%) scale(1.8); opacity: 0.34; }
-          100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
-        }
-
-        @keyframes sfsChargeRing {
-          0% { transform: translate(-50%,-50%) scale(0.38) rotate(0deg); opacity: 0.4; }
-          40% { transform: translate(-50%,-50%) scale(1.1) rotate(180deg); opacity: 0.9; }
-          100% { transform: translate(-50%,-50%) scale(1.55) rotate(330deg); opacity: 0; }
-        }
-
-        @keyframes sfsChargePulse {
-          0%, 100% { opacity: 0.24; filter: blur(3px); }
-          50% { opacity: 0.82; filter: blur(12px); }
-        }
-
-        @keyframes sfsBlackThunder {
-          0% { transform: translate3d(0,0,0) scaleX(0.4); opacity: 0; }
-          15% { opacity: 0.8; }
-          45% { transform: translate3d(10px,-2px,0) scaleX(1.0); opacity: 1; }
-          72% { transform: translate3d(24px,-4px,0) scaleX(1.25); opacity: 0.32; }
-          100% { transform: translate3d(36px,-8px,0) scaleX(1.5); opacity: 0; }
-        }
-
-        @keyframes sfsShockwave {
-          0% { transform: translate(-50%,-50%) scale(0.2); opacity: 1; }
-          60% { opacity: 0.6; }
-          100% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; }
-        }
-
-        @keyframes sfsCoreFlash {
-          0% { transform: translate(-50%,-50%) scale(1); opacity: 0.3; }
-          20% { transform: translate(-50%,-50%) scale(1.4); opacity: 0.9; }
-          40% { transform: translate(-50%,-50%) scale(1.15); opacity: 0.7; }
-          70% { transform: translate(-50%,-50%) scale(1.5); opacity: 0.56; }
-          100% { transform: translate(-50%,-50%) scale(0.8); opacity: 0; }
-        }
-
-        @keyframes sfsTextShimmer {
-          0% { filter: drop-shadow(0 0 0 rgba(255,255,255,0)) drop-shadow(0 0 0 rgba(74,178,255,0)); }
-          50% { filter: drop-shadow(0 0 16px rgba(255,255,255,0.9)) drop-shadow(0 0 24px rgba(74,178,255,0.78)); }
-          100% { filter: drop-shadow(0 0 0 rgba(255,255,255,0)) drop-shadow(0 0 0 rgba(74,178,255,0)); }
-        }
-
-        .sfs-art {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          height: min(86vh, 780px);
-          width: auto;
-          max-width: none;
-          user-select: none;
-          -webkit-user-select: none;
-          pointer-events: none;
-        }
-
-        .sfs-backdrop {
-          filter: blur(20px) brightness(0.22) saturate(0.90);
-          opacity: 0.54;
-          transform: translate(-50%,-50%) scale(1.18);
-        }
-
-        @media (max-width: 600px) {
-          .sfs-art {
-            height: min(78dvh, 640px);
-            left: 50%;
-          }
-        }
-
-        @media (min-width: 1100px) {
-          .sfs-art { height: min(90vh, 800px); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .sfs-motion { animation: none !important; }
-        }
-      `}</style>
-
-      {mode === 'CHARGE' ? (
-        <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
-          {!chargeFailed && (
-            <>
-              <img src={chargeImage} alt="" draggable={false} onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-backdrop" style={{ animation: `sfsChargeWide ${d} ease-out both` }} />
-              <img src={chargeImage} alt="" draggable={false} onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: chargeImageOpacity * (1 - chargeClose * 0.92), animation: `sfsChargeWide ${d} cubic-bezier(0.16,0.80,0.20,1) both`, willChange: 'transform, opacity' }} />
-              <img src={chargeImage} alt="" draggable={false} onError={(event) => { setChargeFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: chargeClose, filter: 'brightness(1.08) saturate(1.08)', animation: `sfsChargeClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`, willChange: 'transform, opacity, filter' }} />
-            </>
-          )}
-
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '48%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,220,255,0.92) 0%, rgba(120,180,255,0.52) 18%, rgba(60,100,180,0.16) 42%, transparent 72%)', filter: 'blur(10px)', animation: `sfsChargeGlow ${d} cubic-bezier(0.08,0.88,0.16,1) both`, pointerEvents: 'none' }} />
-
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '40%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', border: '3px solid rgba(135,205,255,0.82)', boxShadow: '0 0 18px rgba(135,205,255,0.88), inset 0 0 18px rgba(135,205,255,0.48)', animation: `sfsChargeRing ${d} linear both`, pointerEvents: 'none' }} />
-
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '24%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.94) 0%, rgba(196,232,255,0.55) 22%, transparent 72%)', filter: 'blur(4px)', animation: `sfsChargePulse ${d} ease-in-out infinite`, pointerEvents: 'none' }} />
-
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 44%, transparent 30%, rgba(0,0,0,0.18) 58%, rgba(0,0,0,0.76) 100%)', pointerEvents: 'none' }} />
-
-          <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '14%', color: '#EAF8FF', fontSize: 'clamp(28px,6.2vw,56px)', fontWeight: 1000, letterSpacing: '0.32em', textShadow: '0 0 12px rgba(104,205,255,0.80), 0 0 32px rgba(68,132,255,0.48), 0 0 48px rgba(40,80,200,0.32)', opacity: Math.max(0, Math.min(1, (t - 0.60) / 0.16)) * Math.max(0, Math.min(1, (0.98 - t) / 0.20)), animation: `sfsTitle ${d} cubic-bezier(0.10,0.84,0.16,1) both, sfsTextShimmer calc(${d} * 0.6) ease-in-out infinite`, pointerEvents: 'none' }}>
-            超堕天撃
+        {!assetsFailed.beam && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              ...HERO_FRAME,
+              transform: 'translate(-50%,-50%)',
+              clipPath: `inset(0 ${Math.max(0, 100 - beamFast * 100)}% 0 0)`,
+              opacity: beamOpacity,
+              mixBlendMode: 'screen',
+              willChange: 'clip-path, opacity',
+            }}
+          >
+            <img
+              src={beamImage}
+              alt=""
+              draggable={false}
+              onError={() => markFailed('beam')}
+              style={{
+                display: 'block',
+                width: '100%',
+                height: '100%',
+                objectFit: 'fill',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                filter: `brightness(${0.96 + launchSnap * 0.42 + contactFlash * 0.28}) contrast(${1.08 + launchSnap * 0.22}) saturate(${1.02 + launchSnap * 0.28})`,
+              }}
+            />
           </div>
-        </div>
-      ) : (
-        <div style={{ position: 'absolute', inset: 0, background: '#000', animation: `sfsShotCamera ${d} cubic-bezier(0.12,0.84,0.18,1) both`, willChange: 'transform' }}>
-          <img src={shotImage} alt="" draggable={false} onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-backdrop" style={{ animation: `sfsShotWide ${d} ease-out both` }} />
+        )}
 
-          {!limitFailed && (
-            <img src={limitGif} alt="" draggable={false} onError={(event) => { setLimitFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: limitOpacity, animation: `sfsLimit calc(${d} * 0.30) cubic-bezier(0.08,0.88,0.16,1) both`, willChange: 'transform, opacity, filter' }} />
-          )}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${ORIGIN_X}%`,
+            top: `${ORIGIN_Y}%`,
+            width: `${8 + beamFast * 18}%`,
+            height: `${0.8 + beamFast * 1.8}%`,
+            transform: 'translateY(-50%) rotate(0.3deg)',
+            transformOrigin: 'left center',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,241,191,0.70) 18%, rgba(255,255,255,0.98) 52%, rgba(255,255,255,0) 100%)',
+            boxShadow: '0 0 10px rgba(255,255,255,0.86), 0 0 24px rgba(115,186,255,0.64)',
+            opacity: beamFast * 0.88,
+            mixBlendMode: 'screen',
+          }}
+        />
 
-          {!shotFailed && (
-            <>
-              <img src={shotImage} alt="" draggable={false} onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: shotOpacity * (1 - closePunch * 0.92), animation: `sfsShotWide ${d} cubic-bezier(0.10,0.76,0.18,1) both`, willChange: 'transform, opacity, filter' }} />
-              <img src={shotImage} alt="" draggable={false} onError={(event) => { setShotFailed(true); event.currentTarget.style.display = 'none'; }} className="sfs-art sfs-motion" style={{ opacity: closePunch, height: 'min(100vh, 900px)', filter: 'brightness(1.08) saturate(1.08)', animation: `sfsShotClose ${d} cubic-bezier(0.08,0.84,0.14,1) both`, willChange: 'transform, opacity, filter' }} />
-            </>
-          )}
+        <div
+          style={{
+            position: 'absolute',
+            left: `${ORIGIN_X}%`,
+            top: '50%',
+            width: `${Math.max(5, (IMPACT_X - ORIGIN_X) * launchSnap)}%`,
+            height: '0.36%',
+            transform: 'translateY(-50%)',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0), #fff6d7 22%, #fff 52%, rgba(255,255,255,0.1) 100%)',
+            boxShadow: '0 0 8px rgba(255,255,255,0.98), 0 0 22px rgba(101,180,255,0.72)',
+            opacity: launchSnap,
+            mixBlendMode: 'screen',
+          }}
+        />
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '44%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.7)', background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(180,220,255,0.56) 18%, rgba(50,80,150,0.2) 46%, transparent 72%)', boxShadow: '0 0 26px rgba(130,190,255,0.7), inset 0 0 26px rgba(255,255,255,0.3)', animation: `sfsShockwave ${d} cubic-bezier(0.06,0.88,0.14,1) both`, willChange: 'transform, opacity' }} />
+        <div
+          style={{
+            position: 'absolute',
+            left: `${IMPACT_X}%`,
+            top: `${IMPACT_Y}%`,
+            width: `${5 + contactBurst * 58}%`,
+            aspectRatio: '1',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(255,235,174,0.78) 13%, rgba(89,167,255,0.28) 37%, transparent 73%)',
+            opacity: contactFlash * 0.92 + contactBurst * 0.24,
+            transform: 'translate(-50%,-50%)',
+            filter: 'blur(2px)',
+            mixBlendMode: 'screen',
+          }}
+        />
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '34%', aspectRatio: '1', transform: 'translate(-50%,-50%)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(200,236,255,0.62) 16%, rgba(90,160,255,0.16) 42%, transparent 74%)', filter: 'blur(2px)', animation: `sfsCoreFlash ${d} cubic-bezier(0.06,0.88,0.14,1) both`, willChange: 'transform, opacity' }} />
+        {RAYS.map((ray, index) => {
+          const rayT = between(visualT, 0.56 + ray.offset, 0.73 + ray.offset);
+          const length = ray.length * easeOutCubic(rayT);
+          const alpha = rayT * (1 - rayT * 0.66) * 0.92;
+          return (
+            <span
+              key={index}
+              style={{
+                position: 'absolute',
+                left: `${IMPACT_X}%`,
+                top: `${IMPACT_Y}%`,
+                width: `${length}%`,
+                height: `${ray.width}%`,
+                transformOrigin: 'left center',
+                transform: `translateY(-50%) rotate(${ray.angle}rad)`,
+                background: index % 2 === 0
+                  ? 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,246,210,0.96), rgba(87,166,255,0))'
+                  : 'linear-gradient(90deg, rgba(255,255,255,0), rgba(106,190,255,0.90), rgba(255,255,255,0))',
+                boxShadow: '0 0 8px rgba(110,194,255,0.68)',
+                clipPath: 'polygon(0 50%, 68% 0, 100% 50%, 68% 100%)',
+                opacity: alpha,
+                mixBlendMode: 'screen',
+              }}
+            />
+          );
+        })}
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '44%', width: '58%', height: '10px', transformOrigin: 'left center', background: 'linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.85) 18%, rgba(255,255,255,0.95) 36%, rgba(150,200,255,0.9) 53%, rgba(255,255,255,0.95) 70%, rgba(0,0,0,0.82) 85%, rgba(0,0,0,0) 100%)', boxShadow: '0 0 12px rgba(140,210,255,0.95), 0 0 26px rgba(60,120,255,0.5)', clipPath: 'polygon(0 43%, 8% 5%, 15% 72%, 25% 20%, 39% 80%, 49% 14%, 62% 74%, 76% 24%, 100% 40%, 86% 66%, 69% 48%, 56% 94%, 40% 52%, 24% 86%, 13% 52%, 7% 82%)', animation: `sfsBoltA calc(${d} * 0.52) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.12) both`, pointerEvents: 'none' }} />
+        <div
+          style={{
+            position: 'absolute',
+            left: `${IMPACT_X}%`,
+            top: `${IMPACT_Y}%`,
+            width: `${firstShockwave * 48}%`,
+            aspectRatio: '1 / 0.68',
+            borderRadius: '50%',
+            border: `${Math.max(2, 7 - firstShockwave * 4)}px solid rgba(232,247,255,${(1 - firstShockwave) * 0.92})`,
+            boxShadow: '0 0 22px rgba(89,189,255,0.62), inset 0 0 18px rgba(255,255,255,0.32)',
+            transform: 'translate(-50%,-50%)',
+            opacity: firstShockwave * (1 - firstShockwave * 0.42),
+            mixBlendMode: 'screen',
+          }}
+        />
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '31%', top: '47%', width: '62%', height: '8px', transformOrigin: 'left center', background: 'linear-gradient(90deg, rgba(0,0,0,0), rgba(24,24,30,0.9) 14%, rgba(255,255,255,0.96) 33%, rgba(120,200,255,0.92) 55%, rgba(255,255,255,0.96) 70%, rgba(24,24,30,0.8) 88%, rgba(0,0,0,0) 100%)', boxShadow: '0 0 10px rgba(110,190,255,0.75)', clipPath: 'polygon(0 42%, 9% 8%, 18% 80%, 28% 18%, 40% 84%, 50% 13%, 63% 74%, 76% 24%, 100% 42%, 84% 66%, 64% 48%, 52% 94%, 32% 52%, 15% 88%, 6% 42%)', animation: `sfsBoltB calc(${d} * 0.46) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.15) both`, pointerEvents: 'none' }} />
+        <div
+          style={{
+            position: 'absolute',
+            left: `${IMPACT_X}%`,
+            top: `${IMPACT_Y}%`,
+            width: `${secondShockwave * 82}%`,
+            aspectRatio: '1 / 0.40',
+            borderRadius: '50%',
+            border: `${Math.max(1.5, 5 - secondShockwave * 2.8)}px solid rgba(131,205,255,${(1 - secondShockwave) * 0.72})`,
+            transform: 'translate(-50%,-50%)',
+            opacity: secondShockwave * (1 - secondShockwave * 0.64),
+            mixBlendMode: 'screen',
+          }}
+        />
 
-          <div className="sfs-motion" style={{ position: 'absolute', left: '30%', top: '46%', width: '42%', height: '5px', transformOrigin: 'left center', background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(0,0,0,0.9) 15%, rgba(255,255,255,0.95) 30%, rgba(130,200,255,0.9) 52%, rgba(255,255,255,0.95) 74%, rgba(0,0,0,0.9) 90%, rgba(255,255,255,0) 100%)', boxShadow: '0 0 12px rgba(255,255,255,0.36)', clipPath: 'polygon(0 50%, 8% 30%, 20% 78%, 35% 28%, 55% 82%, 70% 24%, 82% 70%, 100% 48%, 88% 60%, 72% 44%, 54% 92%, 34% 42%, 18% 88%, 6% 48%)', animation: `sfsBlackThunder calc(${d} * 0.55) cubic-bezier(0.08,0.9,0.12,1) calc(${d} * 0.1) both`, pointerEvents: 'none' }} />
+        {PARTICLES.map((particle, index) => {
+          const particleT = between(visualT, particle.start, particle.end);
+          const travel = easeOutCubic(particleT) * particle.distance;
+          const x = IMPACT_X + Math.cos(particle.angle) * travel;
+          const y = IMPACT_Y + Math.sin(particle.angle) * travel * 0.68;
+          const alpha = particleT * (1 - particleT * 0.86) * 0.92;
+          return (
+            <span
+              key={index}
+              style={{
+                position: 'absolute',
+                left: `${x}%`,
+                top: `${y}%`,
+                width: `${particle.size}%`,
+                aspectRatio: '1',
+                transform: 'translate(-50%,-50%) rotate(32deg)',
+                background: index % 3 === 0 ? '#FFFFFF' : '#A9D9FF',
+                boxShadow: '0 0 8px rgba(120,208,255,0.85)',
+                clipPath: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
+                opacity: alpha,
+                mixBlendMode: 'screen',
+              }}
+            />
+          );
+        })}
 
-          <div className="sfs-motion" style={{ position: 'absolute', inset: 0, background: '#fff', opacity: 0, animation: `sfsFlash ${d} ease-out both`, pointerEvents: 'none' }} />
-
-          {cutinVisible && !cutinFailed && (
-            <div className="sfs-motion" style={{ position: 'absolute', left: '-4%', bottom: '4%', width: 'min(60vw, 700px)', maxHeight: '25vh', overflow: 'hidden', clipPath: 'polygon(0 12%, 100% 0, 93% 88%, 0 100%)', borderTop: '3px solid rgba(188,235,255,0.98)', borderBottom: '2px solid rgba(71,157,255,0.48)', background: 'linear-gradient(90deg, rgba(2,8,22,0.96), rgba(8,24,48,0.88))', boxShadow: '0 0 36px rgba(70,168,255,0.32), inset 0 2px 12px rgba(132,200,255,0.16)', animation: `sfsCutin ${d} cubic-bezier(0.08,0.88,0.12,1) calc(${d} * 0.40) both` }}>
-              <img src={irenaCutin} alt="" draggable={false} onError={() => setCutinFailed(true)} style={{ display: 'block', width: '100%', height: 'auto', opacity: 0.98, userSelect: 'none', filter: 'brightness(1.05) contrast(1.08)' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(1,7,17,0.48), rgba(1,7,17,0) 78%)' }} />
+        {damage > 0 && !isEvade && damageP > 0.001 && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '76%',
+              top: '52%',
+              transform: `translate(-50%,-50%) scale(${0.56 + easeOutCubic(damageP) * 0.66}) translateY(${-damageP * 12}px)`,
+              opacity: damageP * (1 - between(t, 0.73, 0.83)),
+              textAlign: 'center',
+              lineHeight: 0.80,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 'clamp(62px, 15.8vw, 180px)',
+                fontWeight: 1000,
+                letterSpacing: '-0.075em',
+                color: '#FFFFFF',
+                WebkitTextStroke: '2px rgba(203,237,255,0.92)',
+                textShadow: '0 0 12px rgba(255,255,255,1), 0 0 30px rgba(77,171,255,1), 0 0 56px rgba(86,187,255,0.54), 10px 12px 0 rgba(1,7,18,0.98)',
+                filter: 'drop-shadow(0 0 8px rgba(120,208,255,0.74))',
+              }}
+            >
+              −{damage}
             </div>
-          )}
-
-          {damageVisible && (
-            <>
-              <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '53%', width: '40%', aspectRatio: '1', transform: 'translate(-50%,-50%)', border: '3px solid rgba(255,200,120,0.6)', borderRadius: '50%', animation: `sfsShockwave ${d} cubic-bezier(0.08,0.88,0.14,1) calc(${d} * 0.48) both`, pointerEvents: 'none' }} />
-
-              <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '52%', transform: 'translate(-50%,-50%)', color: 'rgba(228,249,255,0.2)', fontSize: 'clamp(42px,10vw,96px)', fontWeight: 1000, letterSpacing: '0.16em', whiteSpace: 'nowrap', textShadow: '0 0 26px rgba(74,178,255,0.56), 0 0 12px rgba(132,213,255,0.48)', animation: `sfsImpactTitle calc(${d} * 0.40) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.44) both`, pointerEvents: 'none' }}>
-                超堕天撃
-              </div>
-
-              <div className="sfs-motion" style={{ position: 'absolute', left: '68%', top: '53%', transform: 'translate(-50%,-50%)', textAlign: 'center', lineHeight: 0.80, animation: `sfsDamage calc(${d} * 0.46) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.48) both`, pointerEvents: 'none' }}>
-                <div style={{ fontSize: 'clamp(72px,20vw,200px)', fontWeight: 1000, letterSpacing: '-0.075em', color: '#FFFFFF', WebkitTextStroke: '2px rgba(190,236,255,0.88)', textShadow: '0 0 12px rgba(255,255,255,0.98), 0 0 32px rgba(74,178,255,0.98), 0 0 48px rgba(100,200,255,0.64), 12px 14px 0 rgba(3,10,24,0.96)', filter: 'drop-shadow(0 0 8px rgba(255,200,100,0.44))', animation: `sfsTextShimmer calc(${d} * 0.46) ease-in-out calc(${d} * 0.48)` }}>
-                  −{damage}
-                </div>
-                <div style={{ marginTop: '8px', fontSize: 'clamp(12px,2.4vw,20px)', fontWeight: 1000, color: '#DFF7FF', letterSpacing: '0.24em', textShadow: '0 0 12px rgba(105,198,255,0.94), 0 0 24px rgba(74,178,255,0.64)', filter: 'drop-shadow(0 0 6px rgba(132,213,255,0.56))', animation: `sfsTextShimmer calc(${d} * 0.46) ease-in-out calc(${d} * 0.48)` }}>
-                  超堕天撃
-                </div>
-              </div>
-            </>
-          )}
-
-          {missVisible && (
-            <div className="sfs-motion" style={{ position: 'absolute', left: '50%', top: '76%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(28px,6vw,52px)', fontWeight: 1000, color: '#fff', textShadow: '0 0 14px rgba(105,198,255,0.92), 0 0 20px rgba(255,150,100,0.64), 0 2px 8px rgba(0,0,0,0.96)', animation: `sfsDamage calc(${d} * 0.36) cubic-bezier(0.08,0.84,0.14,1) calc(${d} * 0.50) both, sfsTextShimmer calc(${d} * 0.36) ease-in-out calc(${d} * 0.50)` }}>
-              MISS!! 超堕天撃回避
+            <div
+              style={{
+                marginTop: '8px',
+                fontSize: 'clamp(11px, 2.2vw, 19px)',
+                fontWeight: 1000,
+                color: '#DFF8FF',
+                letterSpacing: '0.24em',
+                textShadow: '0 0 11px rgba(104,205,255,0.92), 0 0 24px rgba(74,178,255,0.58)',
+              }}
+            >
+              超堕天撃
             </div>
-          )}
+          </div>
+        )}
+
+        {isEvade && (
+          <div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '76%',
+              transform: `translate(-50%,-50%) scale(${0.72 + between(t, 0.56, 0.64) * 0.28})`,
+              opacity: between(t, 0.55, 0.65) * (1 - between(t, 0.70, 0.82)),
+              color: '#E9FBFF',
+              fontSize: 'clamp(24px, 5vw, 48px)',
+              fontWeight: 1000,
+              letterSpacing: '0.05em',
+              textShadow: '0 0 15px rgba(97,198,255,0.98), 0 2px 8px rgba(0,0,0,0.96)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            MISS! 超堕天撃回避
+          </div>
+        )}
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: '#fff',
+            opacity: contactFlash * 0.42,
+            mixBlendMode: 'screen',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 88% 50%, rgba(255,255,255,0) 30%, rgba(0,0,0,0.66) 100%)',
+            opacity: 0.54 + aftermathA * 0.20,
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '12%',
+            transform: `translateX(-50%) translateY(${(1 - between(visualT, 0.64, 0.80)) * 6}px) scale(${0.92 + between(visualT, 0.64, 0.80) * 0.08})`,
+            opacity: between(visualT, 0.64, 0.83) * (1 - finalFade),
+            color: '#F3FBFF',
+            fontSize: 'clamp(16px, 3.2vw, 28px)',
+            fontWeight: 1000,
+            letterSpacing: '0.28em',
+            textShadow: '0 0 12px rgba(112,210,255,0.92), 0 2px 8px rgba(0,0,0,0.96)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          超堕天撃
         </div>
-      )}
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: '#000',
+          opacity: finalFade * 0.84,
+          pointerEvents: 'none',
+        }}
+      />
     </div>
   );
 };
+
+{/* Preview retry marker: no runtime behavior change. */}
 
 export { SuperFallenShotVfx };
