@@ -84,7 +84,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   }, []);
 
   const t = clamp01(progress);
-  const duration = Math.max(1, durationMs);
   const isShot = mode === 'SHOT';
 
   if (!isShot) {
@@ -263,7 +262,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const beamP = phase(visualT, 0.26, 0.585);
   const launchP = phase(visualT, 0.39, 0.56);
   const contactP = phase(visualT, 0.535, 0.59);
-  const aftermathP = phase(visualT, 0.565, 0.88);
   const fadeP = phase(visualT, 0.80, 1.00);
 
   const ringIn = easeOut(ringP);
