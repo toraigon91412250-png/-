@@ -8,8 +8,6 @@ import {
   CharacterDef,
   CpuDifficulty,
   EffectType,
-  getEffectiveAttack,
-  getEffectiveDefense,
   getEffectiveSpeed,
   getIrenaFeatherMaxChargeCount,
   rollIrenaFeatherChargeGain,
@@ -225,6 +223,19 @@ export function useBattleGame(
   const setCpuDifficulty = useCallback((diff: CpuDifficulty) => {
     updateState(prev => ({ ...prev, cpuDifficulty: diff }));
   }, [updateState]);
+
+  const cancelBattle = useCallback(() => {
+    cancelPendingBattleWork();
+    updateState(prev => ({
+      ...prev,
+      phase: prev.phase === 'EXECUTING_TURNS' ? 'SELECT_ACTION' : prev.phase,
+      isAnimating: false,
+      visualEffect: null,
+      visualEffects: [],
+      player: { ...prev.player, isEvading: false },
+      enemy: { ...prev.enemy, isEvading: false },
+    }));
+  }, [cancelPendingBattleWork, updateState]);
 
   const addJudgmentMarks = (amount: number, turn: number) => {
     const config = stateRef.current.battleConfig;
@@ -654,6 +665,7 @@ export function useBattleGame(
             isActingFirst,
             judgmentReady: judgmentActive,
             alreadyPrepared: true,
+            baseAttackerMaxHp: baseActorMaxHp,
           },
           isCritical,
         );
@@ -871,13 +883,18 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
-          let finalDamage = Math.max(
-            0,
-            Math.round(getEffectiveAttack(actor) * multiplier - getEffectiveDefense(target)),
-          );
+          const finalDamage = calculateSpecialDamage({
+            attacker: actor,
+            target,
+            config: stateRef.current.battleConfig,
+            turn,
+            isActingFirst,
+            specialSkillId: 'SUPER_FALLEN_SHOT',
+            alreadyPrepared: true,
+            baseAttackerMaxHp: baseActorMaxHp,
+          });
 
           if (hadBuff) {
-            finalDamage += buffDamageBonus;
             addLog(
               `⚡【強化消費】『超堕天撃』のダメージ+${buffDamageBonus}！（計: ${finalDamage}）`,
               'BUFF_PLAYER',
@@ -1105,6 +1122,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           specialSkillId: specialSkillId ?? 'FEATHER',
           alreadyPrepared: true,
+          baseAttackerMaxHp: baseActorMaxHp,
         });
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
@@ -1359,6 +1377,7 @@ export function useBattleGame(
           judgmentReady: judgmentActive,
           ultimateVariant: appliedIrenaVariant,
           alreadyPrepared: true,
+          baseAttackerMaxHp: baseActorMaxHp,
         });
 
         const judgmentLevel = isActorPlayer
@@ -1624,6 +1643,7 @@ export function useBattleGame(
     state,
     onActionSelected,
     restartBattle,
+    cancelBattle,
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,

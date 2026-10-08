@@ -26,6 +26,8 @@ export interface DamageContext {
   specialSkillId?: IrenaSpecialSkillId;
   ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE';
   alreadyPrepared?: boolean;
+  /** Max HP before turn-dependent ability modifiers are applied. */
+  baseAttackerMaxHp?: number;
 }
 
 function prepareFighters(context: DamageContext): { attacker: BattleFighter; target: BattleFighter } {
@@ -59,7 +61,7 @@ function applyFallenExecution(
 }
 
 export function calculateNormalAttackDamage(context: DamageContext, critical = false): number {
-  const baseAttackerMaxHp = context.attacker.character.maxHp;
+  const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   let { attacker, target } = prepareFighters(context);
   const judgmentLevel = context.attacker.isPlayer ? getAbilityLevel(context.config, 'JUDGMENT') : 0;
   const judgmentActive = Boolean(context.judgmentReady && judgmentLevel > 0);
@@ -101,7 +103,7 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
 }
 
 export function calculateSpecialDamage(context: DamageContext): number {
-  const baseAttackerMaxHp = context.attacker.character.maxHp;
+  const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   const { attacker, target } = prepareFighters(context);
   const isSuperFallenShot = context.specialSkillId === 'SUPER_FALLEN_SHOT';
 
@@ -179,7 +181,7 @@ export function calculateSpecialDamage(context: DamageContext): number {
 }
 
 export function calculateUltimateDamage(context: DamageContext): number {
-  const baseAttackerMaxHp = context.attacker.character.maxHp;
+  const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   const { attacker, target } = prepareFighters(context);
   const isIrena = attacker.character.id === 'irena';
   let damage =

@@ -12,6 +12,7 @@ interface ActionDockProps {
   turnNumber: number;
   judgmentReady?: boolean;
   isEnabled: boolean;
+  onCinematicActiveChange: (active: boolean) => void;
   selectedSpecialSkill: IrenaSpecialSkillId;
   onSelectedSpecialSkillChange: (skillId: IrenaSpecialSkillId) => void;
   onAction: (
@@ -33,6 +34,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   turnNumber,
   judgmentReady = false,
   isEnabled,
+  onCinematicActiveChange,
   selectedSpecialSkill,
   onSelectedSpecialSkillChange,
   onAction,
@@ -113,10 +115,11 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
     setCinematicVariant(variant);
     setCinematicActive(true);
+    onCinematicActiveChange(true);
 
     cinematicActionTimer.current = window.setTimeout(() => {
       if (variant === 'OMNIPOTENCE') {
-        onAction('ULTIMATE');
+        onAction('ULTIMATE', 'OMNIPOTENCE');
       } else {
         onIrenaUltimateAction(variant);
       }
@@ -125,6 +128,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
     cinematicFinishTimer.current = window.setTimeout(() => {
       setCinematicActive(false);
       setCinematicVariant(null);
+      onCinematicActiveChange(false);
     }, 1300);
   };
   const ultimateDamagePreview = calculateUltimateDamage({

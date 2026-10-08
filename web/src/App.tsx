@@ -35,6 +35,7 @@ export const App: React.FC = () => {
     state: battleState,
     onActionSelected,
     restartBattle,
+    cancelBattle,
     toggleSound,
     toggleSpeed,
     setCpuDifficulty,
@@ -139,6 +140,7 @@ export const App: React.FC = () => {
   };
 
   const handleBackToSelect = () => {
+    cancelBattle();
     refreshProgress();
     setScreen('SELECT');
   };
