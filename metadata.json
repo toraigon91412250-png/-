@@ -1,6 +1,0 @@
-{
-  "name": "デュエルアリーナ",
-  "description": "スマホとPCで遊べるオリジナルキャラクター同士の1対1ターン制バトルゲーム",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
