@@ -10,7 +10,6 @@ import beamImage from '../assets/IMG_1151.jpeg';
 import chargeBackgroundImage from '../assets/IMG_1152.jpeg';
 import controlledShotImage from '../assets/IMG_1154.jpeg';
 import strongShotImage from '../assets/IMG_1155.jpeg';
-import limitGif from '../assets/bannerkoubou-koukasen-20261007-170734.gif';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 
@@ -40,7 +39,6 @@ const SRC_IMAGES = [
   chargeBackgroundImage,
   controlledShotImage,
   strongShotImage,
-  limitGif,
   raidBossArt,
   raidIrenaCutin,
 ] as const;
