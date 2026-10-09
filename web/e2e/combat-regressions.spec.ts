@@ -39,6 +39,10 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await expect(page.getByText('防御態勢', { exact: true })).toBeVisible();
   await expect(page.getByText('LAST HIT')).toBeVisible();
   await expect(page.getByText('LAST RECEIVED')).toBeVisible();
+  await expect(page.getByLabel('直近5手の戦闘履歴')).toBeVisible();
+  await page.getByRole('button', { name: '集中' }).click();
+  await expect(page.getByText('FOCUS READY · 次の攻撃ダメージ ×1.65')).toBeVisible();
+  await expect(page.getByLabel('直近5手の戦闘履歴').getByText(/集中/).first()).toBeVisible();
   await page.getByTitle('戻る').click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 

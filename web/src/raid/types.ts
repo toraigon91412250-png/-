@@ -47,6 +47,8 @@ export interface RaidState {
   breakCount: number;
   adaptation: number;
   lastAction: RaidAction | null;
+  actionCounts: Record<RaidAction, number>;
+  history: string[];
   lastRead: RaidOutcomeTone;
   outcome: RaidOutcome;
   score: number;

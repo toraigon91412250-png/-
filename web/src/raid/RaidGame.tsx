@@ -26,26 +26,30 @@ interface RaidGameProps {
 
 const BEST_SCORE_KEY = 'raidPrototypeV1BestScore';
 
-const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: string }> = {
+const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: string; recommendation: string }> = {
   SWEEP: {
     name: '黒爪薙ぎ',
     danger: 'WARNING',
     detail: '広い薙ぎ払いの予告。攻撃は通るが被弾する。防御で被害を抑えられる。',
+    recommendation: '推奨: 通常攻撃で隙を突く。HPが不安なら防御。',
   },
   CHARGE: {
     name: '滅界砲',
     danger: 'HIGH THREAT',
     detail: '核を圧縮する大技。迎撃が成功すれば攻撃そのものを止められる。',
+    recommendation: '推奨: 迎撃で攻撃を止める。迎撃できない場合は防御。',
   },
   VOID: {
     name: '虚無落雷',
     danger: 'MP DRAIN',
     detail: '空間を侵食する詠唱。羽弾を合わせると中断できる。',
+    recommendation: '推奨: 羽弾で詠唱を中断。MP不足なら防御。',
   },
   RAGE: {
     name: '終焉衝動',
     danger: 'CRITICAL',
     detail: '深淵解放後の必殺級攻撃。迎撃か防御を選び、同じ行動に固執するな。',
+    recommendation: '推奨: 迎撃で止める。資源不足なら防御。',
   },
 };
 
@@ -58,9 +62,9 @@ const ACTIONS: Array<{
 }> = [
   { id: 'ATTACK', label: '通常攻撃', english: 'STRIKE', detail: '安定したダメージ。薙ぎ払いの隙を突く。', cost: 'COST 0' },
   { id: 'FEATHER', label: '羽弾', english: 'FEATHER', detail: '高火力。虚無落雷を中断できる。', cost: 'MP 18' },
-  { id: 'GUARD', label: '防御', english: 'GUARD', detail: '被害を大幅に減らし、HPも少し回復。', cost: 'MP 8' },
+  { id: 'GUARD', label: '防御', english: 'GUARD', detail: '被害を抑えてHPを少し回復。大技への迎撃とは役割が違う。', cost: 'MP 10' },
   { id: 'COUNTER', label: '迎撃', english: 'COUNTER', detail: '滅界砲・終焉衝動に合わせれば反撃。', cost: 'MP 12' },
-  { id: 'FOCUS', label: '集中', english: 'FOCUS', detail: '次の攻撃を強化。必殺ゲージを大きく回収。', cost: 'MP 8' },
+  { id: 'FOCUS', label: '集中', english: 'FOCUS', detail: '次の攻撃を大きく強化。必殺ゲージも回収。', cost: 'MP 8' },
   { id: 'ULTIMATE', label: '終天羽星穿ち', english: 'ULTIMATE', detail: '蓄積したゲージを解放する大ダメージ。', cost: 'TP 100' },
 ];
 
@@ -264,6 +268,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             </div>
             <h3>{state.brokenTurns > 0 ? 'バーストチャンス' : pattern.name}</h3>
             <p>{state.brokenTurns > 0 ? 'ボスは体勢を崩している。高火力行動でダメージを稼ぐ。' : pattern.detail}</p>
+            <p className="raid-v1-intent-advice">{state.brokenTurns > 0 ? '推奨: 高火力行動。必殺ゲージが100なら必殺技。' : pattern.recommendation}</p>
           </div>
         </div>
 
@@ -289,7 +294,12 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
               </div>
             </div>
             {state.phase === 2 && (
-              <div className="raid-v1-adaptation">
+              {state.focusCharge && (
+              <div className="raid-v1-focus-ready" role="status">
+                <Zap size={14} /> FOCUS READY · 次の攻撃ダメージ ×1.65
+              </div>
+            )}
+            <div className="raid-v1-adaptation">
                 <span>ボスの適応</span>
                 <strong>{state.adaptation}/3</strong>
                 <div>{[0, 1, 2].map(level => <i key={level} className={level < state.adaptation ? 'is-filled' : ''} />)}</div>
@@ -319,7 +329,15 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
                 <ActionButton key={action.id} action={action} state={state} onAction={handleAction} />
               ))}
             </div>
-            <div className="raid-v1-combat-log" aria-live="polite"><span>COMBAT LOG</span><p>{state.log}</p></div>
+            <div className="raid-v1-combat-log" aria-live="polite">
+              <span>COMBAT LOG · 直近の戦闘</span>
+              <p>{state.log}</p>
+              <ol className="raid-v1-history" aria-label="直近5手の戦闘履歴">
+                {state.history.slice(-4).reverse().map((entry, index) => (
+                  <li key={String(state.turn) + '-' + String(index)}>{entry}</li>
+                ))}
+              </ol>
+            </div>
             <p className="raid-v1-hint"><Sparkles size={14} /> 予告への正答は攻撃を止め、BREAKを加速させる。</p>
           </section>
         </aside>
@@ -340,13 +358,21 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             <span><small>PERFECT READ</small><strong>{state.perfectReads}</strong></span>
             <span><small>BREAK</small><strong>{state.breakCount}</strong></span>
           </div>
+          <section className="raid-v1-command-mix" aria-label="今回の行動回数">
+            <span className="raid-v1-command-mix-title">COMMAND MIX · 行動回数</span>
+            <div className="raid-v1-command-counts">
+              {ACTIONS.map(action => (
+                <span key={action.id}><small>{action.label}</small><strong>{state.actionCounts[action.id]}</strong></span>
+              ))}
+            </div>
+          </section>
           <button type="button" className="raid-v1-retry" onClick={restart}><RotateCcw size={17} /> もう一度挑戦</button>
           <button type="button" className="raid-v1-return" onClick={onBack}>本編に戻る</button>
         </section>
       )}
 
       <footer className="raid-v1-footer">
-        <span>RAID PROJECT 01 / ITERATION 1</span>
+        <span>RAID PROJECT 01 / ITERATION 2</span>
         <span>独立戦闘エンジン · 本編の成長データには接続しません</span>
       </footer>
     </main>

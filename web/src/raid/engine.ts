@@ -8,10 +8,13 @@ export const RAID_RULES = {
   PHASE_TWO_BOSS_HP: 6800,
   BREAK_MAX: 100,
   MP_REGEN_PER_TURN: 5,
-  GUARD_COST: 8,
+  GUARD_COST: 10,
   COUNTER_COST: 12,
   FEATHER_COST: 18,
   FOCUS_COST: 8,
+  GUARD_HEAL: 80,
+  FOCUS_TP_GAIN: 32,
+  FOCUS_DAMAGE_MULTIPLIER: 1.65,
   FEATHER_COOLDOWN: 2,
 } as const;
 
@@ -27,6 +30,15 @@ const PATTERN_DAMAGE: Record<RaidPattern, { min: number; max: number }> = {
   CHARGE: { min: 850, max: 1120 },
   VOID: { min: 560, max: 760 },
   RAGE: { min: 1050, max: 1380 },
+};
+
+const ACTION_LABELS: Record<RaidAction, string> = {
+  ATTACK: '通常攻撃',
+  FEATHER: '羽弾',
+  GUARD: '防御',
+  COUNTER: '迎撃',
+  FOCUS: '集中',
+  ULTIMATE: '必殺技',
 };
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -68,6 +80,8 @@ export function createInitialRaidState(): RaidState {
     breakCount: 0,
     adaptation: 0,
     lastAction: null,
+    actionCounts: { ATTACK: 0, FEATHER: 0, GUARD: 0, COUNTER: 0, FOCUS: 0, ULTIMATE: 0 },
+    history: ['RUN START · 第1形態 · 黒爪薙ぎを確認'],
     lastRead: 'neutral',
     outcome: {
       title: '予告を読め',
@@ -192,7 +206,7 @@ export function resolveRaidAction(
       breakGain = perfectGuard ? 28 : 0;
       break;
     case 'FOCUS':
-      nextTp += 28;
+      nextTp += RAID_RULES.FOCUS_TP_GAIN;
       break;
     case 'ULTIMATE':
       baseDamage = rollInteger(1850, 2200, random);
@@ -203,7 +217,7 @@ export function resolveRaidAction(
 
   const hasDamage = baseDamage > 0;
   const comboMultiplier = hasDamage ? 1 + Math.min(state.combo, 3) * 0.045 : 1;
-  const focusMultiplier = hasDamage && state.focusCharge && action !== 'FOCUS' ? 1.42 : 1;
+  const focusMultiplier = hasDamage && state.focusCharge && action !== 'FOCUS' ? RAID_RULES.FOCUS_DAMAGE_MULTIPLIER : 1;
   const brokenMultiplier = hasDamage && wasBroken ? 1.5 : 1;
   const readMultiplier = sweepOpening ? 1.12 : perfectCounter || featherInterrupt ? 1.08 : 1;
   const finalDamage = Math.round(baseDamage * comboMultiplier * focusMultiplier * brokenMultiplier * readMultiplier);
@@ -215,7 +229,7 @@ export function resolveRaidAction(
     : clamp(state.breakGauge + breakGain, 0, RAID_RULES.BREAK_MAX);
   const triggersBreak = !wasBroken && nextBreakGauge >= RAID_RULES.BREAK_MAX;
   const playerHpAfterGuard = action === 'GUARD'
-    ? Math.min(state.playerMaxHp, state.playerHp + 120)
+    ? Math.min(state.playerMaxHp, state.playerHp + RAID_RULES.GUARD_HEAL)
     : state.playerHp;
   nextTp = clamp(nextTp, 0, RAID_RULES.PLAYER_MAX_TP);
   nextMp = Math.min(RAID_RULES.PLAYER_MAX_MP, nextMp + RAID_RULES.MP_REGEN_PER_TURN);
@@ -304,9 +318,9 @@ export function resolveRaidAction(
     const rawDamage = rollInteger(range.min, range.max, random);
     const adaptationMultiplier = state.phase === 2 ? 1.08 + nextAdaptation * 0.08 : 1;
     const counterPunishment = counterMiss ? 1.2 : 1;
-    const guardMultiplier = action === 'GUARD' ? (heavy ? 0.45 : 0.65) : 1;
+    const guardMultiplier = action === 'GUARD' ? (heavy ? 0.5 : 0.65) : 1;
     const reducedDamage = Math.round(rawDamage * adaptationMultiplier * counterPunishment * guardMultiplier);
-    const guardShield = action === 'GUARD' ? (heavy ? 420 : 220) : 0;
+    const guardShield = action === 'GUARD' ? (heavy ? 300 : 220) : 0;
     incomingDamage = Math.max(0, reducedDamage - guardShield);
     if (pattern === 'VOID') {
       mpDrain = Math.min(nextMp, 8);
@@ -385,6 +399,11 @@ export function resolveRaidAction(
     breakCount: nextBreakCount,
     adaptation: nextPhase === 2 ? nextAdaptation : 0,
     lastAction: action,
+    actionCounts: { ...state.actionCounts, [action]: state.actionCounts[action] + 1 },
+    history: [
+      ...state.history,
+      `T${String(state.turn).padStart(2, '0')} ${ACTION_LABELS[action]} · ${finalOutcome.title} · 与ダメ ${damageDealt} / 被ダメ ${incomingDamage} · MP ${state.mp}→${nextMp}`,
+    ].slice(-5),
     lastRead: finalOutcome.tone,
     outcome: finalOutcome,
     result: newResult,
