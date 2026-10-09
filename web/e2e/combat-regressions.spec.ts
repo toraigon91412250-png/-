@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 
 async function startFreshBattle(page: Page) {
   await page.addInitScript(() => {
@@ -96,7 +96,7 @@ test('raid victory grants its exclusive item and the item upgrades the main-game
   const intent = page.locator('.raid-v1-intent h3');
   const turnMarker = page.locator('.raid-v1-action-heading > span');
   const actionEnabled = async (name: string) => page.getByRole('button', { name, exact: true }).isEnabled();
-  const readNumber = async (locator: ReturnType<typeof page.locator>) => {
+  const readNumber = async (locator: Locator) => {
     const text = await locator.innerText();
     return Number(text.split('/')[0].replace(/,/g, '').trim());
   };
