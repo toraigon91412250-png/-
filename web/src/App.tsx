@@ -4,6 +4,7 @@ import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
+import { BattleDeployOverlay } from './components/BattleDeployOverlay';
 import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
@@ -212,45 +213,7 @@ export const App: React.FC = () => {
         </button>
       )}
 
-      {isBattleDeploying && (
-        <div
-          style={{
-            position: 'fixed', inset: 0, zIndex: 200, backgroundColor: '#000000',
-            color: '#FFFFFF', display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', textAlign: 'center',
-          }}
-          aria-label="戦闘出撃中"
-        >
-          <style>{`
-            @keyframes battleDeployProgress {
-              0% { transform: scaleX(0); opacity: 0.4; }
-              20% { opacity: 1; }
-              100% { transform: scaleX(1); opacity: 1; }
-            }
-          `}</style>
-          <div style={{
-            fontSize: 'clamp(11px, 2vw, 16px)', fontWeight: 800,
-            letterSpacing: '0.28em', color: '#90CAF9', marginBottom: '10px',
-          }}>
-            BATTLE DEPLOYING...
-          </div>
-          <div style={{
-            fontSize: 'clamp(28px, 6vw, 52px)', fontWeight: 1000,
-            letterSpacing: '0.08em', textShadow: '0 0 18px rgba(144, 202, 249, 0.45)',
-          }}>
-            戦闘出撃中
-          </div>
-          <div style={{
-            width: 'clamp(120px, 28vw, 220px)', height: '2px', marginTop: '22px',
-            backgroundColor: '#1E283D', overflow: 'hidden', position: 'relative',
-          }}>
-            <div style={{
-              position: 'absolute', inset: 0, backgroundColor: '#64B5F6',
-              transformOrigin: 'left center', animation: 'battleDeployProgress 1.1s ease-out both',
-            }} />
-          </div>
-        </div>
-      )}
+      {isBattleDeploying && <BattleDeployOverlay />}
       {screen === 'SELECT' ? (
         <CharacterSelectScreen
           overallStats={overallStats}
