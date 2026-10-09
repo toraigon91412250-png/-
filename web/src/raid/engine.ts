@@ -186,7 +186,7 @@ export function resolveRaidAction(
   const collapseRelease = pattern === 'COLLAPSE' && state.bossWindup > 0 && !wasBroken;
   const perfectCounter = action === 'COUNTER' && (pattern === 'CHARGE' || pattern === 'RAGE' || collapseRelease) && !wasBroken;
   const featherInterrupt = action === 'FEATHER' && (pattern === 'VOID' || pattern === 'CORE_REGEN') && !wasBroken;
-  const perfectGuard = action === 'GUARD' && heavy && !wasBroken;
+  const perfectGuard = action === 'GUARD' && (pattern === 'CHARGE' || pattern === 'RAGE' || collapseRelease) && !wasBroken;
   const sweepOpening = action === 'ATTACK' && pattern === 'SWEEP';
   const counterMiss = action === 'COUNTER' && !perfectCounter && !wasBroken && !collapsePreparing;
   const mpCost = ACTION_COST[action] ?? 0;
