@@ -293,13 +293,13 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
                 <div className="raid-v1-resource-track"><span className="is-tp" style={{ width: `${tpPercent}%` }} /></div>
               </div>
             </div>
-            {state.phase === 2 && (
-              {state.focusCharge && (
+            {state.focusCharge && (
               <div className="raid-v1-focus-ready" role="status">
                 <Zap size={14} /> FOCUS READY · 次の攻撃ダメージ ×1.65
               </div>
             )}
-            <div className="raid-v1-adaptation">
+            {state.phase === 2 && (
+              <div className="raid-v1-adaptation">
                 <span>ボスの適応</span>
                 <strong>{state.adaptation}/3</strong>
                 <div>{[0, 1, 2].map(level => <i key={level} className={level < state.adaptation ? 'is-filled' : ''} />)}</div>
