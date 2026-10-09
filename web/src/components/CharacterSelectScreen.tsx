@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats } from '../types/game';
+import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
-import { Swords, Trophy, Play, CheckCircle, Sparkles } from 'lucide-react';
+import { Swords, Trophy, Play, CheckCircle, Sparkles, Gem } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
 
 interface CharacterSelectScreenProps {
@@ -13,6 +13,9 @@ interface CharacterSelectScreenProps {
   onOpenRaidPrototype: () => void;
   onOpenRecruitment: () => void;
   skillProgress: IrenaSkillProgress;
+  raidRewardProgress: RaidRewardProgress;
+  raidItemMessage: string | null;
+  onUseRaidCoreFragment: () => void;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
 }
@@ -25,6 +28,9 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onOpenRaidPrototype,
   onOpenRecruitment,
   skillProgress,
+  raidRewardProgress,
+  raidItemMessage,
+  onUseRaidCoreFragment,
   onUpgradeSkill,
   onChooseSkillPath,
 }) => {
@@ -250,6 +256,64 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
             ✨ 技を強化・ビルドを育てる
           </button>
         </div>
+
+        {/* Raid-exclusive item: redeemable only after clearing the standalone raid. */}
+        <section aria-label="レイド限定アイテム" style={{
+          width: '100%',
+          marginBottom: '18px',
+          padding: '13px',
+          borderRadius: '14px',
+          background: 'linear-gradient(135deg, rgba(9,31,45,0.98), rgba(14,20,36,0.98))',
+          border: '1px solid rgba(91,205,205,0.42)',
+          boxShadow: '0 8px 22px rgba(0,0,0,0.24)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+              <div style={{ width: '40px', height: '40px', flex: '0 0 auto', display: 'grid', placeItems: 'center', borderRadius: '10px', background: 'rgba(65,190,202,0.12)', border: '1px solid rgba(109,225,220,0.3)' }}>
+                <Gem size={23} color="#81E6DF" />
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.16em', color: '#81E6DF' }}>RAID EXCLUSIVE ITEM</div>
+                <div style={{ marginTop: '2px', fontSize: '17px', fontWeight: 950, color: '#F3FCFF' }}>深淵核片</div>
+                <div style={{ marginTop: '3px', fontSize: '10px', color: '#A2B8C8', lineHeight: 1.45 }}>レイド勝利でのみ入手。本編で使用するとステータス配分上限が永続的に +2P。</div>
+              </div>
+            </div>
+            <div style={{ flex: '0 0 auto', textAlign: 'center', minWidth: '48px', padding: '6px 8px', borderRadius: '9px', background: 'rgba(101,224,218,0.08)', border: '1px solid rgba(101,224,218,0.22)' }}>
+              <div style={{ fontSize: '9px', fontWeight: 800, color: '#8CA9BA' }}>所持数</div>
+              <div aria-label={`深淵核片の所持数 ${raidRewardProgress.coreFragments}`} style={{ fontSize: '22px', fontWeight: 950, color: '#B7FFF7', lineHeight: 1.2 }}>{raidRewardProgress.coreFragments}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '11px', padding: '8px 9px', borderRadius: '9px', background: 'rgba(8,14,24,0.68)', color: '#D0E5EA', fontSize: '11px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 900, color: '#81E6DF' }}>使用効果</span>
+            <span>1個消費 → ステータス配分ポイント +2P</span>
+            <span style={{ marginLeft: 'auto', color: '#7DE0D4', fontWeight: 900 }}>累計 +{raidRewardProgress.bonusStatPoints}P</span>
+          </div>
+          <button
+            type="button"
+            onClick={onUseRaidCoreFragment}
+            disabled={raidRewardProgress.coreFragments <= 0}
+            style={{
+              width: '100%',
+              minHeight: '42px',
+              marginTop: '9px',
+              borderRadius: '10px',
+              border: '1px solid rgba(129,230,223,0.65)',
+              background: raidRewardProgress.coreFragments > 0 ? 'linear-gradient(90deg, #145566, #187A83)' : 'rgba(31,47,57,0.72)',
+              color: raidRewardProgress.coreFragments > 0 ? '#F1FFFF' : '#738A96',
+              fontSize: '12px',
+              fontWeight: 950,
+              cursor: raidRewardProgress.coreFragments > 0 ? 'pointer' : 'not-allowed',
+              opacity: raidRewardProgress.coreFragments > 0 ? 1 : 0.72,
+            }}
+          >
+            {raidRewardProgress.coreFragments > 0 ? '深淵核片を使用する（+2P・永続）' : 'レイドをクリアすると入手できます'}
+          </button>
+          {raidItemMessage && (
+            <p role="status" aria-live="polite" style={{ margin: '8px 2px 0', fontSize: '11px', lineHeight: 1.5, color: raidItemMessage.includes('失敗') || raidItemMessage.includes('ありません') ? '#FFB4A9' : '#9FF5D9' }}>
+              {raidItemMessage}
+            </p>
+          )}
+        </section>
 
         {/* Difficulty Selector */}
         <div style={{ width: '100%', marginBottom: '24px' }}>
