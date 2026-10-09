@@ -1,10 +1,12 @@
-import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
 const STAT_POINTS_KEY = 'duel_arena_stat_points';
+const RAID_REWARD_PROGRESS_KEY = 'duel_arena_raid_reward_progress';
+
 
 const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
   shards: 50,
@@ -22,7 +24,7 @@ export const BATTLE_REWARD_LOSS = 20;
 export const PATH_MASTERY_REWARD = 15;
 export const MAX_SKILL_LEVEL = 10;
 
-export function loadStatPoints(): number {
+function loadBaseStatPoints(): number {
   try {
     const raw = localStorage.getItem(STAT_POINTS_KEY);
     if (raw === null) return INITIAL_STAT_POINTS;
@@ -33,14 +35,118 @@ export function loadStatPoints(): number {
   }
 }
 
+/** Normal points from the main game plus the permanent bonus redeemed from raid items. */
+export function loadStatPoints(): number {
+  return loadBaseStatPoints() + loadRaidRewardProgress().bonusStatPoints;
+}
+
 export function addStatPoints(amount: number): number {
-  const next = loadStatPoints() + Math.max(0, Math.floor(amount));
+  const safeAmount = Number.isFinite(amount) ? Math.max(0, Math.floor(amount)) : 0;
+  const nextBase = loadBaseStatPoints() + safeAmount;
   try {
-    localStorage.setItem(STAT_POINTS_KEY, String(next));
+    localStorage.setItem(STAT_POINTS_KEY, String(nextBase));
   } catch {
     // ignore
   }
-  return next;
+  return nextBase + loadRaidRewardProgress().bonusStatPoints;
+}
+
+const INITIAL_RAID_REWARD_PROGRESS: RaidRewardProgress = {
+  coreFragments: 0,
+  bonusStatPoints: 0,
+  claimedVictoryRunIds: [],
+};
+
+export interface RaidVictoryRewardClaim {
+  progress: RaidRewardProgress;
+  claimed: boolean;
+  /** False only when the reward could not be persisted. */
+  persisted: boolean;
+}
+
+export interface RaidCoreFragmentRedemption {
+  progress: RaidRewardProgress;
+  used: boolean;
+  /** False only when the updated inventory could not be persisted. */
+  persisted: boolean;
+}
+
+function normalizeRaidRewardProgress(
+  parsed: Partial<RaidRewardProgress> | null | undefined,
+): RaidRewardProgress {
+  const normalizeCount = (value: unknown): number => {
+    const count = Number(value);
+    return Number.isFinite(count) ? Math.min(1_000_000_000, Math.max(0, Math.floor(count))) : 0;
+  };
+  const runIds = Array.isArray(parsed?.claimedVictoryRunIds)
+    ? parsed.claimedVictoryRunIds
+        .filter((id): id is string => typeof id === 'string' && id.trim().length > 0)
+        .map(id => id.slice(0, 120))
+    : [];
+
+  return {
+    coreFragments: normalizeCount(parsed?.coreFragments),
+    bonusStatPoints: normalizeCount(parsed?.bonusStatPoints),
+    claimedVictoryRunIds: Array.from(new Set(runIds)).slice(-100),
+  };
+}
+
+export function loadRaidRewardProgress(): RaidRewardProgress {
+  try {
+    const raw = localStorage.getItem(RAID_REWARD_PROGRESS_KEY);
+    if (raw) return normalizeRaidRewardProgress(JSON.parse(raw));
+  } catch {
+    // A missing, malformed, or blocked save must never prevent the main game from opening.
+  }
+  return { ...INITIAL_RAID_REWARD_PROGRESS, claimedVictoryRunIds: [] };
+}
+
+function persistRaidRewardProgress(progress: RaidRewardProgress): boolean {
+  try {
+    localStorage.setItem(RAID_REWARD_PROGRESS_KEY, JSON.stringify(normalizeRaidRewardProgress(progress)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Grant exactly one fragment for a raid victory. The run ID makes repeated effect calls idempotent. */
+export function claimRaidVictoryReward(runId: string): RaidVictoryRewardClaim {
+  const current = loadRaidRewardProgress();
+  const safeRunId = typeof runId === 'string' ? runId.trim().slice(0, 120) : '';
+
+  if (!safeRunId) return { progress: current, claimed: false, persisted: false };
+  if (current.claimedVictoryRunIds.includes(safeRunId)) {
+    return { progress: current, claimed: false, persisted: true };
+  }
+
+  const next = normalizeRaidRewardProgress({
+    ...current,
+    coreFragments: current.coreFragments + 1,
+    claimedVictoryRunIds: [...current.claimedVictoryRunIds, safeRunId],
+  });
+  if (!persistRaidRewardProgress(next)) {
+    return { progress: current, claimed: false, persisted: false };
+  }
+  return { progress: next, claimed: true, persisted: true };
+}
+
+/** Convert one raid-only fragment into +2 permanent stat-allocation points in a single save write. */
+export function redeemRaidCoreFragment(): RaidCoreFragmentRedemption {
+  const current = loadRaidRewardProgress();
+  if (current.coreFragments <= 0) {
+    return { progress: current, used: false, persisted: true };
+  }
+
+  const next = normalizeRaidRewardProgress({
+    ...current,
+    coreFragments: current.coreFragments - 1,
+    bonusStatPoints: current.bonusStatPoints + 2,
+  });
+  if (!persistRaidRewardProgress(next)) {
+    return { progress: current, used: false, persisted: false };
+  }
+  return { progress: next, used: true, persisted: true };
 }
 
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
@@ -264,6 +370,7 @@ export function resetProgressForDeveloper(): {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
+    persistRaidRewardProgress({ ...INITIAL_RAID_REWARD_PROGRESS, claimedVictoryRunIds: [] });
   } catch {
     // ignore
   }
