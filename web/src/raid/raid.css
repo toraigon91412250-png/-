@@ -246,3 +246,78 @@
   .raid-v1-boss-image, .raid-v1-hero-art img, .raid-v1-cutin, .raid-v1-phase-flash { animation: none !important; }
   .raid-v1-bar span, .raid-v1-break-bar span, .raid-v1-resource-track span { transition: none !important; }
 }
+
+
+.raid-v1-start-panel {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px 24px;
+  align-items: center;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--raid-border);
+  border-radius: 16px;
+  background: linear-gradient(115deg, rgba(17, 21, 34, .97), rgba(23, 18, 39, .94));
+  box-shadow: 0 16px 44px rgba(0, 0, 0, .15);
+}
+.raid-v1-start-copy h2 {
+  margin: 7px 0 0;
+  color: var(--raid-text);
+  font-size: clamp(21px, 2.7vw, 28px);
+  font-weight: 900;
+}
+.raid-v1-start-copy > p:not(.raid-v1-section-label) {
+  max-width: 760px;
+  margin: 10px 0 0;
+  color: #aab4ca;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.raid-v1-start-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 14px;
+}
+.raid-v1-start-facts span {
+  padding: 6px 9px;
+  border: 1px solid #37324f;
+  border-radius: 6px;
+  color: #c3b7f0;
+  background: rgba(35, 27, 53, .5);
+  font-size: 10px;
+  font-weight: 800;
+}
+.raid-v1-start-button {
+  min-width: 190px;
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 22px;
+  border: 1px solid #9881f6;
+  border-radius: 11px;
+  color: #fff;
+  background: linear-gradient(135deg, #7051c9, #42317e);
+  box-shadow: 0 8px 25px rgba(104, 77, 195, .23);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: filter .16s ease, transform .16s ease;
+}
+.raid-v1-start-button:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.raid-v1-start-button:focus-visible { outline: 3px solid #d6c9ff; outline-offset: 3px; }
+.raid-v1-start-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--raid-muted);
+  font-size: 10px;
+}
+@media (max-width: 760px) {
+  .raid-v1-start-panel { grid-template-columns: minmax(0, 1fr); gap: 15px; padding: 18px 15px; }
+  .raid-v1-start-button { width: 100%; min-height: 52px; }
+  .raid-v1-start-note { grid-column: auto; text-align: center; }
+}
