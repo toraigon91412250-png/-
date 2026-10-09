@@ -22,6 +22,36 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+test('raid prototype opens independently and resolves a defensive turn on desktop and mobile', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+
+  await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'バトル開始', exact: true })).toBeEnabled();
+  await expect(page.getByText('BOSS TELEGRAPH')).toHaveCount(0);
+  await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
+  await expect(page.getByText('BOSS TELEGRAPH')).toBeVisible();
+  await expect(page.getByRole('button', { name: '迎撃' })).toBeEnabled();
+  await page.getByRole('button', { name: '防御' }).click();
+
+  await expect(page.getByText('TURN 02')).toBeVisible();
+  await expect(page.getByText('防御態勢', { exact: true })).toBeVisible();
+  await expect(page.getByText('LAST HIT')).toBeVisible();
+  await expect(page.getByText('LAST RECEIVED')).toBeVisible();
+  await expect(page.getByLabel('直近5手の戦闘履歴')).toBeVisible();
+  await page.getByRole('button', { name: '集中' }).click();
+  await expect(page.getByText('FOCUS READY · 次の攻撃ダメージ ×1.65')).toBeVisible();
+  await expect(page.getByLabel('直近5手の戦闘履歴').getByText(/集中/).first()).toBeVisible();
+  await page.getByTitle('戻る').click();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+
+  expect(pageErrors, 'The raid prototype should not raise uncaught JavaScript errors.').toEqual([]);
+});
+
 test('fresh save starts with 12 points and action controls relock until the turn resolves', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));

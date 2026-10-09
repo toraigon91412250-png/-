@@ -32,6 +32,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, performRecruitment } = await import('./src/utils/storage.ts');
+const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
@@ -535,6 +536,261 @@ console.log(
   'Level curve:',
   battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
 );
+
+console.log('--- Testing isolated Raid Project 01 rules ---');
+
+const raidInitial = createInitialRaidState();
+assert.strictEqual(raidInitial.playerHp, RAID_RULES.PLAYER_MAX_HP);
+assert.strictEqual(raidInitial.bossHp, RAID_RULES.PHASE_ONE_BOSS_HP);
+assert.strictEqual(raidInitial.phase, 1);
+assert.strictEqual(canUseRaidAction(raidInitial, 'ATTACK'), true);
+assert.strictEqual(canUseRaidAction(raidInitial, 'ULTIMATE'), false);
+assert.strictEqual(resolveRaidAction(raidInitial, 'ULTIMATE', () => 0.5), raidInitial, 'An ultimate without full TP must not mutate the run.');
+
+const raidAttack = resolveRaidAction(raidInitial, 'ATTACK', () => 0.5);
+assert.strictEqual(raidAttack.turn, 2);
+assert.ok(raidAttack.bossHp < raidInitial.bossHp, 'A normal strike must damage the boss.');
+assert.ok(raidAttack.tp > 0, 'A normal strike must build ultimate TP.');
+assert.strictEqual(raidAttack.lastDamage, raidAttack.totalDamage, 'The impact readout should expose the latest strike damage.');
+assert.ok(raidAttack.lastIncomingDamage > 0, 'The impact readout should expose the boss hit after an unguarded action.');
+assert.ok(raidAttack.playerHp < raidInitial.playerHp, 'An unguarded attack must take the telegraphed sweep hit.');
+
+const raidCounterState = { ...raidInitial, bossPattern: 'CHARGE' };
+const raidCounter = resolveRaidAction(raidCounterState, 'COUNTER', () => 0.5);
+assert.strictEqual(raidCounter.playerHp, raidCounterState.playerHp, 'A perfect counter must stop a heavy boss attack.');
+assert.ok(raidCounter.perfectReads === 1);
+assert.ok(raidCounter.bossPattern !== 'CHARGE', 'A successful counter must reveal a new telegraph.');
+
+const raidInterruptState = { ...raidInitial, bossPattern: 'VOID' };
+const raidInterrupt = resolveRaidAction(raidInterruptState, 'FEATHER', () => 0.5);
+assert.strictEqual(raidInterrupt.playerHp, raidInterruptState.playerHp, 'Feather must interrupt VOID before its hit resolves.');
+assert.strictEqual(raidInterrupt.perfectReads, 1);
+assert.ok(raidInterrupt.mp < raidInterruptState.mp);
+
+const raidGuardState = { ...raidInitial, bossPattern: 'SWEEP' };
+const raidGuard = resolveRaidAction(raidGuardState, 'GUARD', () => 0.5);
+assert.ok(raidGuard.playerHp > raidAttack.playerHp, 'Guard must be safer than an unguarded strike against a sweep.');
+
+const raidBreakState = { ...raidInitial, breakGauge: 90 };
+const raidBreak = resolveRaidAction(raidBreakState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidBreak.breakCount, 1);
+assert.strictEqual(raidBreak.breakGauge, 0);
+assert.strictEqual(raidBreak.brokenTurns, 1, 'Full BREAK gauge should open a burst turn.');
+
+const raidPhaseState = { ...raidInitial, bossHp: 100, bossMaxHp: 100 };
+const raidPhase = resolveRaidAction(raidPhaseState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidPhase.phase, 2, 'Defeating phase one should trigger phase two.');
+assert.strictEqual(raidPhase.bossHp, RAID_RULES.PHASE_TWO_BOSS_HP);
+assert.strictEqual(raidPhase.bossPattern, 'RAGE');
+
+const raidVictoryState = {
+  ...raidInitial,
+  phase: 2,
+  bossHp: 100,
+  bossMaxHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossPattern: 'RAGE',
+};
+const raidVictory = resolveRaidAction(raidVictoryState, 'COUNTER', () => 0.5);
+assert.strictEqual(raidVictory.result, 'VICTORY', 'Defeating phase two with a perfect counter should win the run.');
+assert.ok(raidVictory.score > 0);
+
+const raidDefeatState = { ...raidInitial, playerHp: 1, bossPattern: 'CHARGE' };
+const raidDefeat = resolveRaidAction(raidDefeatState, 'ATTACK', () => 0.99);
+assert.strictEqual(raidDefeat.result, 'DEFEAT', 'An unguarded hit at 1 HP must end the run.');
+assert.strictEqual(raidDefeat.playerHp, 0);
+
+const raidAdaptState = {
+  ...raidInitial,
+  phase: 2,
+  bossHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossMaxHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossPattern: 'SWEEP',
+  lastAction: 'ATTACK',
+  repeatCount: 1,
+  combo: 1,
+};
+const raidAdapt = resolveRaidAction(raidAdaptState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidAdapt.adaptation, 1, 'Repeated actions in phase two should increase boss adaptation.');
+
+console.log('✓ Raid telegraphs, counter, interrupt, guard, BREAK, phase transition, victory, defeat, and adaptation verified.');
+
+assert.strictEqual(raidGuardState.mp - raidGuard.mp, 5, 'Guard should have an intentional MP cost after turn regeneration.');
+const raidHeavyGuardState = { ...raidInitial, bossPattern: 'CHARGE' };
+const raidHeavyGuard = resolveRaidAction(raidHeavyGuardState, 'GUARD', () => 0.5);
+const raidHeavyCounter = resolveRaidAction(raidHeavyGuardState, 'COUNTER', () => 0.5);
+assert.ok(raidHeavyGuard.lastIncomingDamage > 0, 'Guard should reduce but not nullify a heavy hit.');
+assert.strictEqual(raidHeavyCounter.lastIncomingDamage, 0, 'A successful counter should stop a heavy hit.');
+assert.ok(raidHeavyCounter.lastDamage > raidHeavyGuard.lastDamage, 'A correct counter should reward the read with more damage than guard.');
+
+const raidFocusState = { ...raidInitial, bossPattern: 'SWEEP', focusCharge: true };
+const raidFocusedAttack = resolveRaidAction(raidFocusState, 'ATTACK', () => 0.5);
+const raidUnfocusedAttack = resolveRaidAction({ ...raidFocusState, focusCharge: false }, 'ATTACK', () => 0.5);
+assert.ok(
+  Math.abs(raidFocusedAttack.lastDamage - Math.round(raidUnfocusedAttack.lastDamage * RAID_RULES.FOCUS_DAMAGE_MULTIPLIER)) <= 1,
+  'Focus should apply its documented multiplier to the next damaging action, allowing for integer rounding.',
+);
+
+
+const raidFocusTurn = resolveRaidAction({ ...raidInitial, bossPattern: 'SWEEP' }, 'FOCUS', () => 0.5);
+const raidUnfocusedTurn = resolveRaidAction({ ...raidInitial, bossPattern: 'SWEEP' }, 'ATTACK', () => 0.5);
+const raidHeavyFocus = resolveRaidAction({ ...raidInitial, bossPattern: 'CHARGE' }, 'FOCUS', () => 0.5);
+const raidHeavyGuardForFocus = resolveRaidAction({ ...raidInitial, bossPattern: 'CHARGE' }, 'GUARD', () => 0.5);
+assert.ok(raidFocusTurn.lastIncomingDamage > 0, 'Focus should not completely negate incoming hits.');
+assert.ok(raidFocusTurn.lastIncomingDamage < raidUnfocusedTurn.lastIncomingDamage,
+  'Focus should reduce incoming damage while preparing the next hit.');
+assert.ok(raidHeavyFocus.lastIncomingDamage > raidHeavyGuardForFocus.lastIncomingDamage,
+  'Focus should stay less protective against heavy attacks than dedicated guard.');
+const raidActionNames = ['ATTACK', 'FEATHER', 'GUARD', 'COUNTER', 'FOCUS', 'ULTIMATE'];
+const raidTelegraphs = [
+  { pattern: 'SWEEP', phase: 1 },
+  { pattern: 'CHARGE', phase: 1 },
+  { pattern: 'VOID', phase: 1 },
+  { pattern: 'RAGE', phase: 2 },
+];
+let raidMatrixCases = 0;
+for (const entry of raidTelegraphs) {
+  for (const action of raidActionNames) {
+    const scenario = {
+      ...raidInitial,
+      phase: entry.phase,
+      bossHp: entry.phase === 1 ? RAID_RULES.PHASE_ONE_BOSS_HP : RAID_RULES.PHASE_TWO_BOSS_HP,
+      bossMaxHp: entry.phase === 1 ? RAID_RULES.PHASE_ONE_BOSS_HP : RAID_RULES.PHASE_TWO_BOSS_HP,
+      bossPattern: entry.pattern,
+      playerHp: RAID_RULES.PLAYER_MAX_HP,
+      mp: RAID_RULES.PLAYER_MAX_MP,
+      tp: RAID_RULES.PLAYER_MAX_TP,
+      breakGauge: 0,
+      brokenTurns: 0,
+      featherCooldown: 0,
+      focusCharge: false,
+      combo: 0,
+      repeatCount: 0,
+      lastAction: null,
+      actionCounts: { ...raidInitial.actionCounts },
+      history: [...raidInitial.history],
+    };
+    assert.strictEqual(canUseRaidAction(scenario, action), true,
+      action + ' should be available in the ' + entry.pattern + ' matrix case.');
+    const next = resolveRaidAction(scenario, action, () => 0.5);
+    assert.strictEqual(next.turn, scenario.turn + 1);
+    assert.strictEqual(next.actionCounts[action], 1, action + ' should be recorded once.');
+    assert.ok(next.playerHp >= 0 && next.playerHp <= next.playerMaxHp, action + '/' + entry.pattern + ' player HP must be bounded.');
+    assert.ok(next.bossHp >= 0 && next.bossHp <= next.bossMaxHp, action + '/' + entry.pattern + ' boss HP must be bounded.');
+    assert.ok(next.mp >= 0 && next.mp <= next.maxMp, action + '/' + entry.pattern + ' MP must be bounded.');
+    assert.ok(next.tp >= 0 && next.tp <= RAID_RULES.PLAYER_MAX_TP, action + '/' + entry.pattern + ' TP must be bounded.');
+    assert.ok(next.history.length <= 5);
+    raidMatrixCases += 1;
+  }
+}
+assert.strictEqual(raidMatrixCases, 24, 'Test all six actions against all four available telegraphs.');
+
+const raidDryState = { ...raidInitial, mp: 0, tp: 0 };
+for (const action of ['FEATHER', 'GUARD', 'COUNTER', 'FOCUS', 'ULTIMATE']) {
+  assert.strictEqual(canUseRaidAction(raidDryState, action), false, action + ' should be disabled without its resource.');
+  assert.strictEqual(resolveRaidAction(raidDryState, action, () => 0.5), raidDryState, action + ' must not mutate state when unavailable.');
+}
+assert.strictEqual(canUseRaidAction(raidDryState, 'ATTACK'), true, 'A free basic action must remain available at zero resources.');
+const raidVoidDry = resolveRaidAction({ ...raidDryState, bossPattern: 'VOID' }, 'ATTACK', () => 0.5);
+assert.ok(raidVoidDry.mp >= 0 && raidVoidDry.mp <= raidVoidDry.maxMp, 'Void drain and regeneration must keep MP in range.');
+
+function createSeededRaidRandom(seed) {
+  let value = seed >>> 0;
+  return () => {
+    value = (Math.imul(value, 1664525) + 1013904223) >>> 0;
+    return value / 4294967296;
+  };
+}
+
+function pickBalancedRaidAction(state) {
+  if (state.tp >= 100 && (state.brokenTurns > 0 || state.bossHp <= 2200)) return 'ULTIMATE';
+  if (state.brokenTurns > 0) {
+    if (canUseRaidAction(state, 'FEATHER')) return 'FEATHER';
+    return 'ATTACK';
+  }
+  if (state.bossPattern === 'CHARGE' || state.bossPattern === 'RAGE') {
+    if (canUseRaidAction(state, 'COUNTER')) return 'COUNTER';
+    if (canUseRaidAction(state, 'GUARD')) return 'GUARD';
+    return 'ATTACK';
+  }
+  if (state.bossPattern === 'VOID') {
+    if (canUseRaidAction(state, 'FEATHER')) return 'FEATHER';
+    if (canUseRaidAction(state, 'GUARD')) return 'GUARD';
+    return 'ATTACK';
+  }
+  if (state.focusCharge) return 'ATTACK';
+  if (state.tp < 65 && state.mp >= RAID_RULES.FOCUS_COST && state.playerHp > 2400 && state.bossHp > 2500) return 'FOCUS';
+  return 'ATTACK';
+}
+
+function pickRecklessRaidAction(state) {
+  if (state.tp >= 100 && (state.brokenTurns > 0 || state.bossHp <= 2200)) return 'ULTIMATE';
+  return 'ATTACK';
+}
+
+function pickGuardRaidAction(state) {
+  if (canUseRaidAction(state, 'GUARD')) return 'GUARD';
+  return 'ATTACK';
+}
+
+function simulateRaidPolicy(policy, seed) {
+  let state = createInitialRaidState();
+  const random = createSeededRaidRandom(seed);
+  let remainingActions = 60;
+  while (state.result === 'ACTIVE' && remainingActions > 0) {
+    state = resolveRaidAction(state, policy(state), random);
+    remainingActions -= 1;
+  }
+  return { state, turns: state.turn - 1 };
+}
+
+const policyResults = { balanced: [], reckless: [], guardSpam: [] };
+for (let seed = 101; seed < 131; seed += 1) {
+  policyResults.balanced.push(simulateRaidPolicy(pickBalancedRaidAction, seed));
+  policyResults.reckless.push(simulateRaidPolicy(pickRecklessRaidAction, seed));
+  policyResults.guardSpam.push(simulateRaidPolicy(pickGuardRaidAction, seed));
+}
+function summarizeRaidPolicy(runs) {
+  return {
+    wins: runs.filter(run => run.state.result === 'VICTORY').length,
+    defeats: runs.filter(run => run.state.result === 'DEFEAT').length,
+    avgTurns: Math.round(runs.reduce((sum, run) => sum + run.turns, 0) / runs.length * 10) / 10,
+    avgDamageTaken: Math.round(runs.reduce((sum, run) => sum + run.state.damageTaken, 0) / runs.length),
+    avgBreaks: Math.round(runs.reduce((sum, run) => sum + run.state.breakCount, 0) / runs.length * 10) / 10,
+    avgPerfectReads: Math.round(runs.reduce((sum, run) => sum + run.state.perfectReads, 0) / runs.length * 10) / 10,
+    avgActions: Object.fromEntries(raidActionNames.map(action => [
+      action,
+      Math.round(runs.reduce((sum, run) => sum + run.state.actionCounts[action], 0) / runs.length * 10) / 10,
+    ])),
+  };
+}
+const raidPolicySummary = {
+  balanced: summarizeRaidPolicy(policyResults.balanced),
+  reckless: summarizeRaidPolicy(policyResults.reckless),
+  guardSpam: summarizeRaidPolicy(policyResults.guardSpam),
+};
+console.log('Raid policy simulation (30 fixed seeds each):', JSON.stringify(raidPolicySummary));
+assert.ok(raidPolicySummary.balanced.wins > raidPolicySummary.reckless.wins,
+  'A telegraph-aware strategy should beat repeated normal attacks in these fixed-seed runs.');
+
+const raidNearFullGuard = resolveRaidAction({
+  ...raidInitial,
+  playerHp: RAID_RULES.PLAYER_MAX_HP - 10,
+  bossPattern: 'SWEEP',
+}, 'GUARD', () => 0.5);
+assert.ok(raidNearFullGuard.playerHp <= raidNearFullGuard.playerMaxHp, 'Guard healing must clamp at maximum HP.');
+
+const raidTerminalState = {
+  ...raidInitial,
+  result: 'VICTORY',
+  playerHp: 0,
+  bossHp: 0,
+};
+assert.strictEqual(canUseRaidAction(raidTerminalState, 'ATTACK'), false, 'Terminal states must reject further commands.');
+assert.strictEqual(resolveRaidAction(raidTerminalState, 'ATTACK', () => 0.5), raidTerminalState,
+  'A late input must not mutate a terminal run.');
+
+console.log('✓ Raid 24-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
 
 
