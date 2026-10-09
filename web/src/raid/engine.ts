@@ -332,6 +332,8 @@ export function resolveRaidAction(
   } else if (wasBroken) {
     finalLog = 'BREAK WINDOW終了。アビスコアが次の予告を組み立てる。';
     nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
+  } else if (perfectCounter || featherInterrupt) {
+    nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
   } else if (bossShouldAttack) {
     nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
     finalLog += pattern === 'VOID'
