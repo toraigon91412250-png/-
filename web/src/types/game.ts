@@ -268,6 +268,16 @@ export interface OverallStats {
   losses: number;
 }
 
+/** Persistent currency earned only by clearing the standalone raid. */
+export interface RaidRewardProgress {
+  coreFragments: number;
+  /** Permanent bonus added to the normal battle's stat-allocation pool. */
+  bonusStatPoints: number;
+  /** Recent raid run IDs that have already paid out a victory reward. */
+  claimedVictoryRunIds: string[];
+}
+
+
 
 export const IRENA_SUPER_FALLEN_SHOT_COOLDOWN = 5;
 
