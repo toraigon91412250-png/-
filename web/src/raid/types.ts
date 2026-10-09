@@ -39,7 +39,9 @@ export interface RaidState {
   repeatCount: number;
   maxCombo: number;
   totalDamage: number;
+  lastDamage: number;
   damageTaken: number;
+  lastIncomingDamage: number;
   bestHit: number;
   perfectReads: number;
   breakCount: number;
