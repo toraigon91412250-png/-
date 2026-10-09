@@ -755,6 +755,24 @@ const raidPolicySummary = {
 console.log('Raid policy simulation (30 fixed seeds each):', JSON.stringify(raidPolicySummary));
 assert.ok(raidPolicySummary.balanced.wins > raidPolicySummary.reckless.wins,
   'A telegraph-aware strategy should beat repeated normal attacks in these fixed-seed runs.');
+
+const raidNearFullGuard = resolveRaidAction({
+  ...raidInitial,
+  playerHp: RAID_RULES.PLAYER_MAX_HP - 10,
+  bossPattern: 'SWEEP',
+}, 'GUARD', () => 0.5);
+assert.ok(raidNearFullGuard.playerHp <= raidNearFullGuard.playerMaxHp, 'Guard healing must clamp at maximum HP.');
+
+const raidTerminalState = {
+  ...raidInitial,
+  result: 'VICTORY',
+  playerHp: 0,
+  bossHp: 0,
+};
+assert.strictEqual(canUseRaidAction(raidTerminalState, 'ATTACK'), false, 'Terminal states must reject further commands.');
+assert.strictEqual(resolveRaidAction(raidTerminalState, 'ATTACK', () => 0.5), raidTerminalState,
+  'A late input must not mutate a terminal run.');
+
 console.log('✓ Raid 24-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
