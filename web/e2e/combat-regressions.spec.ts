@@ -36,7 +36,7 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await page.getByRole('button', { name: '防御' }).click();
 
   await expect(page.getByText('TURN 02')).toBeVisible();
-  await expect(page.getByText('防御態勢')).toBeVisible();
+  await expect(page.getByText('防御態勢', { exact: true })).toBeVisible();
   await expect(page.getByText('LAST HIT')).toBeVisible();
   await expect(page.getByText('LAST RECEIVED')).toBeVisible();
   await page.getByTitle('戻る').click();
