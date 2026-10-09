@@ -46,8 +46,9 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
 
   await expect(page.getByText('TURN 02')).toBeVisible();
   await expect(page.getByText('防御態勢', { exact: true })).toBeVisible();
-  await expect(page.getByText('LAST HIT')).toBeVisible();
-  await expect(page.getByText('LAST RECEIVED')).toBeVisible();
+  await expect(page.getByText('LAST HIT')).toHaveCount(0);
+  await expect(page.getByText('LAST RECEIVED')).toHaveCount(0);
+  await expect(page.getByText('予告への正答は攻撃を止め、BREAKを加速させる。')).toHaveCount(0);
   await expect(page.getByLabel('直近5手の戦闘履歴')).toBeVisible();
   await page.getByRole('button', { name: '集中' }).click();
   await expect(page.getByText('FOCUS READY · 次の攻撃ダメージ ×1.65')).toBeVisible();
@@ -158,11 +159,12 @@ test('phase two Collapse Chain shows its wind-up and can be countered at release
   await expect(intent).toHaveText('崩壊連撃・発動直前');
   await expect(page.locator('.raid-v1-intent')).toContainText('次の行動で崩壊連撃が発動');
 
+  const playerHpBeforeCounter = await page.locator('.raid-v1-player-stat .raid-v1-bar-caption strong').innerText();
   const releaseTurn = await turnMarker.innerText();
   await page.getByRole('button', { name: '迎撃', exact: true }).click();
   await expect(turnMarker).not.toHaveText(releaseTurn);
   await expect(page.locator('.raid-v1-outcome')).toContainText('PERFECT READ');
-  await expect(page.locator('.raid-v1-impact-row span').nth(1)).toContainText('0');
+  await expect(page.locator('.raid-v1-player-stat .raid-v1-bar-caption strong')).toHaveText(playerHpBeforeCounter);
   await expect(intent).not.toHaveText('崩壊連撃・発動直前');
 
   expect(pageErrors, 'Collapse Chain must be resolved without uncaught JavaScript errors.').toEqual([]);
