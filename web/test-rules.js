@@ -612,7 +612,60 @@ const raidAdaptState = {
 const raidAdapt = resolveRaidAction(raidAdaptState, 'ATTACK', () => 0.5);
 assert.strictEqual(raidAdapt.adaptation, 1, 'Repeated actions in phase two should increase boss adaptation.');
 
-console.log('✓ Raid telegraphs, counter, interrupt, guard, BREAK, phase transition, victory, defeat, and adaptation verified.');
+const raidRegenState = {
+  ...raidInitial,
+  bossPattern: 'CORE_REGEN',
+  bossHp: 3200,
+  bossMaxHp: RAID_RULES.PHASE_ONE_BOSS_HP,
+};
+const raidRegen = resolveRaidAction(raidRegenState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidRegen.lastIncomingDamage, 0, 'Core regeneration is a recovery action, not a direct attack.');
+assert.strictEqual(
+  raidRegen.bossHp,
+  Math.min(raidRegenState.bossMaxHp, raidRegenState.bossHp - raidRegen.lastDamage + RAID_RULES.CORE_REGEN_HEAL),
+  'Ignoring Core Regeneration should restore boss HP after the player action.',
+);
+assert.strictEqual(raidRegen.bossPattern === 'CORE_REGEN', false, 'Core regeneration must resolve into a new telegraph.');
+
+const raidRegenInterrupt = resolveRaidAction(raidRegenState, 'FEATHER', () => 0.5);
+assert.strictEqual(
+  raidRegenInterrupt.bossHp,
+  raidRegenState.bossHp - raidRegenInterrupt.lastDamage,
+  'Feather must stop the recovery before it restores boss HP.',
+);
+assert.strictEqual(raidRegenInterrupt.healingPrevented, RAID_RULES.CORE_REGEN_HEAL);
+assert.strictEqual(raidRegenInterrupt.interrupts, 1);
+assert.strictEqual(raidRegenInterrupt.lastIncomingDamage, 0);
+assert.ok(raidRegenInterrupt.history.at(-1).includes('回復阻止'), 'The battle history should record the interrupted healing.');
+
+const raidCollapsePrepState = {
+  ...raidInitial,
+  phase: 2,
+  bossHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossMaxHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossPattern: 'COLLAPSE',
+  bossWindup: 0,
+};
+const raidCollapsePrepared = resolveRaidAction(raidCollapsePrepState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidCollapsePrepared.bossPattern, 'COLLAPSE', 'Collapse Chain must remain telegraphed during its wind-up.');
+assert.strictEqual(raidCollapsePrepared.bossWindup, 1, 'The first Collapse Chain turn must arm the next-turn strike.');
+assert.strictEqual(raidCollapsePrepared.lastIncomingDamage, 0, 'Collapse Chain must not hit before its release turn.');
+
+const raidCollapseReleaseState = { ...raidCollapsePrepared, bossWindup: 1, bossPattern: 'COLLAPSE' };
+const raidCollapseCounter = resolveRaidAction(raidCollapseReleaseState, 'COUNTER', () => 0.5);
+assert.strictEqual(raidCollapseCounter.lastIncomingDamage, 0, 'A correctly timed counter must cancel Collapse Chain.');
+assert.strictEqual(raidCollapseCounter.interrupts, raidCollapseReleaseState.interrupts + 1);
+assert.strictEqual(raidCollapseCounter.bossWindup, 0);
+assert.notStrictEqual(raidCollapseCounter.bossPattern, 'COLLAPSE', 'A stopped Collapse Chain must be replaced by a new telegraph.');
+
+const raidCollapseHit = resolveRaidAction(raidCollapseReleaseState, 'ATTACK', () => 0.5);
+const raidCollapseGuard = resolveRaidAction(raidCollapseReleaseState, 'GUARD', () => 0.5);
+assert.ok(raidCollapseHit.lastIncomingDamage > 1000, 'Ignoring Collapse Chain should carry a substantial damage risk.');
+assert.ok(raidCollapseGuard.lastIncomingDamage < raidCollapseHit.lastIncomingDamage,
+  'Guard must reduce the Collapse Chain hit if countering is not possible.');
+assert.strictEqual(raidCollapseHit.bossWindup, 0, 'The pending multi-turn action must clear after release.');
+
+console.log('✓ Raid telegraphs, counters, channel interruptions, multi-turn wind-up, healing prevention, BREAK, phase transition, victory, defeat, and adaptation verified.');
 
 assert.strictEqual(raidGuardState.mp - raidGuard.mp, 5, 'Guard should have an intentional MP cost after turn regeneration.');
 const raidHeavyGuardState = { ...raidInitial, bossPattern: 'CHARGE' };
@@ -645,7 +698,9 @@ const raidTelegraphs = [
   { pattern: 'SWEEP', phase: 1 },
   { pattern: 'CHARGE', phase: 1 },
   { pattern: 'VOID', phase: 1 },
+  { pattern: 'CORE_REGEN', phase: 1 },
   { pattern: 'RAGE', phase: 2 },
+  { pattern: 'COLLAPSE', phase: 2 },
 ];
 let raidMatrixCases = 0;
 for (const entry of raidTelegraphs) {
@@ -682,7 +737,7 @@ for (const entry of raidTelegraphs) {
     raidMatrixCases += 1;
   }
 }
-assert.strictEqual(raidMatrixCases, 24, 'Test all six actions against all four available telegraphs.');
+assert.strictEqual(raidMatrixCases, 36, 'Test all six actions against all six available telegraphs.');
 
 const raidDryState = { ...raidInitial, mp: 0, tp: 0 };
 for (const action of ['FEATHER', 'GUARD', 'COUNTER', 'FOCUS', 'ULTIMATE']) {
@@ -702,6 +757,12 @@ function createSeededRaidRandom(seed) {
 }
 
 function pickBalancedRaidAction(state) {
+  if (state.bossPattern === 'COLLAPSE' && state.bossWindup > 0) {
+    if (canUseRaidAction(state, 'COUNTER')) return 'COUNTER';
+    if (canUseRaidAction(state, 'GUARD')) return 'GUARD';
+    return 'ATTACK';
+  }
+  if (state.bossPattern === 'CORE_REGEN' && canUseRaidAction(state, 'FEATHER')) return 'FEATHER';
   if (state.tp >= 100 && (state.brokenTurns > 0 || state.bossHp <= 2200)) return 'ULTIMATE';
   if (state.brokenTurns > 0) {
     if (canUseRaidAction(state, 'FEATHER')) return 'FEATHER';
