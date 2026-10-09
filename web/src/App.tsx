@@ -5,7 +5,7 @@ import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -22,6 +22,8 @@ export const App: React.FC = () => {
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
   const [availableStatPoints, setAvailableStatPoints] = useState(() => loadStatPoints());
+  const [raidRewardProgress, setRaidRewardProgress] = useState(() => loadRaidRewardProgress());
+  const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: 10,
     abilities: [],
@@ -58,6 +60,7 @@ export const App: React.FC = () => {
   }, [battleState.phase]);
 
   const refreshProgress = () => {
+    setRaidRewardProgress(loadRaidRewardProgress());
     setOverallStats(loadOverallStats());
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
@@ -65,6 +68,25 @@ export const App: React.FC = () => {
     const currentStatPoints = loadStatPoints();
     setAvailableStatPoints(currentStatPoints);
     setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+  };
+
+  const handleUseRaidCoreFragment = () => {
+    const redemption = redeemRaidCoreFragment();
+    setRaidRewardProgress(redemption.progress);
+
+    if (!redemption.used) {
+      setRaidItemMessage(
+        redemption.persisted
+          ? '使用できる深淵核片がありません。レイド勝利で入手できます。'
+          : '保存に失敗したため使用できませんでした。空き容量やブラウザの保存設定を確認してください。',
+      );
+      return;
+    }
+
+    const nextStatPoints = loadStatPoints();
+    setAvailableStatPoints(nextStatPoints);
+    setBattleSetup(prev => ({ ...prev, statPointTotal: nextStatPoints }));
+    setRaidItemMessage(`深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 ${nextStatPoints}P。`);
   };
 
   const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
@@ -176,6 +198,8 @@ export const App: React.FC = () => {
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
     setAbilityProgress(reset.abilityProgress);
+    setRaidRewardProgress(loadRaidRewardProgress());
+    setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
     setBattleSetup({
       kaiserLevel: 10,
@@ -223,6 +247,9 @@ export const App: React.FC = () => {
           onOpenRaidPrototype={() => setScreen('RAID_PROTOTYPE')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
+          raidRewardProgress={raidRewardProgress}
+          raidItemMessage={raidItemMessage}
+          onUseRaidCoreFragment={handleUseRaidCoreFragment}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
         />
@@ -247,7 +274,10 @@ export const App: React.FC = () => {
           onToggleSpeed={toggleSpeed}
         />
       ) : screen === 'RAID_PROTOTYPE' ? (
-        <RaidGame onBack={() => setScreen('SELECT')} />
+        <RaidGame
+          onBack={() => setScreen('SELECT')}
+          onRaidRewardProgressChange={setRaidRewardProgress}
+        />
       ) : screen === 'RECRUITMENT' ? (
         <RecruitmentScreen
           progress={recruitmentProgress}
