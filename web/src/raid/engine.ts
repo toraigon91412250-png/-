@@ -18,6 +18,7 @@ export const RAID_RULES = {
   FOCUS_GUARD_MULTIPLIER: 0.7,
   FOCUS_SHIELD: 120,
   FEATHER_COOLDOWN: 2,
+  CORE_REGEN_HEAL: 700,
 } as const;
 
 const ACTION_COST: Partial<Record<RaidAction, number>> = {
@@ -32,6 +33,8 @@ const PATTERN_DAMAGE: Record<RaidPattern, { min: number; max: number }> = {
   CHARGE: { min: 850, max: 1120 },
   VOID: { min: 560, max: 760 },
   RAGE: { min: 1050, max: 1380 },
+  CORE_REGEN: { min: 0, max: 0 },
+  COLLAPSE: { min: 1120, max: 1450 },
 };
 
 const ACTION_LABELS: Record<RaidAction, string> = {
@@ -51,7 +54,7 @@ function rollInteger(min: number, max: number, random: () => number): number {
 }
 
 function isHeavyPattern(pattern: RaidPattern): boolean {
-  return pattern === 'CHARGE' || pattern === 'RAGE';
+  return pattern === 'CHARGE' || pattern === 'RAGE' || pattern === 'COLLAPSE';
 }
 
 export function createInitialRaidState(): RaidState {
@@ -68,6 +71,7 @@ export function createInitialRaidState(): RaidState {
     breakGauge: 0,
     brokenTurns: 0,
     bossPattern: 'SWEEP',
+    bossWindup: 0,
     featherCooldown: 0,
     focusCharge: false,
     combo: 0,
@@ -79,6 +83,8 @@ export function createInitialRaidState(): RaidState {
     lastIncomingDamage: 0,
     bestHit: 0,
     perfectReads: 0,
+    interrupts: 0,
+    healingPrevented: 0,
     breakCount: 0,
     adaptation: 0,
     lastAction: null,
@@ -111,16 +117,16 @@ function chooseNextPattern(
   random: () => number,
 ): RaidPattern {
   const pool: RaidPattern[] = phase === 1
-    ? ['SWEEP', 'CHARGE', 'VOID']
-    : ['SWEEP', 'CHARGE', 'VOID', 'RAGE'];
+    ? ['SWEEP', 'CHARGE', 'VOID', 'CORE_REGEN']
+    : ['SWEEP', 'CHARGE', 'VOID', 'RAGE', 'CORE_REGEN', 'COLLAPSE'];
 
   const actionBias: Partial<Record<RaidAction, Partial<Record<RaidPattern, number>>>> = {
-    ATTACK: { CHARGE: 2, VOID: 1 },
-    FEATHER: { SWEEP: 2, CHARGE: 1 },
-    GUARD: { VOID: 2, CHARGE: 1 },
-    COUNTER: { SWEEP: 2, VOID: 1 },
-    FOCUS: { CHARGE: 2, RAGE: 2 },
-    ULTIMATE: { VOID: 2, RAGE: 2 },
+    ATTACK: { CHARGE: 2, VOID: 1, CORE_REGEN: 1 },
+    FEATHER: { SWEEP: 2, CHARGE: 1, CORE_REGEN: 2 },
+    GUARD: { VOID: 2, CHARGE: 1, COLLAPSE: 1 },
+    COUNTER: { SWEEP: 2, VOID: 1, COLLAPSE: 2 },
+    FOCUS: { CHARGE: 2, RAGE: 2, CORE_REGEN: 1 },
+    ULTIMATE: { VOID: 2, RAGE: 2, COLLAPSE: 2 },
   };
 
   const bias = phase === 2 && repeats >= 2 ? actionBias[lastAction] ?? {} : {};
@@ -176,11 +182,13 @@ export function resolveRaidAction(
   const heavy = isHeavyPattern(pattern);
   const wasBroken = state.brokenTurns > 0;
   const repeatCount = state.lastAction === action ? state.repeatCount + 1 : 1;
-  const perfectCounter = action === 'COUNTER' && heavy && !wasBroken;
-  const featherInterrupt = action === 'FEATHER' && pattern === 'VOID' && !wasBroken;
-  const perfectGuard = action === 'GUARD' && heavy && !wasBroken;
+  const collapsePreparing = pattern === 'COLLAPSE' && state.bossWindup === 0 && !wasBroken;
+  const collapseRelease = pattern === 'COLLAPSE' && state.bossWindup > 0 && !wasBroken;
+  const perfectCounter = action === 'COUNTER' && (pattern === 'CHARGE' || pattern === 'RAGE' || collapseRelease) && !wasBroken;
+  const featherInterrupt = action === 'FEATHER' && (pattern === 'VOID' || pattern === 'CORE_REGEN') && !wasBroken;
+  const perfectGuard = action === 'GUARD' && (pattern === 'CHARGE' || pattern === 'RAGE' || collapseRelease) && !wasBroken;
   const sweepOpening = action === 'ATTACK' && pattern === 'SWEEP';
-  const counterMiss = action === 'COUNTER' && !perfectCounter && !wasBroken;
+  const counterMiss = action === 'COUNTER' && !perfectCounter && !wasBroken && !collapsePreparing;
   const mpCost = ACTION_COST[action] ?? 0;
   let nextMp = clamp(state.mp - mpCost, 0, RAID_RULES.PLAYER_MAX_MP);
   let nextTp = state.tp;
@@ -275,7 +283,7 @@ export function resolveRaidAction(
   if (perfectCounter) {
     readOutcome = { title: 'PERFECT READ', detail: '迎撃成功。大技を打ち消し、BREAKを大きく進めた。', tone: 'perfect' };
   } else if (featherInterrupt) {
-    readOutcome = { title: 'SPELL INTERRUPT', detail: '羽弾が虚無落雷の詠唱を断ち切った。', tone: 'perfect' };
+    readOutcome = { title: 'SPELL INTERRUPT', detail: pattern === 'CORE_REGEN' ? '羽弾が虚核再生を断ち、回復を阻止した。' : '羽弾が虚無落雷の詠唱を断ち切った。', tone: 'perfect' };
   } else if (perfectGuard) {
     readOutcome = { title: 'PERFECT GUARD', detail: '大技を読み、防御とBREAKを同時に整えた。', tone: 'good' };
   } else if (counterMiss) {
@@ -297,7 +305,7 @@ export function resolveRaidAction(
     : perfectCounter
       ? '大技を迎撃。アビスコアの攻撃を止めた。'
       : featherInterrupt
-        ? '羽弾で詠唱を中断。ボスの攻撃を止めた。'
+        ? (pattern === 'CORE_REGEN' ? '羽弾で虚核再生を中断。回復を阻止した。' : '羽弾で詠唱を中断。ボスの攻撃を止めた。')
         : action === 'ULTIMATE'
           ? '終天羽星穿ちが炸裂。深淵の核を貫いた。'
           : action === 'FEATHER'
@@ -313,7 +321,7 @@ export function resolveRaidAction(
   const nextAdaptation = state.phase === 2
     ? repeatCount >= 2 ? Math.min(3, state.adaptation + 1) : Math.max(0, state.adaptation - 1)
     : 0;
-  const bossShouldAttack = !wasBroken && !perfectCounter && !featherInterrupt && !triggersBreak && !nextPhaseTwo && !victory;
+  const bossShouldAttack = !wasBroken && !perfectCounter && !featherInterrupt && !triggersBreak && !nextPhaseTwo && !victory && !collapsePreparing && pattern !== 'CORE_REGEN';
 
   if (bossShouldAttack) {
     const range = PATTERN_DAMAGE[pattern];
@@ -342,10 +350,15 @@ export function resolveRaidAction(
   let nextBossHpValue = nextBossHp;
   let nextBossMaxHp = state.bossMaxHp;
   let nextPattern = pattern;
+  let nextBossWindup = 0;
   let nextBrokenTurns = wasBroken ? Math.max(0, state.brokenTurns - 1) : triggersBreak ? 1 : 0;
   let nextGauge = triggersBreak ? 0 : nextBreakGauge;
   let finalLog = nextLog;
   let finalOutcome = readOutcome;
+  let healingPreventedThisTurn = 0;
+  if (pattern === 'CORE_REGEN' && !nextPhaseTwo && !victory && (featherInterrupt || triggersBreak)) {
+    healingPreventedThisTurn = Math.min(RAID_RULES.CORE_REGEN_HEAL, Math.max(0, nextBossMaxHp - nextBossHpValue));
+  }
 
   if (nextPhaseTwo) {
     nextPhase = 2;
@@ -367,6 +380,19 @@ export function resolveRaidAction(
   } else if (triggersBreak) {
     finalLog = 'BREAK! 深淵の核が崩壊。次の行動でバーストを狙える。';
     finalOutcome = { title: 'BREAK!', detail: '次の攻撃は1.5倍。必殺技を温存していたなら大きな好機。', tone: 'good' };
+  } else if (collapsePreparing) {
+    nextPattern = 'COLLAPSE';
+    nextBossWindup = 1;
+    finalLog = '崩壊連撃の発動準備。次の行動で迎撃すれば連撃を止められる。';
+    finalOutcome = { title: '崩壊連撃・予兆', detail: '次のターンに連撃が発動する。迎撃で止めるか、防御で備えよう。', tone: 'danger' };
+  } else if (pattern === 'CORE_REGEN' && !wasBroken && !featherInterrupt) {
+    const healing = Math.min(RAID_RULES.CORE_REGEN_HEAL, Math.max(0, nextBossMaxHp - nextBossHpValue));
+    nextBossHpValue += healing;
+    nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
+    finalLog = healing > 0
+      ? '虚核再生が発動。アビスコアがHPを' + healing + '回復した。羽弾で中断できる。'
+      : '虚核再生が発動したが、核の損傷は残っていない。';
+    finalOutcome = { title: '虚核再生', detail: healing > 0 ? 'ボスがHPを' + healing + '回復。羽弾なら回復を阻止できる。' : '回復するHPがなく、再生は空振りした。', tone: healing > 0 ? 'danger' : 'neutral' };
   } else if (wasBroken) {
     finalLog = 'BREAK WINDOW終了。アビスコアが次の予告を組み立てる。';
     nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
@@ -391,6 +417,7 @@ export function resolveRaidAction(
     breakGauge: nextGauge,
     brokenTurns: nextBrokenTurns,
     bossPattern: nextPattern,
+    bossWindup: nextBossWindup,
     featherCooldown: nextFeatherCooldown,
     focusCharge: nextFocusCharge,
     combo: nextCombo,
@@ -402,13 +429,15 @@ export function resolveRaidAction(
     lastIncomingDamage: incomingDamage,
     bestHit: nextBestHit,
     perfectReads: perfectReadCount,
+    interrupts: state.interrupts + (perfectCounter || featherInterrupt ? 1 : 0),
+    healingPrevented: state.healingPrevented + healingPreventedThisTurn,
     breakCount: nextBreakCount,
     adaptation: nextPhase === 2 ? nextAdaptation : 0,
     lastAction: action,
     actionCounts: { ...state.actionCounts, [action]: state.actionCounts[action] + 1 },
     history: [
       ...state.history,
-      `T${String(state.turn).padStart(2, '0')} ${ACTION_LABELS[action]} · ${finalOutcome.title} · 与ダメ ${damageDealt} / 被ダメ ${incomingDamage} · MP ${state.mp}→${nextMp}`,
+      `T${String(state.turn).padStart(2, '0')} ${ACTION_LABELS[action]} · ${finalOutcome.title} · 与ダメ ${damageDealt} / 被ダメ ${incomingDamage} · MP ${state.mp}→${nextMp}${healingPreventedThisTurn > 0 ? ' · 回復阻止 ' + healingPreventedThisTurn : ''}`,
     ].slice(-5),
     lastRead: finalOutcome.tone,
     outcome: finalOutcome,

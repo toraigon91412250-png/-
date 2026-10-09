@@ -51,6 +51,18 @@ const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: 
     detail: '深淵解放後の必殺級攻撃。迎撃か防御を選び、同じ行動に固執するな。',
     recommendation: '推奨: 迎撃で止める。資源不足なら防御。',
   },
+  CORE_REGEN: {
+    name: '虚核再生',
+    danger: 'RECOVERY',
+    detail: 'アビスコアが損傷した核を再生する。放置するとHPを回復する。',
+    recommendation: '推奨: 羽弾で再生を中断し、回復を阻止する。',
+  },
+  COLLAPSE: {
+    name: '崩壊連撃',
+    danger: 'MULTI-HIT',
+    detail: 'ボスが連撃の準備を開始。次のターンに大技が発動する。',
+    recommendation: '推奨: 次のターンに迎撃できるよう、MP12以上を確保する。',
+  },
 };
 
 const ACTIONS: Array<{
@@ -193,8 +205,8 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             </p>
             <div className="raid-v1-tags">
               <span>2 PHASES</span>
-              <span>READ &amp; COUNTER</span>
-              <span>LOCAL SCORE</span>
+              <span>MULTI-TURN THREATS</span>
+              <span>CHANNEL INTERRUPTS</span>
             </div>
           </div>
           <div className="raid-v1-hero-art" aria-hidden="true">
@@ -227,7 +239,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
         </section>
 
         <footer className="raid-v1-footer">
-          <span>RAID PROJECT 01 / ITERATION 2</span>
+          <span>RAID PROJECT 01 / ITERATION 3</span>
           <span>独立戦闘エンジン · 本編の成長データには接続しません</span>
         </footer>
       </main>
@@ -329,14 +341,14 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
 
           <div className="raid-v1-intent">
             <div className="raid-v1-intent-top">
-              <span>{state.brokenTurns > 0 ? 'OPENING DETECTED' : 'BOSS TELEGRAPH'}</span>
+              <span>{state.brokenTurns > 0 ? 'OPENING DETECTED' : state.bossPattern === 'COLLAPSE' && state.bossWindup > 0 ? 'COLLAPSE · FINAL WARNING' : 'BOSS TELEGRAPH'}</span>
               <span className={`raid-v1-danger raid-v1-danger--${state.brokenTurns > 0 ? 'break' : state.bossPattern.toLowerCase()}`}>
                 {state.brokenTurns > 0 ? 'BREAK' : pattern.danger}
               </span>
             </div>
-            <h3>{state.brokenTurns > 0 ? 'バーストチャンス' : pattern.name}</h3>
-            <p>{state.brokenTurns > 0 ? 'ボスは体勢を崩している。高火力行動でダメージを稼ぐ。' : pattern.detail}</p>
-            <p className="raid-v1-intent-advice">{state.brokenTurns > 0 ? '推奨: 高火力行動。必殺ゲージが100なら必殺技。' : pattern.recommendation}</p>
+            <h3>{state.brokenTurns > 0 ? 'バーストチャンス' : state.bossPattern === 'COLLAPSE' && state.bossWindup > 0 ? '崩壊連撃・発動直前' : pattern.name}</h3>
+            <p>{state.brokenTurns > 0 ? 'ボスは体勢を崩している。高火力行動でダメージを稼ぐ。' : state.bossPattern === 'COLLAPSE' && state.bossWindup > 0 ? '次の行動で崩壊連撃が発動する。迎撃で止められるが、失敗すると大きなダメージを受ける。' : pattern.detail}</p>
+            <p className="raid-v1-intent-advice">{state.brokenTurns > 0 ? '推奨: 高火力行動。必殺ゲージが100なら必殺技。' : state.bossPattern === 'COLLAPSE' && state.bossWindup > 0 ? '推奨: 迎撃で連撃を止める。MP不足なら防御で耐える。' : pattern.recommendation}</p>
           </div>
         </div>
 
@@ -371,6 +383,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
                 <span>ボスの適応</span>
                 <strong>{state.adaptation}/3</strong>
                 <div>{[0, 1, 2].map(level => <i key={level} className={level < state.adaptation ? 'is-filled' : ''} />)}</div>
+                <small className="raid-v1-adaptation-note">{state.repeatCount >= 2 && state.lastAction ? `読まれた行動: ${ACTIONS.find(action => action.id === state.lastAction)?.label ?? '不明'}` : '行動を変えると適応が弱まる'}</small>
               </div>
             )}
           </section>
@@ -425,6 +438,8 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             <span><small>最高ダメージ</small><strong>{formatNumber(state.bestHit)}</strong></span>
             <span><small>PERFECT READ</small><strong>{state.perfectReads}</strong></span>
             <span><small>BREAK</small><strong>{state.breakCount}</strong></span>
+            <span><small>妨害成功</small><strong>{state.interrupts}</strong></span>
+            <span><small>回復阻止</small><strong>{formatNumber(state.healingPrevented)}</strong></span>
           </div>
           <section className="raid-v1-command-mix" aria-label="今回の行動回数">
             <span className="raid-v1-command-mix-title">COMMAND MIX · 行動回数</span>
@@ -440,7 +455,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
       )}
 
       <footer className="raid-v1-footer">
-        <span>RAID PROJECT 01 / ITERATION 2</span>
+        <span>RAID PROJECT 01 / ITERATION 3</span>
         <span>独立戦闘エンジン · 本編の成長データには接続しません</span>
       </footer>
     </main>

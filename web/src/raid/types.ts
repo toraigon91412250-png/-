@@ -1,6 +1,6 @@
 export type RaidPhase = 1 | 2;
 
-export type RaidPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE';
+export type RaidPattern = 'SWEEP' | 'CHARGE' | 'VOID' | 'RAGE' | 'CORE_REGEN' | 'COLLAPSE';
 
 export type RaidAction =
   | 'ATTACK'
@@ -33,6 +33,8 @@ export interface RaidState {
   breakGauge: number;
   brokenTurns: number;
   bossPattern: RaidPattern;
+  /** Turns left before a multi-turn boss attack resolves. Zero means its initial warning. */
+  bossWindup: number;
   featherCooldown: number;
   focusCharge: boolean;
   combo: number;
@@ -44,6 +46,8 @@ export interface RaidState {
   lastIncomingDamage: number;
   bestHit: number;
   perfectReads: number;
+  interrupts: number;
+  healingPrevented: number;
   breakCount: number;
   adaptation: number;
   lastAction: RaidAction | null;
