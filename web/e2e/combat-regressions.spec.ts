@@ -35,10 +35,12 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await expect(page.getByText('BOSS TELEGRAPH')).toHaveCount(0);
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
   await expect(page.getByText('BOSS TELEGRAPH')).toBeVisible();
-  const raidShell = page.locator('.raid-v1-shell');
-  await expect.poll(() => raidShell.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
-  await raidShell.evaluate(element => element.scrollTo({ top: element.scrollHeight, behavior: 'instant' }));
-  await expect(page.getByRole('button', { name: '防御' })).toBeInViewport();
+  const raidShell = page.locator('.raid-v1-shell--battle');
+  await expect(raidShell).toBeVisible();
+  for (const action of ['通常攻撃', '羽弾', '防御', '迎撃', '集中', '終天羽星穿ち']) {
+    await expect(page.getByRole('button', { name: action, exact: true })).toBeInViewport();
+  }
+  await expect.poll(() => raidShell.evaluate(element => element.scrollHeight <= element.clientHeight + 1)).toBe(true);
   await expect(page.getByRole('button', { name: '迎撃' })).toBeEnabled();
   await page.getByRole('button', { name: '防御' }).click();
 

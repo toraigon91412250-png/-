@@ -247,7 +247,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
   }
 
   return (
-    <main className="raid-v1-shell">
+    <main className={`raid-v1-shell raid-v1-shell--battle${state.result !== 'ACTIVE' ? ' raid-v1-shell--complete' : ''}`}>
       <header className="raid-v1-header">
         <button type="button" className="raid-v1-back" onClick={onBack} title="戻る">
           <ArrowLeft size={17} />
