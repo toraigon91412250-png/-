@@ -526,7 +526,7 @@
     grid-column: 1;
     grid-row: 2;
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
     gap: 5px;
   }
   .raid-v1-shell--battle .raid-v1-player-card { padding: 7px 9px; border-radius: 9px; }
@@ -544,7 +544,6 @@
   .raid-v1-shell--battle .raid-v1-focus-ready { margin-top: 4px; padding: 4px 6px; font-size: 8px; }
   .raid-v1-shell--battle .raid-v1-adaptation { margin-top: 4px; font-size: 8px; }
   .raid-v1-shell--battle .raid-v1-adaptation i { width: 13px; }
-  .raid-v1-shell--battle .raid-v1-impact-row { display: none; }
   .raid-v1-shell--battle .raid-v1-outcome { padding: 5px 7px; border-radius: 7px; gap: 6px; }
   .raid-v1-shell--battle .raid-v1-outcome-mark { width: 22px; height: 22px; }
   .raid-v1-shell--battle .raid-v1-outcome-mark svg { width: 14px; height: 14px; }
