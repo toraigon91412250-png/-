@@ -229,12 +229,28 @@ export function resolveRaidAction(
   const nextMaxCombo = Math.max(state.maxCombo, nextCombo);
 
   let readOutcome: RaidOutcome = {
-    title: action === 'FOCUS' ? '集中を整える' : action === 'GUARD' ? '防御態勢' : '攻撃を仕掛ける',
+    title: action === 'FOCUS'
+      ? '集中を整える'
+      : action === 'GUARD'
+        ? '防御態勢'
+        : action === 'FEATHER'
+          ? '羽弾を放つ'
+          : action === 'COUNTER'
+            ? '迎撃を試みる'
+            : action === 'ULTIMATE'
+              ? '必殺技を解放'
+              : '攻撃を仕掛ける',
     detail: action === 'FOCUS'
       ? '次の攻撃を強化。必殺ゲージも大きく上昇した。'
       : action === 'GUARD'
         ? 'このターンの被害を抑え、少しだけHPを回復した。'
-        : 'ダメージと必殺ゲージを蓄積する。',
+        : action === 'FEATHER'
+          ? '羽弾を放ち、ボスにダメージを与える。虚無落雷なら中断できる。'
+          : action === 'COUNTER'
+            ? '大技の予告に合わせて迎撃を試みる。'
+            : action === 'ULTIMATE'
+              ? '蓄積した必殺ゲージを使い、強力な一撃を放つ。'
+              : 'ダメージと必殺ゲージを蓄積する。',
     tone: 'neutral',
   };
 
@@ -247,7 +263,7 @@ export function resolveRaidAction(
   } else if (counterMiss) {
     readOutcome = { title: 'COUNTER MISS', detail: '予告と行動が噛み合わない。反撃を受ける危険が高まった。', tone: 'danger' };
   } else if (sweepOpening) {
-    readOutcome = { title: 'OPENING HIT', detail: '薙ぎ払いの予備動作を見切り、隙へ攻撃を差し込んだ。', tone: 'good' };
+    readOutcome = { title: 'OPENING HIT', detail: '予備動作中に攻撃を差し込んだ。ダメージは伸びるが、反撃への注意も必要。', tone: 'good' };
   } else if (wasBroken) {
     readOutcome = { title: 'BURST WINDOW', detail: 'BREAK中。火力が大きく上昇している。', tone: 'good' };
   }
