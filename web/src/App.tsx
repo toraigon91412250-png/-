@@ -5,7 +5,6 @@ import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRecruitmentProgress, loadSkillProgress, performRecruitment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
-import { RaidBossScreen } from './components/RaidBossScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
@@ -14,7 +13,7 @@ import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadAllGameImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_BOSS' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -257,7 +256,6 @@ export const App: React.FC = () => {
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
           onStartBattle={() => handleOpenBattleSetup()}
-          onOpenRaidBoss={() => setScreen('RAID_BOSS')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
@@ -283,8 +281,6 @@ export const App: React.FC = () => {
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />
-      ) : screen === 'RAID_BOSS' ? (
-        <RaidBossScreen onBack={() => setScreen('SELECT')} />
       ) : screen === 'RECRUITMENT' ? (
         <RecruitmentScreen
           progress={recruitmentProgress}
