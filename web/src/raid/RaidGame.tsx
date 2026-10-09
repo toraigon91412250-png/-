@@ -297,6 +297,11 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             )}
           </section>
 
+          <div className="raid-v1-impact-row" aria-live="polite">
+            <span><small>LAST HIT</small><strong>{formatNumber(state.lastDamage)}</strong></span>
+            <span><small>LAST RECEIVED</small><strong>{formatNumber(state.lastIncomingDamage)}</strong></span>
+          </div>
+
           <section className={`raid-v1-outcome raid-v1-outcome--${state.outcome.tone}`} aria-live="polite">
             <div className="raid-v1-outcome-mark">
               {state.outcome.tone === 'perfect' ? <Crosshair size={18} /> : state.outcome.tone === 'phase' ? <Zap size={18} /> : state.outcome.tone === 'danger' ? <Skull size={18} /> : <Sparkles size={18} />}
@@ -314,6 +319,7 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
                 <ActionButton key={action.id} action={action} state={state} onAction={handleAction} />
               ))}
             </div>
+            <div className="raid-v1-combat-log" aria-live="polite"><span>COMBAT LOG</span><p>{state.log}</p></div>
             <p className="raid-v1-hint"><Sparkles size={14} /> 予告への正答は攻撃を止め、BREAKを加速させる。</p>
           </section>
         </aside>
