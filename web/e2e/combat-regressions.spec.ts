@@ -31,6 +31,9 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
 
   await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'バトル開始', exact: true })).toBeEnabled();
+  await expect(page.getByText('BOSS TELEGRAPH')).toHaveCount(0);
+  await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
   await expect(page.getByText('BOSS TELEGRAPH')).toBeVisible();
   await expect(page.getByRole('button', { name: '迎撃' })).toBeEnabled();
   await page.getByRole('button', { name: '防御' }).click();
