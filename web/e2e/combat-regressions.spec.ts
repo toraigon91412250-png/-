@@ -52,6 +52,118 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   expect(pageErrors, 'The raid prototype should not raise uncaught JavaScript errors.').toEqual([]);
 });
 
+
+test('Core Regeneration is visible and Feather interrupts the recovery on desktop and mobile', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
+
+  // Force the opening sweep to transition to CORE_REGEN, without adding a production test hook.
+  await page.evaluate(() => {
+    const samples = [0.5, 0.1, 0.95];
+    let index = 0;
+    Math.random = () => samples[index++] ?? 0.5;
+  });
+  const turnMarker = page.locator('.raid-v1-action-heading > span');
+  const firstTurn = await turnMarker.innerText();
+  await page.getByRole('button', { name: '通常攻撃', exact: true }).click();
+  await expect(turnMarker).not.toHaveText(firstTurn);
+  await expect(page.locator('.raid-v1-intent h3')).toHaveText('虚核再生');
+  await expect(page.locator('.raid-v1-intent')).toContainText('羽弾で再生を中断');
+
+  await page.getByRole('button', { name: '羽弾', exact: true }).click();
+  await expect(page.locator('.raid-v1-outcome')).toContainText('SPELL INTERRUPT');
+  await expect(page.locator('.raid-v1-combat-log')).toContainText('回復を阻止した');
+  await expect(page.locator('.raid-v1-history')).toContainText('回復阻止');
+
+  expect(pageErrors, 'The regeneration interruption must not raise uncaught JavaScript errors.').toEqual([]);
+});
+
+test('phase two Collapse Chain shows its wind-up and can be countered at release', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    const state = window as unknown as { __raidRandomValue: number };
+    state.__raidRandomValue = 0.1;
+    Math.random = () => state.__raidRandomValue;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
+
+  const phaseChip = page.locator('.raid-v1-phase-chip');
+  const turnMarker = page.locator('.raid-v1-action-heading > span');
+  const intent = page.locator('.raid-v1-intent h3');
+
+  // Finish phase one with repeatable low-damage rolls and valid counters against heavy telegraphs.
+  for (let turn = 0; turn < 18; turn += 1) {
+    if ((await phaseChip.innerText()).includes('PHASE 02')) break;
+
+    const title = await intent.innerText();
+    let action = '通常攻撃';
+    if (title === '滅界砲' || title === '終焉衝動') {
+      action = await page.getByRole('button', { name: '迎撃', exact: true }).isEnabled()
+        ? '迎撃'
+        : await page.getByRole('button', { name: '防御', exact: true }).isEnabled()
+          ? '防御'
+          : '通常攻撃';
+    } else if (title === '虚無落雷' || title === '虚核再生') {
+      action = await page.getByRole('button', { name: '羽弾', exact: true }).isEnabled()
+        ? '羽弾'
+        : '通常攻撃';
+    } else if (title === 'バーストチャンス') {
+      action = await page.getByRole('button', { name: '終天羽星穿ち', exact: true }).isEnabled()
+        ? '終天羽星穿ち'
+        : '通常攻撃';
+    }
+
+    const button = page.getByRole('button', { name: action, exact: true });
+    const before = await turnMarker.innerText();
+    await button.click();
+    await expect(turnMarker).not.toHaveText(before, { timeout: 5_000 });
+  }
+  await expect(phaseChip).toHaveText('PHASE 02', { timeout: 5_000 });
+
+  // High rolls are safe for a successful counter and deterministically select the last phase-two telegraph.
+  await page.evaluate(() => {
+    (window as unknown as { __raidRandomValue: number }).__raidRandomValue = 0.99;
+  });
+  await expect(intent).toHaveText('終焉衝動');
+  await page.getByRole('button', { name: '迎撃', exact: true }).click();
+  await expect(intent).toHaveText('崩壊連撃');
+
+  // FOCUS is safe during the wind-up and does not consume the BREAK gauge needed for the release counter.
+  await page.evaluate(() => {
+    (window as unknown as { __raidRandomValue: number }).__raidRandomValue = 0.1;
+  });
+  const warningTurn = await turnMarker.innerText();
+  await page.getByRole('button', { name: '集中', exact: true }).click();
+  await expect(turnMarker).not.toHaveText(warningTurn);
+  await expect(intent).toHaveText('崩壊連撃・発動直前');
+  await expect(page.locator('.raid-v1-intent')).toContainText('次の行動で崩壊連撃が発動');
+
+  const releaseTurn = await turnMarker.innerText();
+  await page.getByRole('button', { name: '迎撃', exact: true }).click();
+  await expect(turnMarker).not.toHaveText(releaseTurn);
+  await expect(page.locator('.raid-v1-outcome')).toContainText('PERFECT READ');
+  await expect(page.locator('.raid-v1-impact-row span').nth(1)).toContainText('0');
+  await expect(intent).not.toHaveText('崩壊連撃・発動直前');
+
+  expect(pageErrors, 'Collapse Chain must be resolved without uncaught JavaScript errors.').toEqual([]);
+});
+
 test('fresh save starts with 12 points and action controls relock until the turn resolves', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
