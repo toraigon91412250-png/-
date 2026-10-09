@@ -22,6 +22,15 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+test('raid mode stays hidden while the main battle and summon entry points remain available', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+
+  await expect(page.getByRole('button', { name: /レイドボスに挑戦/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /黒翼召喚/ })).toBeVisible();
+});
+
 test('fresh save starts with 12 points and action controls relock until the turn resolves', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
