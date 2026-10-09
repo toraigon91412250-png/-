@@ -4,6 +4,7 @@ import {
   Crosshair,
   Feather,
   Gauge,
+  Gem,
   Heart,
   RotateCcw,
   Shield,
