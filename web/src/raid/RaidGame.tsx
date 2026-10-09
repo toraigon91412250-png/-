@@ -30,7 +30,7 @@ const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: 
   SWEEP: {
     name: '黒爪薙ぎ',
     danger: 'WARNING',
-    detail: '広い薙ぎ払い。ガードで被害を抑えるか、予備動作の隙に攻め込め。',
+    detail: '広い薙ぎ払いの予告。攻撃は通るが被弾する。防御で被害を抑えられる。',
   },
   CHARGE: {
     name: '滅界砲',
