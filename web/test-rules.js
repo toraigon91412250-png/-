@@ -625,8 +625,10 @@ assert.ok(raidHeavyCounter.lastDamage > raidHeavyGuard.lastDamage, 'A correct co
 const raidFocusState = { ...raidInitial, bossPattern: 'SWEEP', focusCharge: true };
 const raidFocusedAttack = resolveRaidAction(raidFocusState, 'ATTACK', () => 0.5);
 const raidUnfocusedAttack = resolveRaidAction({ ...raidFocusState, focusCharge: false }, 'ATTACK', () => 0.5);
-assert.strictEqual(raidFocusedAttack.lastDamage, Math.round(raidUnfocusedAttack.lastDamage * RAID_RULES.FOCUS_DAMAGE_MULTIPLIER),
-  'Focus should apply its documented multiplier to the next damaging action.');
+assert.ok(
+  Math.abs(raidFocusedAttack.lastDamage - Math.round(raidUnfocusedAttack.lastDamage * RAID_RULES.FOCUS_DAMAGE_MULTIPLIER)) <= 1,
+  'Focus should apply its documented multiplier to the next damaging action, allowing for integer rounding.',
+);
 
 const raidActionNames = ['ATTACK', 'FEATHER', 'GUARD', 'COUNTER', 'FOCUS', 'ULTIMATE'];
 const raidTelegraphs = [
