@@ -32,6 +32,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, performRecruitment } = await import('./src/utils/storage.ts');
+const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
@@ -535,6 +536,82 @@ console.log(
   'Level curve:',
   battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
 );
+
+console.log('--- Testing isolated Raid Project 01 rules ---');
+
+const raidInitial = createInitialRaidState();
+assert.strictEqual(raidInitial.playerHp, RAID_RULES.PLAYER_MAX_HP);
+assert.strictEqual(raidInitial.bossHp, RAID_RULES.PHASE_ONE_BOSS_HP);
+assert.strictEqual(raidInitial.phase, 1);
+assert.strictEqual(canUseRaidAction(raidInitial, 'ATTACK'), true);
+assert.strictEqual(canUseRaidAction(raidInitial, 'ULTIMATE'), false);
+assert.strictEqual(resolveRaidAction(raidInitial, 'ULTIMATE', () => 0.5), raidInitial, 'An ultimate without full TP must not mutate the run.');
+
+const raidAttack = resolveRaidAction(raidInitial, 'ATTACK', () => 0.5);
+assert.strictEqual(raidAttack.turn, 2);
+assert.ok(raidAttack.bossHp < raidInitial.bossHp, 'A normal strike must damage the boss.');
+assert.ok(raidAttack.tp > 0, 'A normal strike must build ultimate TP.');
+assert.ok(raidAttack.playerHp < raidInitial.playerHp, 'An unguarded attack must take the telegraphed sweep hit.');
+
+const raidCounterState = { ...raidInitial, bossPattern: 'CHARGE' };
+const raidCounter = resolveRaidAction(raidCounterState, 'COUNTER', () => 0.5);
+assert.strictEqual(raidCounter.playerHp, raidCounterState.playerHp, 'A perfect counter must stop a heavy boss attack.');
+assert.ok(raidCounter.perfectReads === 1);
+assert.ok(raidCounter.bossPattern !== 'CHARGE', 'A successful counter must reveal a new telegraph.');
+
+const raidInterruptState = { ...raidInitial, bossPattern: 'VOID' };
+const raidInterrupt = resolveRaidAction(raidInterruptState, 'FEATHER', () => 0.5);
+assert.strictEqual(raidInterrupt.playerHp, raidInterruptState.playerHp, 'Feather must interrupt VOID before its hit resolves.');
+assert.strictEqual(raidInterrupt.perfectReads, 1);
+assert.ok(raidInterrupt.mp < raidInterruptState.mp);
+
+const raidGuardState = { ...raidInitial, bossPattern: 'SWEEP' };
+const raidGuard = resolveRaidAction(raidGuardState, 'GUARD', () => 0.5);
+assert.ok(raidGuard.playerHp > raidAttack.playerHp, 'Guard must be safer than an unguarded strike against a sweep.');
+
+const raidBreakState = { ...raidInitial, breakGauge: 90 };
+const raidBreak = resolveRaidAction(raidBreakState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidBreak.breakCount, 1);
+assert.strictEqual(raidBreak.breakGauge, 0);
+assert.strictEqual(raidBreak.brokenTurns, 1, 'Full BREAK gauge should open a burst turn.');
+
+const raidPhaseState = { ...raidInitial, bossHp: 100, bossMaxHp: 100 };
+const raidPhase = resolveRaidAction(raidPhaseState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidPhase.phase, 2, 'Defeating phase one should trigger phase two.');
+assert.strictEqual(raidPhase.bossHp, RAID_RULES.PHASE_TWO_BOSS_HP);
+assert.strictEqual(raidPhase.bossPattern, 'RAGE');
+
+const raidVictoryState = {
+  ...raidInitial,
+  phase: 2,
+  bossHp: 100,
+  bossMaxHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossPattern: 'RAGE',
+};
+const raidVictory = resolveRaidAction(raidVictoryState, 'COUNTER', () => 0.5);
+assert.strictEqual(raidVictory.result, 'VICTORY', 'Defeating phase two with a perfect counter should win the run.');
+assert.ok(raidVictory.score > 0);
+
+const raidDefeatState = { ...raidInitial, playerHp: 1, bossPattern: 'CHARGE' };
+const raidDefeat = resolveRaidAction(raidDefeatState, 'ATTACK', () => 0.99);
+assert.strictEqual(raidDefeat.result, 'DEFEAT', 'An unguarded hit at 1 HP must end the run.');
+assert.strictEqual(raidDefeat.playerHp, 0);
+
+const raidAdaptState = {
+  ...raidInitial,
+  phase: 2,
+  bossHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossMaxHp: RAID_RULES.PHASE_TWO_BOSS_HP,
+  bossPattern: 'SWEEP',
+  lastAction: 'ATTACK',
+  repeatCount: 1,
+  combo: 1,
+};
+const raidAdapt = resolveRaidAction(raidAdaptState, 'ATTACK', () => 0.5);
+assert.strictEqual(raidAdapt.adaptation, 1, 'Repeated actions in phase two should increase boss adaptation.');
+
+console.log('✓ Raid telegraphs, counter, interrupt, guard, BREAK, phase transition, victory, defeat, and adaptation verified.');
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
 
 
