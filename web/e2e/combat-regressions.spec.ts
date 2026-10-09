@@ -16,7 +16,14 @@ async function startFreshBattle(page: Page) {
   await expect(page.getByText(/残り\s*12P\s*\/\s*12P/)).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
-  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay.locator('.battle-deploy-reticle')).toBeVisible();
+  await expect(deployOverlay.locator('.battle-deploy-progress')).toBeVisible();
+  await expect(deployOverlay).toContainText('TACTICAL LINK');
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+
+  await expect(page.getByText(/^第\\s*1\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   const attackButton = page.locator('button:visible').filter({ hasText: /^攻撃/ }).first();
   await expect(attackButton).toBeEnabled({ timeout: 20_000 });
   return attackButton;
