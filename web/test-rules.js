@@ -31,7 +31,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, performRecruitment } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment } = await import('./src/utils/storage.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -391,6 +391,40 @@ globalThis.localStorage = {
 assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the initial 12 points.');
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');
 assert.strictEqual(loadStatPoints(), 14);
+
+// Raid-exclusive reward persistence, idempotent victory claims, and permanent stat-point redemption.
+const pointsBeforeRaidRewardTest = storageValues.get('duel_arena_stat_points');
+const rewardBeforeRaidRewardTest = storageValues.get('duel_arena_raid_reward_progress');
+assert.strictEqual(loadRaidRewardProgress().coreFragments, 0);
+const firstRaidClaim = claimRaidVictoryReward('unit-test-raid-victory-001');
+assert.strictEqual(firstRaidClaim.claimed, true, 'A new raid victory should grant one core fragment.');
+assert.strictEqual(firstRaidClaim.progress.coreFragments, 1);
+const repeatedRaidClaim = claimRaidVictoryReward('unit-test-raid-victory-001');
+assert.strictEqual(repeatedRaidClaim.claimed, false, 'The same raid run must never pay out twice.');
+assert.strictEqual(loadRaidRewardProgress().coreFragments, 1, 'A duplicate claim must not duplicate the item.');
+
+const firstRedemption = redeemRaidCoreFragment();
+assert.strictEqual(firstRedemption.used, true, 'A held core fragment should be redeemable.');
+assert.strictEqual(firstRedemption.progress.coreFragments, 0, 'Redemption should consume exactly one fragment.');
+assert.strictEqual(firstRedemption.progress.bonusStatPoints, 2, 'One fragment should permanently add two stat points.');
+assert.strictEqual(loadStatPoints(), 16, 'Raid bonus points must be included in the main battle allocation pool.');
+assert.strictEqual(redeemRaidCoreFragment().used, false, 'Redemption must fail cleanly with no fragment remaining.');
+
+assert.strictEqual(addStatPoints(2), 18, 'Normal battle rewards must add to base points without double-counting raid bonuses.');
+assert.strictEqual(loadStatPoints(), 18);
+const secondRaidClaim = claimRaidVictoryReward('unit-test-raid-victory-002');
+assert.strictEqual(secondRaidClaim.claimed, true, 'A different cleared raid run should grant its own reward.');
+assert.strictEqual(redeemRaidCoreFragment().used, true);
+assert.strictEqual(loadStatPoints(), 20, 'A second redeemed fragment should add another permanent two points.');
+assert.strictEqual(claimRaidVictoryReward('').claimed, false, 'An empty run ID must never grant a reward.');
+
+if (pointsBeforeRaidRewardTest === undefined) storageValues.delete('duel_arena_stat_points');
+else storageValues.set('duel_arena_stat_points', pointsBeforeRaidRewardTest);
+if (rewardBeforeRaidRewardTest === undefined) storageValues.delete('duel_arena_raid_reward_progress');
+else storageValues.set('duel_arena_raid_reward_progress', rewardBeforeRaidRewardTest);
+assert.strictEqual(loadStatPoints(), 14, 'Raid reward unit tests must restore the pre-test main progression.');
+console.log('✓ Raid-exclusive item claims are idempotent and redeem into persistent main-game stat points.');
+
 for (let i = 0; i < 8; i += 1) {
   storageValues.set('duel_arena_recruitment_progress', JSON.stringify({ tickets: 10, totalPulls: i * 10, collectedIds: [], lastResults: [] }));
   const drawResult = performRecruitment(10);
