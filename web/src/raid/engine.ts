@@ -57,6 +57,7 @@ export function createInitialRaidState(): RaidState {
     featherCooldown: 0,
     focusCharge: false,
     combo: 0,
+    repeatCount: 0,
     maxCombo: 0,
     totalDamage: 0,
     damageTaken: 0,
@@ -156,7 +157,7 @@ export function resolveRaidAction(
   const pattern = state.bossPattern;
   const heavy = isHeavyPattern(pattern);
   const wasBroken = state.brokenTurns > 0;
-  const repeatCount = state.lastAction === action ? Math.min(4, state.combo + 1) : 1;
+  const repeatCount = state.lastAction === action ? state.repeatCount + 1 : 1;
   const perfectCounter = action === 'COUNTER' && heavy && !wasBroken;
   const featherInterrupt = action === 'FEATHER' && pattern === 'VOID' && !wasBroken;
   const perfectGuard = action === 'GUARD' && heavy && !wasBroken;
@@ -214,7 +215,6 @@ export function resolveRaidAction(
   const playerHpAfterGuard = action === 'GUARD'
     ? Math.min(state.playerMaxHp, state.playerHp + 120)
     : state.playerHp;
-  const tpGain = action === 'ULTIMATE' ? 0 : nextTp - state.tp;
   nextTp = clamp(nextTp, 0, RAID_RULES.PLAYER_MAX_TP);
   nextMp = Math.min(RAID_RULES.PLAYER_MAX_MP, nextMp + RAID_RULES.MP_REGEN_PER_TURN);
   const nextFeatherCooldown = action === 'FEATHER'
@@ -301,7 +301,7 @@ export function resolveRaidAction(
   const newResult = victory ? 'VICTORY' : defeated ? 'DEFEAT' : 'ACTIVE';
 
   let nextPhase: RaidPhase = state.phase;
-  let nextBossHp = nextBossHp;
+  let nextBossHpValue = nextBossHp;
   let nextBossMaxHp = state.bossMaxHp;
   let nextPattern = pattern;
   let nextBrokenTurns = wasBroken ? Math.max(0, state.brokenTurns - 1) : triggersBreak ? 1 : 0;
@@ -311,7 +311,7 @@ export function resolveRaidAction(
 
   if (nextPhaseTwo) {
     nextPhase = 2;
-    nextBossHp = RAID_RULES.PHASE_TWO_BOSS_HP;
+    nextBossHpValue = RAID_RULES.PHASE_TWO_BOSS_HP;
     nextBossMaxHp = RAID_RULES.PHASE_TWO_BOSS_HP;
     nextGauge = 0;
     nextBrokenTurns = 0;
@@ -319,7 +319,7 @@ export function resolveRaidAction(
     finalLog = '深淵解放。アビスコアが第2形態へ移行した。同じ行動を続けると対応が鋭くなる。';
     finalOutcome = { title: 'PHASE II · 深淵解放', detail: 'ボスの攻撃が激化。行動を変えて適応を崩そう。', tone: 'phase' };
   } else if (victory) {
-    nextBossHp = 0;
+    nextBossHpValue = 0;
     nextBrokenTurns = 0;
     finalLog = '討伐成功。深淵の核は砕け散った。';
     finalOutcome = { title: 'RAID CLEAR', detail: 'アビスコアを討伐。戦闘スコアが記録された。', tone: 'victory' };
@@ -343,7 +343,7 @@ export function resolveRaidAction(
     ...state,
     turn: state.turn + 1,
     phase: nextPhase,
-    bossHp: nextBossHp,
+    bossHp: nextBossHpValue,
     bossMaxHp: nextBossMaxHp,
     playerHp: nextPlayerHp,
     mp: nextMp,
@@ -354,6 +354,7 @@ export function resolveRaidAction(
     featherCooldown: nextFeatherCooldown,
     focusCharge: nextFocusCharge,
     combo: nextCombo,
+    repeatCount,
     maxCombo: nextMaxCombo,
     totalDamage: nextDamageTotal,
     damageTaken: state.damageTaken + incomingDamage,
@@ -369,7 +370,5 @@ export function resolveRaidAction(
     score: 0,
   };
 
-  // TP is intentionally computed after the action's costs/effects, not from total damage.
-  void tpGain;
   return withScore(nextState);
 }
