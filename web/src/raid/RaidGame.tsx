@@ -159,7 +159,6 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
 
   const restart = () => setState(createInitialRaidState());
   const pattern = PATTERN_INFO[state.bossPattern];
-  const bossHpPercent = Math.max(0, Math.min(100, (state.bossHp / state.bossMaxHp) * 100));
   const tpPercent = Math.max(0, Math.min(100, state.tp));
   const breakPercent = Math.max(0, Math.min(100, state.breakGauge));
 
