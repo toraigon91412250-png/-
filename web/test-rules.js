@@ -551,6 +551,8 @@ const raidAttack = resolveRaidAction(raidInitial, 'ATTACK', () => 0.5);
 assert.strictEqual(raidAttack.turn, 2);
 assert.ok(raidAttack.bossHp < raidInitial.bossHp, 'A normal strike must damage the boss.');
 assert.ok(raidAttack.tp > 0, 'A normal strike must build ultimate TP.');
+assert.strictEqual(raidAttack.lastDamage, raidAttack.totalDamage, 'The impact readout should expose the latest strike damage.');
+assert.ok(raidAttack.lastIncomingDamage > 0, 'The impact readout should expose the boss hit after an unguarded action.');
 assert.ok(raidAttack.playerHp < raidInitial.playerHp, 'An unguarded attack must take the telegraphed sweep hit.');
 
 const raidCounterState = { ...raidInitial, bossPattern: 'CHARGE' };
