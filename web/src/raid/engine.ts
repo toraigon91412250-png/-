@@ -385,7 +385,7 @@ export function resolveRaidAction(
     nextBossWindup = 1;
     finalLog = '崩壊連撃の発動準備。次の行動で迎撃すれば連撃を止められる。';
     finalOutcome = { title: '崩壊連撃・予兆', detail: '次のターンに連撃が発動する。迎撃で止めるか、防御で備えよう。', tone: 'danger' };
-  } else if (pattern === 'CORE_REGEN' && !wasBroken) {
+  } else if (pattern === 'CORE_REGEN' && !wasBroken && !featherInterrupt) {
     const healing = Math.min(RAID_RULES.CORE_REGEN_HEAL, Math.max(0, nextBossMaxHp - nextBossHpValue));
     nextBossHpValue += healing;
     nextPattern = chooseNextPattern(nextPhase, pattern, action, repeatCount, random);
