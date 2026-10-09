@@ -142,6 +142,7 @@ function ActionButton({
 
 export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
   const [state, setState] = useState<RaidState>(() => createInitialRaidState());
+  const [hasStarted, setHasStarted] = useState(false);
   const [bestScore, setBestScore] = useState<number>(() => loadBestScore());
 
   useEffect(() => {
@@ -165,6 +166,73 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
   const pattern = PATTERN_INFO[state.bossPattern];
   const tpPercent = Math.max(0, Math.min(100, state.tp));
   const breakPercent = Math.max(0, Math.min(100, state.breakGauge));
+
+  if (!hasStarted) {
+    return (
+      <main className="raid-v1-shell">
+        <header className="raid-v1-header">
+          <button type="button" className="raid-v1-back" onClick={onBack} title="戻る">
+            <ArrowLeft size={17} />
+            <span>本編に戻る</span>
+          </button>
+          <div className="raid-v1-project">
+            <span className="raid-v1-project-dot" />
+            RAID PROJECT <strong>01</strong>
+          </div>
+          <span className="raid-v1-status">PLAYABLE PROTOTYPE</span>
+        </header>
+
+        <section className="raid-v1-hero" aria-labelledby="raid-v1-title">
+          <div className="raid-v1-hero-copy">
+            <p className="raid-v1-kicker">SOLO RAID / ABYSS DIVISION</p>
+            <h1 id="raid-v1-title">アビスコア</h1>
+            <p className="raid-v1-hero-subtitle">深淵喰らい · 封印核を破壊せよ</p>
+            <p className="raid-v1-hero-description">
+              予告を読み、正しい回答で反撃の主導権を奪う。
+              深淵解放後は、同じ行動を続けるほどボスの適応が鋭くなる。
+            </p>
+            <div className="raid-v1-tags">
+              <span>2 PHASES</span>
+              <span>READ &amp; COUNTER</span>
+              <span>LOCAL SCORE</span>
+            </div>
+          </div>
+          <div className="raid-v1-hero-art" aria-hidden="true">
+            <div className="raid-v1-art-orbit" />
+            <img src={raidBossArt} alt="" />
+            <span className="raid-v1-art-label">CORE 01</span>
+          </div>
+        </section>
+
+        <section className="raid-v1-start-panel" aria-labelledby="raid-v1-start-title">
+          <div className="raid-v1-start-copy">
+            <p className="raid-v1-section-label">MISSION BRIEFING</p>
+            <h2 id="raid-v1-start-title">戦闘準備完了</h2>
+            <p>ボスの攻撃予告を見て、通常攻撃・羽弾・防御・迎撃・集中・必殺技を使い分けよう。</p>
+            <div className="raid-v1-start-facts">
+              <span>全2フェーズ</span>
+              <span>行動予告あり</span>
+              <span>ベストスコア保存</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="raid-v1-start-button"
+            onClick={() => setHasStarted(true)}
+          >
+            <Swords size={20} />
+            バトル開始
+          </button>
+          <p className="raid-v1-start-note">開始ボタンを押すと第1ターンが始まります。</p>
+        </section>
+
+        <footer className="raid-v1-footer">
+          <span>RAID PROJECT 01 / ITERATION 2</span>
+          <span>独立戦闘エンジン · 本編の成長データには接続しません</span>
+        </footer>
+      </main>
+    );
+  }
 
   return (
     <main className="raid-v1-shell">
