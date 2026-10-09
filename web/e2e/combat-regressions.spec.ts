@@ -66,11 +66,9 @@ test('Core Regeneration is visible and Feather interrupts the recovery on deskto
   await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
 
-  // Force the opening sweep to transition to CORE_REGEN, without adding a production test hook.
+  // A stable high sample selects CORE_REGEN after the opening sweep and remains safe for this test.
   await page.evaluate(() => {
-    const samples = [0.5, 0.1, 0.95];
-    let index = 0;
-    Math.random = () => samples[index++] ?? 0.5;
+    Math.random = () => 0.99;
   });
   const turnMarker = page.locator('.raid-v1-action-heading > span');
   const firstTurn = await turnMarker.innerText();
