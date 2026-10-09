@@ -630,6 +630,16 @@ assert.ok(
   'Focus should apply its documented multiplier to the next damaging action, allowing for integer rounding.',
 );
 
+
+const raidFocusTurn = resolveRaidAction({ ...raidInitial, bossPattern: 'SWEEP' }, 'FOCUS', () => 0.5);
+const raidUnfocusedTurn = resolveRaidAction({ ...raidInitial, bossPattern: 'SWEEP' }, 'ATTACK', () => 0.5);
+const raidHeavyFocus = resolveRaidAction({ ...raidInitial, bossPattern: 'CHARGE' }, 'FOCUS', () => 0.5);
+const raidHeavyGuardForFocus = resolveRaidAction({ ...raidInitial, bossPattern: 'CHARGE' }, 'GUARD', () => 0.5);
+assert.ok(raidFocusTurn.lastIncomingDamage > 0, 'Focus should not completely negate incoming hits.');
+assert.ok(raidFocusTurn.lastIncomingDamage < raidUnfocusedTurn.lastIncomingDamage,
+  'Focus should reduce incoming damage while preparing the next hit.');
+assert.ok(raidHeavyFocus.lastIncomingDamage > raidHeavyGuardForFocus.lastIncomingDamage,
+  'Focus should stay less protective against heavy attacks than dedicated guard.');
 const raidActionNames = ['ATTACK', 'FEATHER', 'GUARD', 'COUNTER', 'FOCUS', 'ULTIMATE'];
 const raidTelegraphs = [
   { pattern: 'SWEEP', phase: 1 },
@@ -747,6 +757,10 @@ function summarizeRaidPolicy(runs) {
     avgDamageTaken: Math.round(runs.reduce((sum, run) => sum + run.state.damageTaken, 0) / runs.length),
     avgBreaks: Math.round(runs.reduce((sum, run) => sum + run.state.breakCount, 0) / runs.length * 10) / 10,
     avgPerfectReads: Math.round(runs.reduce((sum, run) => sum + run.state.perfectReads, 0) / runs.length * 10) / 10,
+    avgActions: Object.fromEntries(raidActionNames.map(action => [
+      action,
+      Math.round(runs.reduce((sum, run) => sum + run.state.actionCounts[action], 0) / runs.length * 10) / 10,
+    ])),
   };
 }
 const raidPolicySummary = {

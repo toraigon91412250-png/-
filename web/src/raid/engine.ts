@@ -15,6 +15,8 @@ export const RAID_RULES = {
   GUARD_HEAL: 80,
   FOCUS_TP_GAIN: 32,
   FOCUS_DAMAGE_MULTIPLIER: 1.65,
+  FOCUS_GUARD_MULTIPLIER: 0.7,
+  FOCUS_SHIELD: 120,
   FEATHER_COOLDOWN: 2,
 } as const;
 
@@ -318,9 +320,13 @@ export function resolveRaidAction(
     const rawDamage = rollInteger(range.min, range.max, random);
     const adaptationMultiplier = state.phase === 2 ? 1.08 + nextAdaptation * 0.08 : 1;
     const counterPunishment = counterMiss ? 1.2 : 1;
-    const guardMultiplier = action === 'GUARD' ? (heavy ? 0.5 : 0.65) : 1;
+    const guardMultiplier = action === 'GUARD'
+      ? (heavy ? 0.5 : 0.65)
+      : action === 'FOCUS' ? RAID_RULES.FOCUS_GUARD_MULTIPLIER : 1;
     const reducedDamage = Math.round(rawDamage * adaptationMultiplier * counterPunishment * guardMultiplier);
-    const guardShield = action === 'GUARD' ? (heavy ? 300 : 220) : 0;
+    const guardShield = action === 'GUARD'
+      ? (heavy ? 300 : 220)
+      : action === 'FOCUS' ? RAID_RULES.FOCUS_SHIELD : 0;
     incomingDamage = Math.max(0, reducedDamage - guardShield);
     if (pattern === 'VOID') {
       mpDrain = Math.min(nextMp, 8);

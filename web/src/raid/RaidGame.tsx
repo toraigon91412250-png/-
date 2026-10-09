@@ -31,7 +31,7 @@ const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: 
     name: '黒爪薙ぎ',
     danger: 'WARNING',
     detail: '広い薙ぎ払いの予告。攻撃は通るが被弾する。防御で被害を抑えられる。',
-    recommendation: '推奨: 通常攻撃で隙を突く。HPが不安なら防御。',
+    recommendation: '推奨: 通常攻撃で隙を突く。次の一撃を強化するなら集中。HPが不安なら防御。',
   },
   CHARGE: {
     name: '滅界砲',
@@ -64,7 +64,7 @@ const ACTIONS: Array<{
   { id: 'FEATHER', label: '羽弾', english: 'FEATHER', detail: '高火力。虚無落雷を中断できる。', cost: 'MP 18' },
   { id: 'GUARD', label: '防御', english: 'GUARD', detail: '被害を抑えてHPを少し回復。大技への迎撃とは役割が違う。', cost: 'MP 10' },
   { id: 'COUNTER', label: '迎撃', english: 'COUNTER', detail: '滅界砲・終焉衝動に合わせれば反撃。', cost: 'MP 12' },
-  { id: 'FOCUS', label: '集中', english: 'FOCUS', detail: '次の攻撃を大きく強化。必殺ゲージも回収。', cost: 'MP 8' },
+  { id: 'FOCUS', label: '集中', english: 'FOCUS', detail: '攻撃を受け流しながら準備。次の一撃と必殺ゲージを強化。', cost: 'MP 8' },
   { id: 'ULTIMATE', label: '終天羽星穿ち', english: 'ULTIMATE', detail: '蓄積したゲージを解放する大ダメージ。', cost: 'TP 100' },
 ];
 
