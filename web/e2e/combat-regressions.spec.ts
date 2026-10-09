@@ -37,6 +37,8 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
 
   await expect(page.getByText('TURN 02')).toBeVisible();
   await expect(page.getByText('防御態勢')).toBeVisible();
+  await expect(page.getByText('LAST HIT')).toBeVisible();
+  await expect(page.getByText('LAST RECEIVED')).toBeVisible();
   await page.getByTitle('戻る').click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 
