@@ -25,6 +25,7 @@ interface RaidGameProps {
 }
 
 const BEST_SCORE_KEY = 'raidPrototypeV1BestScore';
+const RAID_DEPLOY_DURATION_MS = 1200;
 
 const PATTERN_INFO: Record<RaidPattern, { name: string; danger: string; detail: string; recommendation: string }> = {
   SWEEP: {
@@ -155,6 +156,7 @@ function ActionButton({
 export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
   const [state, setState] = useState<RaidState>(() => createInitialRaidState());
   const [hasStarted, setHasStarted] = useState(false);
+  const [isBattleLoading, setIsBattleLoading] = useState(false);
   const [bestScore, setBestScore] = useState<number>(() => loadBestScore());
 
   useEffect(() => {
@@ -169,6 +171,12 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
       return next;
     });
   }, [state.result, state.score]);
+
+  useEffect(() => {
+    if (!isBattleLoading) return;
+    const timer = window.setTimeout(() => setIsBattleLoading(false), RAID_DEPLOY_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [isBattleLoading]);
 
   const handleAction = (action: RaidAction) => {
     setState(current => resolveRaidAction(current, action));
@@ -230,7 +238,10 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
           <button
             type="button"
             className="raid-v1-start-button"
-            onClick={() => setHasStarted(true)}
+            onClick={() => {
+              setHasStarted(true);
+              setIsBattleLoading(true);
+            }}
           >
             <Swords size={20} />
             バトル開始
@@ -446,6 +457,36 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
           <button type="button" className="raid-v1-retry" onClick={restart}><RotateCcw size={17} /> もう一度挑戦</button>
           <button type="button" className="raid-v1-return" onClick={onBack}>本編に戻る</button>
         </section>
+      )}
+
+      {isBattleLoading && (
+        <div
+          className="raid-v1-deploy-overlay"
+          role="status"
+          aria-live="polite"
+          aria-label="レイド戦闘準備中"
+        >
+          <div className="raid-v1-deploy-emblem" aria-hidden="true">
+            <span className="raid-v1-deploy-ring raid-v1-deploy-ring--outer" />
+            <span className="raid-v1-deploy-ring raid-v1-deploy-ring--middle" />
+            <span className="raid-v1-deploy-ring raid-v1-deploy-ring--inner" />
+            <span className="raid-v1-deploy-crosshair" />
+            <span className="raid-v1-deploy-core">
+              <img src={raidBossArt} alt="" />
+            </span>
+          </div>
+          <div className="raid-v1-deploy-eyebrow">RAID SYSTEM // INITIALIZING</div>
+          <div className="raid-v1-deploy-title">深淵接続中</div>
+          <div className="raid-v1-deploy-caption">TARGET LOCK · ABYSS CORE</div>
+          <div className="raid-v1-deploy-progress" aria-hidden="true">
+            <span />
+          </div>
+          <div className="raid-v1-deploy-footer">
+            <span>PHASE 01</span>
+            <i />
+            <span>VOID GATE OPENING</span>
+          </div>
+        </div>
       )}
 
       <footer className="raid-v1-footer">

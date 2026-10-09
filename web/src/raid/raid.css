@@ -583,3 +583,219 @@
   .raid-v1-shell--battle .raid-v1-action-grid { grid-template-rows: repeat(2, minmax(40px, 1fr)); gap: 4px; }
   .raid-v1-shell--battle .raid-v1-action { min-height: 40px; padding: 3px; }
 }
+
+
+/* Raid-specific deployment transition, inspired by the main game's launch overlay. */
+.raid-v1-deploy-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+  padding: 24px 18px;
+  text-align: center;
+  color: #f7efff;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(100, 38, 126, .38), transparent 35%),
+    radial-gradient(ellipse at 50% 100%, rgba(43, 114, 119, .17), transparent 45%),
+    linear-gradient(155deg, #08070f 0%, #170c25 48%, #080a12 100%);
+  animation: raidDeployEnter .22s ease-out both;
+}
+.raid-v1-deploy-overlay::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  opacity: .27;
+  background-image:
+    linear-gradient(rgba(181, 125, 231, .18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(181, 125, 231, .18) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse at center, #000 0%, transparent 78%);
+}
+.raid-v1-deploy-overlay::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: min(74vw, 560px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(188, 116, 229, .13);
+  border-radius: 50%;
+  box-shadow: 0 0 90px rgba(142, 56, 174, .08), inset 0 0 90px rgba(142, 56, 174, .08);
+  animation: raidDeployBreath 2.4s ease-in-out infinite;
+}
+.raid-v1-deploy-emblem {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: clamp(118px, 25vw, 174px);
+  aspect-ratio: 1;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 0 22px rgba(176, 91, 230, .18));
+}
+.raid-v1-deploy-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.raid-v1-deploy-ring--outer {
+  inset: 0;
+  border: 1px solid rgba(204, 140, 255, .66);
+  border-top-color: #e4baff;
+  border-bottom-color: #6de1d6;
+  box-shadow: 0 0 18px rgba(182, 116, 240, .15), inset 0 0 18px rgba(182, 116, 240, .08);
+  animation: raidDeployRotate 6s linear infinite;
+}
+.raid-v1-deploy-ring--middle {
+  inset: 11%;
+  border: 1px dashed rgba(125, 224, 221, .7);
+  border-left-color: rgba(217, 142, 255, .86);
+  border-right-color: rgba(217, 142, 255, .86);
+  animation: raidDeployRotateReverse 9s linear infinite;
+}
+.raid-v1-deploy-ring--inner {
+  inset: 24%;
+  border: 1px solid rgba(232, 192, 255, .5);
+  border-radius: 8px;
+  transform: rotate(45deg);
+  animation: raidDeployPulse 1.9s ease-in-out infinite;
+}
+.raid-v1-deploy-crosshair {
+  position: absolute;
+  inset: 7%;
+  border-radius: 50%;
+  opacity: .28;
+  background:
+    linear-gradient(90deg, transparent 49.7%, #ad86d9 49.7%, #ad86d9 50.3%, transparent 50.3%),
+    linear-gradient(0deg, transparent 49.7%, #ad86d9 49.7%, #ad86d9 50.3%, transparent 50.3%);
+}
+.raid-v1-deploy-crosshair::before,
+.raid-v1-deploy-crosshair::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(198, 139, 245, .55);
+  border-radius: 50%;
+}
+.raid-v1-deploy-crosshair::after { inset: 17%; border-style: dashed; transform: rotate(22deg); }
+.raid-v1-deploy-core {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 59%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(190, 144, 255, .34);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(75, 40, 93, .82), rgba(10, 9, 20, .95) 70%);
+  box-shadow: 0 0 32px rgba(169, 80, 217, .25), inset 0 0 24px rgba(190, 144, 255, .13);
+}
+.raid-v1-deploy-core img {
+  display: block;
+  width: 112%;
+  height: 112%;
+  object-fit: contain;
+  opacity: .92;
+  filter: saturate(.78) hue-rotate(13deg) drop-shadow(0 0 8px rgba(209, 122, 255, .25));
+  animation: raidDeployCorePulse 2s ease-in-out infinite;
+}
+.raid-v1-deploy-eyebrow {
+  color: #bc9fe6;
+  font: 800 clamp(10px, 2vw, 14px) 'Barlow Condensed', sans-serif;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.raid-v1-deploy-title {
+  color: #fff7ff;
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 950;
+  line-height: 1.25;
+  letter-spacing: .09em;
+  text-shadow: 0 0 22px rgba(205, 126, 255, .36), 0 0 42px rgba(117, 61, 156, .2);
+}
+.raid-v1-deploy-caption {
+  margin-top: 10px;
+  color: #9baabf;
+  font: 700 clamp(9px, 1.7vw, 12px) 'Barlow Condensed', sans-serif;
+  letter-spacing: .19em;
+}
+.raid-v1-deploy-progress {
+  position: relative;
+  width: clamp(160px, 32vw, 260px);
+  height: 3px;
+  overflow: hidden;
+  margin-top: 24px;
+  border-radius: 4px;
+  background: rgba(151, 105, 178, .25);
+  box-shadow: 0 0 12px rgba(148, 77, 187, .16);
+}
+.raid-v1-deploy-progress span {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #af63ed, #e6a2ff 48%, #71e6d4);
+  box-shadow: 0 0 12px rgba(197, 117, 255, .7);
+  animation: raidDeployProgress 1.2s cubic-bezier(.25, .7, .25, 1) both;
+}
+.raid-v1-deploy-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 13px;
+  color: #716882;
+  font: 800 9px 'Barlow Condensed', sans-serif;
+  letter-spacing: .2em;
+}
+.raid-v1-deploy-footer i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #7ae2d4;
+  box-shadow: 0 0 8px rgba(122, 226, 212, .8);
+  animation: raidDeployBlink .85s ease-in-out infinite alternate;
+}
+@keyframes raidDeployProgress {
+  0% { transform: scaleX(0); opacity: .65; }
+  18% { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+@keyframes raidDeployRotate { to { transform: rotate(360deg); } }
+@keyframes raidDeployRotateReverse { to { transform: rotate(-360deg); } }
+@keyframes raidDeployPulse { 0%, 100% { opacity: .5; scale: .94; } 50% { opacity: 1; scale: 1.04; } }
+@keyframes raidDeployCorePulse { 0%, 100% { opacity: .78; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes raidDeployBreath { 0%, 100% { transform: scale(.96); opacity: .4; } 50% { transform: scale(1.03); opacity: .85; } }
+@keyframes raidDeployBlink { from { opacity: .45; } to { opacity: 1; } }
+@keyframes raidDeployEnter { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 480px) {
+  .raid-v1-deploy-emblem { margin-bottom: 14px; }
+  .raid-v1-deploy-eyebrow { letter-spacing: .18em; }
+  .raid-v1-deploy-title { letter-spacing: .06em; }
+  .raid-v1-deploy-caption { letter-spacing: .12em; }
+  .raid-v1-deploy-footer { gap: 7px; font-size: 8px; letter-spacing: .13em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .raid-v1-deploy-overlay,
+  .raid-v1-deploy-overlay::after,
+  .raid-v1-deploy-ring--outer,
+  .raid-v1-deploy-ring--middle,
+  .raid-v1-deploy-ring--inner,
+  .raid-v1-deploy-core img,
+  .raid-v1-deploy-footer i {
+    animation: none !important;
+  }
+  .raid-v1-deploy-progress span { transform: scaleX(1); animation: none !important; }
+}
