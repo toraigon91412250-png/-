@@ -29,6 +29,40 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+test('raid-exclusive core fragment can be used in the main game for permanent stat points', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
+      coreFragments: 1,
+      bonusStatPoints: 0,
+      claimedVictoryRunIds: [],
+    }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  const useItem = page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' });
+  await expect(useItem).toBeEnabled();
+  await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
+
+  await useItem.click();
+  await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'レイドをクリアすると入手できます' })).toBeDisabled();
+  await expect.poll(() => page.evaluate(() => {
+    const reward = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
+    return { coreFragments: reward.coreFragments, bonusStatPoints: reward.bonusStatPoints };
+  })).toEqual({ coreFragments: 0, bonusStatPoints: 2 });
+
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
+
+  expect(pageErrors, 'Redeeming a raid item should not raise uncaught JavaScript errors.').toEqual([]);
+});
+
 test('raid prototype opens independently and resolves a defensive turn on desktop and mobile', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
