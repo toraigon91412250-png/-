@@ -10,7 +10,7 @@ interface CharacterSelectScreenProps {
   selectedDifficulty: CpuDifficulty;
   onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
-  onOpenRaidBoss: () => void;
+  onOpenRaidPrototype: () => void;
   onOpenRecruitment: () => void;
   skillProgress: IrenaSkillProgress;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
@@ -22,7 +22,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   selectedDifficulty,
   onSelectDifficulty,
   onStartBattle,
-  onOpenRaidBoss,
+  onOpenRaidPrototype,
   onOpenRecruitment,
   skillProgress,
   onUpgradeSkill,
@@ -353,7 +353,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
 
         <button
           type="button"
-          onClick={onOpenRaidBoss}
+          onClick={onOpenRaidPrototype}
           style={{
             width: '100%',
             height: '50px',
@@ -373,6 +373,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
         >
           <span>👹</span>
           <span>レイドボスに挑戦</span>
+          <span style={{ fontSize: '9px', color: '#BCA8F3', fontWeight: 900, letterSpacing: '.12em' }}>PROTOTYPE 01</span>
         </button>
       </div>
 
