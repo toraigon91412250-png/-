@@ -36,6 +36,7 @@ export interface RaidState {
   featherCooldown: number;
   focusCharge: boolean;
   combo: number;
+  repeatCount: number;
   maxCombo: number;
   totalDamage: number;
   damageTaken: number;
