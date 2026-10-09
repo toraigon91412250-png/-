@@ -34,6 +34,12 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await expect(page.getByRole('button', { name: 'バトル開始', exact: true })).toBeEnabled();
   await expect(page.getByText('BOSS TELEGRAPH')).toHaveCount(0);
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
+  const loadingOverlay = page.getByRole('status', { name: 'レイド戦闘準備中' });
+  await expect(loadingOverlay).toBeVisible();
+  await expect(loadingOverlay).toContainText('深淵接続中');
+  await expect(loadingOverlay).toContainText('TARGET LOCK · ABYSS CORE');
+  await expect(page.locator('.raid-v1-deploy-progress span')).toBeVisible();
+  await expect(loadingOverlay).toBeHidden({ timeout: 5_000 });
   await expect(page.getByText('BOSS TELEGRAPH')).toBeVisible();
   const raidShell = page.locator('.raid-v1-shell--battle');
   await expect(raidShell).toBeVisible();
