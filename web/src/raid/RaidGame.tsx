@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   Crosshair,
@@ -18,10 +18,20 @@ import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutIn from '../assets/raid_irena_cutin.svg';
 import { canUseRaidAction, createInitialRaidState, resolveRaidAction } from './engine';
 import type { RaidAction, RaidPattern, RaidState } from './types';
+import { claimRaidVictoryReward, loadRaidRewardProgress } from '../utils/storage';
+import type { RaidRewardProgress } from '../types/game';
 import './raid.css';
 
 interface RaidGameProps {
   onBack: () => void;
+  onRaidRewardProgressChange: (progress: RaidRewardProgress) => void;
+}
+
+let raidRunSequence = 0;
+
+function createRaidRunId(): string {
+  raidRunSequence += 1;
+  return `raid-${Date.now().toString(36)}-${raidRunSequence.toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 const BEST_SCORE_KEY = 'raidPrototypeV1BestScore';
@@ -153,11 +163,27 @@ function ActionButton({
   );
 }
 
-export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
+export const RaidGame: React.FC<RaidGameProps> = ({ onBack, onRaidRewardProgressChange }) => {
   const [state, setState] = useState<RaidState>(() => createInitialRaidState());
   const [hasStarted, setHasStarted] = useState(false);
   const [isBattleLoading, setIsBattleLoading] = useState(false);
   const [bestScore, setBestScore] = useState<number>(() => loadBestScore());
+  const [raidRewardProgress, setRaidRewardProgress] = useState<RaidRewardProgress>(() => loadRaidRewardProgress());
+  const [raidRewardNotice, setRaidRewardNotice] = useState<'CLAIMED' | 'ALREADY_CLAIMED' | 'SAVE_FAILED' | null>(null);
+  const rewardRunIdRef = useRef<string>('');
+  const rewardClaimedRef = useRef(false);
+  if (!rewardRunIdRef.current) rewardRunIdRef.current = createRaidRunId();
+
+  useEffect(() => {
+    if (state.result !== 'VICTORY' || rewardClaimedRef.current) return;
+
+    // Claim once per run. The storage ledger is a second guard against repeated effects.
+    rewardClaimedRef.current = true;
+    const claim = claimRaidVictoryReward(rewardRunIdRef.current);
+    setRaidRewardProgress(claim.progress);
+    onRaidRewardProgressChange(claim.progress);
+    setRaidRewardNotice(claim.claimed ? 'CLAIMED' : claim.persisted ? 'ALREADY_CLAIMED' : 'SAVE_FAILED');
+  }, [state.result, onRaidRewardProgressChange]);
 
   useEffect(() => {
     if (state.result === 'ACTIVE') return;
@@ -182,7 +208,12 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
     setState(current => resolveRaidAction(current, action));
   };
 
-  const restart = () => setState(createInitialRaidState());
+  const restart = () => {
+    rewardClaimedRef.current = false;
+    rewardRunIdRef.current = createRaidRunId();
+    setRaidRewardNotice(null);
+    setState(createInitialRaidState());
+  };
   const pattern = PATTERN_INFO[state.bossPattern];
   const tpPercent = Math.max(0, Math.min(100, state.tp));
   const breakPercent = Math.max(0, Math.min(100, state.breakGauge));
@@ -446,6 +477,26 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack }) => {
             <span><small>妨害成功</small><strong>{state.interrupts}</strong></span>
             <span><small>回復阻止</small><strong>{formatNumber(state.healingPrevented)}</strong></span>
           </div>
+          {state.result === 'VICTORY' && (
+            <section className="raid-v1-raid-reward" aria-label="レイド勝利報酬" aria-live="polite">
+              <div className="raid-v1-raid-reward-icon"><Gem size={24} /></div>
+              <div className="raid-v1-raid-reward-copy">
+                <span>RAID EXCLUSIVE DROP</span>
+                <strong>{raidRewardNotice === 'CLAIMED' ? '深淵核片 ×1' : raidRewardNotice === 'ALREADY_CLAIMED' ? '報酬受取済み' : raidRewardNotice === 'SAVE_FAILED' ? '報酬の保存に失敗' : '報酬を確定中...'}</strong>
+                <p>
+                  {raidRewardNotice === 'CLAIMED'
+                    ? '本編メニューで使用すると、ステータス配分上限が永続的に +2P。'
+                    : raidRewardNotice === 'SAVE_FAILED'
+                      ? '保存できなかったため付与されていません。ブラウザの保存領域を確認して再挑戦してください。'
+                      : raidRewardNotice === 'ALREADY_CLAIMED'
+                        ? 'この戦闘の報酬はすでに受け取っています。'
+                        : '勝利報酬を保存しています。'}
+                </p>
+                <small>現在の所持数: {raidRewardProgress.coreFragments}</small>
+              </div>
+            </section>
+          )}
+
           <section className="raid-v1-command-mix" aria-label="今回の行動回数">
             <span className="raid-v1-command-mix-title">COMMAND MIX · 行動回数</span>
             <div className="raid-v1-command-counts">
