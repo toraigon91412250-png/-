@@ -35,6 +35,10 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
   await expect(page.getByText('BOSS TELEGRAPH')).toHaveCount(0);
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
   await expect(page.getByText('BOSS TELEGRAPH')).toBeVisible();
+  const raidShell = page.locator('.raid-v1-shell');
+  await expect.poll(() => raidShell.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
+  await raidShell.evaluate(element => element.scrollTo({ top: element.scrollHeight, behavior: 'instant' }));
+  await expect(page.getByRole('button', { name: '防御' })).toBeInViewport();
   await expect(page.getByRole('button', { name: '迎撃' })).toBeEnabled();
   await page.getByRole('button', { name: '防御' }).click();
 
