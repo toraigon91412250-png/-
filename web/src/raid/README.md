@@ -1,44 +1,44 @@
-# Raid Project 01: Abyss Core
+# レイドプロジェクト01：アビスコア
 
-This folder contains the first playable web prototype of a standalone raid game. It is intentionally separate from the main 1v1 battle engine.
+このフォルダは、Web版の独立レイド試作品を置く場所です。本編の1対1戦闘エンジンとは意図的に分離しています。
 
-## Architecture
+## 構成
 
-- `types.ts`: raid-only state and action contracts.
-- `engine.ts`: deterministic state transitions, costs, telegraph response rules, phase change, BREAK, and score calculation. The optional random function is injected so rule tests can be deterministic.
-- `RaidGame.tsx`: raid screen, action selection, resource display, result summary, and a separate local best-score key.
-- `raid.css`: isolated responsive UI styles and combat effects.
+- `types.ts`: レイド専用の状態、行動、結果の型。
+- `engine.ts`: 行動コスト、攻撃予告への回答、ダメージ、BREAK、形態変化、スコア計算を行う状態遷移関数。ランダム関数を引数で受け取れるため、テストで動作を再現できます。
+- `RaidGame.tsx`: 行動選択、HP/MP/TP、ボス予告、演出、戦闘結果、ローカルベストスコアを表示する画面。
+- `raid.css`: 本編の画面スタイルに依存しないレスポンシブUIと演出。
 
-The menu/App connection is a thin route only. The raid engine does not call the main `useBattleGame`, `battleMath`, `abilitySystem`, or progression storage.
+Appとメニューは入口だけを担当します。レイドエンジンから本編の `useBattleGame`、`battleMath`、`abilitySystem`、成長データ保存を呼び出しません。
 
-## Prototype loop
+## 現在のゲームループ
 
-1. Read the next boss telegraph.
-2. Select a command.
-3. Resolve player damage/resource gain and the boss response as one state transition.
-4. Match Counter to Charge/Rage, or Feather to Void, to prevent the incoming hit.
-5. Build BREAK for a burst turn. Defeat phase one to trigger Deep Abyss phase two.
-6. Phase two adapts to repeated choices; vary the action sequence to reduce pressure.
+1. ボスの次の行動予告を読む。
+2. 行動を一つ選び、プレイヤー行動とボスの反撃を1回の状態遷移で処理する。
+3. 滅界砲・終焉衝動には迎撃、虚無落雷には羽弾を合わせると、攻撃を止められる。
+4. 攻撃や正しい回答でBREAKを蓄積し、BREAK後の一手で大ダメージを狙う。
+5. 第1形態を撃破すると深淵解放へ移行する。
+6. 第2形態は同じ行動の連続に適応するため、選択を変えて圧力を下げる。
 
-## Data boundaries
+## データ境界
 
-- Prototype best score uses `raidPrototypeV1BestScore`; it does not read or overwrite `raidBossBestScore`.
-- No existing character/progression save keys are touched.
-- The older raid implementation and its assets remain in the repository as reference material. They are not the screen used by this project.
-- Balance numbers are provisional and should be tuned from repeated playtests rather than treated as canonical character stats.
+- ベストスコアには専用キー `raidPrototypeV1BestScore` を使用。本編の成長・権能・召喚データは変更しません。
+- 旧 `raidBossBestScore` は読み書きしません。
+- 旧 `RaidBossScreen.tsx` と関連素材は比較・再利用用にリポジトリへ残しています。現在のWeb版のレイド画面には使用しません。
+- 数値は試作バランスであり、本編のキャラクター設定値そのものではありません。
 
-## Iteration priorities
+## 5回の開発計画
 
-### Run 2
-- Watch several full runs and tune time-to-clear, incoming damage, MP recovery, and BREAK frequency.
-- Add a focused, deterministic test for every action under every telegraph, including low-resource and near-defeat boundaries.
-- Improve action feedback so misses and successful reads are instantly legible; check mobile tap spacing and screen-height behavior.
-- Consider short combat-history/event records to make later balancing evidence-based.
+### 第2回
+- フルランを複数回プレイして、撃破までの手数、被ダメージ、MP回復、BREAK頻度を調整する。
+- 全行動 × 全予告の決定論的テストを追加し、低MP・低HP・勝敗境界を調べる。
+- 正しい読みと失敗をより瞬時に区別できるフィードバックにし、モバイルで押しやすい間隔と縦画面の収まりを確認する。
+- 将来のバランス調整の根拠として、短い戦闘履歴やイベント記録を検討する。
 
-### Run 3
-- Use playtest findings to refine phase-two adaptation and reduce dominant action loops.
-- Add additional presentation only if the combat decisions are already working.
+### 第3回
+- プレイテストを根拠に、第2形態の適応を調整し、特定行動だけが最適になるループを抑える。
+- 戦闘判断の楽しさが成立してから演出を増やす。
 
-### Runs 4-5
-- Add replay variety and polish the complete victory/defeat flow, then perform regression and browser checks.
-- Keep all raid logic here unless a deliberate, reviewed integration with the main battle engine is required. Do not change existing progression storage or production deployment settings as part of raid iteration.
+### 第4～5回
+- 再プレイ時の変化と勝敗演出を磨き、回帰テストとブラウザ検証を行う。
+- 明確な設計判断とレビューがない限り、レイドロジックはこのフォルダに留める。本編戦闘エンジン、既存セーブ形式、本番デプロイ設定は安易に変更しない。
