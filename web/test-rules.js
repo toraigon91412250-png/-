@@ -855,7 +855,7 @@ assert.strictEqual(canUseRaidAction(raidTerminalState, 'ATTACK'), false, 'Termin
 assert.strictEqual(resolveRaidAction(raidTerminalState, 'ATTACK', () => 0.5), raidTerminalState,
   'A late input must not mutate a terminal run.');
 
-console.log('✓ Raid 24-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
+console.log('✓ Raid 36-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
 
