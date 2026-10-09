@@ -646,6 +646,11 @@ const raidCollapsePrepState = {
   bossPattern: 'COLLAPSE',
   bossWindup: 0,
 };
+const raidCollapseGuardPrep = resolveRaidAction(raidCollapsePrepState, 'GUARD', () => 0.5);
+assert.strictEqual(raidCollapseGuardPrep.bossWindup, 1);
+assert.strictEqual(raidCollapseGuardPrep.perfectReads, 0, 'Guard must not count as a perfect guard while Collapse Chain is still winding up.');
+assert.notStrictEqual(raidCollapseGuardPrep.outcome.title, 'PERFECT GUARD');
+
 const raidCollapsePrepared = resolveRaidAction(raidCollapsePrepState, 'ATTACK', () => 0.5);
 assert.strictEqual(raidCollapsePrepared.bossPattern, 'COLLAPSE', 'Collapse Chain must remain telegraphed during its wind-up.');
 assert.strictEqual(raidCollapsePrepared.bossWindup, 1, 'The first Collapse Chain turn must arm the next-turn strike.');
