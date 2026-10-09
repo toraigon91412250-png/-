@@ -7,7 +7,8 @@
     "dev": "vite --port 3000 --host 0.0.0.0",
     "test": "npx --yes tsx@4.23.15 test-rules.js",
     "build": "tsc && vite build",
-    "preview": "vite preview --port 3000 --host 0.0.0.0"
+    "preview": "vite preview --port 3000 --host 0.0.0.0",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "lucide-react": "^0.383.0",
@@ -15,6 +16,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
