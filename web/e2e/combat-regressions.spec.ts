@@ -63,6 +63,100 @@ test('raid-exclusive core fragment can be used in the main game for permanent st
   expect(pageErrors, 'Redeeming a raid item should not raise uncaught JavaScript errors.').toEqual([]);
 });
 
+test('raid victory grants its exclusive item and the item upgrades the main-game build', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    const state = window as unknown as { __raidSeed: number };
+    state.__raidSeed = 101;
+    Math.random = () => {
+      const current = window as unknown as { __raidSeed: number };
+      current.__raidSeed = (Math.imul(current.__raidSeed, 1664525) + 1013904223) >>> 0;
+      return current.__raidSeed / 4294967296;
+    };
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
+
+  // Reset the RNG after the raid component's one-time run ID is created,
+  // matching the deterministic balanced-policy simulation in test-rules.js.
+  await page.evaluate(() => {
+    (window as unknown as { __raidSeed: number }).__raidSeed = 101;
+  });
+  await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
+  await expect(page.getByRole('status', { name: 'レイド戦闘準備中' })).toBeHidden({ timeout: 5_000 });
+
+  const clearHeading = page.getByRole('heading', { name: 'RAID CLEAR', exact: true });
+  const failHeading = page.getByRole('heading', { name: 'RAID FAILED', exact: true });
+  const intent = page.locator('.raid-v1-intent h3');
+  const turnMarker = page.locator('.raid-v1-action-heading > span');
+  const actionEnabled = async (name: string) => page.getByRole('button', { name, exact: true }).isEnabled();
+  const readNumber = async (locator: ReturnType<typeof page.locator>) => {
+    const text = await locator.innerText();
+    return Number(text.split('/')[0].replace(/,/g, '').trim());
+  };
+
+  // Mirror the tested telegraph-aware policy and use the same seeded RNG.
+  for (let turn = 0; turn < 45; turn += 1) {
+    if (await clearHeading.isVisible() || await failHeading.isVisible()) break;
+
+    const pattern = await intent.innerText();
+    const playerHp = await readNumber(page.locator('.raid-v1-player-stat .raid-v1-bar-caption strong'));
+    const bossHp = await readNumber(page.locator('.raid-v1-boss-hp .raid-v1-bar-caption strong'));
+    const resources = page.locator('.raid-v1-resource-head strong');
+    const mp = await readNumber(resources.nth(0));
+    const tp = await readNumber(resources.nth(1));
+    const broken = (await page.locator('.raid-v1-break-block .raid-v1-bar-caption strong').innerText()) === 'BURST WINDOW';
+    const focusReady = await page.locator('.raid-v1-focus-ready').count() > 0;
+    let action = '通常攻撃';
+
+    if (pattern === '崩壊連撃・発動直前') {
+      action = await actionEnabled('迎撃') ? '迎撃' : await actionEnabled('防御') ? '防御' : '通常攻撃';
+    } else if (pattern === '虚核再生' && await actionEnabled('羽弾')) {
+      action = '羽弾';
+    } else if (tp >= 100 && (broken || bossHp <= 2200) && await actionEnabled('終天羽星穿ち')) {
+      action = '終天羽星穿ち';
+    } else if (broken) {
+      action = await actionEnabled('羽弾') ? '羽弾' : '通常攻撃';
+    } else if (pattern === '滅界砲' || pattern === '終焉衝動') {
+      action = await actionEnabled('迎撃') ? '迎撃' : await actionEnabled('防御') ? '防御' : '通常攻撃';
+    } else if (pattern === '虚無落雷') {
+      action = await actionEnabled('羽弾') ? '羽弾' : await actionEnabled('防御') ? '防御' : '通常攻撃';
+    } else if (focusReady) {
+      action = '通常攻撃';
+    } else if (tp < 65 && mp >= 8 && playerHp > 2400 && bossHp > 2500 && await actionEnabled('集中')) {
+      action = '集中';
+    }
+
+    const before = await turnMarker.innerText();
+    await page.getByRole('button', { name: action, exact: true }).click();
+    await expect(turnMarker).not.toHaveText(before, { timeout: 5_000 });
+  }
+
+  await expect(clearHeading).toBeVisible();
+  await expect(page.locator('.raid-v1-raid-reward')).toContainText('深淵核片 ×1');
+  await expect.poll(() => page.evaluate(() => {
+    const progress = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
+    return { coreFragments: progress.coreFragments, bonusStatPoints: progress.bonusStatPoints };
+  })).toEqual({ coreFragments: 1, bonusStatPoints: 0 });
+
+  await page.getByRole('button', { name: '本編に戻る' }).last().click();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
+  await page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' }).click();
+  await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
+
+  expect(pageErrors, 'A raid victory and its main-game reward must not raise uncaught JavaScript errors.').toEqual([]);
+});
+
 test('raid prototype opens independently and resolves a defensive turn on desktop and mobile', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
