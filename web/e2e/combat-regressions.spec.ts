@@ -124,7 +124,7 @@ test('Yin-Yang Conversion protects the current turn, preserves pressure, and adv
   expect(pageErrors, 'Yin-Yang must not break the status ailment or turn progression.').toEqual([]);
 });
 
-test('raid-exclusive core fragment can be used in the main game for permanent stat points', async ({ page }) =>
+test('raid-exclusive core fragment can be used in the main game for permanent stat points', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.addInitScript(() => {
