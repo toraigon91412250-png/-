@@ -29,6 +29,11 @@ export interface WindGuardDamageResult {
 }
 
 /** Mitigation and counter damage scale from stored feather damage bonus, with a hard mitigation cap. */
+export function getWindGuardCounterDamage(featherChargeValue: number): number {
+  const safeCharge = Number.isFinite(featherChargeValue) ? Math.max(0, Math.floor(featherChargeValue)) : 0;
+  return Math.floor(safeCharge * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER);
+}
+
 export function resolveWindGuardDamage(
   damage: number,
   featherChargeValue: number,
@@ -41,11 +46,17 @@ export function resolveWindGuardDamage(
   }
 
   const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCharge * WIND_GUARD_REDUCTION_PER_CHARGE);
-  const reducedDamage = Math.floor(safeDamage * (1 - reduction));
+  const minimumRemainingDamage = safeDamage > 0
+    ? Math.ceil(safeDamage * (1 - WIND_GUARD_MAX_REDUCTION))
+    : 0;
+  const reducedDamage = Math.max(
+    minimumRemainingDamage,
+    Math.floor(safeDamage * (1 - reduction)),
+  );
   return {
     damage: reducedDamage,
     reducedBy: safeDamage - reducedDamage,
-    counterDamage: Math.floor(safeCharge * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER),
+    counterDamage: getWindGuardCounterDamage(safeCharge),
     applied: true,
   };
 }
