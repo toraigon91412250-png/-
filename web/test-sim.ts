@@ -20,6 +20,7 @@ let state: BattleUiState = {
   winnerIsPlayer: null,
   cpuDifficulty: 'NORMAL',
   cpuIntent: CpuAi.decideAction(createInitialFighter(KAISER, false), createInitialFighter(IRENA, true), 'NORMAL'),
+  usedImprints: [],
   battleSpeedMultiplier: 1.0,
   isSoundEnabled: true,
   isAnimating: false,
