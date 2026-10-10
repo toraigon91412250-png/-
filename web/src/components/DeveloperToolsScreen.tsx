@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, OverallStats, RecruitmentProgress, IrenaSkillProgress } from '../types/game';
+import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, ImprintProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, IrenaSkillProgress } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
+import { IMPRINT_DEFINITIONS } from '../data/imprints';
 
 interface DeveloperToolsScreenProps {
   abilityProgress: AbilityProgress;
   recruitmentProgress: RecruitmentProgress;
+  imprintProgress: ImprintProgress;
+  raidRewardProgress: RaidRewardProgress;
   skillProgress: IrenaSkillProgress;
   overallStats: OverallStats;
   battleSetup: BattleSetupConfig;
@@ -15,6 +18,9 @@ interface DeveloperToolsScreenProps {
   onAddAbilityShards: (id: AbilityId, amount: number) => void;
   onSetTickets: (tickets: number) => void;
   onAddTickets: (amount: number) => void;
+  onSetImprintTickets: (tickets: number) => void;
+  onAddImprintTickets: (amount: number) => void;
+  onUnlockAllImprints: () => void;
   onSetSkillProgress: (featherLevel: number, ruinLevel: number, shards: number) => void;
   onOpenRecruitment: () => void;
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
@@ -30,6 +36,8 @@ const makeConfig = (level: BattleChallengeLevel, abilityProgress: AbilityProgres
 export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   abilityProgress,
   recruitmentProgress,
+  imprintProgress,
+  raidRewardProgress,
   skillProgress,
   overallStats,
   battleSetup,
@@ -40,6 +48,9 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onAddAbilityShards,
   onSetTickets,
   onAddTickets,
+  onSetImprintTickets,
+  onAddImprintTickets,
+  onUnlockAllImprints,
   onSetSkillProgress,
   onOpenRecruitment,
   onOpenBattleSetup,
@@ -50,6 +61,9 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
     battleSetup.abilities.map(ability => ability.id).slice(0, 2),
   );
   const [confirmReset, setConfirmReset] = useState(false);
+  const ownedImprintCount = IMPRINT_DEFINITIONS.filter(imprint =>
+    imprintProgress.unlockedIds.includes(imprint.id),
+  ).length;
 
   const toggleAbility = (id: AbilityId) => {
     setSelectedIds(current => {
@@ -162,6 +176,48 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             width:'100%', minHeight:44, marginTop:8, borderRadius:9, border:'1px solid #7B5A28',
             background:'#2B2111', color:'#FFE082', fontWeight:950, cursor:'pointer',
           }}>召喚画面を開く（今の札 {recruitmentProgress.tickets}）</button>
+        </section>
+
+        <section style={{
+          marginTop:12, padding:14, borderRadius:16, border:'1px solid #51416F',
+          background:'rgba(25,18,39,.96)',
+        }}>
+          <div style={{ fontSize:11, fontWeight:950, color:'#DCCBFF' }}>✦ 刻印テスト</div>
+          <div style={{ marginTop:4, color:'#A59AB9', fontSize:9 }}>
+            刻印ガチャ専用チケットの追加と、現在登録済みの刻印7種の一括解放。
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:10 }}>
+            <div style={{ padding:10, borderRadius:9, border:'1px solid #3B3150', background:'#171221' }}>
+              <div style={{ color:'#A99CC4', fontSize:9, fontWeight:850 }}>刻印ガチャチケット</div>
+              <div aria-label={`刻印ガチャチケットの所持数 ${raidRewardProgress.imprintTickets}`} style={{ marginTop:3, color:'#F1E9FF', fontSize:23, fontWeight:950 }}>
+                {raidRewardProgress.imprintTickets}
+              </div>
+            </div>
+            <div style={{ padding:10, borderRadius:9, border:'1px solid #3B3150', background:'#171221' }}>
+              <div style={{ color:'#A99CC4', fontSize:9, fontWeight:850 }}>刻印の解放状況</div>
+              <div aria-label={`解放済み刻印 ${ownedImprintCount} / ${IMPRINT_DEFINITIONS.length}`} style={{ marginTop:3, color:'#F1E9FF', fontSize:23, fontWeight:950 }}>
+                {ownedImprintCount}<span style={{ color:'#A99CC4', fontSize:12 }}> / {IMPRINT_DEFINITIONS.length}</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,minmax(0,1fr))', gap:7, marginTop:9 }}>
+            {[1,10,100,999].map(amount => (
+              <button key={amount} type="button" aria-label={`刻印ガチャチケットを${amount}枚追加`} onClick={() => { onAddImprintTickets(amount); onRefresh(); }} style={{
+                minHeight:40, borderRadius:9, border:'1px solid #625080', background:'#211832',
+                color:'#E2D5FF', fontSize:10, fontWeight:950, cursor:'pointer',
+              }}>券 +{amount}</button>
+            ))}
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:7, marginTop:7 }}>
+            <button type="button" aria-label="刻印ガチャチケットを9999枚に設定" onClick={() => { onSetImprintTickets(9999); onRefresh(); }} style={{
+              minHeight:42, borderRadius:9, border:'1px solid #8565A8', background:'#2A1D3C',
+              color:'#F0E5FF', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>券 9999</button>
+            <button type="button" aria-label="登録済みの刻印をすべて解放" onClick={() => { onUnlockAllImprints(); onRefresh(); }} style={{
+              minHeight:42, borderRadius:9, border:'1px solid #5A8F8A', background:'#142B2C',
+              color:'#C1FFF3', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>刻印 全解放（{IMPRINT_DEFINITIONS.length}種）</button>
+          </div>
         </section>
 
         <section style={{
