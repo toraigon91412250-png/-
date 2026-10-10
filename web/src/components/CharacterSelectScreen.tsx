@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CharacterDef, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
-import { Swords, Trophy, Play, CheckCircle, Sparkles, Gem } from 'lucide-react';
+import { Swords, Trophy, Play, CheckCircle, Gem } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
 
 interface CharacterSelectScreenProps {
