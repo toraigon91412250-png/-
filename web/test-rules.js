@@ -31,7 +31,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -583,6 +583,30 @@ if (gachaRaidSaveBeforeTest === undefined) storageValues.delete('duel_arena_raid
 else storageValues.set('duel_arena_raid_reward_progress', gachaRaidSaveBeforeTest);
 if (gachaImprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, gachaImprintSaveBeforeTest);
+
+// Developer controls must update the dedicated ticket inventory and unlock every registered imprint.
+const developerRaidSaveBeforeTest = storageValues.get('duel_arena_raid_reward_progress');
+const developerImprintSaveBeforeTest = storageValues.get(IMPRINT_PROGRESS_STORAGE_KEY);
+storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+  coreFragments: 0, imprintTickets: 3, bonusStatPoints: 0, claimedVictoryRunIds: [],
+}));
+storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify({
+  unlockedIds: ['FORESIGHT'], equippedIds: ['FORESIGHT'],
+}));
+assert.strictEqual(addImprintTicketsForDeveloper(7).imprintTickets, 10,
+  'Developer ticket addition must modify the dedicated imprint ticket balance.');
+assert.strictEqual(setImprintTicketsForDeveloper(99).imprintTickets, 99,
+  'Developer ticket setting must set the dedicated imprint ticket balance.');
+const allDeveloperImprints = unlockAllImprintsForDeveloper();
+assert.deepStrictEqual(allDeveloperImprints?.unlockedIds, IMPRINT_DEFINITIONS.map(imprint => imprint.id),
+  'Developer unlock-all must unlock every registered imprint.');
+assert.deepStrictEqual(allDeveloperImprints?.equippedIds, ['FORESIGHT'],
+  'Unlock-all must preserve the existing loadout rather than equip everything.');
+if (developerRaidSaveBeforeTest === undefined) storageValues.delete('duel_arena_raid_reward_progress');
+else storageValues.set('duel_arena_raid_reward_progress', developerRaidSaveBeforeTest);
+if (developerImprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
+else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, developerImprintSaveBeforeTest);
+console.log('✓ Developer imprint ticket and unlock-all controls follow current registration.');
 
 
 
