@@ -33,7 +33,7 @@ const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts'
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
-const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST } = await import('./src/utils/imprintSystem.ts');
+const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -456,6 +456,11 @@ assert.strictEqual(getBloodTearBurstDamage(40, 4), 240);
 assert.strictEqual(getBloodTearBurstDamage(-30, 3), 0);
 assert.strictEqual(getBloodTearBurstDamage(30, -1), 0);
 assert.strictEqual(WIND_GUARD_MAX_REDUCTION, 0.4);
+assert.strictEqual(getWindGuardCounterDamage(300), 75);
+assert.strictEqual(getWindGuardCounterDamage(-10), 0);
+assert.deepStrictEqual(resolveWindGuardDamage(1, 500, true), {
+  damage: 1, reducedBy: 0, counterDamage: 125, applied: true,
+}, 'Rounding must not reduce a one-point hit by more than the 40% cap.');
 assert.deepStrictEqual(resolveWindGuardDamage(200, 300, true), {
   damage: 140, reducedBy: 60, counterDamage: 75, applied: true,
 });
