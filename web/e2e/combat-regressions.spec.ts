@@ -564,7 +564,7 @@ test('Costly Shot spends HP to reset special cooldown and allows the next Feathe
   await expect(costlyShot).toBeEnabled();
   await costlyShot.click();
 
-  await expect(page.getByText(/HP-200 \/ 特殊CT RESET/)).toBeVisible({ timeout: 5_000 });
+  await expect(page.getByRole('status', { name: '代償撃ちの状態' })).toContainText('HP-200');
   await expect(page.getByText(/^第\s*3\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('button', { name: /^羽弾/ }).first()).toBeEnabled();
   expect(pageErrors, 'Costly Shot cooldown reset should not raise uncaught errors.').toEqual([]);
