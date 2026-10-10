@@ -243,7 +243,7 @@ const criticalDamage = calculateNormalAttackDamage({
 
 assert.strictEqual(normalDamage, 180);
 assert.strictEqual(criticalDamage, 280);
-const armoredAttackTarget = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 40), false, 40);
+const armoredAttackTarget = createInitialFighter(KAISER, false, 40);
 const rawNormalDamageAgainstArmor = calculateNormalAttackDamage({
   attacker: attackBase,
   target: armoredAttackTarget,
