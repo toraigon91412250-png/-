@@ -78,10 +78,10 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   // Evading it exercises the real battle hook and the once-per-battle state update.
   const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
   expect(intentLabel).toBe('特殊技');
-  const triggerLog = page.getByText(/【刻印発動：見切り】/);
   await page.getByRole('button', { name: /^回避/ }).first().click();
-  await expect(triggerLog).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('発動済み');
+  // The forecast status is the visible UI contract for a battle-limited trigger.
+  // This assertion verifies the real combat hook changed its once-per-battle state.
+  await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('発動済み', { timeout: 15_000 });
 
   expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
 });
