@@ -32,6 +32,7 @@ import {
   getTurnExecutionPlan,
   normalizeEquippedImprints,
   resolveWindGuardDamage,
+  WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER,
   resolveYinYangDefense,
   shouldSuppressCpuBuffAction,
   shouldTriggerForesight,
@@ -312,17 +313,17 @@ export function useBattleGame(
       target.isPlayer &&
       source !== '出血ダメージ' &&
       stateRef.current.battleConfig.imprints?.includes('WIND_GUARD') &&
-      target.featherChargeCount > 0
+      target.featherChargeBonus > 0
     );
     if (windGuardIsEligible) {
-      const counterDamage = Math.max(0, Math.floor(target.featherChargeCount)) * 20;
+      const counterDamage = Math.floor(Math.max(0, target.featherChargeBonus) * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER);
       const nextEnemyHp = Math.max(0, stateRef.current.enemy.currentHp - counterDamage);
       updateState(prev => ({
         ...prev,
         enemy: { ...prev.enemy, currentHp: Math.max(0, prev.enemy.currentHp - counterDamage) },
       }));
       addLog(
-        `🪶【風守り・自動反撃】蓄積${target.featherChargeCount}に反応！ CPUへ${counterDamage}ダメージ。`,
+        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${counterDamage}ダメージ。`,
         'PASSIVE_TRIGGER',
         turn,
       );
@@ -453,7 +454,7 @@ export function useBattleGame(
   ): number => {
     const result = resolveWindGuardDamage(
       damage,
-      target.featherChargeCount,
+      target.featherChargeBonus,
       !attackerIsPlayer &&
         target.isPlayer &&
         Boolean(stateRef.current.battleConfig.imprints?.includes('WIND_GUARD')),
@@ -466,7 +467,7 @@ export function useBattleGame(
         turn,
         reducedBy: result.reducedBy,
         counterDamage: result.counterDamage,
-        featherChargeCount: target.featherChargeCount,
+        featherChargeBonus: target.featherChargeBonus,
       },
     }));
     addLog(
@@ -1953,7 +1954,7 @@ export function useBattleGame(
       // End of Round: remember what the player just did, then select the next
       // CPU action from the updated state. This makes the opponent learn from
       // repeated habits without re-rolling its action after the player commits.
-      if (playerAction !== 'YIN_YANG') {
+      if (playerAction !== 'YIN_YANG' && playerAction !== 'COSTLY_SHOT') {
         recentPlayerActionsRef.current = [...recentPlayerActionsRef.current.slice(-5), playerAction];
       }
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
