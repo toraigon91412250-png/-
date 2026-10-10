@@ -270,6 +270,8 @@ export interface BattleUiState {
   /** Last Yin-Yang action and its confirmed one-hit mitigation, retained for readable battle feedback. */
   yinYangActivatedTurn?: number | null;
   yinYangDefenseResult?: { turn: number; reducedBy: number } | null;
+  /** Latest Wind Guard trigger, retained until the next player action for readable feedback. */
+  windGuardResult?: { turn: number; reducedBy: number; counterDamage: number; featherChargeCount: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
