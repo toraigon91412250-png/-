@@ -5,7 +5,7 @@ import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -254,6 +254,21 @@ export const App: React.FC = () => {
     setRecruitmentProgress(addRecruitmentTicketsForDeveloper(amount));
   };
 
+  const handleDeveloperSetImprintTickets = (tickets: number) => {
+    setRaidRewardProgress(setImprintTicketsForDeveloper(tickets));
+  };
+
+  const handleDeveloperAddImprintTickets = (amount: number) => {
+    setRaidRewardProgress(addImprintTicketsForDeveloper(amount));
+  };
+
+  const handleDeveloperUnlockAllImprints = () => {
+    const next = unlockAllImprintsForDeveloper();
+    if (!next) return;
+    setImprintProgress(next);
+    setBattleSetup(prev => ({ ...prev, imprints: next.equippedIds }));
+  };
+
   const handleDeveloperSetSkillProgress = (featherLevel: number, ruinLevel: number, shards: number) => {
     setSkillProgress(setSkillProgressForDeveloper(featherLevel, ruinLevel, shards));
   };
@@ -384,6 +399,8 @@ export const App: React.FC = () => {
         <DeveloperToolsScreen
           abilityProgress={abilityProgress}
           recruitmentProgress={recruitmentProgress}
+          imprintProgress={imprintProgress}
+          raidRewardProgress={raidRewardProgress}
           skillProgress={skillProgress}
           overallStats={overallStats}
           battleSetup={battleSetup}
@@ -394,6 +411,9 @@ export const App: React.FC = () => {
           onAddAbilityShards={handleDeveloperAddAbilityShards}
           onSetTickets={handleDeveloperSetTickets}
           onAddTickets={handleDeveloperAddTickets}
+          onSetImprintTickets={handleDeveloperSetImprintTickets}
+          onAddImprintTickets={handleDeveloperAddImprintTickets}
+          onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           onOpenBattleSetup={handleOpenBattleSetup}
