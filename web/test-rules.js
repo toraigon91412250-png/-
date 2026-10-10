@@ -247,7 +247,7 @@ const armoredAttackTarget = createInitialFighter(KAISER, false, 40);
 const rawNormalDamageAgainstArmor = calculateNormalAttackDamage({
   attacker: attackBase,
   target: armoredAttackTarget,
-  config: { kaiserLevel: 40, abilities: [] },
+  config: { kaiserLevel: 10, abilities: [] },
   turn: 1,
   isActingFirst: true,
 });
