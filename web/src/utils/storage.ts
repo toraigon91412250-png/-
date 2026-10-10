@@ -298,8 +298,19 @@ export function equipImprint(id: ImprintId): ImprintProgress | null {
   const current = loadImprintProgress();
   if (!isImprintId(id) || !current.unlockedIds.includes(id)) return null;
   if (current.equippedIds.includes(id)) return current;
-  if (current.equippedIds.length >= MAX_EQUIPPED_IMPRINTS) return null;
-  return persistImprintProgress({ ...current, equippedIds: [...current.equippedIds, id] });
+
+  // Equipping one blood imprint automatically replaces the other so saved data
+  // and UI interactions can never leave both mutually exclusive effects active.
+  const opposingBloodImprint = id === 'BLOOD_TEAR'
+    ? 'BLOOD_MEDIA'
+    : id === 'BLOOD_MEDIA'
+      ? 'BLOOD_TEAR'
+      : null;
+  const compatibleIds = opposingBloodImprint
+    ? current.equippedIds.filter(equippedId => equippedId !== opposingBloodImprint)
+    : current.equippedIds;
+  if (compatibleIds.length >= MAX_EQUIPPED_IMPRINTS) return null;
+  return persistImprintProgress({ ...current, equippedIds: [...compatibleIds, id] });
 }
 
 export function unequipImprint(id: ImprintId): ImprintProgress | null {
