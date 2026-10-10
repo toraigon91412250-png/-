@@ -520,7 +520,7 @@ export function useBattleGame(
     attacker: BattleFighter,
     defenderIsPlayer: boolean,
     turn: number,
-  ): { bloodTearBurstDamage: number } => {
+  ): { bloodTearBurstDamage: number; appliedAilmentDuration: number | null } => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
     const bleedDamage = attacker.character.id === 'irena' && (attacker.character.featherSkillLevel || 1) >= 3
       ? 40
@@ -547,7 +547,7 @@ export function useBattleGame(
         'PASSIVE_TRIGGER',
         turn,
       );
-      return { bloodTearBurstDamage: burstDamage };
+      return { bloodTearBurstDamage: burstDamage, appliedAilmentDuration: null };
     }
 
     const duration = def.defaultDuration + (
@@ -573,7 +573,7 @@ export function useBattleGame(
     const defenderName = defenderIsPlayer ? stateRef.current.player.character.name : stateRef.current.enemy.character.name;
     const displayName = ailmentType === 'BLEED' ? '出血' : '重圧';
     addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${duration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
-    return { bloodTearBurstDamage: 0 };
+    return { bloodTearBurstDamage: 0, appliedAilmentDuration: duration };
   };
 
 
@@ -1526,7 +1526,8 @@ export function useBattleGame(
             isUltimate: false,
             actorName: actor.character.name,
             skillName: statusOutcome.bloodTearBurstDamage > 0 ? '血裂' : skillName,
-            statusAilmentName: appliedAilmentName,
+            statusAilmentName: statusOutcome.bloodTearBurstDamage > 0 ? '' : appliedAilmentName,
+            statusAilmentDuration: statusOutcome.appliedAilmentDuration ?? undefined,
             bannerText: statusOutcome.bloodTearBurstDamage > 0
               ? `🩸『血裂』出血凝縮を開始 · 羽弾-${finalDamage}`
               : `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
@@ -1557,7 +1558,7 @@ export function useBattleGame(
               isUltimate: false,
               actorName: actor.character.name,
               skillName: '血裂',
-              statusAilmentName: '出血',
+              statusAilmentName: '',
               bannerText: `🩸『血裂』-${burstDamage} DMG`,
               effectId: nextVisualEffectId.current++,
             },
