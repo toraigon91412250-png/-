@@ -13,6 +13,7 @@ interface CharacterSelectScreenProps {
   onOpenRaidPrototype: () => void;
   onOpenRecruitment: () => void;
   onOpenImprints: () => void;
+  onOpenImprintGacha: () => void;
   skillProgress: IrenaSkillProgress;
   raidRewardProgress: RaidRewardProgress;
   raidItemMessage: string | null;
@@ -29,6 +30,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onOpenRaidPrototype,
   onOpenRecruitment,
   onOpenImprints,
+  onOpenImprintGacha,
   skillProgress,
   raidRewardProgress,
   raidItemMessage,
@@ -416,6 +418,33 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           <Eye size={19} color="#9FE9DF" />
           <span>深淵刻印</span>
           <span style={{ fontSize: '9px', color: '#99C9D2', fontWeight: 800 }}>3 SLOTS</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenImprintGacha}
+          aria-label="刻印ガチャを開く"
+          style={{
+            width: '100%',
+            height: '50px',
+            marginBottom: '8px',
+            background: 'linear-gradient(135deg, #35205A 0%, #20234A 56%, #123643 100%)',
+            color: '#F5F0FF',
+            border: '1.5px solid #B39DDB',
+            borderRadius: '14px',
+            fontSize: '16px',
+            fontWeight: 950,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 18px rgba(126, 87, 194, 0.18)',
+          }}
+        >
+          <Sparkles size={19} color="#D4C5FF" />
+          <span>刻印ガチャ</span>
+          <span style={{ fontSize: '10px', color: '#D4C5FF', fontWeight: 900 }}>TICKET {raidRewardProgress.imprintTickets}</span>
         </button>
 
         {/* Start Battle Button */}

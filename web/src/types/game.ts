@@ -287,6 +287,8 @@ export interface OverallStats {
 /** Persistent currency earned only by clearing the standalone raid. */
 export interface RaidRewardProgress {
   coreFragments: number;
+  /** One free imprint summon per ticket, awarded for each unique raid victory. */
+  imprintTickets: number;
   /** Permanent bonus added to the normal battle's stat-allocation pool. */
   bonusStatPoints: number;
   /** Recent raid run IDs that have already paid out a victory reward. */

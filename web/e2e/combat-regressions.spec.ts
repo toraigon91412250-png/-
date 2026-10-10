@@ -86,6 +86,53 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
 });
 
+test('raid imprint gacha spends one ticket per new imprint and excludes owned imprints', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_imprint_progress', JSON.stringify({
+      unlockedIds: ['FORESIGHT'],
+      equippedIds: [],
+    }));
+    window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
+      coreFragments: 0,
+      imprintTickets: 2,
+      bonusStatPoints: 0,
+      claimedVictoryRunIds: [],
+    }));
+    Math.random = () => 0;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '刻印ガチャを開く' }).click();
+  await expect(page.getByRole('heading', { name: '刻印ガチャ' })).toBeVisible();
+  await expect(page.getByLabel('刻印ガチャチケットの所持数 2')).toBeVisible();
+
+  await page.getByRole('button', { name: '刻印を1回引く' }).click();
+  await expect(page.getByRole('status')).toContainText('詠唱狩りを獲得しました！');
+  await expect.poll(() => page.evaluate(() => {
+    const raid = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
+    const imprints = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
+    return { tickets: raid.imprintTickets, unlockedIds: imprints.unlockedIds };
+  })).toEqual({ tickets: 1, unlockedIds: ['FORESIGHT', 'CHANT_HUNT'] });
+
+  await page.getByRole('button', { name: '刻印を1回引く' }).click();
+  await expect(page.getByRole('status')).toContainText('陰陽転化を獲得しました！');
+  await expect.poll(() => page.evaluate(() => {
+    const raid = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
+    const imprints = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
+    return { tickets: raid.imprintTickets, unlockedIds: imprints.unlockedIds };
+  })).toEqual({ tickets: 0, unlockedIds: ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG'] });
+
+  const drawButton = page.getByRole('button', { name: '刻印を1回引く' });
+  await expect(drawButton).toBeDisabled();
+  await expect(drawButton).toContainText('すべての刻印を獲得済み');
+  expect(pageErrors, 'Imprint gacha navigation and draws must not raise uncaught errors.').toEqual([]);
+});
+
 test('Yin-Yang Conversion protects the current turn, preserves pressure, and advances the round', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));

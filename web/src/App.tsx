@@ -5,18 +5,19 @@ import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
 import { ImprintScreen } from './components/ImprintScreen';
+import { ImprintGachaScreen } from './components/ImprintGachaScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadAllGameImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
   const [imprintProgress, setImprintProgress] = useState(() => loadImprintProgress());
   const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
   const [imprintMessage, setImprintMessage] = useState<string | null>(null);
+  const [imprintGachaMessage, setImprintGachaMessage] = useState<string | null>(null);
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: 10,
     abilities: [],
@@ -136,6 +138,29 @@ export const App: React.FC = () => {
     setImprintProgress(next);
     setBattleSetup(prev => ({ ...prev, imprints: next.equippedIds }));
     setImprintMessage('刻印の解除を保存しました。');
+  };
+
+  const handleOpenImprintGacha = () => {
+    refreshProgress();
+    setImprintGachaMessage(null);
+    setScreen('IMPRINT_GACHA');
+  };
+
+  const handleDrawImprintGacha = () => {
+    const result = drawImprintGacha();
+    setRaidRewardProgress(result.raidRewardProgress);
+    setImprintProgress(result.imprintProgress);
+
+    if (result.status === 'DRAWN') {
+      setImprintGachaMessage(`${result.imprint.name}を獲得しました！ 刻印管理から装備できます。`);
+    } else if (result.status === 'ALL_COLLECTED') {
+      setImprintGachaMessage('すべての刻印を所持しています。これ以上ガチャを引く必要はありません。');
+    } else if (result.status === 'NO_TICKETS') {
+      setImprintGachaMessage('刻印ガチャチケットがありません。レイドに勝利すると1枚入手できます。');
+    } else {
+      setImprintGachaMessage('保存に失敗したため、チケットは消費していません。ブラウザの保存設定を確認してください。');
+    }
+    return result;
   };
 
   const handleOpenDeveloperTools = () => {
@@ -290,6 +315,7 @@ export const App: React.FC = () => {
           onOpenRaidPrototype={() => setScreen('RAID_PROTOTYPE')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           onOpenImprints={handleOpenImprints}
+          onOpenImprintGacha={handleOpenImprintGacha}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
           raidItemMessage={raidItemMessage}
@@ -306,6 +332,18 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintMessage(null);
+            setScreen('SELECT');
+          }}
+        />
+      ) : screen === 'IMPRINT_GACHA' ? (
+        <ImprintGachaScreen
+          progress={imprintProgress}
+          raidRewardProgress={raidRewardProgress}
+          message={imprintGachaMessage}
+          onDraw={handleDrawImprintGacha}
+          onBack={() => {
+            refreshProgress();
+            setImprintGachaMessage(null);
             setScreen('SELECT');
           }}
         />

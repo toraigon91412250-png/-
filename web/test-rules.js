@@ -31,7 +31,7 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -401,9 +401,11 @@ assert.strictEqual(loadRaidRewardProgress().coreFragments, 0);
 const firstRaidClaim = claimRaidVictoryReward('unit-test-raid-victory-001');
 assert.strictEqual(firstRaidClaim.claimed, true, 'A new raid victory should grant one core fragment.');
 assert.strictEqual(firstRaidClaim.progress.coreFragments, 1);
+assert.strictEqual(firstRaidClaim.progress.imprintTickets, 1, 'Each unique raid victory also grants one imprint ticket.');
 const repeatedRaidClaim = claimRaidVictoryReward('unit-test-raid-victory-001');
 assert.strictEqual(repeatedRaidClaim.claimed, false, 'The same raid run must never pay out twice.');
 assert.strictEqual(loadRaidRewardProgress().coreFragments, 1, 'A duplicate claim must not duplicate the item.');
+assert.strictEqual(loadRaidRewardProgress().imprintTickets, 1, 'A duplicate claim must not duplicate the imprint ticket.');
 
 const firstRedemption = redeemRaidCoreFragment();
 assert.strictEqual(firstRedemption.used, true, 'A held core fragment should be redeemable.');
@@ -509,6 +511,37 @@ assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'CHANT_HUNT', 'YI
 if (imprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, imprintSaveBeforeTest);
 console.log('✓ Imprint persistence and Foresight trigger gates are consistent.');
+
+// Imprint gacha spends one dedicated ticket, excludes owned imprints, and stops when complete.
+const gachaRaidSaveBeforeTest = storageValues.get('duel_arena_raid_reward_progress');
+const gachaImprintSaveBeforeTest = storageValues.get(IMPRINT_PROGRESS_STORAGE_KEY);
+storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+  coreFragments: 0, imprintTickets: 2, bonusStatPoints: 0, claimedVictoryRunIds: [],
+}));
+storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify({ unlockedIds: ['FORESIGHT'], equippedIds: [] }));
+const firstImprintDraw = drawImprintGacha(() => 0);
+assert.strictEqual(firstImprintDraw.status, 'DRAWN');
+assert.strictEqual(firstImprintDraw.imprint.id, 'CHANT_HUNT', 'Owned imprints must be excluded from the draw pool.');
+assert.strictEqual(firstImprintDraw.raidRewardProgress.imprintTickets, 1, 'One draw consumes one ticket.');
+assert.deepStrictEqual(firstImprintDraw.imprintProgress.unlockedIds, ['FORESIGHT', 'CHANT_HUNT']);
+const secondImprintDraw = drawImprintGacha(() => 0);
+assert.strictEqual(secondImprintDraw.status, 'DRAWN');
+assert.strictEqual(secondImprintDraw.imprint.id, 'YIN_YANG', 'The next draw must choose the only unowned imprint.');
+assert.strictEqual(secondImprintDraw.raidRewardProgress.imprintTickets, 0);
+const allCollectedDraw = drawImprintGacha(() => 0);
+assert.strictEqual(allCollectedDraw.status, 'ALL_COLLECTED', 'The draw must end once every registered imprint is owned.');
+assert.strictEqual(allCollectedDraw.raidRewardProgress.imprintTickets, 0, 'A completed collection must not consume a ticket.');
+storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+  coreFragments: 0, imprintTickets: 0, bonusStatPoints: 0, claimedVictoryRunIds: [],
+}));
+storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify({ unlockedIds: ['FORESIGHT'], equippedIds: [] }));
+const noTicketDraw = drawImprintGacha(() => 0);
+assert.strictEqual(noTicketDraw.status, 'NO_TICKETS');
+assert.deepStrictEqual(noTicketDraw.imprintProgress.unlockedIds, ['FORESIGHT'], 'A draw without tickets must not unlock an imprint.');
+if (gachaRaidSaveBeforeTest === undefined) storageValues.delete('duel_arena_raid_reward_progress');
+else storageValues.set('duel_arena_raid_reward_progress', gachaRaidSaveBeforeTest);
+if (gachaImprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
+else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, gachaImprintSaveBeforeTest);
 
 
 

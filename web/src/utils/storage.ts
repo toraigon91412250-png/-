@@ -1,7 +1,8 @@
 import { AbilityId, AbilityProgress, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
-import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
+import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
+import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
@@ -55,6 +56,7 @@ export function addStatPoints(amount: number): number {
 
 const INITIAL_RAID_REWARD_PROGRESS: RaidRewardProgress = {
   coreFragments: 0,
+  imprintTickets: 0,
   bonusStatPoints: 0,
   claimedVictoryRunIds: [],
 };
@@ -88,6 +90,7 @@ function normalizeRaidRewardProgress(
 
   return {
     coreFragments: normalizeCount(parsed?.coreFragments),
+    imprintTickets: normalizeCount(parsed?.imprintTickets),
     bonusStatPoints: normalizeCount(parsed?.bonusStatPoints),
     claimedVictoryRunIds: Array.from(new Set(runIds)).slice(-100),
   };
@@ -112,7 +115,7 @@ function persistRaidRewardProgress(progress: RaidRewardProgress): boolean {
   }
 }
 
-/** Grant exactly one fragment for a raid victory. The run ID makes repeated effect calls idempotent. */
+/** Grant one core fragment and one imprint ticket per unique raid victory. */
 export function claimRaidVictoryReward(runId: string): RaidVictoryRewardClaim {
   const current = loadRaidRewardProgress();
   const safeRunId = typeof runId === 'string' ? runId.trim().slice(0, 120) : '';
@@ -125,12 +128,100 @@ export function claimRaidVictoryReward(runId: string): RaidVictoryRewardClaim {
   const next = normalizeRaidRewardProgress({
     ...current,
     coreFragments: current.coreFragments + 1,
+    imprintTickets: current.imprintTickets + 1,
     claimedVictoryRunIds: [...current.claimedVictoryRunIds, safeRunId],
   });
   if (!persistRaidRewardProgress(next)) {
     return { progress: current, claimed: false, persisted: false };
   }
   return { progress: next, claimed: true, persisted: true };
+}
+
+export type ImprintGachaDrawResult =
+  | {
+      status: 'DRAWN';
+      imprint: ImprintDefinition;
+      raidRewardProgress: RaidRewardProgress;
+      imprintProgress: ImprintProgress;
+    }
+  | {
+      status: 'NO_TICKETS' | 'ALL_COLLECTED' | 'SAVE_FAILED';
+      raidRewardProgress: RaidRewardProgress;
+      imprintProgress: ImprintProgress;
+    };
+
+/**
+ * Spend one raid-earned ticket on one random unowned imprint.
+ * The ownership pool is read fresh on every call so a repeated click can never
+ * award a duplicate from a stale UI state.
+ */
+export function drawImprintGacha(random: () => number = Math.random): ImprintGachaDrawResult {
+  const currentRaid = loadRaidRewardProgress();
+  const currentImprints = loadImprintProgress();
+  const available = IMPRINT_DEFINITIONS.filter(
+    imprint => !currentImprints.unlockedIds.includes(imprint.id),
+  );
+
+  if (available.length === 0) {
+    return {
+      status: 'ALL_COLLECTED',
+      raidRewardProgress: currentRaid,
+      imprintProgress: currentImprints,
+    };
+  }
+  if (currentRaid.imprintTickets < 1) {
+    return {
+      status: 'NO_TICKETS',
+      raidRewardProgress: currentRaid,
+      imprintProgress: currentImprints,
+    };
+  }
+
+  const roll = random();
+  const safeRoll = Number.isFinite(roll) ? Math.min(0.999999999, Math.max(0, roll)) : 0;
+  const drawnImprint = available[Math.floor(safeRoll * available.length)];
+  if (!drawnImprint) {
+    return {
+      status: 'SAVE_FAILED',
+      raidRewardProgress: currentRaid,
+      imprintProgress: currentImprints,
+    };
+  }
+
+  const nextRaid = normalizeRaidRewardProgress({
+    ...currentRaid,
+    imprintTickets: currentRaid.imprintTickets - 1,
+  });
+  const nextImprints = normalizeImprintProgress({
+    ...currentImprints,
+    unlockedIds: [...currentImprints.unlockedIds, drawnImprint.id],
+  });
+
+  if (!persistRaidRewardProgress(nextRaid)) {
+    return {
+      status: 'SAVE_FAILED',
+      raidRewardProgress: currentRaid,
+      imprintProgress: currentImprints,
+    };
+  }
+
+  const savedImprints = persistImprintProgress(nextImprints);
+  if (!savedImprints) {
+    // Restore the ticket if ownership could not be saved; never charge for a lost draw.
+    persistRaidRewardProgress(currentRaid);
+    return {
+      status: 'SAVE_FAILED',
+      raidRewardProgress: loadRaidRewardProgress(),
+      imprintProgress: loadImprintProgress(),
+    };
+  }
+
+  return {
+    status: 'DRAWN',
+    imprint: drawnImprint,
+    raidRewardProgress: nextRaid,
+    imprintProgress: savedImprints,
+  };
 }
 
 /** Convert one raid-only fragment into +2 permanent stat-allocation points in a single save write. */
