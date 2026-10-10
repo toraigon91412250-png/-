@@ -25,7 +25,18 @@ import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateD
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
-import { getTurnExecutionPlan, normalizeEquippedImprints, resolveYinYangDefense, shouldSuppressCpuBuffAction, shouldTriggerForesight } from '../utils/imprintSystem';
+import {
+  BLOOD_MEDIA_EXTRA_BLEED_TURNS,
+  COSTLY_SHOT_HP_COST,
+  getBloodTearBurstDamage,
+  getTurnExecutionPlan,
+  getWindGuardCounterDamage,
+  normalizeEquippedImprints,
+  resolveWindGuardDamage,
+  resolveYinYangDefense,
+  shouldSuppressCpuBuffAction,
+  shouldTriggerForesight,
+} from '../utils/imprintSystem';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -99,6 +110,9 @@ export function useBattleGame(
     usedImprints: [],
     yinYangActivatedTurn: null,
     yinYangDefenseResult: null,
+    windGuardResult: null,
+    bloodMediaHealResult: null,
+    costlyShotResult: null,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -279,12 +293,13 @@ export function useBattleGame(
     const safeDamage = Math.max(0, Math.floor(damage));
     const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
     const fallenKingLevel = getAbilityLevel(stateRef.current.battleConfig, 'FALLEN_KING');
+    let resultingHp = Math.max(0, target.currentHp - safeDamage);
 
     if (
       target.isPlayer &&
       fallenKingLevel >= 5 &&
       lethal &&
-      fallenKingSurvivalCountRef.current < (fallenKingLevel >= 5 ? 5 : 1)
+      fallenKingSurvivalCountRef.current < 5
     ) {
       fallenKingSurvivalCountRef.current += 1;
       addLog(
@@ -292,10 +307,36 @@ export function useBattleGame(
         'PASSIVE_TRIGGER',
         turn,
       );
-      return 1;
+      resultingHp = 1;
     }
 
-    return Math.max(0, target.currentHp - safeDamage);
+    // Wind Guard counters after a landed direct CPU hit. DoT must never trigger it.
+    const windGuardIsEligible = Boolean(
+      target.isPlayer &&
+      source !== '出血ダメージ' &&
+      stateRef.current.battleConfig.imprints?.includes('WIND_GUARD') &&
+      target.featherChargeBonus > 0 &&
+      safeDamage > 0
+    );
+    if (windGuardIsEligible) {
+      const counterDamage = getWindGuardCounterDamage(target.featherChargeBonus);
+      const nextEnemyHp = Math.max(0, stateRef.current.enemy.currentHp - counterDamage);
+      updateState(prev => ({
+        ...prev,
+        enemy: { ...prev.enemy, currentHp: Math.max(0, prev.enemy.currentHp - counterDamage) },
+      }));
+      addLog(
+        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${counterDamage}ダメージ。`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+      soundManager.playHeavyStrike();
+      if (nextEnemyHp <= 0) {
+        addLog('🪶【風守り】反撃が決定打になった！', 'PASSIVE_TRIGGER', turn);
+      }
+    }
+
+    return resultingHp;
   };
 
   const restartBattle = useCallback((
@@ -373,6 +414,9 @@ export function useBattleGame(
       usedImprints: [],
       yinYangActivatedTurn: null,
       yinYangDefenseResult: null,
+      windGuardResult: null,
+      bloodMediaHealResult: null,
+      costlyShotResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -407,6 +451,39 @@ export function useBattleGame(
   };
 
   // Only direct hits use this helper. Bleed ticks retain their existing damage and duration rules.
+  const applyWindGuardToDamage = (
+    attackerIsPlayer: boolean,
+    target: BattleFighter,
+    damage: number,
+    turn: number,
+  ): number => {
+    const result = resolveWindGuardDamage(
+      damage,
+      target.featherChargeBonus,
+      !attackerIsPlayer &&
+        target.isPlayer &&
+        Boolean(stateRef.current.battleConfig.imprints?.includes('WIND_GUARD')),
+    );
+    if (!result.applied) return damage;
+
+    updateState(prev => ({
+      ...prev,
+      windGuardResult: {
+        turn,
+        reducedBy: result.reducedBy,
+        counterDamage: result.counterDamage,
+        featherChargeBonus: target.featherChargeBonus,
+      },
+    }));
+    addLog(
+      `🪶【風守り】羽弾蓄積+${target.featherChargeBonus}により被ダメージを${result.reducedBy}軽減（${Math.floor(damage)} → ${result.damage}）。`,
+      'PASSIVE_TRIGGER',
+      turn,
+    );
+    soundManager.playDefend();
+    return result.damage;
+  };
+
   const applyYinYangDefenseToDamage = (
     attackerIsPlayer: boolean,
     target: BattleFighter,
@@ -418,24 +495,32 @@ export function useBattleGame(
       targetIsPlayer: target.isPlayer,
       defenseActive: yinYangDefensePendingRef.current,
     });
-    if (!result.applied) return damage;
+    let adjustedDamage = damage;
 
-    yinYangDefensePendingRef.current = false;
-    updateState(prev => ({
-      ...prev,
-      yinYangDefenseResult: { turn, reducedBy: result.reducedBy },
-    }));
-    addLog(
-      `☯️【陰陽転化・防御】CPUの直撃を半減！ ${Math.floor(damage)} → ${result.damage}。`,
-      'PASSIVE_TRIGGER',
-      turn,
-    );
-    soundManager.playDefend();
-    return result.damage;
+    if (result.applied) {
+      yinYangDefensePendingRef.current = false;
+      updateState(prev => ({
+        ...prev,
+        yinYangDefenseResult: { turn, reducedBy: result.reducedBy },
+      }));
+      addLog(
+        `☯️【陰陽転化・防御】CPUの直撃を半減！ ${Math.floor(damage)} → ${result.damage}。`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+      soundManager.playDefend();
+      adjustedDamage = result.damage;
+    }
+
+    return applyWindGuardToDamage(attackerIsPlayer, target, adjustedDamage, turn);
   };
 
-  // Apply Special Status Ailment (Bleed or Pressure)
-  const applySpecialStatusAilment = (attacker: BattleFighter, defenderIsPlayer: boolean, turn: number) => {
+  // Apply Special Status Ailment (Bleed or Pressure), including player-only imprint conversions.
+  const applySpecialStatusAilment = (
+    attacker: BattleFighter,
+    defenderIsPlayer: boolean,
+    turn: number,
+  ): { bloodTearBurstDamage: number; appliedAilmentDuration: number | null } => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
     const bleedDamage = attacker.character.id === 'irena' && (attacker.character.featherSkillLevel || 1) >= 3
       ? 40
@@ -443,6 +528,33 @@ export function useBattleGame(
     const def = ailmentType === 'BLEED'
       ? { type: 'BLEED' as const, defaultDuration: 3, dotDamage: bleedDamage, description: '各ターン開始時' + bleedDamage + 'ダメージ、速度-20、防御-20' }
       : { type: 'PRESSURE' as const, defaultDuration: 2, description: '速度-25、攻撃力-25' };
+    const playerAppliedBleed = attacker.isPlayer && !defenderIsPlayer && ailmentType === 'BLEED';
+    const equippedImprints = stateRef.current.battleConfig.imprints ?? [];
+
+    if (playerAppliedBleed && equippedImprints.includes('BLOOD_TEAR')) {
+      const burstDamage = getBloodTearBurstDamage(bleedDamage, def.defaultDuration);
+      // Consume any previous Bleed first: Blood Tear must never leave a stale
+      // status behind when it converts the newly applied Bleed into burst damage.
+      updateState(prev => {
+        const target = defenderIsPlayer ? prev.player : prev.enemy;
+        const remainingAilments = target.activeAilments.filter(ailment => ailment.type !== 'BLEED');
+        return defenderIsPlayer
+          ? { ...prev, player: { ...prev.player, activeAilments: remainingAilments } }
+          : { ...prev, enemy: { ...prev.enemy, activeAilments: remainingAilments } };
+      });
+      addLog(
+        `🩸【刻印発動：血裂】出血を付与した瞬間に凝縮！ ${bleedDamage}×${def.defaultDuration}×1.5＝${burstDamage}ダメージ。出血状態は残らない。`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+      return { bloodTearBurstDamage: burstDamage, appliedAilmentDuration: null };
+    }
+
+    const duration = def.defaultDuration + (
+      playerAppliedBleed && equippedImprints.includes('BLOOD_MEDIA')
+        ? BLOOD_MEDIA_EXTRA_BLEED_TURNS
+        : 0
+    );
 
     updateState(prev => {
       const target = defenderIsPlayer ? prev.player : prev.enemy;
@@ -450,8 +562,8 @@ export function useBattleGame(
       const updated = [
         ...filtered,
         ailmentType === 'BLEED'
-          ? { type: ailmentType, remainingTurns: def.defaultDuration, dotDamage: bleedDamage }
-          : { type: ailmentType, remainingTurns: def.defaultDuration },
+          ? { type: ailmentType, remainingTurns: duration, dotDamage: bleedDamage }
+          : { type: ailmentType, remainingTurns: duration },
       ];
       return defenderIsPlayer
         ? { ...prev, player: { ...prev.player, activeAilments: updated } }
@@ -460,7 +572,8 @@ export function useBattleGame(
 
     const defenderName = defenderIsPlayer ? stateRef.current.player.character.name : stateRef.current.enemy.character.name;
     const displayName = ailmentType === 'BLEED' ? '出血' : '重圧';
-    addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${def.defaultDuration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
+    addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${duration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
+    return { bloodTearBurstDamage: 0, appliedAilmentDuration: duration };
   };
 
 
@@ -528,6 +641,29 @@ export function useBattleGame(
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
       const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
+      // Heal only damage that actually landed. For example, Fallen King's survival
+      // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
+      const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
+      const bloodMediaHealAmount = !isActorPlayer &&
+        Boolean(stateRef.current.battleConfig.imprints?.includes('BLOOD_MEDIA'))
+        ? Math.min(actualBleedDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
+        : 0;
+      if (bloodMediaHealAmount > 0) {
+        updateState(prev => ({
+          ...prev,
+          player: {
+            ...prev.player,
+            currentHp: Math.min(prev.player.character.maxHp, prev.player.currentHp + bloodMediaHealAmount),
+          },
+          bloodMediaHealResult: { turn, amount: bloodMediaHealAmount },
+        }));
+        addLog(
+          `🩸【血媒・吸収】出血で実際に与えたダメージからHP+${bloodMediaHealAmount}回復。`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+        soundManager.playDefend();
+      }
       updateState(prev => (isActorPlayer
         ? {
             ...prev,
@@ -707,6 +843,53 @@ export function useBattleGame(
         await sleep(650 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
         return true;
+      }
+
+      case 'COSTLY_SHOT': {
+        if (!isActorPlayer || !stateRef.current.battleConfig.imprints?.includes('COSTLY_SHOT')) {
+          return true;
+        }
+        if (
+          actor.currentHp <= COSTLY_SHOT_HP_COST ||
+          actor.specialCooldownRemaining <= 0 ||
+          actor.isSuperFallenShotCharging
+        ) {
+          return true;
+        }
+
+        const hpAfterCost = actor.currentHp - COSTLY_SHOT_HP_COST;
+        updateState(prev => ({
+          ...prev,
+          player: {
+            ...prev.player,
+            currentHp: hpAfterCost,
+            specialCooldownRemaining: 0,
+          },
+          costlyShotResult: { turn, hpSpent: COSTLY_SHOT_HP_COST },
+          visualEffect: {
+            targetIsPlayer: true,
+            damage: 0,
+            effectType: 'BUFF_POWER',
+            isCritical: false,
+            isEvade: false,
+            isBuff: true,
+            isUltimate: false,
+            actorName: actor.character.name,
+            skillName: '代償撃ち',
+            statusAilmentName: '',
+            bannerText: `♻️ HP-${COSTLY_SHOT_HP_COST} / 特殊CT RESET`,
+            effectId: nextVisualEffectId.current++,
+          },
+        }));
+        addLog(
+          `♻️【刻印発動：代償撃ち】HPを${COSTLY_SHOT_HP_COST}消費し、特殊技のクールタイムをリセット！`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+        soundManager.playDefend();
+        await sleep(650 / speed);
+        updateState(prev => ({ ...prev, visualEffect: null }));
+        return hpAfterCost > 0;
       }
 
       case 'EVADE': {
@@ -1313,8 +1496,8 @@ export function useBattleGame(
           turn
         );
 
-        // Apply 100% Status Ailment upon hit
-        applySpecialStatusAilment(actor, !isActorPlayer, turn);
+        // Apply 100% Status Ailment upon hit or convert the bleed into Blood Tear's burst.
+        const statusOutcome = applySpecialStatusAilment(actor, !isActorPlayer, turn);
 
         const fallenExecution =
           isActorPlayer &&
@@ -1344,15 +1527,48 @@ export function useBattleGame(
             isBuff: false,
             isUltimate: false,
             actorName: actor.character.name,
-            skillName,
-            statusAilmentName: appliedAilmentName,
-            bannerText: `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
+            skillName: statusOutcome.bloodTearBurstDamage > 0 ? '血裂' : skillName,
+            statusAilmentName: statusOutcome.bloodTearBurstDamage > 0 ? '' : appliedAilmentName,
+            statusAilmentDuration: statusOutcome.appliedAilmentDuration ?? undefined,
+            bannerText: statusOutcome.bloodTearBurstDamage > 0
+              ? `🩸『血裂』出血凝縮を開始 · 羽弾-${finalDamage}`
+              : `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
             effectId: nextVisualEffectId.current++,
           },
         }));
 
         await sleep(850 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
+
+        let postSpecialTargetHp = newTargetHp;
+        if (statusOutcome.bloodTearBurstDamage > 0 && newTargetHp > 0) {
+          const burstDamage = statusOutcome.bloodTearBurstDamage;
+          const burstTarget = { ...target, currentHp: newTargetHp };
+          soundManager.playCritical();
+          const bloodTearTargetHp = resolveIncomingDamage(burstTarget, burstDamage, turn, '血裂');
+          updateState(prev => ({
+            ...prev,
+            player: isActorPlayer ? prev.player : { ...prev.player, currentHp: bloodTearTargetHp },
+            enemy: isActorPlayer ? { ...prev.enemy, currentHp: bloodTearTargetHp } : prev.enemy,
+            visualEffect: {
+              targetIsPlayer: !isActorPlayer,
+              damage: burstDamage,
+              effectType: 'NORMAL_HIT',
+              isCritical: false,
+              isEvade: false,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '血裂',
+              statusAilmentName: '',
+              bannerText: `🩸『血裂』-${burstDamage} DMG`,
+              effectId: nextVisualEffectId.current++,
+            },
+          }));
+          await sleep(850 / speed);
+          updateState(prev => ({ ...prev, visualEffect: null }));
+          postSpecialTargetHp = bloodTearTargetHp;
+        }
 
         if (judgmentActive) {
           judgmentReadyRef.current = false;
@@ -1363,7 +1579,7 @@ export function useBattleGame(
           addJudgmentMarks(2, turn);
         }
 
-        if (newTargetHp <= 0) return false;
+        if (newTargetHp <= 0 || postSpecialTargetHp <= 0) return false;
         return true;
       }
 
@@ -1643,6 +1859,15 @@ export function useBattleGame(
     ) return;
     if (playerAction === 'ULTIMATE' && stateRef.current.player.ultimateGauge < 3) return;
     if (playerAction === 'YIN_YANG' && !stateRef.current.battleConfig.imprints?.includes('YIN_YANG')) return;
+    if (
+      playerAction === 'COSTLY_SHOT' &&
+      (
+        !stateRef.current.battleConfig.imprints?.includes('COSTLY_SHOT') ||
+        player.specialCooldownRemaining <= 0 ||
+        player.currentHp <= COSTLY_SHOT_HP_COST ||
+        player.isSuperFallenShotCharging
+      )
+    ) return;
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
@@ -1656,6 +1881,9 @@ export function useBattleGame(
       visualEffect: null,
       visualEffects: [],
       yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
+      windGuardResult: null,
+      bloodMediaHealResult: null,
+      costlyShotResult: null,
     }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
@@ -1711,7 +1939,7 @@ export function useBattleGame(
         firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
         firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
       );
-      if (!continue1) {
+      if (!continue1 || stateRef.current.player.currentHp <= 0 || stateRef.current.enemy.currentHp <= 0) {
         const winner = stateRef.current.player.currentHp > 0;
         finalizeBattle(winner);
         return;
@@ -1729,7 +1957,7 @@ export function useBattleGame(
         !firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
         !firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
       );
-      if (!continue2) {
+      if (!continue2 || stateRef.current.player.currentHp <= 0 || stateRef.current.enemy.currentHp <= 0) {
         const winner = stateRef.current.player.currentHp > 0;
         finalizeBattle(winner);
         return;
@@ -1740,7 +1968,7 @@ export function useBattleGame(
       // End of Round: remember what the player just did, then select the next
       // CPU action from the updated state. This makes the opponent learn from
       // repeated habits without re-rolling its action after the player commits.
-      if (playerAction !== 'YIN_YANG') {
+      if (playerAction !== 'YIN_YANG' && playerAction !== 'COSTLY_SHOT') {
         recentPlayerActionsRef.current = [...recentPlayerActionsRef.current.slice(-5), playerAction];
       }
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];

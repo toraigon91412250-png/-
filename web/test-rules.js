@@ -32,8 +32,8 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha } = await import('./src/utils/storage.ts');
-const { MAX_EQUIPPED_IMPRINTS } = await import('./src/data/imprints.ts');
-const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION } = await import('./src/utils/imprintSystem.ts');
+const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
+const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -444,6 +444,33 @@ assert.strictEqual(equipImprint('FORESIGHT')?.equippedIds.includes('FORESIGHT'),
 assert.strictEqual(unlockImprint('FORESIGHT')?.unlockedIds.length, 1, 'Duplicate acquisition must not duplicate ownership.');
 assert.strictEqual(MAX_EQUIPPED_IMPRINTS, 3, 'The imprint loadout has three slots.');
 assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'FORESIGHT', 'UNKNOWN', null]), ['FORESIGHT']);
+assert.deepStrictEqual(normalizeEquippedImprints(['BLOOD_TEAR', 'BLOOD_MEDIA']), ['BLOOD_TEAR'],
+  'Legacy saves containing both blood imprints must normalize to one effect.');
+assert.deepStrictEqual(normalizeEquippedImprints(['BLOOD_MEDIA', 'BLOOD_TEAR']), ['BLOOD_MEDIA'],
+  'Blood-imprint exclusivity must be deterministic and preserve the first valid choice.');
+assert.strictEqual(getOpposingBloodImprint('BLOOD_TEAR'), 'BLOOD_MEDIA');
+assert.strictEqual(getOpposingBloodImprint('BLOOD_MEDIA'), 'BLOOD_TEAR');
+assert.strictEqual(getOpposingBloodImprint('WIND_GUARD'), null);
+assert.strictEqual(getBloodTearBurstDamage(30, 3), 135);
+assert.strictEqual(getBloodTearBurstDamage(40, 4), 240);
+assert.strictEqual(getBloodTearBurstDamage(-30, 3), 0);
+assert.strictEqual(getBloodTearBurstDamage(30, -1), 0);
+assert.strictEqual(WIND_GUARD_MAX_REDUCTION, 0.4);
+assert.strictEqual(getWindGuardCounterDamage(300), 75);
+assert.strictEqual(getWindGuardCounterDamage(-10), 0);
+assert.deepStrictEqual(resolveWindGuardDamage(1, 500, true), {
+  damage: 1, reducedBy: 0, counterDamage: 125, applied: true,
+}, 'Rounding must not reduce a one-point hit by more than the 40% cap.');
+assert.deepStrictEqual(resolveWindGuardDamage(200, 300, true), {
+  damage: 140, reducedBy: 60, counterDamage: 75, applied: true,
+});
+assert.deepStrictEqual(resolveWindGuardDamage(200, 500, true), {
+  damage: 120, reducedBy: 80, counterDamage: 125, applied: true,
+}, 'Wind Guard mitigation must cap at 40% while counter damage scales from stored feather power.');
+assert.deepStrictEqual(resolveWindGuardDamage(200, 300, false), {
+  damage: 200, reducedBy: 0, counterDamage: 0, applied: false,
+});
+assert.strictEqual(COSTLY_SHOT_HP_COST, 200);
 
 const eligibleForesight = {
   equippedImprints: ['FORESIGHT'],
@@ -508,6 +535,16 @@ assert.deepStrictEqual(unlockImprint('YIN_YANG')?.unlockedIds, ['FORESIGHT', 'CH
 assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'YIN_YANG']),
   ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG']);
 
+for (const equippedId of loadImprintProgress().equippedIds) unequipImprint(equippedId);
+unlockImprint('BLOOD_TEAR');
+unlockImprint('BLOOD_MEDIA');
+assert.ok(equipImprint('BLOOD_TEAR')?.equippedIds.includes('BLOOD_TEAR'));
+const switchedToBloodMedia = equipImprint('BLOOD_MEDIA');
+assert.ok(switchedToBloodMedia?.equippedIds.includes('BLOOD_MEDIA'));
+assert.strictEqual(switchedToBloodMedia?.equippedIds.includes('BLOOD_TEAR'), false,
+  'Equipping Blood Media automatically removes mutually exclusive Blood Tear.');
+assert.ok(switchedToBloodMedia?.equippedIds.length <= MAX_EQUIPPED_IMPRINTS);
+
 if (imprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, imprintSaveBeforeTest);
 console.log('✓ Imprint persistence and Foresight trigger gates are consistent.');
@@ -528,9 +565,13 @@ const secondImprintDraw = drawImprintGacha(() => 0);
 assert.strictEqual(secondImprintDraw.status, 'DRAWN');
 assert.strictEqual(secondImprintDraw.imprint.id, 'YIN_YANG', 'The next draw must choose the only unowned imprint.');
 assert.strictEqual(secondImprintDraw.raidRewardProgress.imprintTickets, 0);
+for (const imprint of IMPRINT_DEFINITIONS) unlockImprint(imprint.id);
+storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+  coreFragments: 0, imprintTickets: 1, bonusStatPoints: 0, claimedVictoryRunIds: [],
+}));
 const allCollectedDraw = drawImprintGacha(() => 0);
 assert.strictEqual(allCollectedDraw.status, 'ALL_COLLECTED', 'The draw must end once every registered imprint is owned.');
-assert.strictEqual(allCollectedDraw.raidRewardProgress.imprintTickets, 0, 'A completed collection must not consume a ticket.');
+assert.strictEqual(allCollectedDraw.raidRewardProgress.imprintTickets, 1, 'A completed collection must not consume the remaining ticket.');
 storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
   coreFragments: 0, imprintTickets: 0, bonusStatPoints: 0, claimedVictoryRunIds: [],
 }));

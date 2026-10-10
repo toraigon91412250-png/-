@@ -4,6 +4,7 @@ import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
+import { COSTLY_SHOT_HP_COST } from '../utils/imprintSystem';
 
 interface ActionDockProps {
   player: BattleFighter;
@@ -57,6 +58,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
   const hasYinYangImprint = battleConfig.imprints?.includes('YIN_YANG') ?? false;
+  const hasCostlyShotImprint = battleConfig.imprints?.includes('COSTLY_SHOT') ?? false;
   const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
   const isSpecialReady = player.specialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
   const isUltimateReady = player.ultimateGauge >= 3;
@@ -444,6 +446,51 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>☯️ 陰陽転化</span>
             <span style={{ fontSize: '10px', fontWeight: 700, color: 'inherit' }}>
               今ターン被ダメージ50%軽減 · 次の攻撃+{GAME_BALANCE.BUFF_DAMAGE_BONUS}
+            </span>
+          </button>
+        </div>
+      )}
+
+      {hasCostlyShotImprint && (
+        <div style={{ marginBottom: '6px' }}>
+          <button
+            type="button"
+            aria-label="代償撃ち"
+            onClick={() => onAction('COSTLY_SHOT')}
+            disabled={
+              !isEnabled ||
+              isChargingSuperFallenShot ||
+              player.specialCooldownRemaining <= 0 ||
+              player.currentHp <= COSTLY_SHOT_HP_COST
+            }
+            style={{
+              width: '100%',
+              minHeight: '46px',
+              padding: '6px 10px',
+              borderRadius: '10px',
+              border: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+                ? '1px solid #D7A4D7'
+                : '1px solid #3D3940',
+              background: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+                ? 'linear-gradient(105deg, rgba(52,24,57,0.98), rgba(44,35,62,0.98))'
+                : 'rgba(26,30,40,0.92)',
+              color: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+                ? '#F6D7FF'
+                : '#667085',
+              cursor: !isEnabled || isChargingSuperFallenShot || player.specialCooldownRemaining <= 0 || player.currentHp <= COSTLY_SHOT_HP_COST
+                ? 'not-allowed'
+                : 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '2px',
+              fontFamily: 'inherit',
+            }}
+          >
+            <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>♻️ 代償撃ち</span>
+            <span style={{ fontSize: '10px', fontWeight: 700 }}>
+              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {player.specialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : 'リセット不要'}
             </span>
           </button>
         </div>

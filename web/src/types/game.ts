@@ -1,6 +1,6 @@
 export type BattleAction = 'ATTACK' | 'EVADE' | 'BUFF' | 'SPECIAL' | 'ULTIMATE';
 /** Player-only command granted by the Yin-Yang Conversion imprint. */
-export type PlayerBattleAction = BattleAction | 'YIN_YANG';
+export type PlayerBattleAction = BattleAction | 'YIN_YANG' | 'COSTLY_SHOT';
 
 export const IRENA_FEATHER_CHARGE_RANGES: ReadonlyArray<readonly [number, number]> = [
   [60, 80],
@@ -192,6 +192,8 @@ export interface VisualEffect {
   actorName: string;
   skillName: string;
   statusAilmentName: string;
+  /** Actual duration applied by the current hit; omitted for consumed or non-status effects. */
+  statusAilmentDuration?: number;
   bannerText: string;
   effectId: number;
 }
@@ -203,7 +205,7 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
 
-export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG';
+export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT';
 
 export interface ImprintProgress {
   unlockedIds: ImprintId[];
@@ -270,6 +272,12 @@ export interface BattleUiState {
   /** Last Yin-Yang action and its confirmed one-hit mitigation, retained for readable battle feedback. */
   yinYangActivatedTurn?: number | null;
   yinYangDefenseResult?: { turn: number; reducedBy: number } | null;
+  /** Latest Wind Guard trigger, retained until the next player action for readable feedback. */
+  windGuardResult?: { turn: number; reducedBy: number; counterDamage: number; featherChargeBonus: number } | null;
+  /** Latest Blood Media healing event for readable combat feedback. */
+  bloodMediaHealResult?: { turn: number; amount: number } | null;
+  /** Latest Costly Shot activation and health cost. */
+  costlyShotResult?: { turn: number; hpSpent: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;

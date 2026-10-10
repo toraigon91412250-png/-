@@ -7,6 +7,7 @@ import { BattleResultModal } from './BattleResultModal';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
+import { getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE } from '../utils/imprintSystem';
 
 interface BattleScreenProps {
   state: BattleUiState;
@@ -187,6 +188,69 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
               : state.yinYangActivatedTurn != null
                 ? `最終発動：第${state.yinYangActivatedTurn}ターン`
                 : '未使用'}
+        </div>
+      )}
+      {state.battleConfig.imprints?.includes('WIND_GUARD') && (
+        <div
+          role="status"
+          aria-label="風守りの状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(129,230,223,0.38)',
+            background: 'rgba(38,166,154,0.10)',
+            color: '#9FE9DF',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          🪶 風守り：
+          {state.windGuardResult
+            ? `第${state.windGuardResult.turn}ターン発動 · 被ダメージ-${state.windGuardResult.reducedBy} · 自動反撃${state.windGuardResult.counterDamage}`
+            : `羽弾蓄積+${state.player.featherChargeBonus} · 被ダメージ${Math.round(Math.min(WIND_GUARD_MAX_REDUCTION, state.player.featherChargeBonus * WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE) * 100)}%軽減 · 反撃${getWindGuardCounterDamage(state.player.featherChargeBonus)}`}
+        </div>
+      )}
+      {state.battleConfig.imprints?.includes('BLOOD_MEDIA') && (
+        <div
+          role="status"
+          aria-label="血媒の状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(239,83,80,0.35)',
+            background: 'rgba(183,28,28,0.10)',
+            color: '#FFB4B4',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          🩸 血媒：
+          {state.bloodMediaHealResult
+            ? `第${state.bloodMediaHealResult.turn}ターン吸収 · HP+${state.bloodMediaHealResult.amount}`
+            : '出血による実ダメージ分を回復 · 出血+1ターン'}
+        </div>
+      )}
+      {state.battleConfig.imprints?.includes('COSTLY_SHOT') && state.costlyShotResult && (
+        <div
+          role="status"
+          aria-label="代償撃ちの状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(215,164,215,0.4)',
+            background: 'rgba(72,34,76,0.14)',
+            color: '#F0C8F5',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          ♻️ 代償撃ち：第{state.costlyShotResult.turn}ターン発動 · HP-{state.costlyShotResult.hpSpent} · 特殊CTリセット
         </div>
       )}
       <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
