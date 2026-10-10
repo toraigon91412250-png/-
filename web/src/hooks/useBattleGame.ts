@@ -30,9 +30,9 @@ import {
   COSTLY_SHOT_HP_COST,
   getBloodTearBurstDamage,
   getTurnExecutionPlan,
+  getWindGuardCounterDamage,
   normalizeEquippedImprints,
   resolveWindGuardDamage,
-  WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER,
   resolveYinYangDefense,
   shouldSuppressCpuBuffAction,
   shouldTriggerForesight,
@@ -319,7 +319,7 @@ export function useBattleGame(
       safeDamage > 0
     );
     if (windGuardIsEligible) {
-      const counterDamage = Math.floor(Math.max(0, target.featherChargeBonus) * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER);
+      const counterDamage = getWindGuardCounterDamage(target.featherChargeBonus);
       const nextEnemyHp = Math.max(0, stateRef.current.enemy.currentHp - counterDamage);
       updateState(prev => ({
         ...prev,
