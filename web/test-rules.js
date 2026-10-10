@@ -90,10 +90,14 @@ assert.deepStrictEqual(
   'Lv100 stats must remain close to the requested baseline curve.',
 );
 
+const runtimeKaiserLv30Fighter = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 30), false, 30);
+const runtimeKaiserLv40Fighter = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 40), false, 40);
 const kaiserLv10Fighter = createInitialFighter(runtimeKaiserLv10, false, 10);
 const kaiserLv50Fighter = createInitialFighter(runtimeKaiserLv50, false, 50);
 const kaiserLv100Fighter = createInitialFighter(runtimeKaiserLv100, false, 100);
 assert.strictEqual(kaiserLv10Fighter.kaiserArmorMax, 0, 'Lv10 must not deploy armor.');
+assert.strictEqual(runtimeKaiserLv30Fighter.kaiserArmorMax, 0, 'Lv30 must not deploy armor.');
+assert.strictEqual(runtimeKaiserLv40Fighter.kaiserArmorMax, Math.round(runtimeKaiserLv40Fighter.character.maxHp * 0.2), 'Lv40 is the first armor level.');
 assert.strictEqual(kaiserLv50Fighter.kaiserArmorMax, Math.round(runtimeKaiserLv50.maxHp * 0.2));
 assert.strictEqual(kaiserLv50Fighter.kaiserArmorCurrent, kaiserLv50Fighter.kaiserArmorMax);
 assert.strictEqual(kaiserLv100Fighter.kaiserArmorCurrent, Math.round(runtimeKaiserLv100.maxHp * 0.2));
@@ -148,6 +152,16 @@ assert.strictEqual(lv100OneShot.fighter.character.specialSkillDamage, Math.round
 assert.strictEqual(lv100OneShot.fighter.character.ultimateSkillDamage, Math.round(runtimeKaiserLv100.ultimateSkillDamage * 1.25));
 assert.strictEqual(lv100OneShot.fighter.kaiserArmorCurrent, Math.round(lv100OneShot.fighter.kaiserArmorMax * 0.5));
 assert.strictEqual(lv100OneShot.fighter.kaiserArmorBrokenTurns, 0);
+const lv50LethalHit = resolveKaiserHit(
+  kaiserLv50Fighter,
+  kaiserLv50Fighter.character.maxHp * 2,
+  50,
+  1,
+  true,
+  '通常攻撃',
+);
+assert.strictEqual(lv50LethalHit.fighter.currentHp, 0, 'The Lv100 phase boundary must not impose a global damage cap on Lv50.');
+assert.strictEqual(lv50LethalHit.phaseChanged, false, 'The final phase must only exist at Lv100.');
 const lv100HitAfterTransition = resolveKaiserHit(lv100OneShot.fighter, 100, 100, 2, true, '通常攻撃');
 assert.strictEqual(lv100HitAfterTransition.phaseChanged, false, 'Phase 2 must not trigger repeatedly.');
 assert.strictEqual(lv100HitAfterTransition.fighter.character.attack, lv100OneShot.fighter.character.attack, 'Phase buffs must not stack.');
@@ -229,6 +243,19 @@ const criticalDamage = calculateNormalAttackDamage({
 
 assert.strictEqual(normalDamage, 180);
 assert.strictEqual(criticalDamage, 280);
+const armoredAttackTarget = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 40), false, 40);
+const rawNormalDamageAgainstArmor = calculateNormalAttackDamage({
+  attacker: attackBase,
+  target: armoredAttackTarget,
+  config: { kaiserLevel: 40, abilities: [] },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(
+  rawNormalDamageAgainstArmor,
+  normalDamage + 20,
+  'Ironclad armor must replace the flat Heavy Armor reduction, not stack with it.',
+);
 
 assert.strictEqual(calculateUltimateDamage({
   attacker: attackBase,
