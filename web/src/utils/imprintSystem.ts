@@ -3,9 +3,9 @@ import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
 export const BLOOD_TEAR_DAMAGE_MULTIPLIER = 1.5;
 export const BLOOD_MEDIA_EXTRA_BLEED_TURNS = 1;
-export const WIND_GUARD_REDUCTION_PER_CHARGE = 0.05;
+export const WIND_GUARD_REDUCTION_PER_CHARGE = 0.001;
 export const WIND_GUARD_MAX_REDUCTION = 0.4;
-export const WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE = 20;
+export const WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER = 0.25;
 export const COSTLY_SHOT_HP_COST = 200;
 
 /** The two blood imprints represent mutually exclusive ways to use Bleed. */
@@ -31,21 +31,21 @@ export interface WindGuardDamageResult {
 /** Mitigation and the counter scale from accumulated feather-charge count, with a hard mitigation cap. */
 export function resolveWindGuardDamage(
   damage: number,
-  featherChargeCount: number,
+  featherChargeValue: number,
   enabled: boolean,
 ): WindGuardDamageResult {
   const safeDamage = Number.isFinite(damage) ? Math.max(0, Math.floor(damage)) : 0;
-  const safeCount = Number.isFinite(featherChargeCount) ? Math.max(0, Math.floor(featherChargeCount)) : 0;
-  if (!enabled || safeDamage <= 0 || safeCount <= 0) {
+  const safeCharge = Number.isFinite(featherChargeValue) ? Math.max(0, Math.floor(featherChargeValue)) : 0;
+  if (!enabled || safeDamage <= 0 || safeCharge <= 0) {
     return { damage: safeDamage, reducedBy: 0, counterDamage: 0, applied: false };
   }
 
-  const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCount * WIND_GUARD_REDUCTION_PER_CHARGE);
+  const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCharge * WIND_GUARD_REDUCTION_PER_CHARGE);
   const reducedDamage = Math.floor(safeDamage * (1 - reduction));
   return {
     damage: reducedDamage,
     reducedBy: safeDamage - reducedDamage,
-    counterDamage: safeCount * WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE,
+    counterDamage: Math.floor(safeCharge * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER),
     applied: true,
   };
 }
