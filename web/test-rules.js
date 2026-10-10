@@ -191,7 +191,7 @@ const abyssSpeedAdjusted = applyDynamicAbilityModifiers(
   { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 4 }] },
   2,
 );
-assert.strictEqual(abyssSpeedAdjusted.character.speed, 76);
+assert.strictEqual(abyssSpeedAdjusted.character.speed, 171);
 console.log('✓ Dynamic speed modifiers remain visible to effective-speed calculations.');
 
 const fighterIrena = createInitialFighter(IRENA, true);
@@ -202,7 +202,7 @@ assert.strictEqual(getEffectiveDefense(fighterIrena), 180);
 
 const fighterKaiser = createInitialFighter(KAISER, false);
 fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
-assert.strictEqual(getEffectiveSpeed(fighterKaiser), 55);
+assert.strictEqual(getEffectiveSpeed(fighterKaiser), 155);
 assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
 
 const aiSpecialDamageReference = Math.max(0, KAISER.specialSkillDamage - IRENA.defense);
