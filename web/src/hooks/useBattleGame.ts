@@ -109,6 +109,7 @@ export function useBattleGame(
     usedImprints: [],
     yinYangActivatedTurn: null,
     yinYangDefenseResult: null,
+    windGuardResult: null,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -311,8 +312,7 @@ export function useBattleGame(
       target.isPlayer &&
       source !== '出血ダメージ' &&
       stateRef.current.battleConfig.imprints?.includes('WIND_GUARD') &&
-      target.featherChargeCount > 0 &&
-      safeDamage > 0
+      target.featherChargeCount > 0
     );
     if (windGuardIsEligible) {
       const counterDamage = Math.max(0, Math.floor(target.featherChargeCount)) * 20;
@@ -410,6 +410,7 @@ export function useBattleGame(
       usedImprints: [],
       yinYangActivatedTurn: null,
       yinYangDefenseResult: null,
+      windGuardResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -459,6 +460,15 @@ export function useBattleGame(
     );
     if (!result.applied) return damage;
 
+    updateState(prev => ({
+      ...prev,
+      windGuardResult: {
+        turn,
+        reducedBy: result.reducedBy,
+        counterDamage: result.counterDamage,
+        featherChargeCount: target.featherChargeCount,
+      },
+    }));
     addLog(
       `🪶【風守り】羽弾蓄積${target.featherChargeCount}により被ダメージを${result.reducedBy}軽減（${Math.floor(damage)} → ${result.damage}）。`,
       'PASSIVE_TRIGGER',
@@ -1858,6 +1868,7 @@ export function useBattleGame(
       visualEffect: null,
       visualEffects: [],
       yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
+      windGuardResult: null,
     }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
