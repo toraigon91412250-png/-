@@ -1816,7 +1816,15 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '必殺技');
+        finalDamage = hitOutcome.damage;
 
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
@@ -1846,7 +1854,7 @@ export function useBattleGame(
           turn
         );
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '必殺技');
+        const newTargetHp = hitOutcome.targetHp;
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
