@@ -274,6 +274,8 @@ export interface BattleUiState {
   windGuardResult?: { turn: number; reducedBy: number; counterDamage: number; featherChargeBonus: number } | null;
   /** Latest Blood Media healing event for readable combat feedback. */
   bloodMediaHealResult?: { turn: number; amount: number } | null;
+  /** Latest Costly Shot activation and health cost. */
+  costlyShotResult?: { turn: number; hpSpent: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
