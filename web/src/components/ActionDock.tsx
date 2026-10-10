@@ -490,7 +490,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>♻️ 代償撃ち</span>
             <span style={{ fontSize: '10px', fontWeight: 700 }}>
-              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {player.specialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : '使用可能'}
+              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {player.specialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : 'リセット不要'}
             </span>
           </button>
         </div>
