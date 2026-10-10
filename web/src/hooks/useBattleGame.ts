@@ -1050,7 +1050,15 @@ export function useBattleGame(
           },
           isCritical,
         );
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '通常攻撃');
+        finalDamage = hitOutcome.damage;
 
         if (actor.character.id === 'irena' && isActingFirst) {
           addLog(
@@ -1111,7 +1119,7 @@ export function useBattleGame(
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '通常攻撃');
+        const newTargetHp = hitOutcome.targetHp;
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
