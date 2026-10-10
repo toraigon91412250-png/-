@@ -212,6 +212,28 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
             : `羽弾蓄積+${state.player.featherChargeBonus} · 被ダメージ${Math.round(Math.min(WIND_GUARD_MAX_REDUCTION, state.player.featherChargeBonus * WIND_GUARD_REDUCTION_PER_CHARGE) * 100)}%軽減 · 反撃${Math.floor(state.player.featherChargeBonus * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER)}`}
         </div>
       )}
+      {state.battleConfig.imprints?.includes('BLOOD_MEDIA') && (
+        <div
+          role="status"
+          aria-label="血媒の状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(239,83,80,0.35)',
+            background: 'rgba(183,28,28,0.10)',
+            color: '#FFB4B4',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          🩸 血媒：
+          {state.bloodMediaHealResult
+            ? `第${state.bloodMediaHealResult.turn}ターン吸収 · HP+${state.bloodMediaHealResult.amount}`
+            : '出血による実ダメージ分を回復 · 出血+1ターン'}
+        </div>
+      )}
       <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
         {intentMeta.hint}
       </div>
