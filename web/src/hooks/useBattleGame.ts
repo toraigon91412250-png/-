@@ -1516,7 +1516,15 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '特殊技');
+        finalDamage = hitOutcome.damage;
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
           addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
@@ -1578,7 +1586,7 @@ export function useBattleGame(
           addLog('🩸【堕天・終局】5%以下のいれーなの特殊技に即死効果が発動した！', 'PASSIVE_TRIGGER', turn);
         }
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '特殊技');
+        const newTargetHp = hitOutcome.targetHp;
         const appliedAilmentName = actor.character.id === 'irena' ? '出血' : '重圧';
         const effType: EffectType = actor.character.id === 'irena' ? 'SPECIAL_FEATHER' : 'SPECIAL_SMASH';
 
@@ -1610,10 +1618,12 @@ export function useBattleGame(
 
         let postSpecialTargetHp = newTargetHp;
         if (statusOutcome.bloodTearBurstDamage > 0 && newTargetHp > 0) {
-          const burstDamage = statusOutcome.bloodTearBurstDamage;
+          let burstDamage = statusOutcome.bloodTearBurstDamage;
           const burstTarget = { ...target, currentHp: newTargetHp };
           soundManager.playCritical();
-          const bloodTearTargetHp = resolveIncomingDamage(burstTarget, burstDamage, turn, '血裂');
+          const bloodTearOutcome = resolveKaiserDamage(burstTarget, burstDamage, turn, '血裂');
+          burstDamage = bloodTearOutcome.damage;
+          const bloodTearTargetHp = bloodTearOutcome.targetHp;
           updateState(prev => ({
             ...prev,
             player: isActorPlayer ? prev.player : { ...prev.player, currentHp: bloodTearTargetHp },
