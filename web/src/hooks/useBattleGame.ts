@@ -152,6 +152,8 @@ export function useBattleGame(
   }, [cancelPendingBattleWork]);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
+  // Track the chosen command explicitly so combat effects do not depend only on a React state render timing.
+  const playerEvadeSelectedRef = useRef(false);
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
@@ -326,6 +328,7 @@ export function useBattleGame(
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
+    playerEvadeSelectedRef.current = false;
     masteryClaimedRef.current = new Set();
     battleMasteryRewardRef.current = 0;
     judgmentMarksRef.current = 0;
@@ -434,7 +437,7 @@ export function useBattleGame(
       usedImprints: current.usedImprints,
       attackerIsPlayer,
       targetIsPlayer: target.isPlayer,
-      targetIsEvading: target.isEvading,
+      targetIsEvading: target.isEvading || (target.isPlayer && playerEvadeSelectedRef.current),
       incomingAction,
       predictedAction: current.cpuIntent,
     });
@@ -1106,7 +1109,7 @@ export function useBattleGame(
         ));
 
         // Check opponent evasion
-        if (target.isEvading) {
+        if (target.isEvading || (!isActorPlayer && target.isPlayer && playerEvadeSelectedRef.current)) {
           const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
           const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
@@ -1365,7 +1368,7 @@ export function useBattleGame(
         }
 
         // Check opponent evasion
-        if (target.isEvading) {
+        if (target.isEvading || (!isActorPlayer && target.isPlayer && playerEvadeSelectedRef.current)) {
           const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
           const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
@@ -1540,6 +1543,8 @@ export function useBattleGame(
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
+    // The chosen action is authoritative for the incoming response, even if a state update has not rendered yet.
+    playerEvadeSelectedRef.current = playerAction === 'EVADE';
     const actionRunId = battleRunIdRef.current;
     updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null, visualEffects: [] }));
     const speed = stateRef.current.battleSpeedMultiplier;
