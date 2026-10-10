@@ -674,7 +674,6 @@ export function useBattleGame(
         updateState(prev => ({
           ...prev,
           yinYangActivatedTurn: turn,
-          yinYangDefenseResult: null,
           player: {
             ...prev.player,
             isBuffed: true,
@@ -1650,7 +1649,14 @@ export function useBattleGame(
     // The chosen action is authoritative for the incoming response, even if a state update has not rendered yet.
     playerEvadeSelectedRef.current = playerAction === 'EVADE';
     const actionRunId = battleRunIdRef.current;
-    updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null, visualEffects: [] }));
+    updateState(prev => ({
+      ...prev,
+      phase: 'EXECUTING_TURNS',
+      isAnimating: true,
+      visualEffect: null,
+      visualEffects: [],
+      yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
+    }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
 
