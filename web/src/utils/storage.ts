@@ -1,6 +1,8 @@
-import { AbilityId, AbilityProgress, FeatherSkillPath, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
+import { normalizeEquippedImprints } from './imprintSystem';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -147,6 +149,75 @@ export function redeemRaidCoreFragment(): RaidCoreFragmentRedemption {
     return { progress: current, used: false, persisted: false };
   }
   return { progress: next, used: true, persisted: true };
+}
+
+
+export const IMPRINT_PROGRESS_STORAGE_KEY = 'duel_arena_imprint_progress';
+const INITIAL_IMPRINT_PROGRESS: ImprintProgress = {
+  // The first prototype imprint is available as a starter so equipment and
+  // persistence can be validated before the dedicated imprint summon exists.
+  unlockedIds: ['FORESIGHT'],
+  equippedIds: [],
+};
+
+function normalizeImprintProgress(
+  parsed: Partial<ImprintProgress> | null | undefined,
+): ImprintProgress {
+  const unlockedIds = Array.isArray(parsed?.unlockedIds)
+    ? Array.from(new Set(parsed.unlockedIds.filter(isImprintId)))
+    : [];
+  const equippedIds = normalizeEquippedImprints(parsed?.equippedIds)
+    .filter(id => unlockedIds.includes(id))
+    .slice(0, MAX_EQUIPPED_IMPRINTS);
+  return { unlockedIds, equippedIds };
+}
+
+export function loadImprintProgress(): ImprintProgress {
+  try {
+    const raw = localStorage.getItem(IMPRINT_PROGRESS_STORAGE_KEY);
+    if (raw !== null) return normalizeImprintProgress(JSON.parse(raw));
+  } catch {
+    // Missing, malformed, or blocked storage must not prevent the game from opening.
+  }
+  return {
+    unlockedIds: [...INITIAL_IMPRINT_PROGRESS.unlockedIds],
+    equippedIds: [...INITIAL_IMPRINT_PROGRESS.equippedIds],
+  };
+}
+
+function persistImprintProgress(progress: ImprintProgress): ImprintProgress | null {
+  const normalized = normalizeImprintProgress(progress);
+  try {
+    localStorage.setItem(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
+  } catch {
+    return null;
+  }
+}
+
+/** Called by the future imprint-summon reward flow; repeated unlocks are idempotent. */
+export function unlockImprint(id: ImprintId): ImprintProgress | null {
+  if (!isImprintId(id)) return null;
+  const current = loadImprintProgress();
+  if (current.unlockedIds.includes(id)) return current;
+  return persistImprintProgress({ ...current, unlockedIds: [...current.unlockedIds, id] });
+}
+
+export function equipImprint(id: ImprintId): ImprintProgress | null {
+  const current = loadImprintProgress();
+  if (!isImprintId(id) || !current.unlockedIds.includes(id)) return null;
+  if (current.equippedIds.includes(id)) return current;
+  if (current.equippedIds.length >= MAX_EQUIPPED_IMPRINTS) return null;
+  return persistImprintProgress({ ...current, equippedIds: [...current.equippedIds, id] });
+}
+
+export function unequipImprint(id: ImprintId): ImprintProgress | null {
+  const current = loadImprintProgress();
+  if (!current.equippedIds.includes(id)) return current;
+  return persistImprintProgress({
+    ...current,
+    equippedIds: current.equippedIds.filter(equippedId => equippedId !== id),
+  });
 }
 
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
@@ -354,6 +425,7 @@ export function resetProgressForDeveloper(): {
   abilityProgress: AbilityProgress;
   recruitmentProgress: RecruitmentProgress;
   skillProgress: IrenaSkillProgress;
+  imprintProgress: ImprintProgress;
   overallStats: OverallStats;
 } {
   const abilityProgress = persistAbilityProgress({
@@ -367,6 +439,10 @@ export function resetProgressForDeveloper(): {
     lastResults: [],
   });
   const skillProgress = persistSkillProgress({ ...INITIAL_SKILL_PROGRESS });
+  const imprintProgress = persistImprintProgress({
+    unlockedIds: [...INITIAL_IMPRINT_PROGRESS.unlockedIds],
+    equippedIds: [...INITIAL_IMPRINT_PROGRESS.equippedIds],
+  });
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
@@ -378,6 +454,7 @@ export function resetProgressForDeveloper(): {
     abilityProgress,
     recruitmentProgress,
     skillProgress,
+    imprintProgress: imprintProgress ?? loadImprintProgress(),
     overallStats: { totalBattles: 0, wins: 0, losses: 0 },
   };
 }

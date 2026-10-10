@@ -24,6 +24,7 @@ import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateD
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
+import { normalizeEquippedImprints, shouldTriggerForesight } from '../utils/imprintSystem';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -60,6 +61,7 @@ export function useBattleGame(
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
+    imprints: normalizeEquippedImprints(initialBattleConfig.imprints),
     statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
     statAllocation: normalizeStatAllocation(
       initialBattleConfig.statAllocation,
@@ -93,6 +95,7 @@ export function useBattleGame(
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
+    usedImprints: [],
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -149,6 +152,10 @@ export function useBattleGame(
   }, [cancelPendingBattleWork]);
   const recentPlayerActionsRef = useRef<BattleAction[]>([]);
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
+  // Track the chosen command explicitly so combat effects do not depend only on a React state render timing.
+  const playerEvadeSelectedRef = useRef(false);
+  // Snapshot Foresight eligibility when the player commits to evade against the displayed CPU telegraph.
+  const foresightTriggerPendingRef = useRef(false);
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
@@ -308,6 +315,9 @@ export function useBattleGame(
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
       ),
+      imprints: normalizeEquippedImprints(
+        battleConfigOverride?.imprints ?? stateRef.current.battleConfig.imprints,
+      ),
       statPointTotal: nextStatPointTotal,
       statAllocation: normalizeStatAllocation(
         battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
@@ -320,6 +330,8 @@ export function useBattleGame(
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
+    playerEvadeSelectedRef.current = false;
+    foresightTriggerPendingRef.current = false;
     masteryClaimedRef.current = new Set();
     battleMasteryRewardRef.current = 0;
     judgmentMarksRef.current = 0;
@@ -352,6 +364,7 @@ export function useBattleGame(
       winnerIsPlayer: null,
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
+      usedImprints: [],
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -412,6 +425,37 @@ export function useBattleGame(
     const defenderName = defenderIsPlayer ? stateRef.current.player.character.name : stateRef.current.enemy.character.name;
     const displayName = ailmentType === 'BLEED' ? '出血' : '重圧';
     addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${def.defaultDuration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
+  };
+
+
+  const tryTriggerForesight = (
+    attackerIsPlayer: boolean,
+    target: BattleFighter,
+    incomingAction: BattleAction,
+    turn: number,
+  ): boolean => {
+    const current = stateRef.current;
+    // Eligibility was snapshotted from the telegraph and the player's committed action.
+    // Do not re-read cpuIntent here: state updates during turn execution must not invalidate that decision.
+    const triggered = Boolean(
+      !attackerIsPlayer &&
+      target.isPlayer &&
+      foresightTriggerPendingRef.current &&
+      !current.usedImprints.includes('FORESIGHT') &&
+      (incomingAction === 'SPECIAL' || incomingAction === 'ULTIMATE')
+    );
+    if (!triggered) return false;
+
+    foresightTriggerPendingRef.current = false;
+    updateState(prev => prev.usedImprints.includes('FORESIGHT')
+      ? prev
+      : { ...prev, usedImprints: [...prev.usedImprints, 'FORESIGHT'] });
+    addLog(
+      '👁️【刻印発動：見切り】特殊技／必殺技の予告を読み切った！ この回避は確定成功。',
+      'PASSIVE_TRIGGER',
+      turn,
+    );
+    return true;
   };
 
   const executeFighterTurn = async (
@@ -904,7 +948,8 @@ export function useBattleGame(
 
           let isEvaded = false;
           if (target.isEvading) {
-            isEvaded = Math.random() < target.character.evasionRate;
+            const foresightTriggered = tryTriggerForesight(isActorPlayer, target, 'SPECIAL', turn);
+            isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
             if (isEvaded) {
               soundManager.playDefend();
               addLog(
@@ -1068,8 +1113,9 @@ export function useBattleGame(
         ));
 
         // Check opponent evasion
-        if (target.isEvading) {
-          const isEvaded = Math.random() < target.character.evasionRate;
+        if (target.isEvading || (!isActorPlayer && target.isPlayer && playerEvadeSelectedRef.current)) {
+          const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
+          const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
             soundManager.playDefend();
             addLog(
@@ -1326,8 +1372,9 @@ export function useBattleGame(
         }
 
         // Check opponent evasion
-        if (target.isEvading) {
-          const isEvaded = Math.random() < target.character.evasionRate;
+        if (target.isEvading || (!isActorPlayer && target.isPlayer && playerEvadeSelectedRef.current)) {
+          const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
+          const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
             soundManager.playDefend();
             addLog(
@@ -1500,6 +1547,8 @@ export function useBattleGame(
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
+    // The chosen action is authoritative for the incoming response, even if a state update has not rendered yet.
+    playerEvadeSelectedRef.current = playerAction === 'EVADE';
     const actionRunId = battleRunIdRef.current;
     updateState(prev => ({ ...prev, phase: 'EXECUTING_TURNS', isAnimating: true, visualEffect: null, visualEffects: [] }));
     const speed = stateRef.current.battleSpeedMultiplier;
@@ -1508,6 +1557,15 @@ export function useBattleGame(
     // The CPU intent was selected at the end of the previous round and is now the
     // telegraphed action the player has been allowed to react to.
     const cpuAction = stateRef.current.cpuIntent;
+    foresightTriggerPendingRef.current = shouldTriggerForesight({
+      equippedImprints: stateRef.current.battleConfig.imprints,
+      usedImprints: stateRef.current.usedImprints,
+      attackerIsPlayer: false,
+      targetIsPlayer: true,
+      targetIsEvading: playerAction === 'EVADE',
+      incomingAction: cpuAction,
+      predictedAction: cpuAction,
+    });
 
     addLog(`--- 第${currentTurn}ターン 開始 ---`, 'SYSTEM', currentTurn);
 

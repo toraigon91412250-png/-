@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { AbilityId, BattleSetupConfig, CpuDifficulty } from './types/game';
+import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
+import { ImprintScreen } from './components/ImprintScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadAllGameImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -23,7 +24,9 @@ export const App: React.FC = () => {
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
   const [availableStatPoints, setAvailableStatPoints] = useState(() => loadStatPoints());
   const [raidRewardProgress, setRaidRewardProgress] = useState(() => loadRaidRewardProgress());
+  const [imprintProgress, setImprintProgress] = useState(() => loadImprintProgress());
   const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
+  const [imprintMessage, setImprintMessage] = useState<string | null>(null);
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: 10,
     abilities: [],
@@ -61,13 +64,15 @@ export const App: React.FC = () => {
 
   const refreshProgress = () => {
     setRaidRewardProgress(loadRaidRewardProgress());
+    const currentImprintProgress = loadImprintProgress();
+    setImprintProgress(currentImprintProgress);
     setOverallStats(loadOverallStats());
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
     const currentStatPoints = loadStatPoints();
     setAvailableStatPoints(currentStatPoints);
-    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
   };
 
   const handleUseRaidCoreFragment = () => {
@@ -92,13 +97,45 @@ export const App: React.FC = () => {
   const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
     refreshProgress();
     const currentStatPoints = loadStatPoints();
+    const currentImprintProgress = loadImprintProgress();
+    setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
     if (prefill) {
-      setBattleSetup({ ...prefill, statPointTotal: currentStatPoints });
+      setBattleSetup({ ...prefill, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds });
     } else {
-      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
     }
     setScreen('BATTLE_SETUP');
+  };
+
+  const handleOpenImprints = () => {
+    const current = loadImprintProgress();
+    setImprintProgress(current);
+    setBattleSetup(prev => ({ ...prev, imprints: current.equippedIds }));
+    setImprintMessage(null);
+    setScreen('IMPRINTS');
+  };
+
+  const handleEquipImprint = (id: ImprintId) => {
+    const next = equipImprint(id);
+    if (!next) {
+      setImprintMessage('装備を保存できませんでした。空き枠と保存設定を確認してください。');
+      return;
+    }
+    setImprintProgress(next);
+    setBattleSetup(prev => ({ ...prev, imprints: next.equippedIds }));
+    setImprintMessage('刻印の装備を保存しました。');
+  };
+
+  const handleUnequipImprint = (id: ImprintId) => {
+    const next = unequipImprint(id);
+    if (!next) {
+      setImprintMessage('解除を保存できませんでした。保存設定を確認してください。');
+      return;
+    }
+    setImprintProgress(next);
+    setBattleSetup(prev => ({ ...prev, imprints: next.equippedIds }));
+    setImprintMessage('刻印の解除を保存しました。');
   };
 
   const handleOpenDeveloperTools = () => {
@@ -112,10 +149,14 @@ export const App: React.FC = () => {
     || KAISER;
 
   const handleStartBattle = (config: BattleSetupConfig) => {
-    setBattleSetup(config);
+    const battleConfigWithImprints: BattleSetupConfig = {
+      ...config,
+      imprints: [...imprintProgress.equippedIds],
+    };
+    setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
     const cpuOpponent = getBattleCpuOpponent();
-    restartBattle(upgradedIrena, cpuOpponent, difficulty, config);
+    restartBattle(upgradedIrena, cpuOpponent, difficulty, battleConfigWithImprints);
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
@@ -198,6 +239,8 @@ export const App: React.FC = () => {
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
     setAbilityProgress(reset.abilityProgress);
+    setImprintProgress(reset.imprintProgress);
+    setBattleSetup(prev => ({ ...prev, imprints: reset.imprintProgress.equippedIds }));
     setRaidRewardProgress(loadRaidRewardProgress());
     setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
@@ -246,12 +289,25 @@ export const App: React.FC = () => {
           onStartBattle={() => handleOpenBattleSetup()}
           onOpenRaidPrototype={() => setScreen('RAID_PROTOTYPE')}
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenImprints={handleOpenImprints}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
           raidItemMessage={raidItemMessage}
           onUseRaidCoreFragment={handleUseRaidCoreFragment}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
+        />
+      ) : screen === 'IMPRINTS' ? (
+        <ImprintScreen
+          progress={imprintProgress}
+          message={imprintMessage}
+          onEquip={handleEquipImprint}
+          onUnequip={handleUnequipImprint}
+          onBack={() => {
+            refreshProgress();
+            setImprintMessage(null);
+            setScreen('SELECT');
+          }}
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen

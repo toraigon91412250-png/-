@@ -201,6 +201,13 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
 
+export type ImprintId = 'FORESIGHT';
+
+export interface ImprintProgress {
+  unlockedIds: ImprintId[];
+  equippedIds: ImprintId[];
+}
+
 export interface AbilityProgress {
   levels: Record<AbilityId, number>;
   shards: Record<AbilityId, number>;
@@ -221,6 +228,8 @@ export interface StatAllocation {
 export interface BattleSetupConfig {
   kaiserLevel: BattleChallengeLevel;
   abilities: EquippedAbility[];
+  /** Imprints are persisted separately and snapshotted into each battle config. */
+  imprints?: ImprintId[];
   // Optional for backwards compatibility with older saved/config objects.
   statAllocation?: StatAllocation;
   statPointTotal?: number;
@@ -254,6 +263,8 @@ export interface BattleUiState {
   winnerIsPlayer: boolean | null;
   cpuDifficulty: CpuDifficulty;
   cpuIntent: BattleAction;
+  /** Once-per-battle imprint activations; reset on every new battle. */
+  usedImprints: ImprintId[];
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
