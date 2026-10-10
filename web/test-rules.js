@@ -837,7 +837,7 @@ assert.ok(
 const lv10 = levelStats[0];
 const lv100 = levelStats[levelStats.length - 1];
 assert.strictEqual(lv10.maxHp, cpuKaiserBase.maxHp);
-assert.strictEqual(lv10.attack, cpuKaiserBase.attack);
+assert.strictEqual(lv10.attack, Math.round(cpuKaiserBase.attack));
 assert.strictEqual(lv10.defense, cpuKaiserBase.defense);
 assert.strictEqual(lv100.maxHp, Math.round(cpuKaiserBase.maxHp * 1.5));
 assert.strictEqual(lv100.attack, cpuKaiserBase.attack * 2);
