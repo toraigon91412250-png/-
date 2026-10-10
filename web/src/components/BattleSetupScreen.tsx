@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, CpuDifficulty, StatAllocation } from '../types/game';
 import { IRENA } from '../data/characters';
 import { createStatPreset, getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey, StatPresetId } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
+  selectedDifficulty: CpuDifficulty;
+  onSelectDifficulty: (difficulty: CpuDifficulty) => void;
   initialConfig?: BattleSetupConfig;
   onBack: () => void;
   onStartBattle: (config: BattleSetupConfig) => void;
@@ -16,6 +18,8 @@ interface BattleSetupScreenProps {
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   abilityProgress,
+  selectedDifficulty,
+  onSelectDifficulty,
   initialConfig,
   onBack,
   onStartBattle,
@@ -132,6 +136,37 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           border: '1px solid #333B52',
           backgroundColor: 'rgba(16, 21, 34, 0.94)',
         }}>
+          <div style={{ fontSize: '10px', color: '#90CAF9', fontWeight: 900, letterSpacing: '0.16em' }}>CPU DIFFICULTY</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginTop: '8px', marginBottom: '14px' }}>
+            {([
+              ['NORMAL', 'ノーマル', '状況を見てバランスよく行動'],
+              ['EXPERT', 'エキスパート', '先読みと回避・強化を駆使'],
+            ] as const).map(([difficulty, label, description]) => {
+              const selected = selectedDifficulty === difficulty;
+              return (
+                <button
+                  key={difficulty}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => onSelectDifficulty(difficulty)}
+                  style={{
+                    minWidth: 0,
+                    minHeight: '58px',
+                    padding: '9px 10px',
+                    borderRadius: '10px',
+                    border: selected ? '1.5px solid #90CAF9' : '1px solid #303B51',
+                    background: selected ? 'linear-gradient(135deg, rgba(24,58,92,0.98), rgba(18,31,51,0.98))' : 'rgba(12,18,30,0.92)',
+                    color: selected ? '#FFFFFF' : '#B8C4D6',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ fontSize: '12px', fontWeight: 950 }}>{label}</div>
+                  <div style={{ marginTop: '3px', fontSize: '9px', lineHeight: 1.4, color: selected ? '#B9DEFF' : '#8290A8' }}>{description}</div>
+                </button>
+              );
+            })}
+          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10px' }}>
             <div>
               <div style={{ fontSize: '10px', fontWeight: 900, letterSpacing: '0.16em', color: '#FFCC80' }}>KAISER LEVEL</div>

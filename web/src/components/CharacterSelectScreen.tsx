@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
-import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
+import { CharacterDef, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
-import { Swords, Trophy, Play, CheckCircle, Sparkles, Gem, Eye } from 'lucide-react';
+import { Swords, Trophy, Play, CheckCircle, Gem } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
 
 interface CharacterSelectScreenProps {
   overallStats: OverallStats;
-  selectedDifficulty: CpuDifficulty;
-  onSelectDifficulty: (diff: CpuDifficulty) => void;
   onStartBattle: () => void;
-  onOpenRaidPrototype: () => void;
-  onOpenRecruitment: () => void;
-  onOpenImprints: () => void;
-  onOpenImprintGacha: () => void;
   skillProgress: IrenaSkillProgress;
   raidRewardProgress: RaidRewardProgress;
   raidItemMessage: string | null;
@@ -24,13 +18,7 @@ interface CharacterSelectScreenProps {
 
 export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   overallStats,
-  selectedDifficulty,
-  onSelectDifficulty,
   onStartBattle,
-  onOpenRaidPrototype,
-  onOpenRecruitment,
-  onOpenImprints,
-  onOpenImprintGacha,
   skillProgress,
   raidRewardProgress,
   raidItemMessage,
@@ -52,7 +40,6 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   };
 
   const playerChar = getIrenaWithSkillProgress(skillProgress);
-  const cpuChar = KAISER;
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
@@ -68,7 +55,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '20px 16px 30px 16px',
+        padding: '20px 16px 108px 16px',
       }}
     >
       {/* Background Image */}
@@ -135,108 +122,94 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           </div>
         </div>
 
-        {/* Fixed matchup: the player controls Irena only; Kaiser is CPU-only. */}
-        <div style={{ width: '100%', textAlign: 'left', marginBottom: '8px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: 800, color: '#FFFFFF' }}>対戦キャラクター</h2>
-        </div>
+        {/* Compact matchup cards keep the home screen scannable. */}
         <div style={{
-          width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '12px', marginBottom: '18px',
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '10px',
+          marginBottom: '14px',
         }}>
           {[
             { char: playerChar, role: 'あなた' },
             { char: KAISER, role: 'CPU' },
           ].map(({ char, role }) => (
             <div key={char.id} style={{
-              backgroundColor: '#1E2436', border: `2px solid ${char.primaryColor}`, borderRadius: '16px',
-              padding: '12px', display: 'flex', flexDirection: 'column', boxShadow: `0 0 16px ${char.primaryColor}25`,
+              minWidth: 0,
+              background: 'linear-gradient(155deg, rgba(28,35,53,0.98), rgba(16,20,32,0.98))',
+              border: `1px solid ${char.primaryColor}99`,
+              borderRadius: '14px',
+              padding: '9px',
+              boxShadow: `0 4px 16px ${char.primaryColor}18`,
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '4px', marginBottom: '7px' }}>
                 <span style={{
-                  fontSize: '10px', fontWeight: 800, color: char.primaryColor, backgroundColor: `${char.primaryColor}25`,
-                  padding: '2px 7px', borderRadius: '4px',
+                  fontSize: '10px',
+                  fontWeight: 900,
+                  color: char.primaryColor,
+                  background: `${char.primaryColor}20`,
+                  padding: '3px 7px',
+                  borderRadius: '5px',
                 }}>{role}</span>
-                {role === 'あなた' && <CheckCircle size={18} color="#64FFDA" />}
+                {role === 'あなた' && <CheckCircle size={15} color="#64FFDA" />}
               </div>
-              <div style={{
-                width: '100%', height: char.selectImageSrc ? '200px' : '140px', borderRadius: '10px', overflow: 'hidden',
-                border: `1px solid ${char.primaryColor}80`, marginBottom: '8px', backgroundColor: '#0a0d16', position: 'relative',
-              }}>
-                <img src={char.selectImageSrc ?? char.imageSrc} alt={char.name} style={{
-                  width: '100%', height: '100%', objectFit: 'cover',
-                  objectPosition: char.selectImageSrc ? 'center 22%' : 'center', display: 'block',
-                }} />
-                <button type="button" onClick={() => setViewingChar(char)} style={{
-                  position: 'absolute', right: '6px', bottom: '6px', backgroundColor: 'rgba(10, 13, 22, 0.75)',
-                  border: `1px solid ${char.primaryColor}`, color: '#FFFFFF', fontSize: '10px', fontWeight: 700,
-                  borderRadius: '6px', padding: '3px 8px', cursor: 'pointer',
-                }}>🔍 全身を見る</button>
+              <div style={{ width: '100%', height: '104px', borderRadius: '9px', overflow: 'hidden', background: '#0a0d16', border: `1px solid ${char.primaryColor}55` }}>
+                <img
+                  src={char.selectImageSrc ?? char.imageSrc}
+                  alt={char.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: char.selectImageSrc ? 'center 22%' : 'center',
+                    display: 'block',
+                  }}
+                />
               </div>
-              <div style={{ fontSize: '17px', fontWeight: 900, color: '#FFFFFF', marginBottom: '8px' }}>{char.name}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-                <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 4000} color="#66BB6A" />
-                <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 400} color="#EF5350" />
-                <StatItem label="防御力" value={char.defense.toString()} ratio={char.defense / 200} color="#42A5F5" />
-                <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 240} color="#FFCA28" />
-                <StatItem label="回避率" value={`${Math.round(char.evasionRate * 100)}%`} ratio={char.evasionRate / 0.3} color="#26C6DA" />
+              <div style={{ marginTop: '7px', fontSize: '15px', fontWeight: 950, color: '#FFFFFF', overflowWrap: 'anywhere' }}>{char.name}</div>
+              <div style={{ marginTop: '3px', fontSize: '10px', lineHeight: 1.5, color: '#C1CDDC' }}>
+                HP {char.maxHp.toLocaleString()} · 攻撃 {char.attack}
               </div>
-              <div style={{
-                backgroundColor: '#1E1C2B', border: '1px solid #4A3B69', borderRadius: '8px',
-                padding: '6px 8px', marginBottom: '6px', fontSize: '11px',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#D1C4E9', marginBottom: '2px' }}>
-                  <Sparkles size={12} color="#B39DDB" /><span>固有能力「{char.passiveName}」</span>
+              <button
+                type="button"
+                onClick={() => setViewingChar(char)}
+                aria-label={char.name + 'の全身を見る'}
+                style={{
+                  width: '100%',
+                  minHeight: '31px',
+                  marginTop: '7px',
+                  borderRadius: '7px',
+                  border: '1px solid #46536B',
+                  background: 'rgba(10,13,22,0.78)',
+                  color: '#DCE6F5',
+                  fontSize: '10px',
+                  fontWeight: 850,
+                  cursor: 'pointer',
+                }}
+              >
+                全身を見る
+              </button>
+              <details style={{ marginTop: '7px', borderTop: '1px solid #30394D', paddingTop: '6px' }}>
+                <summary style={{ cursor: 'pointer', color: '#90CAF9', fontSize: '10px', fontWeight: 850 }}>能力・詳細を表示</summary>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
+                  <StatItem label="HP" value={char.maxHp.toString()} ratio={char.maxHp / 4000} color="#66BB6A" />
+                  <StatItem label="攻撃力" value={char.attack.toString()} ratio={char.attack / 400} color="#EF5350" />
+                  <StatItem label="防御力" value={char.defense.toString()} ratio={char.defense / 200} color="#42A5F5" />
+                  <StatItem label="素早さ" value={char.speed.toString()} ratio={char.speed / 240} color="#FFCA28" />
+                  <StatItem label="回避率" value={`${Math.round(char.evasionRate * 100)}%`} ratio={char.evasionRate / 0.3} color="#26C6DA" />
                 </div>
-                <div style={{ color: '#B0BEC5', fontSize: '10px', lineHeight: 1.3 }}>{char.passiveDescription}</div>
-              </div>
-              <div style={{ fontSize: '10px', color: '#90CAF9', lineHeight: 1.4 }}>
-                <div>✨ 特殊「{char.specialSkillName}」: {char.specialSkillDamage}ダメ (CD:{char.specialSkillCooldown}T)</div>
-                <div>🌟 必殺「{char.ultimateSkillName}」: {char.ultimateSkillDamage}ダメ (ゲージ3消費)</div>
-              </div>
+                <div style={{ marginTop: '8px', padding: '7px', borderRadius: '8px', background: '#1E1C2B', border: '1px solid #4A3B69' }}>
+                  <div style={{ fontSize: '10px', fontWeight: 800, color: '#D1C4E9', marginBottom: '3px' }}>固有能力「{char.passiveName}」</div>
+                  <div style={{ color: '#B0BEC5', fontSize: '10px', lineHeight: 1.45 }}>{char.passiveDescription}</div>
+                </div>
+                <div style={{ marginTop: '7px', fontSize: '10px', lineHeight: 1.5, color: '#90CAF9' }}>
+                  <div>特殊「{char.specialSkillName}」: {char.specialSkillDamage}ダメ (CD:{char.specialSkillCooldown}T)</div>
+                  <div>必殺「{char.ultimateSkillName}」: {char.ultimateSkillDamage}ダメ (ゲージ3消費)</div>
+                </div>
+              </details>
             </div>
           ))}
         </div>
-
-        {/* Matchup Overview Preview Card */}
-        <div
-          style={{
-            width: '100%',
-            backgroundColor: '#161C2C',
-            border: '1px solid #283754',
-            borderRadius: '14px',
-            padding: '12px 16px',
-            marginBottom: '18px',
-          }}
-        >
-          <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', marginBottom: '6px' }}>
-            ⚔️ 対戦カード詳細
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '13px',
-              fontWeight: 700,
-              marginBottom: '6px',
-            }}
-          >
-            <span style={{ color: '#90CAF9' }}>
-              あなた: {playerChar.name} (素早さ {playerChar.speed})
-            </span>
-            <span style={{ color: '#FF5252', fontWeight: 900 }}>VS</span>
-            <span style={{ color: '#FFCC80' }}>
-              CPU: {cpuChar.name} (素早さ {cpuChar.speed})
-            </span>
-          </div>
-
-          <div style={{ fontSize: '11px', color: '#B0BEC5' }}>
-            {playerChar.speed > cpuChar.speed
-              ? '⚡ あなたの素早さが高いため、毎ターン先手で行動できます！'
-              : '🌀 相手の素早さが高いため、相手が先手で行動します。回避や強化を上手く活用しましょう！'}
-          </div>
-        </div>
-
         {/* Persistent Irena growth */}
         <div style={{ width: '100%', marginBottom: '18px', padding: '12px', borderRadius: '14px', background: 'linear-gradient(135deg, rgba(28,20,48,0.96), rgba(14,20,34,0.96))', border: '1px solid rgba(179,157,219,0.42)', boxShadow: '0 8px 20px rgba(0,0,0,0.22)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
@@ -261,8 +234,34 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           </button>
         </div>
 
+        <details
+          aria-label="レイド限定アイテム"
+          style={{
+            width: '100%',
+            marginBottom: '12px',
+            borderRadius: '12px',
+            border: '1px solid rgba(91,205,205,0.35)',
+            background: 'rgba(9,31,45,0.72)',
+            overflow: 'hidden',
+          }}
+        >
+          <summary style={{
+            listStyle: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            padding: '12px',
+            color: '#DDFBFF',
+            fontSize: '12px',
+            fontWeight: 900,
+          }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '7px' }}><Gem size={16} color="#81E6DF" />深淵核片・アイテム</span>
+            <span style={{ color: '#81E6DF', fontSize: '11px' }}>所持 {raidRewardProgress.coreFragments} 個　⌄</span>
+          </summary>
         {/* Raid-exclusive item: redeemable only after clearing the standalone raid. */}
-        <section aria-label="レイド限定アイテム" style={{
+        <section aria-label="レイド限定アイテム詳細" style={{
           width: '100%',
           marginBottom: '18px',
           padding: '13px',
@@ -318,134 +317,9 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
             </p>
           )}
         </section>
+        </details>
 
-        {/* Difficulty Selector */}
-        <div style={{ width: '100%', marginBottom: '24px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 800, color: '#FFFFFF', marginBottom: '8px' }}>
-            CPU 難易度
-          </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={() => onSelectDifficulty('NORMAL')}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                borderRadius: '8px',
-                backgroundColor: selectedDifficulty === 'NORMAL' ? '#1E3A8A' : '#161B26',
-                border: selectedDifficulty === 'NORMAL' ? '1.5px solid #60A5FA' : '1px solid #333F58',
-                color: selectedDifficulty === 'NORMAL' ? '#FFFFFF' : '#B0BEC5',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '12px',
-                fontWeight: selectedDifficulty === 'NORMAL' ? 800 : 500,
-              }}
-            >
-              <div>ノーマル</div>
-              <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px' }}>状況を見てバランスよく行動</div>
-            </button>
 
-            <button
-              onClick={() => onSelectDifficulty('EXPERT')}
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                borderRadius: '8px',
-                backgroundColor: selectedDifficulty === 'EXPERT' ? '#1E3A8A' : '#161B26',
-                border: selectedDifficulty === 'EXPERT' ? '1.5px solid #60A5FA' : '1px solid #333F58',
-                color: selectedDifficulty === 'EXPERT' ? '#FFFFFF' : '#B0BEC5',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontSize: '12px',
-                fontWeight: selectedDifficulty === 'EXPERT' ? 800 : 500,
-              }}
-            >
-              <div>エキスパート</div>
-              <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px' }}>先読みと回避・強化を駆使する戦略派</div>
-            </button>
-          </div>
-        </div>
-
-        {/* Black Wing Summon */}
-        <button
-          type="button"
-          onClick={onOpenRecruitment}
-          style={{
-            width: '100%',
-            height: '50px',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #2A1744 0%, #17122A 55%, #3A2910 100%)',
-            color: '#FFFFFF',
-            border: '1.5px solid #B39DDB',
-            borderRadius: '14px',
-            fontSize: '16px',
-            fontWeight: 950,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 18px rgba(126, 87, 194, 0.22)',
-          }}
-        >
-          <Sparkles size={19} color="#FFE082" />
-          <span>黒翼召喚</span>
-          <span style={{ fontSize: '9px', color: '#C5B8D9', fontWeight: 800 }}>SUMMON</span>
-        </button>
-
-        {/* Independent 3-slot imprint loadout; acquisition is connected in a later summon phase. */}
-        <button
-          type="button"
-          onClick={onOpenImprints}
-          aria-label="刻印を管理"
-          style={{
-            width: '100%',
-            height: '50px',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #102C3C 0%, #142334 55%, #202044 100%)',
-            color: '#E9FFFF',
-            border: '1.5px solid #4BA8B4',
-            borderRadius: '14px',
-            fontSize: '16px',
-            fontWeight: 950,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 18px rgba(38, 166, 154, 0.16)',
-          }}
-        >
-          <Eye size={19} color="#9FE9DF" />
-          <span>深淵刻印</span>
-          <span style={{ fontSize: '9px', color: '#99C9D2', fontWeight: 800 }}>3 SLOTS</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={onOpenImprintGacha}
-          aria-label="刻印ガチャを開く"
-          style={{
-            width: '100%',
-            height: '50px',
-            marginBottom: '8px',
-            background: 'linear-gradient(135deg, #35205A 0%, #20234A 56%, #123643 100%)',
-            color: '#F5F0FF',
-            border: '1.5px solid #B39DDB',
-            borderRadius: '14px',
-            fontSize: '16px',
-            fontWeight: 950,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 18px rgba(126, 87, 194, 0.18)',
-          }}
-        >
-          <Sparkles size={19} color="#D4C5FF" />
-          <span>刻印ガチャ</span>
-          <span style={{ fontSize: '10px', color: '#D4C5FF', fontWeight: 900 }}>TICKET {raidRewardProgress.imprintTickets}</span>
-        </button>
 
         {/* Start Battle Button */}
         <button
@@ -474,30 +348,6 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           <span>バトル開始！</span>
         </button>
 
-        <button
-          type="button"
-          onClick={onOpenRaidPrototype}
-          style={{
-            width: '100%',
-            height: '50px',
-            marginTop: '8px',
-            backgroundColor: '#24173A',
-            color: '#FFD54F',
-            border: '1.5px solid #8E6BBE',
-            borderRadius: '14px',
-            fontSize: '16px',
-            fontWeight: 900,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}
-        >
-          <span>👹</span>
-          <span>レイドボスに挑戦</span>
-          <span style={{ fontSize: '9px', color: '#BCA8F3', fontWeight: 900, letterSpacing: '.12em' }}>PROTOTYPE 01</span>
-        </button>
       </div>
 
       {/* Full Art Viewer */}

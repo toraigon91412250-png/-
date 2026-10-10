@@ -52,6 +52,25 @@ async function startBattleWithImprints(page: Page, equippedIds: string[]) {
   await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 }
 
+
+test('bottom navigation separates the main sections and opens battle preparation', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('navigation', { name: 'メインナビゲーション' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ホーム' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ガチャ' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '戦闘' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'レイド', exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'ガチャ' }).click();
+  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
+  await page.getByRole('button', { name: 'ホーム' }).click();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+
+  await page.getByRole('button', { name: '戦闘' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
+});
+
 test('imprint loadout can be equipped, unequipped, persisted, and carried into battle', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
@@ -65,6 +84,8 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ガチャ' }).click();
+  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
   await page.getByRole('button', { name: '刻印を管理' }).click();
   await expect(page.getByRole('heading', { name: '刻印管理' })).toBeVisible();
   await expect(page.getByLabel('刻印枠1：空き')).toBeVisible();
@@ -90,6 +111,7 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
 
   await page.getByLabel('見切りを装備').click();
   await page.getByRole('button', { name: '本編に戻る' }).click();
+  await page.getByRole('button', { name: 'ホーム' }).click();
   await page.getByRole('button', { name: /バトル開始/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
@@ -130,6 +152,7 @@ test('raid imprint gacha spends one ticket per new imprint and excludes owned im
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ガチャ' }).click();
   await page.getByRole('button', { name: '刻印ガチャを開く' }).click();
   await expect(page.getByRole('heading', { name: '刻印ガチャ' })).toBeVisible();
   await expect(page.getByLabel('刻印ガチャチケットの所持数 2')).toBeVisible();
@@ -240,6 +263,7 @@ test('raid-exclusive core fragment can be used in the main game for permanent st
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.locator('details[aria-label="レイド限定アイテム"] summary').click();
   const useItem = page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' });
   await expect(useItem).toBeEnabled();
   await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
@@ -276,7 +300,7 @@ test('raid victory grants its exclusive item and the item upgrades the main-game
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
 
   // Reset the RNG after the raid component's one-time run ID is created,
@@ -343,6 +367,7 @@ test('raid victory grants its exclusive item and the item upgrades the main-game
 
   await page.getByRole('button', { name: '本編に戻る' }).last().click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.locator('details[aria-label="レイド限定アイテム"] summary').click();
   await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
   await page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' }).click();
   await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
@@ -359,7 +384,7 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
 
   await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'バトル開始', exact: true })).toBeEnabled();
@@ -407,7 +432,7 @@ test('Core Regeneration is visible and Feather interrupts the recovery on deskto
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
 
   // A stable high sample selects CORE_REGEN after the opening sweep and remains safe for this test.
@@ -442,7 +467,7 @@ test('phase two Collapse Chain shows its wind-up and can be countered at release
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
 
   const phaseChip = page.locator('.raid-v1-phase-chip');
