@@ -89,7 +89,13 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
       + Math.round(target.currentHp * GAME_BALANCE.JUDGMENT_MAX_HP_BONUS);
   }
 
-  if (target.character.id === 'kaiser') {
+  if (
+    target.character.id === 'kaiser' &&
+    (target.kaiserArmorCurrent ?? 0) <= 0
+  ) {
+    // While Ironclad Armor is up its 25% mitigation replaces this flat passive
+    // reduction, avoiding accidental double mitigation. Heavy Armor returns
+    // once the separate armor gauge is gone.
     damage = Math.max(0, damage - GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION);
   }
 
