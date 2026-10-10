@@ -203,7 +203,7 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
 
-export type ImprintId = 'FORESIGHT';
+export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG';
 
 export interface ImprintProgress {
   unlockedIds: ImprintId[];

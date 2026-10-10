@@ -1,4 +1,4 @@
-import type { BattleAction, ImprintId } from '../types/game';
+import type { BattleAction, ImprintId, PlayerBattleAction } from '../types/game';
 import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
 export function normalizeEquippedImprints(value: unknown): ImprintId[] {
