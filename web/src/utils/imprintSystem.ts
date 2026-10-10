@@ -3,7 +3,7 @@ import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
 export const BLOOD_TEAR_DAMAGE_MULTIPLIER = 1.5;
 export const BLOOD_MEDIA_EXTRA_BLEED_TURNS = 1;
-export const WIND_GUARD_REDUCTION_PER_CHARGE = 0.001;
+export const WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE = 0.001;
 export const WIND_GUARD_MAX_REDUCTION = 0.4;
 export const WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER = 0.25;
 export const COSTLY_SHOT_HP_COST = 200;
@@ -28,12 +28,13 @@ export interface WindGuardDamageResult {
   applied: boolean;
 }
 
-/** Mitigation and counter damage scale from stored feather damage bonus, with a hard mitigation cap. */
+/** Counter damage scales to one quarter of the stored feather damage bonus. */
 export function getWindGuardCounterDamage(featherChargeValue: number): number {
   const safeCharge = Number.isFinite(featherChargeValue) ? Math.max(0, Math.floor(featherChargeValue)) : 0;
   return Math.floor(safeCharge * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER);
 }
 
+/** Apply proportional mitigation based on stored feather damage, capped at 40%. */
 export function resolveWindGuardDamage(
   damage: number,
   featherChargeValue: number,
@@ -45,7 +46,7 @@ export function resolveWindGuardDamage(
     return { damage: safeDamage, reducedBy: 0, counterDamage: 0, applied: false };
   }
 
-  const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCharge * WIND_GUARD_REDUCTION_PER_CHARGE);
+  const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCharge * WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE);
   const minimumRemainingDamage = safeDamage > 0
     ? Math.ceil(safeDamage * (1 - WIND_GUARD_MAX_REDUCTION))
     : 0;
