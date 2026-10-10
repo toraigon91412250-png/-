@@ -35,6 +35,9 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
+    // Lock CPU action choice to its highest-scoring action so this live-combat
+    // assertion is deterministic: the initial forecast is SPECIAL, not random variation.
+    Math.random = () => 0.99;
   });
 
   await page.goto('/');
@@ -71,24 +74,13 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
   await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('未使用', { timeout: 20_000 });
 
-  // Exercise the real battle hook: respond to the displayed telegraph and
-  // verify that the once-per-battle effect fires in combat, not only in its predicate tests.
-  test.setTimeout(120_000);
+  // With deterministic CPU choice, the initial telegraph must be SPECIAL.
+  // Evading it exercises the real battle hook and the once-per-battle state update.
+  const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
+  expect(intentLabel).toBe('特殊技');
   const triggerLog = page.getByText(/【刻印発動：見切り】/);
-  const turnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
-  for (let attempt = 0; attempt < 18; attempt += 1) {
-    if (await triggerLog.count()) break;
-
-    const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
-    const shouldEvade = intentLabel === '特殊技' || intentLabel === '必殺技';
-    const actionButton = shouldEvade
-      ? page.getByRole('button', { name: /^回避/ }).first()
-      : page.getByRole('button', { name: /^攻撃/ }).first();
-    const previousTurn = await turnMarker.innerText();
-    await actionButton.click();
-    await expect(turnMarker).not.toHaveText(previousTurn, { timeout: 8_000 });
-  }
-  await expect(triggerLog).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: /^回避/ }).first().click();
+  await expect(triggerLog).toBeVisible({ timeout: 15_000 });
   await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('発動済み');
 
   expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
