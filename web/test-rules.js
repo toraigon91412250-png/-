@@ -33,7 +33,7 @@ const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts'
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS } = await import('./src/data/imprints.ts');
-const { normalizeEquippedImprints, shouldTriggerForesight } = await import('./src/utils/imprintSystem.ts');
+const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -461,6 +461,50 @@ assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, attackerIsPlay
 assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, targetIsPlayer: false }), false, 'Foresight cannot trigger against a CPU target.');
 assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, incomingAction: 'ATTACK', predictedAction: 'ATTACK' }), false, 'Normal attacks are outside the effect.');
 assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, incomingAction: 'SPECIAL', predictedAction: 'ULTIMATE' }), false, 'The move must match the announced prediction.');
+
+assert.strictEqual(shouldSuppressCpuBuffAction('BUFF', false, ['CHANT_HUNT']), true,
+  'Chant Hunt must suppress the CPU buff action.');
+assert.strictEqual(shouldSuppressCpuBuffAction('BUFF', true, ['CHANT_HUNT']), false,
+  'Chant Hunt must never suppress a player action.');
+assert.strictEqual(shouldSuppressCpuBuffAction('ATTACK', false, ['CHANT_HUNT']), false,
+  'Chant Hunt must not alter the CPU attack action.');
+assert.strictEqual(shouldSuppressCpuBuffAction('BUFF', false, ['FORESIGHT']), false,
+  'Chant Hunt must be equipped to suppress CPU buffs.');
+
+assert.strictEqual(YIN_YANG_DAMAGE_REDUCTION, 0.5);
+const fastYinYangPlan = getTurnExecutionPlan('YIN_YANG', 'BUFF', 240, 80);
+assert.strictEqual(fastYinYangPlan.playerGoesFirst, true);
+assert.strictEqual(fastYinYangPlan.firstAction, 'YIN_YANG');
+assert.strictEqual(fastYinYangPlan.secondAction, 'BUFF');
+assert.strictEqual(fastYinYangPlan.yinYangDefenseActive, true,
+  'Yin-Yang defense must be primed when the player acts first.');
+const slowYinYangPlan = getTurnExecutionPlan('YIN_YANG', 'BUFF', 60, 80);
+assert.strictEqual(slowYinYangPlan.playerGoesFirst, false);
+assert.strictEqual(slowYinYangPlan.firstAction, 'BUFF');
+assert.strictEqual(slowYinYangPlan.secondAction, 'YIN_YANG');
+assert.strictEqual(slowYinYangPlan.yinYangDefenseActive, true,
+  'Yin-Yang defense must be primed before the CPU acts even when the player is slower.');
+
+assert.deepStrictEqual(resolveYinYangDefense(200, {
+  attackerIsPlayer: false, targetIsPlayer: true, defenseActive: fastYinYangPlan.yinYangDefenseActive,
+}), { damage: 100, reducedBy: 100, applied: true });
+assert.deepStrictEqual(resolveYinYangDefense(201, {
+  attackerIsPlayer: false, targetIsPlayer: true, defenseActive: slowYinYangPlan.yinYangDefenseActive,
+}), { damage: 100, reducedBy: 101, applied: true },
+  'Yin-Yang mitigation must work before the player action resolves.');
+assert.deepStrictEqual(resolveYinYangDefense(200, {
+  attackerIsPlayer: true, targetIsPlayer: false, defenseActive: true,
+}), { damage: 200, reducedBy: 0, applied: false },
+  'Yin-Yang must not reduce the player hitting the CPU.');
+assert.deepStrictEqual(resolveYinYangDefense(200, {
+  attackerIsPlayer: false, targetIsPlayer: true, defenseActive: false,
+}), { damage: 200, reducedBy: 0, applied: false },
+  'Yin-Yang defense expires outside the chosen turn.');
+
+assert.deepStrictEqual(unlockImprint('CHANT_HUNT')?.unlockedIds, ['FORESIGHT', 'CHANT_HUNT']);
+assert.deepStrictEqual(unlockImprint('YIN_YANG')?.unlockedIds, ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG']);
+assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'YIN_YANG']),
+  ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG']);
 
 if (imprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, imprintSaveBeforeTest);

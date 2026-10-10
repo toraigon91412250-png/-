@@ -14,6 +14,7 @@ import {
   getIrenaSuperFallenShotMultiplier,
   IRENA_SUPER_FALLEN_SHOT_COOLDOWN,
   IrenaSpecialSkillId,
+  PlayerBattleAction,
   STATUS_AILMENTS,
   LogType,
   StatusAilmentType,
@@ -24,7 +25,7 @@ import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateD
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
-import { normalizeEquippedImprints, shouldTriggerForesight } from '../utils/imprintSystem';
+import { getTurnExecutionPlan, normalizeEquippedImprints, resolveYinYangDefense, shouldSuppressCpuBuffAction, shouldTriggerForesight } from '../utils/imprintSystem';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -156,6 +157,8 @@ export function useBattleGame(
   const playerEvadeSelectedRef = useRef(false);
   // Snapshot Foresight eligibility when the player commits to evade against the displayed CPU telegraph.
   const foresightTriggerPendingRef = useRef(false);
+  // Defensive half of Yin-Yang Conversion; scoped to the current round and set before turn order resolves.
+  const yinYangDefensePendingRef = useRef(false);
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
@@ -332,6 +335,7 @@ export function useBattleGame(
     recentCpuActionsRef.current = [];
     playerEvadeSelectedRef.current = false;
     foresightTriggerPendingRef.current = false;
+    yinYangDefensePendingRef.current = false;
     masteryClaimedRef.current = new Set();
     battleMasteryRewardRef.current = 0;
     judgmentMarksRef.current = 0;
@@ -398,6 +402,30 @@ export function useBattleGame(
     ));
   };
 
+  // Only direct hits use this helper. Bleed ticks retain their existing damage and duration rules.
+  const applyYinYangDefenseToDamage = (
+    attackerIsPlayer: boolean,
+    target: BattleFighter,
+    damage: number,
+    turn: number,
+  ): number => {
+    const result = resolveYinYangDefense(damage, {
+      attackerIsPlayer,
+      targetIsPlayer: target.isPlayer,
+      defenseActive: yinYangDefensePendingRef.current,
+    });
+    if (!result.applied) return damage;
+
+    yinYangDefensePendingRef.current = false;
+    addLog(
+      `☯️【陰陽転化・防御】CPUの直接攻撃を50%軽減！ ${Math.floor(damage)} → ${result.damage} ダメージ。`,
+      'PASSIVE_TRIGGER',
+      turn,
+    );
+    soundManager.playDefend();
+    return result.damage;
+  };
+
   // Apply Special Status Ailment (Bleed or Pressure)
   const applySpecialStatusAilment = (attacker: BattleFighter, defenderIsPlayer: boolean, turn: number) => {
     const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
@@ -460,7 +488,7 @@ export function useBattleGame(
 
   const executeFighterTurn = async (
     isActorPlayer: boolean,
-    action: BattleAction,
+    action: PlayerBattleAction,
     isActingFirst: boolean,
     speed: number,
     turn: number,
@@ -573,6 +601,17 @@ export function useBattleGame(
     // 3. Execute Chosen Action
     switch (action) {
       case 'BUFF': {
+        if (shouldSuppressCpuBuffAction(action, isActorPlayer, stateRef.current.battleConfig.imprints)) {
+          addLog(
+            `⛓️【刻印発動：詠唱狩り】${actor.character.name}の強化詠唱を断ち切った！ 強化効果は発生しない。`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
+          soundManager.playDefend();
+          await sleep(450 / speed);
+          return true;
+        }
+
         if (!actor.isBuffed) {
           updateState(prev => (isActorPlayer
             ? { ...prev, player: { ...prev.player, isBuffed: true, buffDamageBonus: GAME_BALANCE.BUFF_DAMAGE_BONUS } }
@@ -609,6 +648,52 @@ export function useBattleGame(
             effectId: nextVisualEffectId.current++,
           },
         }));
+
+        await sleep(650 / speed);
+        updateState(prev => ({ ...prev, visualEffect: null }));
+        return true;
+      }
+
+      case 'YIN_YANG': {
+        if (!isActorPlayer || !stateRef.current.battleConfig.imprints?.includes('YIN_YANG')) {
+          return true;
+        }
+
+        const existingBonus = stateRef.current.player.isBuffed
+          ? stateRef.current.player.buffDamageBonus
+          : 0;
+        const attackBonus = Math.max(existingBonus, GAME_BALANCE.BUFF_DAMAGE_BONUS);
+        updateState(prev => ({
+          ...prev,
+          player: {
+            ...prev.player,
+            isBuffed: true,
+            buffDamageBonus: Math.max(
+              prev.player.isBuffed ? prev.player.buffDamageBonus : 0,
+              GAME_BALANCE.BUFF_DAMAGE_BONUS,
+            ),
+          },
+          visualEffect: {
+            targetIsPlayer: true,
+            damage: 0,
+            effectType: 'BUFF_POWER',
+            isCritical: false,
+            isEvade: false,
+            isBuff: true,
+            isUltimate: false,
+            actorName: actor.character.name,
+            skillName: '陰陽転化',
+            statusAilmentName: '',
+            bannerText: `☯️ 防御50% / 次の攻撃+${attackBonus}`,
+            effectId: nextVisualEffectId.current++,
+          },
+        }));
+        soundManager.playDefend();
+        addLog(
+          `☯️【陰陽転化】陰の守りを展開。今ターンのCPUからの直接ダメージを50%軽減し、次の攻撃系行動を+${attackBonus}強化する！`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
 
         await sleep(650 / speed);
         updateState(prev => ({ ...prev, visualEffect: null }));
@@ -700,7 +785,7 @@ export function useBattleGame(
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
-        const finalDamage = calculateNormalAttackDamage(
+        const calculatedDamage = calculateNormalAttackDamage(
           {
             attacker: actor,
             target,
@@ -713,6 +798,7 @@ export function useBattleGame(
           },
           isCritical,
         );
+        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
 
         if (actor.character.id === 'irena' && isActingFirst) {
           addLog(
@@ -1159,7 +1245,7 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const finalDamage = calculateSpecialDamage({
+        const calculatedDamage = calculateSpecialDamage({
           attacker: actor,
           target,
           config: stateRef.current.battleConfig,
@@ -1170,6 +1256,7 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
+        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
           addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
@@ -1415,7 +1502,7 @@ export function useBattleGame(
         }
 
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const finalDamage = calculateUltimateDamage({
+        const calculatedDamage = calculateUltimateDamage({
           attacker: actor,
           target,
           config: stateRef.current.battleConfig,
@@ -1426,6 +1513,7 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
+        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
 
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
@@ -1497,6 +1585,7 @@ export function useBattleGame(
   };
 
   const finalizeBattle = (winnerIsPlayer: boolean) => {
+    yinYangDefensePendingRef.current = false;
     const masteryBonus = battleMasteryRewardRef.current;
     const reward = getBattleReward(winnerIsPlayer, masteryBonus);
     saveBattleResult(winnerIsPlayer, masteryBonus);
@@ -1521,7 +1610,7 @@ export function useBattleGame(
   };
 
   const onActionSelected = useCallback(async (
-    playerAction: BattleAction,
+    playerAction: PlayerBattleAction,
     ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
     specialSkillId?: IrenaSpecialSkillId,
   ) => {
@@ -1544,6 +1633,7 @@ export function useBattleGame(
       !player.character.hasSuperFallenShot
     ) return;
     if (playerAction === 'ULTIMATE' && stateRef.current.player.ultimateGauge < 3) return;
+    if (playerAction === 'YIN_YANG' && !stateRef.current.battleConfig.imprints?.includes('YIN_YANG')) return;
     // Irena's Buff command was removed from the player UI; reject stale shortcuts/programmatic calls too.
     if (playerAction === 'BUFF' && stateRef.current.player.character.id === 'irena') return;
 
@@ -1589,11 +1679,10 @@ export function useBattleGame(
     );
     const playerSpeed = getEffectiveSpeed(preparedPlayer);
     const cpuSpeed = getEffectiveSpeed(preparedEnemy);
-    const playerGoesFirst = playerSpeed >= cpuSpeed;
-
-    const firstIsPlayer = playerGoesFirst;
-    const firstAction = firstIsPlayer ? playerAction : cpuAction;
-    const secondAction = firstIsPlayer ? cpuAction : playerAction;
+    const turnPlan = getTurnExecutionPlan(playerAction, cpuAction, playerSpeed, cpuSpeed);
+    const { firstIsPlayer, firstAction, secondAction } = turnPlan;
+    // Arm protection before either actor resolves, independent of who has turn priority.
+    yinYangDefensePendingRef.current = turnPlan.yinYangDefenseActive;
 
     try {
       // Step 1: First Battler Turn
@@ -1635,8 +1724,11 @@ export function useBattleGame(
       // End of Round: remember what the player just did, then select the next
       // CPU action from the updated state. This makes the opponent learn from
       // repeated habits without re-rolling its action after the player commits.
-      recentPlayerActionsRef.current = [...recentPlayerActionsRef.current.slice(-5), playerAction];
+      if (playerAction !== 'YIN_YANG') {
+        recentPlayerActionsRef.current = [...recentPlayerActionsRef.current.slice(-5), playerAction];
+      }
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
+      yinYangDefensePendingRef.current = false;
 
       const nextPlayer = {
         ...stateRef.current.player,
@@ -1673,6 +1765,7 @@ export function useBattleGame(
         isAnimating: false,
       }));
     } catch (err) {
+      yinYangDefensePendingRef.current = false;
       if (isBattleCancelled(err) || actionRunId !== battleRunIdRef.current) return;
       console.error('Battle execution error occurred, recovering state:', err);
       updateState(prev => ({

@@ -1,4 +1,6 @@
 export type BattleAction = 'ATTACK' | 'EVADE' | 'BUFF' | 'SPECIAL' | 'ULTIMATE';
+/** Player-only command granted by the Yin-Yang Conversion imprint. */
+export type PlayerBattleAction = BattleAction | 'YIN_YANG';
 
 export const IRENA_FEATHER_CHARGE_RANGES: ReadonlyArray<readonly [number, number]> = [
   [60, 80],

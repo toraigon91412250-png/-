@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, getEffectiveSpeed } from '../types/game';
+import { BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, PlayerBattleAction, getEffectiveSpeed } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
@@ -11,7 +11,7 @@ import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
 interface BattleScreenProps {
   state: BattleUiState;
   onAction: (
-    action: BattleAction,
+    action: PlayerBattleAction,
     ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
     specialSkillId?: IrenaSpecialSkillId,
   ) => void;
