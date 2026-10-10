@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   BattleAction,
+  BattleChallengeLevel,
   BattleFighter,
   BattleLog,
   BattleSetupConfig,
@@ -26,6 +27,11 @@ import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
 import {
+  advanceKaiserChallengeRound,
+  initializeKaiserChallengeFighter,
+  resolveKaiserHit,
+} from '../utils/kaiserChallenge';
+import {
   BLOOD_MEDIA_EXTRA_BLEED_TURNS,
   COSTLY_SHOT_HP_COST,
   getBloodTearBurstDamage,
@@ -47,8 +53,12 @@ import {
   normalizeEquippedAbilities,
 } from '../utils/abilitySystem';
 
-export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
-  return {
+export function createInitialFighter(
+  character: CharacterDef,
+  isPlayer: boolean,
+  kaiserLevel: BattleChallengeLevel = 10,
+): BattleFighter {
+  const fighter: BattleFighter = {
     character,
     currentHp: character.maxHp,
     specialCooldownRemaining: 0,
@@ -62,6 +72,7 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
     isPlayer,
     activeAilments: [],
   };
+  return initializeKaiserChallengeFighter(fighter, kaiserLevel);
 }
 
 export function useBattleGame(
@@ -84,7 +95,7 @@ export function useBattleGame(
   const [state, setState] = useState<BattleUiState>(() => {
     const initialCharacters = createBattleCharacters(initialPlayerChar, initialEnemyChar, normalizedInitialConfig);
     const initialPlayer = createInitialFighter(initialCharacters.player, true);
-    const initialEnemy = createInitialFighter(initialCharacters.enemy, false);
+    const initialEnemy = createInitialFighter(initialCharacters.enemy, false, normalizedInitialConfig.kaiserLevel);
     const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty);
 
     return {
@@ -320,13 +331,11 @@ export function useBattleGame(
     );
     if (windGuardIsEligible) {
       const counterDamage = getWindGuardCounterDamage(target.featherChargeBonus);
-      const nextEnemyHp = Math.max(0, stateRef.current.enemy.currentHp - counterDamage);
-      updateState(prev => ({
-        ...prev,
-        enemy: { ...prev.enemy, currentHp: Math.max(0, prev.enemy.currentHp - counterDamage) },
-      }));
+      const counterHit = resolveKaiserDamage(stateRef.current.enemy, counterDamage, turn, '風守り・反撃');
+      const actualCounterDamage = counterHit.damage;
+      const nextEnemyHp = counterHit.targetHp;
       addLog(
-        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${counterDamage}ダメージ。`,
+        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${actualCounterDamage}ダメージ。`,
         'PASSIVE_TRIGGER',
         turn,
       );
@@ -337,6 +346,56 @@ export function useBattleGame(
     }
 
     return resultingHp;
+  };
+
+  const resolveKaiserDamage = (
+    target: BattleFighter,
+    damage: number,
+    turn: number,
+    source: string,
+    isDirectHit = source !== '出血ダメージ',
+  ): { damage: number; targetHp: number; phaseChanged: boolean } => {
+    if (!target.isPlayer && target.character.id === 'kaiser') {
+      // Use authoritative enemy state; the action-local target may be a dynamic-stat snapshot.
+      const outcome = resolveKaiserHit(
+        stateRef.current.enemy,
+        damage,
+        stateRef.current.battleConfig.kaiserLevel,
+        turn,
+        isDirectHit,
+        source,
+      );
+      updateState(prev => ({ ...prev, enemy: outcome.fighter }));
+      if (outcome.armorWasActive) {
+        addLog(
+          `🛡️【鉄壁装甲】耐久 ${outcome.armorBefore} → ${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}。HPダメージは25%軽減。`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+      }
+      if (outcome.armorBroke) {
+        addLog('💥【鉄壁装甲破壊】カイザーが2ターンの装甲破壊状態に入った！ 被ダメージ×1.3。', 'PASSIVE_TRIGGER', turn);
+      } else if (outcome.armorWasBroken && isDirectHit) {
+        addLog(
+          `⚔️【装甲破壊中】カイザーへのダメージ×1.3（残り${Math.max(1, stateRef.current.enemy.kaiserArmorBrokenTurns ?? 1)}ターン）。`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+      }
+      if (outcome.phaseChanged) {
+        addLog(
+          '⚠️【最終試練・第2フェーズ】カイザーの攻撃力・技威力が上昇！ 素早さ強化、鉄壁装甲を50%再展開。',
+          'SYSTEM',
+          turn,
+        );
+      }
+      return { damage: outcome.damage, targetHp: outcome.fighter.currentHp, phaseChanged: outcome.phaseChanged };
+    }
+    return {
+      damage: Math.max(0, Math.floor(damage)),
+      targetHp: resolveIncomingDamage(target, damage, turn, source),
+      phaseChanged: false,
+    };
   };
 
   const restartBattle = useCallback((
@@ -372,7 +431,7 @@ export function useBattleGame(
     };
     const prepared = createBattleCharacters(baseP, baseE, nextConfig);
     const nextPlayer = createInitialFighter(prepared.player, true);
-    const nextEnemy = createInitialFighter(prepared.enemy, false);
+    const nextEnemy = createInitialFighter(prepared.enemy, false, nextConfig.kaiserLevel);
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
@@ -640,7 +699,8 @@ export function useBattleGame(
       const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
+      const bleedOutcome = resolveKaiserDamage(actor, dotDamage, turn, '出血ダメージ', false);
+      const newHp = bleedOutcome.targetHp;
       // Heal only damage that actually landed. For example, Fallen King's survival
       // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
       const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
