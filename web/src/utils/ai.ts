@@ -10,6 +10,7 @@ export interface CpuAiContext {
   recentPlayerActions?: BattleAction[];
   recentCpuActions?: BattleAction[];
   turnNumber?: number;
+  kaiserLevel?: number;
 }
 
 const ACTION_KEYS = ['ATTACK', 'EVADE', 'BUFF', 'SPECIAL', 'ULTIMATE'] as const;
@@ -132,6 +133,10 @@ export const CpuAi = {
     const recentSamePlayerAction =
       recentPlayerActions.length >= 2 &&
       recentPlayerActions[recentPlayerActions.length - 1] === recentPlayerActions[recentPlayerActions.length - 2];
+    const highLevelAdaptation = cpu.character.id === 'kaiser' && (context.kaiserLevel ?? 10) >= 70;
+    const adaptationMultiplier = highLevelAdaptation
+      ? (difficulty === 'EXPERT' ? 1.55 : 1.35)
+      : 1;
 
     const lastCpuAction = recentCpuActions[recentCpuActions.length - 1];
     const secondLastCpuAction = recentCpuActions[recentCpuActions.length - 2];
@@ -225,6 +230,9 @@ export const CpuAi = {
       if (difficulty === 'EXPERT') {
         scoreOf('ULTIMATE').score += playerBurstThreat ? 12 : 0;
       }
+      if (cpu.character.id === 'kaiser' && context.kaiserLevel === 100 && cpu.kaiserPhase === 2) {
+        scoreOf('ULTIMATE').score += 28;
+      }
     }
 
     // Learning from repeated player habits is the central second-stage change:
@@ -232,16 +240,16 @@ export const CpuAi = {
     if (recentSamePlayerAction) {
       const repeated = recentPlayerActions[recentPlayerActions.length - 1];
       if (repeated === 'ATTACK') {
-        scoreOf('EVADE').score += difficulty === 'EXPERT' ? 14 : 9;
-        scoreOf('SPECIAL').score += 7;
+        scoreOf('EVADE').score += (difficulty === 'EXPERT' ? 14 : 9) * adaptationMultiplier;
+        scoreOf('SPECIAL').score += 7 * adaptationMultiplier;
       } else if (repeated === 'SPECIAL' || repeated === 'ULTIMATE') {
-        scoreOf('EVADE').score += difficulty === 'EXPERT' ? 18 : 11;
+        scoreOf('EVADE').score += (difficulty === 'EXPERT' ? 18 : 11) * adaptationMultiplier;
       } else if (repeated === 'EVADE') {
-        scoreOf('BUFF').score += 12;
-        scoreOf('ATTACK').score += 8;
+        scoreOf('BUFF').score += 12 * adaptationMultiplier;
+        scoreOf('ATTACK').score += 8 * adaptationMultiplier;
       } else if (repeated === 'BUFF') {
-        scoreOf('ATTACK').score += difficulty === 'EXPERT' ? 18 : 12;
-        scoreOf('SPECIAL').score += 9;
+        scoreOf('ATTACK').score += (difficulty === 'EXPERT' ? 18 : 12) * adaptationMultiplier;
+        scoreOf('SPECIAL').score += 9 * adaptationMultiplier;
       }
     }
 
