@@ -1273,7 +1273,7 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
-          const finalDamage = calculateSpecialDamage({
+          let finalDamage = calculateSpecialDamage({
             attacker: actor,
             target,
             config: stateRef.current.battleConfig,
@@ -1356,6 +1356,14 @@ export function useBattleGame(
             return true;
           }
 
+          const executionForHit =
+            isActorPlayer &&
+            hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+            target.currentHp > 0 &&
+            actor.currentHp > 1 &&
+            actor.currentHp <= baseActorMaxHp * 0.05;
+          const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '超堕天撃');
+          finalDamage = hitOutcome.damage;
           soundManager.playCritical();
           soundManager.playFeatherShot();
 
@@ -1365,7 +1373,7 @@ export function useBattleGame(
             turn,
           );
 
-          const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, '超堕天撃');
+          const newTargetHp = hitOutcome.targetHp;
 
           updateState(prev => ({
             ...prev,
