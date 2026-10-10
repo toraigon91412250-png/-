@@ -156,6 +156,37 @@ test('raid imprint gacha spends one ticket per new imprint and excludes owned im
   expect(pageErrors, 'Imprint gacha navigation and draws must not raise uncaught errors.').toEqual([]);
 });
 
+test('developer tools can add imprint tickets and unlock all registered imprints', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '開発者ツール' }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+  await expect(page.getByLabel('刻印ガチャチケットの所持数 0')).toBeVisible();
+  await expect(page.getByLabel('解放済み刻印 1 / 7')).toBeVisible();
+
+  await page.getByRole('button', { name: '刻印ガチャチケットを10枚追加' }).click();
+  await expect(page.getByLabel('刻印ガチャチケットの所持数 10')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const raid = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
+    return raid.imprintTickets;
+  })).toBe(10);
+
+  await page.getByRole('button', { name: '登録済みの刻印をすべて解放' }).click();
+  await expect(page.getByLabel('解放済み刻印 7 / 7')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const imprints = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
+    return imprints.unlockedIds;
+  })).toEqual(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT']);
+  expect(pageErrors, 'Developer imprint testing controls must not raise uncaught errors.').toEqual([]);
+});
+
 test('Yin-Yang Conversion protects the current turn, preserves pressure, and advances the round', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
