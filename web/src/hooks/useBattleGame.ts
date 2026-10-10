@@ -111,6 +111,7 @@ export function useBattleGame(
     yinYangActivatedTurn: null,
     yinYangDefenseResult: null,
     windGuardResult: null,
+    bloodMediaHealResult: null,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -413,6 +414,7 @@ export function useBattleGame(
       yinYangActivatedTurn: null,
       yinYangDefenseResult: null,
       windGuardResult: null,
+    bloodMediaHealResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -649,6 +651,7 @@ export function useBattleGame(
             ...prev.player,
             currentHp: Math.min(prev.player.character.maxHp, prev.player.currentHp + bloodMediaHealAmount),
           },
+          bloodMediaHealResult: { turn, amount: bloodMediaHealAmount },
         }));
         addLog(
           `🩸【血媒・吸収】出血で実際に与えたダメージからHP+${bloodMediaHealAmount}回復。`,
@@ -1519,9 +1522,11 @@ export function useBattleGame(
             isBuff: false,
             isUltimate: false,
             actorName: actor.character.name,
-            skillName,
+            skillName: statusOutcome.bloodTearBurstDamage > 0 ? '血裂' : skillName,
             statusAilmentName: appliedAilmentName,
-            bannerText: `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
+            bannerText: statusOutcome.bloodTearBurstDamage > 0
+              ? `🩸『血裂』出血凝縮を開始 · 羽弾-${finalDamage}`
+              : `✨『${skillName}』-${finalDamage} [${appliedAilmentName}付与]`,
             effectId: nextVisualEffectId.current++,
           },
         }));
@@ -1542,7 +1547,7 @@ export function useBattleGame(
             visualEffect: {
               targetIsPlayer: !isActorPlayer,
               damage: burstDamage,
-              effectType: 'SPECIAL_FEATHER',
+              effectType: 'NORMAL_HIT',
               isCritical: false,
               isEvade: false,
               isBuff: false,
@@ -1871,6 +1876,7 @@ export function useBattleGame(
       visualEffects: [],
       yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
       windGuardResult: null,
+    bloodMediaHealResult: null,
     }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
