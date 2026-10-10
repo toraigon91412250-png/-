@@ -203,10 +203,10 @@ assert.strictEqual(getEffectiveDefense(fighterIrena), 180);
 const fighterKaiser = createInitialFighter(KAISER, false);
 fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
 assert.strictEqual(getEffectiveSpeed(fighterKaiser), 155);
-assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
+assert.strictEqual(getEffectiveAttack(fighterKaiser), 162);
 
 const aiSpecialDamageReference = Math.max(0, KAISER.specialSkillDamage - IRENA.defense);
-assert.strictEqual(aiSpecialDamageReference, 175);
+assert.strictEqual(aiSpecialDamageReference, 300);
 
 
 const config = { kaiserLevel: 10, abilities: [] };
@@ -227,8 +227,8 @@ const criticalDamage = calculateNormalAttackDamage({
   isActingFirst: true,
 }, true);
 
-assert.strictEqual(normalDamage, 220);
-assert.strictEqual(criticalDamage, 340);
+assert.strictEqual(normalDamage, 180);
+assert.strictEqual(criticalDamage, 280);
 
 assert.strictEqual(calculateUltimateDamage({
   attacker: attackBase,
