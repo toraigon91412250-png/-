@@ -456,13 +456,13 @@ assert.strictEqual(getBloodTearBurstDamage(40, 4), 240);
 assert.strictEqual(getBloodTearBurstDamage(-30, 3), 0);
 assert.strictEqual(getBloodTearBurstDamage(30, -1), 0);
 assert.strictEqual(WIND_GUARD_MAX_REDUCTION, 0.4);
-assert.deepStrictEqual(resolveWindGuardDamage(200, 3, true), {
-  damage: 170, reducedBy: 30, counterDamage: 60, applied: true,
+assert.deepStrictEqual(resolveWindGuardDamage(200, 300, true), {
+  damage: 140, reducedBy: 60, counterDamage: 75, applied: true,
 });
-assert.deepStrictEqual(resolveWindGuardDamage(200, 30, true), {
-  damage: 120, reducedBy: 80, counterDamage: 600, applied: true,
-}, 'Wind Guard mitigation must respect its cap while counters continue scaling from charge count.');
-assert.deepStrictEqual(resolveWindGuardDamage(200, 3, false), {
+assert.deepStrictEqual(resolveWindGuardDamage(200, 500, true), {
+  damage: 120, reducedBy: 80, counterDamage: 125, applied: true,
+}, 'Wind Guard mitigation must cap at 40% while counter damage scales from stored feather power.');
+assert.deepStrictEqual(resolveWindGuardDamage(200, 300, false), {
   damage: 200, reducedBy: 0, counterDamage: 0, applied: false,
 });
 assert.strictEqual(COSTLY_SHOT_HP_COST, 200);
