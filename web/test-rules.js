@@ -566,9 +566,12 @@ assert.strictEqual(secondImprintDraw.status, 'DRAWN');
 assert.strictEqual(secondImprintDraw.imprint.id, 'YIN_YANG', 'The next draw must choose the only unowned imprint.');
 assert.strictEqual(secondImprintDraw.raidRewardProgress.imprintTickets, 0);
 for (const imprint of IMPRINT_DEFINITIONS) unlockImprint(imprint.id);
+storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+  coreFragments: 0, imprintTickets: 1, bonusStatPoints: 0, claimedVictoryRunIds: [],
+}));
 const allCollectedDraw = drawImprintGacha(() => 0);
 assert.strictEqual(allCollectedDraw.status, 'ALL_COLLECTED', 'The draw must end once every registered imprint is owned.');
-assert.strictEqual(allCollectedDraw.raidRewardProgress.imprintTickets, 0, 'A completed collection must not consume a ticket.');
+assert.strictEqual(allCollectedDraw.raidRewardProgress.imprintTickets, 1, 'A completed collection must not consume the remaining ticket.');
 storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
   coreFragments: 0, imprintTickets: 0, bonusStatPoints: 0, claimedVictoryRunIds: [],
 }));
