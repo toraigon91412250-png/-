@@ -28,7 +28,7 @@ export interface WindGuardDamageResult {
   applied: boolean;
 }
 
-/** Mitigation and the counter scale from accumulated feather-charge count, with a hard mitigation cap. */
+/** Mitigation and counter damage scale from stored feather damage bonus, with a hard mitigation cap. */
 export function resolveWindGuardDamage(
   damage: number,
   featherChargeValue: number,
