@@ -313,7 +313,8 @@ export function useBattleGame(
       target.isPlayer &&
       source !== '出血ダメージ' &&
       stateRef.current.battleConfig.imprints?.includes('WIND_GUARD') &&
-      target.featherChargeBonus > 0
+      target.featherChargeBonus > 0 &&
+      safeDamage > 0
     );
     if (windGuardIsEligible) {
       const counterDamage = Math.floor(Math.max(0, target.featherChargeBonus) * WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER);
@@ -471,7 +472,7 @@ export function useBattleGame(
       },
     }));
     addLog(
-      `🪶【風守り】羽弾蓄積${target.featherChargeCount}により被ダメージを${result.reducedBy}軽減（${Math.floor(damage)} → ${result.damage}）。`,
+      `🪶【風守り】羽弾蓄積+${target.featherChargeBonus}により被ダメージを${result.reducedBy}軽減（${Math.floor(damage)} → ${result.damage}）。`,
       'PASSIVE_TRIGGER',
       turn,
     );
