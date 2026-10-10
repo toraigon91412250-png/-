@@ -115,6 +115,21 @@ function persistRaidRewardProgress(progress: RaidRewardProgress): boolean {
   }
 }
 
+/** Developer-only helpers for exercising the dedicated imprint gacha. */
+export function setImprintTicketsForDeveloper(tickets: number): RaidRewardProgress {
+  const next = normalizeRaidRewardProgress({
+    ...loadRaidRewardProgress(),
+    imprintTickets: Math.max(0, Math.floor(tickets)),
+  });
+  persistRaidRewardProgress(next);
+  return next;
+}
+
+export function addImprintTicketsForDeveloper(amount: number): RaidRewardProgress {
+  const current = loadRaidRewardProgress();
+  return setImprintTicketsForDeveloper(current.imprintTickets + Math.max(0, Math.floor(amount)));
+}
+
 /** Grant one core fragment and one imprint ticket per unique raid victory. */
 export function claimRaidVictoryReward(runId: string): RaidVictoryRewardClaim {
   const current = loadRaidRewardProgress();
@@ -292,6 +307,15 @@ export function unlockImprint(id: ImprintId): ImprintProgress | null {
   const current = loadImprintProgress();
   if (current.unlockedIds.includes(id)) return current;
   return persistImprintProgress({ ...current, unlockedIds: [...current.unlockedIds, id] });
+}
+
+/** Unlock every currently registered imprint for manual test setup. */
+export function unlockAllImprintsForDeveloper(): ImprintProgress | null {
+  const current = loadImprintProgress();
+  return persistImprintProgress({
+    ...current,
+    unlockedIds: IMPRINT_DEFINITIONS.map(imprint => imprint.id),
+  });
 }
 
 export function equipImprint(id: ImprintId): ImprintProgress | null {
