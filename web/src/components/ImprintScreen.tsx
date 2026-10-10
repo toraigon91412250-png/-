@@ -133,7 +133,7 @@ export const ImprintScreen: React.FC<ImprintScreenProps> = ({ progress, message,
           })}
         </section>
         <div style={{ marginTop: '13px', color: '#7F91A6', fontSize: '10px', lineHeight: 1.5 }}>
-          ※ 刻印は権能の装備枠とは別管理です。入手経路と召喚は別段階で実装します。
+          ※ 刻印は権能とは別枠で最大3つまで装備できます。未所持の刻印はレイド勝利で得た専用チケットから入手できます。
         </div>
       </div>
     </main>
