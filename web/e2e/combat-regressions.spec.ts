@@ -29,6 +29,29 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+async function startBattleWithImprints(page: Page, equippedIds: string[]) {
+  await page.addInitScript((ids: string[]) => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_imprint_progress', JSON.stringify({
+      unlockedIds: ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT'],
+      equippedIds: ids,
+    }));
+    Math.random = () => 0.99;
+  }, equippedIds);
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\\s*1\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+}
+
 test('imprint loadout can be equipped, unequipped, persisted, and carried into battle', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
@@ -485,4 +508,64 @@ test('leaving during an executing turn cancels the battle and keeps the selectio
   await expect(page.getByTitle('戻る')).toHaveCount(0);
 
   expect(pageErrors, 'Cancelling a battle should not raise uncaught JavaScript errors.').toEqual([]);
+});
+
+
+test('Blood Tear bursts when Bleed is applied and leaves no Bleed status', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await startBattleWithImprints(page, ['BLOOD_TEAR']);
+  await page.getByRole('button', { name: /^羽弾/ }).first().click();
+
+  // The cut-in must identify Blood Tear at the special-hit moment; the burst is a separate impact.
+  await expect(page.getByText('『血裂』')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/^第\\s*2\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: /出血 .*ターンの詳細を表示/ })).toHaveCount(0);
+  expect(pageErrors, 'Blood Tear should not raise uncaught JavaScript errors.').toEqual([]);
+});
+
+test('Blood Media extends Bleed and heals for the actual tick damage', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await startBattleWithImprints(page, ['BLOOD_MEDIA']);
+  await page.getByRole('button', { name: /^攻撃/ }).first().click();
+  await expect(page.getByText(/^第\\s*2\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  await page.getByRole('button', { name: /^羽弾/ }).first().click();
+  await expect(page.getByText(/^第\\s*3\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('status', { name: '血媒の状態' })).toContainText('HP+30');
+  await expect(page.getByRole('button', { name: /出血 3ターンの詳細を表示/ })).toBeVisible();
+  expect(pageErrors, 'Blood Media healing and Bleed duration should not raise uncaught errors.').toEqual([]);
+});
+
+test('Wind Guard reduces a direct CPU hit and counterattacks using stored feather power', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await startBattleWithImprints(page, ['WIND_GUARD']);
+  await page.getByRole('button', { name: /^攻撃/ }).first().click();
+  await expect(page.getByText(/^第\\s*2\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  await expect(page.getByRole('status', { name: '風守りの状態' })).toContainText('第1ターン発動');
+  await expect(page.getByRole('status', { name: '風守りの状態' })).toContainText('自動反撃20');
+  expect(pageErrors, 'Wind Guard mitigation and retaliation should not raise uncaught errors.').toEqual([]);
+});
+
+test('Costly Shot spends HP to reset special cooldown and allows the next Feather', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await startBattleWithImprints(page, ['COSTLY_SHOT']);
+  await page.getByRole('button', { name: /^羽弾/ }).first().click();
+  await expect(page.getByText(/^第\\s*2\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  const costlyShot = page.getByRole('button', { name: '代償撃ち' });
+  await expect(costlyShot).toBeEnabled();
+  await costlyShot.click();
+
+  await expect(page.getByText(/HP-200 \/ 特殊CT RESET/)).toBeVisible({ timeout: 5_000 });
+  await expect(page.getByText(/^第\\s*3\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: /^羽弾/ }).first()).toBeEnabled();
+  expect(pageErrors, 'Costly Shot cooldown reset should not raise uncaught errors.').toEqual([]);
 });
