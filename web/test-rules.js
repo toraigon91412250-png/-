@@ -421,11 +421,11 @@ const lv5AbyssKaiser = applyDynamicAbilityModifiers(
   { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 5 }] },
   2,
 );
-assert.strictEqual(lv4AbyssKaiser.character.attack, 152);
+assert.strictEqual(lv4AbyssKaiser.character.attack, 178);
 assert.strictEqual(lv4AbyssKaiser.character.specialSkillDamage, KAISER.specialSkillDamage);
-assert.strictEqual(lv5AbyssKaiser.character.attack, 150);
-assert.strictEqual(lv5AbyssKaiser.character.specialSkillDamage, 353);
-assert.strictEqual(lv5AbyssKaiser.character.ultimateSkillDamage, 470);
+assert.strictEqual(lv5AbyssKaiser.character.attack, 176);
+assert.strictEqual(lv5AbyssKaiser.character.specialSkillDamage, 470);
+assert.strictEqual(lv5AbyssKaiser.character.ultimateSkillDamage, 658);
 
 const judgmentTarget = createInitialFighter(KAISER, false);
 const judgmentDamage = calculateNormalAttackDamage({
