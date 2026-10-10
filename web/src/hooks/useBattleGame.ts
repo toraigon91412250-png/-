@@ -517,6 +517,15 @@ export function useBattleGame(
 
     if (playerAppliedBleed && equippedImprints.includes('BLOOD_TEAR')) {
       const burstDamage = getBloodTearBurstDamage(bleedDamage, def.defaultDuration);
+      // Consume any previous Bleed first: Blood Tear must never leave a stale
+      // status behind when it converts the newly applied Bleed into burst damage.
+      updateState(prev => {
+        const target = defenderIsPlayer ? prev.player : prev.enemy;
+        const remainingAilments = target.activeAilments.filter(ailment => ailment.type !== 'BLEED');
+        return defenderIsPlayer
+          ? { ...prev, player: { ...prev.player, activeAilments: remainingAilments } }
+          : { ...prev, enemy: { ...prev.enemy, activeAilments: remainingAilments } };
+      });
       addLog(
         `🩸【刻印発動：血裂】出血を付与した瞬間に凝縮！ ${bleedDamage}×${def.defaultDuration}×1.5＝${burstDamage}ダメージ。出血状態は残らない。`,
         'PASSIVE_TRIGGER',
