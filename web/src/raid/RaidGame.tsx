@@ -483,17 +483,17 @@ export const RaidGame: React.FC<RaidGameProps> = ({ onBack, onRaidRewardProgress
               <div className="raid-v1-raid-reward-icon"><Gem size={24} /></div>
               <div className="raid-v1-raid-reward-copy">
                 <span>RAID EXCLUSIVE DROP</span>
-                <strong>{raidRewardNotice === 'CLAIMED' ? '深淵核片 ×1' : raidRewardNotice === 'ALREADY_CLAIMED' ? '報酬受取済み' : raidRewardNotice === 'SAVE_FAILED' ? '報酬の保存に失敗' : '報酬を確定中...'}</strong>
+                <strong>{raidRewardNotice === 'CLAIMED' ? '深淵核片 ×1 ＋ 刻印ガチャチケット ×1' : raidRewardNotice === 'ALREADY_CLAIMED' ? '報酬受取済み' : raidRewardNotice === 'SAVE_FAILED' ? '報酬の保存に失敗' : '報酬を確定中...'}</strong>
                 <p>
                   {raidRewardNotice === 'CLAIMED'
-                    ? '本編メニューで使用すると、ステータス配分上限が永続的に +2P。'
+                    ? '深淵核片はステータス配分 +2P に使用。刻印ガチャチケットは刻印1回分。'
                     : raidRewardNotice === 'SAVE_FAILED'
                       ? '保存できなかったため付与されていません。ブラウザの保存領域を確認して再挑戦してください。'
                       : raidRewardNotice === 'ALREADY_CLAIMED'
                         ? 'この戦闘の報酬はすでに受け取っています。'
                         : '勝利報酬を保存しています。'}
                 </p>
-                <small>現在の所持数: {raidRewardProgress.coreFragments}</small>
+                <small>現在の所持数: 深淵核片 {raidRewardProgress.coreFragments} ／ 刻印ガチャチケット {raidRewardProgress.imprintTickets}</small>
               </div>
             </section>
           )}
