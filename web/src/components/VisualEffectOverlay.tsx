@@ -1049,6 +1049,11 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
             </div>
           )}
 
+          {effect.effectType === 'NORMAL_HIT' && effect.skillName === '血裂' && (
+            <div style={{ backgroundColor: 'rgba(183,28,28,0.92)', border: '1.5px solid #FF8A80', borderRadius: '6px', padding: '2px 8px', fontSize: '11px', fontWeight: 900, color: '#FFFFFF', marginBottom: '4px' }}>
+              🩸 血裂発動
+            </div>
+          )}
           {effect.statusAilmentName && effect.effectType !== 'BLEED_TICK' && (
             <div
               style={{
@@ -1063,7 +1068,9 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
                 boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
               }}
             >
-              {effect.statusAilmentName === '出血' ? '🩸 出血付与！ (3T / 速度-20 / 防御-20)' : '🌀 重圧付与！ (速度/攻撃-25)'}
+              {effect.statusAilmentName === '出血'
+                ? `🩸 出血付与！ (${effect.statusAilmentDuration ?? 3}T / 速度-20 / 防御-20)`
+                : `🌀 重圧付与！ (${effect.statusAilmentDuration ?? 2}T / 速度/攻撃-25)`}
             </div>
           )}
 
