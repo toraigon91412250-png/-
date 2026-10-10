@@ -418,7 +418,7 @@ export function useBattleGame(
 
     yinYangDefensePendingRef.current = false;
     addLog(
-      `☯️【陰陽転化・防御】CPUの直接攻撃を50%軽減！ ${Math.floor(damage)} → ${result.damage} ダメージ。`,
+      `☯️【陰陽転化・防御】CPUの直撃を半減！ ${Math.floor(damage)} → ${result.damage}。`,
       'PASSIVE_TRIGGER',
       turn,
     );
@@ -690,7 +690,7 @@ export function useBattleGame(
         }));
         soundManager.playDefend();
         addLog(
-          `☯️【陰陽転化】陰の守りを展開。今ターンのCPUからの直接ダメージを50%軽減し、次の攻撃系行動を+${attackBonus}強化する！`,
+          `☯️【陰陽転化】陰の守りを展開。今ターンはCPUの直撃を半減し、次の攻撃系行動を+${attackBonus}強化する！`,
           'PASSIVE_TRIGGER',
           turn,
         );
