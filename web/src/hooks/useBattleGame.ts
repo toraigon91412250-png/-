@@ -96,7 +96,9 @@ export function useBattleGame(
     const initialCharacters = createBattleCharacters(initialPlayerChar, initialEnemyChar, normalizedInitialConfig);
     const initialPlayer = createInitialFighter(initialCharacters.player, true);
     const initialEnemy = createInitialFighter(initialCharacters.enemy, false, normalizedInitialConfig.kaiserLevel);
-    const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty);
+    const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty, {
+      kaiserLevel: normalizedInitialConfig.kaiserLevel,
+    });
 
     return {
     turnNumber: 1,
@@ -447,7 +449,9 @@ export function useBattleGame(
     nextLogId.current = 1;
     cancelPendingBattleWork();
 
-    const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
+    const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty, {
+      kaiserLevel: nextConfig.kaiserLevel,
+    });
 
     updateState(prev => ({
       ...prev,
@@ -2073,11 +2077,18 @@ export function useBattleGame(
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
       };
-      const nextEnemy = {
+      const enemyBeforeArmorTick = {
         ...stateRef.current.enemy,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.enemy.specialCooldownRemaining - 1),
       };
+      const nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      if (
+        (enemyBeforeArmorTick.kaiserArmorBrokenTurns ?? 0) > 0 &&
+        (nextEnemy.kaiserArmorBrokenTurns ?? 0) === 0
+      ) {
+        addLog('🛡️【装甲破壊終了】カイザーが立て直した。ただし装甲ゲージは再生成されない。', 'SYSTEM', currentTurn);
+      }
       const aiEnemy = applyDynamicAbilityModifiers(nextEnemy, stateRef.current.battleConfig, currentTurn + 1);
       const aiPlayer = applyDynamicAbilityModifiers(nextPlayer, stateRef.current.battleConfig, currentTurn + 1);
       const nextCpuIntent = CpuAi.decideAction(
@@ -2088,6 +2099,7 @@ export function useBattleGame(
           recentPlayerActions: recentPlayerActionsRef.current,
           recentCpuActions: recentCpuActionsRef.current,
           turnNumber: currentTurn + 1,
+          kaiserLevel: stateRef.current.battleConfig.kaiserLevel,
         }
       );
 
