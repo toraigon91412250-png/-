@@ -7,6 +7,7 @@ import { BattleResultModal } from './BattleResultModal';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
+import { WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE, WIND_GUARD_MAX_REDUCTION, WIND_GUARD_REDUCTION_PER_CHARGE } from '../utils/imprintSystem';
 
 interface BattleScreenProps {
   state: BattleUiState;
@@ -187,6 +188,28 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
               : state.yinYangActivatedTurn != null
                 ? `最終発動：第${state.yinYangActivatedTurn}ターン`
                 : '未使用'}
+        </div>
+      )}
+      {state.battleConfig.imprints?.includes('WIND_GUARD') && (
+        <div
+          role="status"
+          aria-label="風守りの状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(129,230,223,0.38)',
+            background: 'rgba(38,166,154,0.10)',
+            color: '#9FE9DF',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          🪶 風守り：
+          {state.windGuardResult
+            ? `第${state.windGuardResult.turn}ターン発動 · 被ダメージ-${state.windGuardResult.reducedBy} · 自動反撃${state.windGuardResult.counterDamage}`
+            : `蓄積${state.player.featherChargeCount} · 被ダメージ${Math.round(Math.min(WIND_GUARD_MAX_REDUCTION, state.player.featherChargeCount * WIND_GUARD_REDUCTION_PER_CHARGE) * 100)}%軽減 · 反撃${state.player.featherChargeCount * WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE}`}
         </div>
       )}
       <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
