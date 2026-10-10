@@ -112,6 +112,7 @@ export function useBattleGame(
     yinYangDefenseResult: null,
     windGuardResult: null,
     bloodMediaHealResult: null,
+    costlyShotResult: null,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -415,6 +416,7 @@ export function useBattleGame(
       yinYangDefenseResult: null,
       windGuardResult: null,
     bloodMediaHealResult: null,
+    costlyShotResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -861,6 +863,7 @@ export function useBattleGame(
             currentHp: hpAfterCost,
             specialCooldownRemaining: 0,
           },
+          costlyShotResult: { turn, hpSpent: COSTLY_SHOT_HP_COST },
           visualEffect: {
             targetIsPlayer: true,
             damage: 0,
@@ -1877,6 +1880,7 @@ export function useBattleGame(
       yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
       windGuardResult: null,
     bloodMediaHealResult: null,
+    costlyShotResult: null,
     }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
