@@ -129,7 +129,7 @@ test('raid imprint gacha spends one ticket per new imprint and excludes owned im
 
   const drawButton = page.getByRole('button', { name: '刻印を1回引く' });
   await expect(drawButton).toBeDisabled();
-  await expect(drawButton).toContainText('すべての刻印を獲得済み');
+  await expect(drawButton).toContainText('チケットがありません');
   expect(pageErrors, 'Imprint gacha navigation and draws must not raise uncaught errors.').toEqual([]);
 });
 
