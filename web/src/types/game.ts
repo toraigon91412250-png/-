@@ -1,4 +1,6 @@
 export type BattleAction = 'ATTACK' | 'EVADE' | 'BUFF' | 'SPECIAL' | 'ULTIMATE';
+/** Player-only command granted by the Yin-Yang Conversion imprint. */
+export type PlayerBattleAction = BattleAction | 'YIN_YANG';
 
 export const IRENA_FEATHER_CHARGE_RANGES: ReadonlyArray<readonly [number, number]> = [
   [60, 80],
@@ -201,7 +203,7 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
 
-export type ImprintId = 'FORESIGHT';
+export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG';
 
 export interface ImprintProgress {
   unlockedIds: ImprintId[];
@@ -265,6 +267,9 @@ export interface BattleUiState {
   cpuIntent: BattleAction;
   /** Once-per-battle imprint activations; reset on every new battle. */
   usedImprints: ImprintId[];
+  /** Last Yin-Yang action and its confirmed one-hit mitigation, retained for readable battle feedback. */
+  yinYangActivatedTurn?: number | null;
+  yinYangDefenseResult?: { turn: number; reducedBy: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;

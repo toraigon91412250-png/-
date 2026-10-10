@@ -86,6 +86,44 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
 });
 
+test('Yin-Yang Conversion protects the current turn, preserves pressure, and advances the round', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_imprint_progress', JSON.stringify({
+      unlockedIds: ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG'],
+      equippedIds: ['CHANT_HUNT', 'YIN_YANG'],
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
+  expect(intentLabel).toBe('特殊技');
+  await expect(page.getByRole('button', { name: '陰陽転化' })).toBeEnabled();
+  await page.getByRole('button', { name: '陰陽転化' }).click();
+
+  // This checks the state after resolution, regardless of whether CPU or player acted first.
+  await expect(page.getByRole('button', { name: '強化中の詳細を表示' })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('status', { name: '陰陽転化の状態' })).toContainText('防御成功', { timeout: 15_000 });
+  // Kaiser’s special must still apply Pressure even though its direct damage is reduced.
+  await expect(page.getByRole('button', { name: /重圧 2ターンの詳細を表示/ })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  expect(pageErrors, 'Yin-Yang must not break the status ailment or turn progression.').toEqual([]);
+});
+
 test('raid-exclusive core fragment can be used in the main game for permanent stat points', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));

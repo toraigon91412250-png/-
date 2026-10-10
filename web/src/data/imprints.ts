@@ -24,6 +24,26 @@ export const IMPRINT_DEFINITIONS: readonly ImprintDefinition[] = [
     effect: 'その予告どおりの攻撃に対する回避を、戦闘中最初の1回だけ確定成功にする。',
     usageLimit: '1戦につき1回。戦闘を再開すると再び使用可能。',
   },
+  {
+    id: 'CHANT_HUNT',
+    name: '詠唱狩り',
+    symbol: '⛓️',
+    category: '行動妨害',
+    description: '敵が力を高めようとする瞬間を狙い、強化行動を断ち切る。',
+    trigger: '装備中、CPUが「強化」を選んだときに自動発動。',
+    effect: 'CPUの強化効果を無効化する。行動自体は解決済みとして扱い、ターン進行は止めない。',
+    usageLimit: '戦闘中、CPUの強化行動ごとに発動。',
+  },
+  {
+    id: 'YIN_YANG',
+    name: '陰陽転化',
+    symbol: '☯️',
+    category: '攻防転換',
+    description: '陰の守りで敵の一撃を受け流し、陽の力を次の攻撃へ転化する。',
+    trigger: '戦闘中に専用行動「陰陽転化」を選択。',
+    effect: 'そのターンのCPUから受ける直接ダメージを50%軽減し、次の攻撃系行動に+125ダメージを付与する。',
+    usageLimit: '防御効果はそのターンのみ。攻撃強化は次の攻撃系行動で消費し、重複しない。',
+  },
 ] as const;
 
 export function isImprintId(value: unknown): value is ImprintId {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BattleAction, BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId } from '../types/game';
+import { BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
 import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
@@ -16,7 +16,7 @@ interface ActionDockProps {
   selectedSpecialSkill: IrenaSpecialSkillId;
   onSelectedSpecialSkillChange: (skillId: IrenaSpecialSkillId) => void;
   onAction: (
-    action: BattleAction,
+    action: PlayerBattleAction,
     ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE',
     specialSkillId?: IrenaSpecialSkillId,
   ) => void;
@@ -56,6 +56,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
+  const hasYinYangImprint = battleConfig.imprints?.includes('YIN_YANG') ?? false;
   const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
   const isSpecialReady = player.specialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
   const isUltimateReady = player.ultimateGauge >= 3;
@@ -413,6 +414,40 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           </span>
         </button>
       </div>
+
+      {hasYinYangImprint && (
+        <div style={{ marginBottom: '6px' }}>
+          <button
+            type="button"
+            aria-label="陰陽転化"
+            onClick={() => onAction('YIN_YANG')}
+            disabled={!isEnabled || isChargingSuperFallenShot}
+            style={{
+              width: '100%',
+              minHeight: '48px',
+              padding: '6px 10px',
+              borderRadius: '10px',
+              border: isEnabled && !isChargingSuperFallenShot ? '1px solid #D4B05B' : '1px solid #3D3940',
+              background: isEnabled && !isChargingSuperFallenShot
+                ? 'linear-gradient(105deg, rgba(43,43,62,0.98), rgba(54,43,24,0.98))'
+                : 'rgba(26,30,40,0.92)',
+              color: isEnabled && !isChargingSuperFallenShot ? '#FFF0C2' : '#667085',
+              cursor: isEnabled && !isChargingSuperFallenShot ? 'pointer' : 'not-allowed',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '2px',
+              fontFamily: 'inherit',
+            }}
+          >
+            <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>☯️ 陰陽転化</span>
+            <span style={{ fontSize: '10px', fontWeight: 700, color: 'inherit' }}>
+              今ターン被ダメージ50%軽減 · 次の攻撃+{GAME_BALANCE.BUFF_DAMAGE_BONUS}
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Row 2: Prominent 必殺技 Command */}
       {isIrenaUltimate && hasUnlockedOmnipotence && (
