@@ -13,11 +13,14 @@ import { BattleSetupScreen } from './components/BattleSetupScreen';
 import { ImprintScreen } from './components/ImprintScreen';
 import { ImprintGachaScreen } from './components/ImprintGachaScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
+import { GachaHubScreen } from './components/GachaHubScreen';
+import { BottomNavigation } from './components/BottomNavigation';
+import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadAllGameImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -294,7 +297,7 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-      {screen !== 'BATTLE' && (
+      {screen === 'SELECT' && (
         <button
           type="button"
           onClick={handleOpenDeveloperTools}
@@ -324,19 +327,24 @@ export const App: React.FC = () => {
       {screen === 'SELECT' ? (
         <CharacterSelectScreen
           overallStats={overallStats}
-          selectedDifficulty={difficulty}
-          onSelectDifficulty={setDifficulty}
           onStartBattle={() => handleOpenBattleSetup()}
-          onOpenRaidPrototype={() => setScreen('RAID_PROTOTYPE')}
-          onOpenRecruitment={() => setScreen('RECRUITMENT')}
-          onOpenImprints={handleOpenImprints}
-          onOpenImprintGacha={handleOpenImprintGacha}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
           raidItemMessage={raidItemMessage}
           onUseRaidCoreFragment={handleUseRaidCoreFragment}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
+        />
+      ) : screen === 'GACHA_HUB' ? (
+        <GachaHubScreen
+          imprintTickets={raidRewardProgress.imprintTickets}
+          unlockedImprints={imprintProgress.unlockedIds.length}
+          onOpenRecruitment={() => {
+            refreshProgress();
+            setScreen('RECRUITMENT');
+          }}
+          onOpenImprintGacha={handleOpenImprintGacha}
+          onOpenImprints={handleOpenImprints}
         />
       ) : screen === 'IMPRINTS' ? (
         <ImprintScreen
@@ -347,7 +355,7 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintMessage(null);
-            setScreen('SELECT');
+            setScreen('GACHA_HUB');
           }}
         />
       ) : screen === 'IMPRINT_GACHA' ? (
@@ -359,7 +367,7 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintGachaMessage(null);
-            setScreen('SELECT');
+            setScreen('GACHA_HUB');
           }}
         />
       ) : screen === 'BATTLE_SETUP' ? (
@@ -367,6 +375,8 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           availableStatPoints={availableStatPoints}
           initialConfig={battleSetup}
+          selectedDifficulty={difficulty}
+          onSelectDifficulty={setDifficulty}
           onBack={() => setScreen('SELECT')}
           onStartBattle={handleStartBattle}
         />
@@ -393,7 +403,7 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
           onUpgradeAbility={handleUpgradeAbility}
-          onBack={() => setScreen('SELECT')}
+          onBack={() => setScreen('GACHA_HUB')}
         />
       ) : (
         <DeveloperToolsScreen
@@ -418,6 +428,24 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => setScreen('RECRUITMENT')}
           onOpenBattleSetup={handleOpenBattleSetup}
           onReset={handleDeveloperReset}
+        />
+      )}
+      {(screen === 'SELECT' || screen === 'GACHA_HUB') && (
+        <BottomNavigation
+          active={screen === 'SELECT' ? 'HOME' : 'GACHA'}
+          onNavigate={(tab: MainTab) => {
+            if (tab === 'HOME') {
+              setScreen('SELECT');
+            } else if (tab === 'GACHA') {
+              refreshProgress();
+              setScreen('GACHA_HUB');
+            } else if (tab === 'BATTLE') {
+              handleOpenBattleSetup();
+            } else {
+              refreshProgress();
+              setScreen('RAID_PROTOTYPE');
+            }
+          }}
         />
       )}
     </div>
