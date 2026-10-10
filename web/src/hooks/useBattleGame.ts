@@ -154,6 +154,8 @@ export function useBattleGame(
   const recentCpuActionsRef = useRef<BattleAction[]>([]);
   // Track the chosen command explicitly so combat effects do not depend only on a React state render timing.
   const playerEvadeSelectedRef = useRef(false);
+  // Snapshot Foresight eligibility when the player commits to evade against the displayed CPU telegraph.
+  const foresightTriggerPendingRef = useRef(false);
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
@@ -329,6 +331,7 @@ export function useBattleGame(
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
     playerEvadeSelectedRef.current = false;
+    foresightTriggerPendingRef.current = false;
     masteryClaimedRef.current = new Set();
     battleMasteryRewardRef.current = 0;
     judgmentMarksRef.current = 0;
@@ -432,17 +435,18 @@ export function useBattleGame(
     turn: number,
   ): boolean => {
     const current = stateRef.current;
-    const triggered = shouldTriggerForesight({
-      equippedImprints: current.battleConfig.imprints,
-      usedImprints: current.usedImprints,
-      attackerIsPlayer,
-      targetIsPlayer: target.isPlayer,
-      targetIsEvading: target.isEvading || (target.isPlayer && playerEvadeSelectedRef.current),
-      incomingAction,
-      predictedAction: current.cpuIntent,
-    });
+    // Eligibility was snapshotted from the telegraph and the player's committed action.
+    // Do not re-read cpuIntent here: state updates during turn execution must not invalidate that decision.
+    const triggered = Boolean(
+      !attackerIsPlayer &&
+      target.isPlayer &&
+      foresightTriggerPendingRef.current &&
+      !current.usedImprints.includes('FORESIGHT') &&
+      (incomingAction === 'SPECIAL' || incomingAction === 'ULTIMATE')
+    );
     if (!triggered) return false;
 
+    foresightTriggerPendingRef.current = false;
     updateState(prev => prev.usedImprints.includes('FORESIGHT')
       ? prev
       : { ...prev, usedImprints: [...prev.usedImprints, 'FORESIGHT'] });
@@ -1553,6 +1557,15 @@ export function useBattleGame(
     // The CPU intent was selected at the end of the previous round and is now the
     // telegraphed action the player has been allowed to react to.
     const cpuAction = stateRef.current.cpuIntent;
+    foresightTriggerPendingRef.current = shouldTriggerForesight({
+      equippedImprints: stateRef.current.battleConfig.imprints,
+      usedImprints: stateRef.current.usedImprints,
+      attackerIsPlayer: false,
+      targetIsPlayer: true,
+      targetIsEvading: playerAction === 'EVADE',
+      incomingAction: cpuAction,
+      predictedAction: cpuAction,
+    });
 
     addLog(`--- 第${currentTurn}ターン 開始 ---`, 'SYSTEM', currentTurn);
 
