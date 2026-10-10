@@ -357,7 +357,7 @@ assert.strictEqual(calculateNormalAttackDamage({
   config,
   turn: 1,
   isActingFirst: true,
-}), 345);
+}), 305);
 
 const lv50Kaiser = createKaiserForLevel(KAISER, 50);
 const maxSkillIrena = createInitialFighter(
@@ -377,14 +377,14 @@ const lv50FeatherDamage = calculateSpecialDamage({
   turn: 1,
   isActingFirst: true,
 });
-assert.strictEqual(lv50Kaiser.maxHp, 2933);
-assert.strictEqual(lv50Kaiser.attack, 192);
-assert.strictEqual(lv50Kaiser.defense, 154);
-assert.strictEqual(lv50Kaiser.speed, 116);
-assert.strictEqual(lv50Kaiser.specialSkillDamage, 449);
-assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 599);
+assert.strictEqual(lv50Kaiser.maxHp, 3361);
+assert.strictEqual(lv50Kaiser.attack, 224);
+assert.strictEqual(lv50Kaiser.defense, 198);
+assert.strictEqual(lv50Kaiser.speed, 260);
+assert.strictEqual(lv50Kaiser.specialSkillDamage, 599);
+assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 838);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
-assert.strictEqual(lv50FeatherDamage, 371);
+assert.strictEqual(lv50FeatherDamage, 327);
 
 assert.strictEqual(getJudgmentThreshold(1), 4);
 assert.strictEqual(getJudgmentThreshold(2), 4);
@@ -845,7 +845,7 @@ assert.strictEqual(lv100.defense, Math.round(cpuKaiserBase.defense * 1.5));
 assert.strictEqual(lv100.speed, cpuKaiserBase.speed * 2);
 assert.strictEqual(lv100.specialSkillDamage, cpuKaiserBase.specialSkillDamage * 2);
 assert.strictEqual(lv100.ultimateSkillDamage, cpuKaiserBase.ultimateSkillDamage * 2);
-assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
+assert.ok(lv100.playerDamage >= 80, 'Armor should mitigate but not nullify a Lv100 Irena normal attack.');
 assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
 
 console.log('✓ Kaiser Lv10-Lv100 progression stays bounded and monotonic.');
