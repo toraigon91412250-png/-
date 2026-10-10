@@ -1,11 +1,62 @@
 import type { BattleAction, ImprintId, PlayerBattleAction } from '../types/game';
 import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
+export const BLOOD_TEAR_DAMAGE_MULTIPLIER = 1.5;
+export const BLOOD_MEDIA_EXTRA_BLEED_TURNS = 1;
+export const WIND_GUARD_REDUCTION_PER_CHARGE = 0.05;
+export const WIND_GUARD_MAX_REDUCTION = 0.4;
+export const WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE = 20;
+export const COSTLY_SHOT_HP_COST = 200;
+
+/** The two blood imprints represent mutually exclusive ways to use Bleed. */
+export function getOpposingBloodImprint(id: ImprintId): ImprintId | null {
+  if (id === 'BLOOD_TEAR') return 'BLOOD_MEDIA';
+  if (id === 'BLOOD_MEDIA') return 'BLOOD_TEAR';
+  return null;
+}
+
+export function getBloodTearBurstDamage(dotDamage: number, remainingTurns: number): number {
+  const safeDotDamage = Number.isFinite(dotDamage) ? Math.max(0, Math.floor(dotDamage)) : 0;
+  const safeTurns = Number.isFinite(remainingTurns) ? Math.max(0, Math.floor(remainingTurns)) : 0;
+  return Math.floor(safeDotDamage * safeTurns * BLOOD_TEAR_DAMAGE_MULTIPLIER);
+}
+
+export interface WindGuardDamageResult {
+  damage: number;
+  reducedBy: number;
+  counterDamage: number;
+  applied: boolean;
+}
+
+/** Mitigation and the counter scale from accumulated feather-charge count, with a hard mitigation cap. */
+export function resolveWindGuardDamage(
+  damage: number,
+  featherChargeCount: number,
+  enabled: boolean,
+): WindGuardDamageResult {
+  const safeDamage = Number.isFinite(damage) ? Math.max(0, Math.floor(damage)) : 0;
+  const safeCount = Number.isFinite(featherChargeCount) ? Math.max(0, Math.floor(featherChargeCount)) : 0;
+  if (!enabled || safeDamage <= 0 || safeCount <= 0) {
+    return { damage: safeDamage, reducedBy: 0, counterDamage: 0, applied: false };
+  }
+
+  const reduction = Math.min(WIND_GUARD_MAX_REDUCTION, safeCount * WIND_GUARD_REDUCTION_PER_CHARGE);
+  const reducedDamage = Math.floor(safeDamage * (1 - reduction));
+  return {
+    damage: reducedDamage,
+    reducedBy: safeDamage - reducedDamage,
+    counterDamage: safeCount * WIND_GUARD_COUNTER_DAMAGE_PER_CHARGE,
+    applied: true,
+  };
+}
+
 export function normalizeEquippedImprints(value: unknown): ImprintId[] {
   if (!Array.isArray(value)) return [];
   const result: ImprintId[] = [];
   for (const candidate of value) {
     if (!isImprintId(candidate) || result.includes(candidate)) continue;
+    const opposingBloodImprint = getOpposingBloodImprint(candidate);
+    if (opposingBloodImprint && result.includes(opposingBloodImprint)) continue;
     result.push(candidate);
     if (result.length >= MAX_EQUIPPED_IMPRINTS) break;
   }
