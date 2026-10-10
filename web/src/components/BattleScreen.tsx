@@ -144,6 +144,25 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
         </div>
       </div>
 
+      {state.battleConfig.imprints?.includes('FORESIGHT') && (
+        <div
+          role="status"
+          aria-label="見切りの状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid ' + (state.usedImprints.includes('FORESIGHT') ? 'rgba(120,144,156,0.35)' : 'rgba(129,230,223,0.38)'),
+            background: state.usedImprints.includes('FORESIGHT') ? 'rgba(120,144,156,0.08)' : 'rgba(38,166,154,0.10)',
+            color: state.usedImprints.includes('FORESIGHT') ? '#8291A3' : '#9FE9DF',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          👁️ 見切り：{state.usedImprints.includes('FORESIGHT') ? '発動済み' : '未使用'} · 特殊技／必殺技の予告中に回避すると確定成功
+        </div>
+      )}
       <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
         {intentMeta.hint}
       </div>

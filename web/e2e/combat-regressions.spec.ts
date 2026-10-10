@@ -29,6 +29,50 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+test('imprint loadout can be equipped, unequipped, persisted, and carried into battle', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '刻印を管理' }).click();
+  await expect(page.getByRole('heading', { name: '刻印管理' })).toBeVisible();
+  await expect(page.getByLabel('刻印枠1：空き')).toBeVisible();
+  await expect(page.getByLabel('見切りを装備')).toBeEnabled();
+
+  await page.getByLabel('見切りを装備').click();
+  await expect(page.getByLabel('刻印枠1：見切り')).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('刻印の装備を保存しました。');
+  await expect.poll(() => page.evaluate(() => {
+    const progress = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
+    return { unlockedIds: progress.unlockedIds, equippedIds: progress.equippedIds };
+  })).toEqual({ unlockedIds: ['FORESIGHT'], equippedIds: ['FORESIGHT'] });
+
+  await page.getByRole('button', { name: '本編に戻る' }).click();
+  await page.getByRole('button', { name: '刻印を管理' }).click();
+  await expect(page.getByLabel('刻印枠1：見切り')).toBeVisible();
+  await page.getByLabel('見切りを解除').click();
+  await expect(page.getByLabel('刻印枠1：空き')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const progress = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
+    return progress.equippedIds;
+  })).toEqual([]);
+
+  await page.getByLabel('見切りを装備').click();
+  await page.getByRole('button', { name: '本編に戻る' }).click();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeVisible();
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('未使用', { timeout: 20_000 });
+  expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
+});
+
 test('raid-exclusive core fragment can be used in the main game for permanent stat points', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));

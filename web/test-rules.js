@@ -31,7 +31,9 @@ const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint } = await import('./src/utils/storage.ts');
+const { MAX_EQUIPPED_IMPRINTS } = await import('./src/data/imprints.ts');
+const { normalizeEquippedImprints, shouldTriggerForesight } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -424,6 +426,47 @@ if (rewardBeforeRaidRewardTest === undefined) storageValues.delete('duel_arena_r
 else storageValues.set('duel_arena_raid_reward_progress', rewardBeforeRaidRewardTest);
 assert.strictEqual(loadStatPoints(), 14, 'Raid reward unit tests must restore the pre-test main progression.');
 console.log('✓ Raid-exclusive item claims are idempotent and redeem into persistent main-game stat points.');
+
+const imprintSaveBeforeTest = storageValues.get(IMPRINT_PROGRESS_STORAGE_KEY);
+storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify({ unlockedIds: [], equippedIds: [] }));
+assert.deepStrictEqual(loadImprintProgress(), { unlockedIds: [], equippedIds: [] });
+const unlockedForesight = unlockImprint('FORESIGHT');
+assert.deepStrictEqual(unlockedForesight?.unlockedIds, ['FORESIGHT'], 'A known imprint can be unlocked.');
+assert.deepStrictEqual(loadImprintProgress().unlockedIds, ['FORESIGHT'], 'Unlock state must persist.');
+const equippedForesight = equipImprint('FORESIGHT');
+assert.deepStrictEqual(equippedForesight?.equippedIds, ['FORESIGHT'], 'An unlocked imprint can be equipped.');
+assert.deepStrictEqual(loadImprintProgress().equippedIds, ['FORESIGHT'], 'Equipment must persist.');
+assert.strictEqual(equipImprint('FORESIGHT')?.equippedIds.length, 1, 'Duplicate equipment must not duplicate a slot.');
+assert.deepStrictEqual(unequipImprint('FORESIGHT')?.equippedIds, [], 'An equipped imprint can be removed and saved.');
+assert.strictEqual(equipImprint('FORESIGHT')?.equippedIds.includes('FORESIGHT'), true, 'Re-equipping after removal must work.');
+assert.strictEqual(unlockImprint('FORESIGHT')?.unlockedIds.length, 1, 'Duplicate acquisition must not duplicate ownership.');
+assert.strictEqual(MAX_EQUIPPED_IMPRINTS, 3, 'The imprint loadout has three slots.');
+assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'FORESIGHT', 'UNKNOWN', null]), ['FORESIGHT']);
+
+const eligibleForesight = {
+  equippedImprints: ['FORESIGHT'],
+  usedImprints: [],
+  attackerIsPlayer: false,
+  targetIsPlayer: true,
+  targetIsEvading: true,
+  incomingAction: 'SPECIAL',
+  predictedAction: 'SPECIAL',
+};
+assert.strictEqual(shouldTriggerForesight(eligibleForesight), true, 'Foresight triggers against a forecast special.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, incomingAction: 'ULTIMATE', predictedAction: 'ULTIMATE' }), true, 'Foresight triggers against a forecast ultimate.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, targetIsEvading: false }), false, 'Foresight requires choosing evade.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, usedImprints: ['FORESIGHT'] }), false, 'Foresight is once per battle.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, equippedImprints: [] }), false, 'An unequipped imprint cannot trigger.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, attackerIsPlayer: true }), false, 'Foresight only counters the CPU.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, targetIsPlayer: false }), false, 'Foresight cannot trigger against a CPU target.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, incomingAction: 'ATTACK', predictedAction: 'ATTACK' }), false, 'Normal attacks are outside the effect.');
+assert.strictEqual(shouldTriggerForesight({ ...eligibleForesight, incomingAction: 'SPECIAL', predictedAction: 'ULTIMATE' }), false, 'The move must match the announced prediction.');
+
+if (imprintSaveBeforeTest === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
+else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, imprintSaveBeforeTest);
+console.log('✓ Imprint persistence and Foresight trigger gates are consistent.');
+
+
 
 for (let i = 0; i < 8; i += 1) {
   storageValues.set('duel_arena_recruitment_progress', JSON.stringify({ tickets: 10, totalPulls: i * 10, collectedIds: [], lastResults: [] }));

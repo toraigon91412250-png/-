@@ -24,6 +24,7 @@ import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateD
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
+import { normalizeEquippedImprints, shouldTriggerForesight } from '../utils/imprintSystem';
 import {
   applyDynamicAbilityModifiers,
   createBattleCharacters,
@@ -60,6 +61,7 @@ export function useBattleGame(
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
+    imprints: normalizeEquippedImprints(initialBattleConfig.imprints),
     statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
     statAllocation: normalizeStatAllocation(
       initialBattleConfig.statAllocation,
@@ -93,6 +95,7 @@ export function useBattleGame(
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
+    usedImprints: [],
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -308,6 +311,9 @@ export function useBattleGame(
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
       ),
+      imprints: normalizeEquippedImprints(
+        battleConfigOverride?.imprints ?? stateRef.current.battleConfig.imprints,
+      ),
       statPointTotal: nextStatPointTotal,
       statAllocation: normalizeStatAllocation(
         battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
@@ -352,6 +358,7 @@ export function useBattleGame(
       winnerIsPlayer: null,
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
+      usedImprints: [],
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -412,6 +419,36 @@ export function useBattleGame(
     const defenderName = defenderIsPlayer ? stateRef.current.player.character.name : stateRef.current.enemy.character.name;
     const displayName = ailmentType === 'BLEED' ? '出血' : '重圧';
     addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${def.defaultDuration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
+  };
+
+
+  const tryTriggerForesight = (
+    attackerIsPlayer: boolean,
+    target: BattleFighter,
+    incomingAction: BattleAction,
+    turn: number,
+  ): boolean => {
+    const current = stateRef.current;
+    const triggered = shouldTriggerForesight({
+      equippedImprints: current.battleConfig.imprints,
+      usedImprints: current.usedImprints,
+      attackerIsPlayer,
+      targetIsPlayer: target.isPlayer,
+      targetIsEvading: target.isEvading,
+      incomingAction,
+      predictedAction: current.cpuIntent,
+    });
+    if (!triggered) return false;
+
+    updateState(prev => prev.usedImprints.includes('FORESIGHT')
+      ? prev
+      : { ...prev, usedImprints: [...prev.usedImprints, 'FORESIGHT'] });
+    addLog(
+      '👁️【刻印発動：見切り】特殊技／必殺技の予告を読み切った！ この回避は確定成功。',
+      'PASSIVE_TRIGGER',
+      turn,
+    );
+    return true;
   };
 
   const executeFighterTurn = async (
@@ -904,7 +941,8 @@ export function useBattleGame(
 
           let isEvaded = false;
           if (target.isEvading) {
-            isEvaded = Math.random() < target.character.evasionRate;
+            const foresightTriggered = tryTriggerForesight(isActorPlayer, target, 'SPECIAL', turn);
+            isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
             if (isEvaded) {
               soundManager.playDefend();
               addLog(
@@ -1069,7 +1107,8 @@ export function useBattleGame(
 
         // Check opponent evasion
         if (target.isEvading) {
-          const isEvaded = Math.random() < target.character.evasionRate;
+          const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
+          const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
             soundManager.playDefend();
             addLog(
@@ -1327,7 +1366,8 @@ export function useBattleGame(
 
         // Check opponent evasion
         if (target.isEvading) {
-          const isEvaded = Math.random() < target.character.evasionRate;
+          const foresightTriggered = tryTriggerForesight(isActorPlayer, target, action, turn);
+          const isEvaded = foresightTriggered || Math.random() < target.character.evasionRate;
           if (isEvaded) {
             soundManager.playDefend();
             addLog(

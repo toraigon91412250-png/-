@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CharacterDef, CpuDifficulty, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
-import { Swords, Trophy, Play, CheckCircle, Sparkles, Gem } from 'lucide-react';
+import { Swords, Trophy, Play, CheckCircle, Sparkles, Gem, Eye } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
 
 interface CharacterSelectScreenProps {
@@ -12,6 +12,7 @@ interface CharacterSelectScreenProps {
   onStartBattle: () => void;
   onOpenRaidPrototype: () => void;
   onOpenRecruitment: () => void;
+  onOpenImprints: () => void;
   skillProgress: IrenaSkillProgress;
   raidRewardProgress: RaidRewardProgress;
   raidItemMessage: string | null;
@@ -27,6 +28,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onStartBattle,
   onOpenRaidPrototype,
   onOpenRecruitment,
+  onOpenImprints,
   skillProgress,
   raidRewardProgress,
   raidItemMessage,
@@ -386,6 +388,34 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           <Sparkles size={19} color="#FFE082" />
           <span>黒翼召喚</span>
           <span style={{ fontSize: '9px', color: '#C5B8D9', fontWeight: 800 }}>SUMMON</span>
+        </button>
+
+        {/* Independent 3-slot imprint loadout; acquisition is connected in a later summon phase. */}
+        <button
+          type="button"
+          onClick={onOpenImprints}
+          aria-label="刻印を管理"
+          style={{
+            width: '100%',
+            height: '50px',
+            marginBottom: '8px',
+            background: 'linear-gradient(135deg, #102C3C 0%, #142334 55%, #202044 100%)',
+            color: '#E9FFFF',
+            border: '1.5px solid #4BA8B4',
+            borderRadius: '14px',
+            fontSize: '16px',
+            fontWeight: 950,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            boxShadow: '0 4px 18px rgba(38, 166, 154, 0.16)',
+          }}
+        >
+          <Eye size={19} color="#9FE9DF" />
+          <span>深淵刻印</span>
+          <span style={{ fontSize: '9px', color: '#99C9D2', fontWeight: 800 }}>3 SLOTS</span>
         </button>
 
         {/* Start Battle Button */}
