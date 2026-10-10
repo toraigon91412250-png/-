@@ -71,7 +71,7 @@ export const IMPRINT_DEFINITIONS: readonly ImprintDefinition[] = [
     category: '蓄積反撃',
     description: '羽弾の蓄積を守りの風へ変え、受け流しながら反撃する。',
     trigger: '羽弾蓄積が1以上ある状態で、CPUから直接ダメージを受ける。',
-    effect: '蓄積1つにつき被ダメージを5%軽減（最大40%）。被弾時に蓄積数×20の自動反撃を行う。',
+    effect: '蓄積した羽弾威力50ごとに被ダメージを5%軽減（最大40%）。被弾時に蓄積した羽弾威力の25%で自動反撃を行う。',
     usageLimit: '蓄積は消費しない。出血ダメージなどの継続ダメージは軽減・反撃の対象外。',
   },
   {
