@@ -111,6 +111,7 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
 
   await page.getByLabel('見切りを装備').click();
   await page.getByRole('button', { name: '本編に戻る' }).click();
+  await page.getByRole('button', { name: 'ホーム' }).click();
   await page.getByRole('button', { name: /バトル開始/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
@@ -383,7 +384,7 @@ test('raid prototype opens independently and resolves a defensive turn on deskto
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
 
   await expect(page.getByRole('heading', { name: 'アビスコア', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'バトル開始', exact: true })).toBeEnabled();
@@ -431,7 +432,7 @@ test('Core Regeneration is visible and Feather interrupts the recovery on deskto
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
 
   // A stable high sample selects CORE_REGEN after the opening sweep and remains safe for this test.
@@ -466,7 +467,7 @@ test('phase two Collapse Chain shows its wind-up and can be countered at release
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /レイドボスに挑戦/ }).click();
+  await page.getByRole('button', { name: 'レイド', exact: true }).click();
   await page.getByRole('button', { name: 'バトル開始', exact: true }).click();
 
   const phaseChip = page.locator('.raid-v1-phase-chip');

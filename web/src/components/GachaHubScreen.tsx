@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, Eye, Sparkles, Ticket, WandSparkles } from 'lucide-react';
+import { ArrowUpRight, Crown, Eye, Sparkles, Ticket } from 'lucide-react';
 import { IMPRINT_DEFINITIONS } from '../data/imprints';
 
 interface GachaHubScreenProps {
@@ -54,7 +54,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ width: '44px', height: '44px', display: 'grid', placeItems: 'center', borderRadius: '12px', border: '1px solid rgba(211,195,255,0.32)', background: 'rgba(179,157,219,0.15)' }}>
-                <WandSparkles size={24} color="#D9C7FF" />
+                <Crown size={24} color="#D9C7FF" />
               </div>
               <ArrowUpRight size={20} color="#B39DDB" />
             </div>

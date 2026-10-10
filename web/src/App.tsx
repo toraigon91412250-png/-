@@ -304,7 +304,7 @@ export const App: React.FC = () => {
           style={{
             position:'fixed',
             right:10,
-            bottom:10,
+            bottom:82,
             zIndex:500,
             minHeight:38,
             padding:'0 11px',
