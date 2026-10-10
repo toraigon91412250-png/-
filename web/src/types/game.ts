@@ -272,6 +272,8 @@ export interface BattleUiState {
   yinYangDefenseResult?: { turn: number; reducedBy: number } | null;
   /** Latest Wind Guard trigger, retained until the next player action for readable feedback. */
   windGuardResult?: { turn: number; reducedBy: number; counterDamage: number; featherChargeBonus: number } | null;
+  /** Latest Blood Media healing event for readable combat feedback. */
+  bloodMediaHealResult?: { turn: number; amount: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
