@@ -535,6 +535,7 @@ test('Blood Media extends Bleed and heals for the actual tick damage', async ({ 
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 
   await page.getByRole('button', { name: /^羽弾/ }).first().click();
+  await expect(page.getByText(/出血付与！ \(4T/)).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('status', { name: '血媒の状態' })).toContainText('HP+30');
   await expect(page.getByRole('button', { name: /出血 3ターンの詳細を表示/ })).toBeVisible();
