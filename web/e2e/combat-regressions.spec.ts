@@ -114,9 +114,10 @@ test('Yin-Yang Conversion protects the current turn, preserves pressure, and adv
   await expect(page.getByRole('button', { name: '陰陽転化' })).toBeEnabled();
   await page.getByRole('button', { name: '陰陽転化' }).click();
 
-  await expect(page.getByText(/【陰陽転化・防御】/)).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText(/【陰陽転化】/)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('status', { name: '陰陽転化の状態' })).toContainText('発動中', { timeout: 15_000 });
   await expect(page.getByRole('button', { name: '強化中の詳細を表示' })).toBeVisible();
+  // The status persists after hit resolution so the real damage reducer, not only the log text, is checked.
+  await expect(page.getByRole('status', { name: '陰陽転化の状態' })).toContainText('防御成功', { timeout: 15_000 });
   // Kaiser’s special must still apply Pressure even though its direct damage is reduced.
   await expect(page.getByRole('button', { name: /重圧 2ターンの詳細を表示/ })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });

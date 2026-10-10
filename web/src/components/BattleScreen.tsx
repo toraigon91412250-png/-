@@ -163,6 +163,32 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
           👁️ 見切り：{state.usedImprints.includes('FORESIGHT') ? '発動済み' : '未使用'} · 特殊技／必殺技の予告中に回避すると確定成功
         </div>
       )}
+      {state.battleConfig.imprints?.includes('YIN_YANG') && (
+        <div
+          role="status"
+          aria-label="陰陽転化の状態"
+          style={{
+            marginTop: '5px',
+            padding: compact ? '4px 6px' : '5px 7px',
+            borderRadius: '6px',
+            border: '1px solid rgba(212,176,91,0.42)',
+            background: 'rgba(80,64,25,0.13)',
+            color: '#F3DDA0',
+            fontSize: labelSize,
+            lineHeight: 1.4,
+            fontWeight: 850,
+          }}
+        >
+          ☯️ 陰陽転化：
+          {state.yinYangDefenseResult
+            ? `防御成功（第${state.yinYangDefenseResult.turn}ターン、軽減${state.yinYangDefenseResult.reducedBy}）`
+            : state.yinYangActivatedTurn === state.turnNumber && state.player.isBuffed
+              ? `発動中：次の攻撃+${state.player.buffDamageBonus || 125}`
+              : state.yinYangActivatedTurn != null
+                ? `最終発動：第${state.yinYangActivatedTurn}ターン`
+                : '未使用'}
+        </div>
+      )}
       <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
         {intentMeta.hint}
       </div>

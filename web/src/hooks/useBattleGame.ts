@@ -97,6 +97,8 @@ export function useBattleGame(
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
     usedImprints: [],
+    yinYangActivatedTurn: null,
+    yinYangDefenseResult: null,
     battleSpeedMultiplier: 1.0,
     isSoundEnabled: true,
     isAnimating: false,
@@ -369,6 +371,8 @@ export function useBattleGame(
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
       usedImprints: [],
+      yinYangActivatedTurn: null,
+      yinYangDefenseResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -417,6 +421,10 @@ export function useBattleGame(
     if (!result.applied) return damage;
 
     yinYangDefensePendingRef.current = false;
+    updateState(prev => ({
+      ...prev,
+      yinYangDefenseResult: { turn, reducedBy: result.reducedBy },
+    }));
     addLog(
       `☯️【陰陽転化・防御】CPUの直撃を半減！ ${Math.floor(damage)} → ${result.damage}。`,
       'PASSIVE_TRIGGER',
@@ -665,6 +673,8 @@ export function useBattleGame(
         const attackBonus = Math.max(existingBonus, GAME_BALANCE.BUFF_DAMAGE_BONUS);
         updateState(prev => ({
           ...prev,
+          yinYangActivatedTurn: turn,
+          yinYangDefenseResult: null,
           player: {
             ...prev.player,
             isBuffed: true,

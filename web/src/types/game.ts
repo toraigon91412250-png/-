@@ -267,6 +267,9 @@ export interface BattleUiState {
   cpuIntent: BattleAction;
   /** Once-per-battle imprint activations; reset on every new battle. */
   usedImprints: ImprintId[];
+  /** Last Yin-Yang action and its confirmed one-hit mitigation, retained for readable battle feedback. */
+  yinYangActivatedTurn?: number | null;
+  yinYangDefenseResult?: { turn: number; reducedBy: number } | null;
   battleSpeedMultiplier: number;
   isSoundEnabled: boolean;
   isAnimating: boolean;
