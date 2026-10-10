@@ -519,7 +519,8 @@ test('Blood Tear bursts when Bleed is applied and leaves no Bleed status', async
   await page.getByRole('button', { name: /^羽弾/ }).first().click();
 
   // The cut-in must identify Blood Tear at the special-hit moment; the burst is a separate impact.
-  await expect(page.getByText('『血裂』')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('『血裂』', { exact: true })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText('🩸 血裂発動', { exact: true })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('button', { name: /出血 .*ターンの詳細を表示/ })).toHaveCount(0);
   expect(pageErrors, 'Blood Tear should not raise uncaught JavaScript errors.').toEqual([]);
