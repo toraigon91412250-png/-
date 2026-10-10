@@ -415,8 +415,8 @@ export function useBattleGame(
       yinYangActivatedTurn: null,
       yinYangDefenseResult: null,
       windGuardResult: null,
-    bloodMediaHealResult: null,
-    costlyShotResult: null,
+      bloodMediaHealResult: null,
+      costlyShotResult: null,
       isAnimating: false,
       lastBattleReward: 0,
       lastBattleMasteryReward: 0,
@@ -640,12 +640,14 @@ export function useBattleGame(
       const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const actualBleedDamage = Math.min(dotDamage, Math.max(0, actor.currentHp));
+      const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
+      // Heal only damage that actually landed. For example, Fallen King's survival
+      // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
+      const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
       const bloodMediaHealAmount = !isActorPlayer &&
         Boolean(stateRef.current.battleConfig.imprints?.includes('BLOOD_MEDIA'))
         ? Math.min(actualBleedDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
         : 0;
-      const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
       if (bloodMediaHealAmount > 0) {
         updateState(prev => ({
           ...prev,
@@ -1880,8 +1882,8 @@ export function useBattleGame(
       visualEffects: [],
       yinYangDefenseResult: playerAction === 'YIN_YANG' ? null : prev.yinYangDefenseResult,
       windGuardResult: null,
-    bloodMediaHealResult: null,
-    costlyShotResult: null,
+      bloodMediaHealResult: null,
+      costlyShotResult: null,
     }));
     const speed = stateRef.current.battleSpeedMultiplier;
     const currentTurn = stateRef.current.turnNumber;
