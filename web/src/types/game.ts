@@ -192,6 +192,8 @@ export interface VisualEffect {
   actorName: string;
   skillName: string;
   statusAilmentName: string;
+  /** Actual duration applied by the current hit; omitted for consumed or non-status effects. */
+  statusAilmentDuration?: number;
   bannerText: string;
   effectId: number;
 }
