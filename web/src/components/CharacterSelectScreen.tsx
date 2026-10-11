@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { CharacterDef, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, OverallStats, RaidRewardProgress } from '../types/game';
 import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
-import { Swords, Trophy, Play, CheckCircle, Gem } from 'lucide-react';
+import { Swords, Trophy, Play, CheckCircle, Gem, Sparkles, ChevronRight } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
+import { applyIrenaTalentModifiers, getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
+import type { IrenaTalentProgress } from '../utils/irenaTalentSystem';
 
 interface CharacterSelectScreenProps {
   overallStats: OverallStats;
@@ -14,6 +16,8 @@ interface CharacterSelectScreenProps {
   onUseRaidCoreFragment: () => void;
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
+  irenaTalentProgress: IrenaTalentProgress;
+  onOpenTalentBoard: () => void;
 }
 
 export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
@@ -25,6 +29,8 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
   onUseRaidCoreFragment,
   onUpgradeSkill,
   onChooseSkillPath,
+  irenaTalentProgress,
+  onOpenTalentBoard,
 }) => {
   const [viewingChar, setViewingChar] = useState<CharacterDef | null>(null);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -39,7 +45,9 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
     return path ? labels[path] ?? path : '';
   };
 
-  const playerChar = getIrenaWithSkillProgress(skillProgress);
+  const playerChar = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
+  const talentLevelProgress = getIrenaLevelProgress(irenaTalentProgress.experience);
+  const availableTalentPoints = getAvailableIrenaTalentPoints(irenaTalentProgress);
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
@@ -231,6 +239,37 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
           </div>
           <button type='button' onClick={() => setUpgradeOpen(true)} style={{ width: '100%', height: '42px', marginTop: '9px', borderRadius: '10px', background: 'linear-gradient(90deg,#6A1B9A,#8E24AA)', color: '#FFFFFF', border: '1px solid #D1C4E9', fontSize: '13px', fontWeight: 950, cursor: 'pointer' }}>
             ✨ 技を強化・ビルドを育てる
+          </button>
+          <button
+            type="button"
+            aria-label="堕天の才能盤を開く"
+            onClick={onOpenTalentBoard}
+            style={{
+              width: '100%',
+              minHeight: '58px',
+              marginTop: '9px',
+              padding: '10px 11px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              borderRadius: '11px',
+              border: '1px solid rgba(201,159,255,0.7)',
+              background: 'linear-gradient(100deg, rgba(54,32,83,0.96), rgba(23,25,43,0.98))',
+              color: '#F8F0FF',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+              <span style={{ width: '36px', height: '36px', flex: '0 0 auto', display: 'grid', placeItems: 'center', borderRadius: '9px', color: '#E0BBFF', background: 'rgba(190,143,255,0.15)', border: '1px solid rgba(190,143,255,0.32)' }}><Sparkles size={19} /></span>
+              <span style={{ display: 'block', minWidth: 0 }}>
+                <span style={{ display: 'block', fontSize: '13px', fontWeight: 950 }}>堕天の才能盤　Lv.{talentLevelProgress.level}<span style={{ color: '#BEB1D8', fontWeight: 700 }}> / 20</span></span>
+                <span style={{ display: 'block', marginTop: '3px', color: availableTalentPoints > 0 ? '#FFE18A' : '#B7AEC9', fontSize: '10px', lineHeight: 1.4 }}>{availableTalentPoints > 0 ? `未使用ポイント ${availableTalentPoints}P ・才能を強化できます` : `経験値 ${irenaTalentProgress.experience} EXP ・次の才能解放を目指そう`}</span>
+                <span style={{ display: 'block', height: '3px', marginTop: '5px', borderRadius: '99px', background: '#40334F', overflow: 'hidden' }}><span style={{ display: 'block', width: `${talentLevelProgress.progressPercent}%`, height: '100%', background: 'linear-gradient(90deg,#9C67EF,#F0B4FF)' }} /></span>
+              </span>
+            </span>
+            <ChevronRight size={20} color="#D8B7FF" />
           </button>
         </div>
 

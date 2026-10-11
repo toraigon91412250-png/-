@@ -4,6 +4,7 @@ import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
+import { addIrenaBattleExperience, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress } from './irenaTalentSystem';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -613,6 +614,10 @@ export function resetProgressForDeveloper(): {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
+    localStorage.setItem(IRENA_TALENT_PROGRESS_KEY, JSON.stringify({
+      ...INITIAL_IRENA_TALENT_PROGRESS,
+      ranks: { ...INITIAL_IRENA_TALENT_PROGRESS.ranks },
+    }));
     persistRaidRewardProgress({ ...INITIAL_RAID_REWARD_PROGRESS, claimedVictoryRunIds: [] });
   } catch {
     // ignore
@@ -774,6 +779,8 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): BattleRe
     ...currentSkills,
     shards: currentSkills.shards + getBattleReward(playerWon, masteryBonus),
   });
+  const currentTalentProgress = loadIrenaTalentProgress();
+  const nextTalentProgress = addIrenaBattleExperience(currentTalentProgress, playerWon);
   const currentRecruitment = loadRecruitmentProgress();
   const nextRecruitment = normalizeRecruitmentProgress({
     ...currentRecruitment,
@@ -782,6 +789,7 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): BattleRe
   const writes: StorageWrite[] = [
     { key: STORAGE_KEY, value: JSON.stringify(updated) },
     { key: SKILL_PROGRESS_KEY, value: JSON.stringify(nextSkills) },
+    { key: IRENA_TALENT_PROGRESS_KEY, value: JSON.stringify(nextTalentProgress) },
     { key: RECRUITMENT_KEY, value: JSON.stringify(nextRecruitment) },
   ];
 
