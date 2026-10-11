@@ -692,6 +692,9 @@ test('Feather Split keeps its selector compact and independently cools down each
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
   await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
+  // The alternation indicator belongs to the next selected mode, not the mode just used.
+  await pierceChoice.click();
+  await expect(pierceChoice).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByLabel(/交互ボーナス準備中：与ダメージ\+15%/)).toBeVisible();
 
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
