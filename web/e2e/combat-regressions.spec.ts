@@ -749,8 +749,8 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
 
   let deployOverlay: Locator | undefined;
   try {
-    // The preloader request is intentionally blocked; don't make navigation
-    // wait for the document load event before we can release that request.
+    // The preloader request is intentionally blocked, so return as soon as
+    // navigation commits and wait for React to render the heading separately.
     await page.goto('/', { waitUntil: 'commit' });
     await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
     await cutinRequested;
