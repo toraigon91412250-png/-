@@ -3,6 +3,7 @@ import irenaImage from '../assets/img_irena.jpg';
 import irenaSelectImage from '../assets/img_irena_select.jpg';
 import irenaIconImage from '../assets/img_irena_icon.jpg';
 import irenaCutinImage from '../assets/img_irena_cutin.jpg';
+import irenaPierceCutInImage from '../assets/4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png';
 import kaiserImage from '../assets/img_kaiser.jpg';
 import victoryImage from '../assets/いれーな勝利演出.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
@@ -26,12 +27,14 @@ const RECRUITMENT_IMAGES = [
   'assets/recruitment/開く直前の門.jpg',
 ] as const;
 
-const SRC_IMAGES = [
+// Preload battle, character, outcome, and combat VFX imagery before the field is playable.
+const BATTLE_IMAGES = [
   arenaBackground,
   irenaImage,
   irenaSelectImage,
   irenaIconImage,
   irenaCutinImage,
+  irenaPierceCutInImage,
   kaiserImage,
   victoryImage,
   battleBackground,
@@ -75,9 +78,9 @@ const preloadImage = (src: string): Promise<void> => {
   return promise;
 };
 
-export const preloadAllGameImages = (): Promise<void[]> => {
+export const preloadBattleImages = (): Promise<void[]> => {
   if (typeof window === 'undefined') return Promise.resolve([]);
-  return Promise.all(SRC_IMAGES.map(preloadImage));
+  return Promise.all(BATTLE_IMAGES.map(preloadImage));
 };
 
 /** Load large summon-only artwork when the player enters the recruitment screen. */
