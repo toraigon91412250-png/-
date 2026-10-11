@@ -125,6 +125,27 @@ assert.strictEqual(armorBreakTest.damage, 75);
 assert.strictEqual(armorBreakTest.fighter.kaiserArmorCurrent, 0);
 assert.strictEqual(armorBreakTest.fighter.kaiserArmorBrokenTurns, 2);
 assert.strictEqual(armorBreakTest.armorBroke, true);
+
+// Breaking the armor on the exact hit that crosses Lv100's phase boundary must
+// not leave Kaiser marked as vulnerable after phase two immediately redeploys armor.
+const phaseThreshold = Math.ceil(kaiserLv100Fighter.character.maxHp * 0.5);
+const armorBreakAtPhaseBoundary = resolveKaiserHit({
+  ...kaiserLv100Fighter,
+  currentHp: phaseThreshold + 50,
+  kaiserArmorCurrent: 50,
+}, 100, 100, 2, true, '通常攻撃');
+assert.strictEqual(armorBreakAtPhaseBoundary.phaseChanged, true);
+assert.strictEqual(armorBreakAtPhaseBoundary.armorBroke, true);
+assert.strictEqual(
+  armorBreakAtPhaseBoundary.fighter.kaiserArmorCurrent,
+  Math.round(armorBreakAtPhaseBoundary.fighter.kaiserArmorMax * 0.5),
+  'Phase-two armor redeployment must take precedence over the just-triggered armor break.',
+);
+assert.strictEqual(
+  armorBreakAtPhaseBoundary.fighter.kaiserArmorBrokenTurns,
+  0,
+  'The phase-two armor redeployment must not retain the broken-state vulnerability.',
+);
 const breakTurnEnd = advanceKaiserChallengeRound(armorBreakTest.fighter, 2);
 assert.strictEqual(breakTurnEnd.kaiserArmorBrokenTurns, 2, 'The break turn itself must not consume a vulnerable turn.');
 const brokenHit = resolveKaiserHit(breakTurnEnd, 100, 50, 3, true, '通常攻撃');
