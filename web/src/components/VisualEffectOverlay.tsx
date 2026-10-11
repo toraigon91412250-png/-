@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
 import { CHARACTERS } from '../data/characters';
 import { SuperFallenShotVfx } from './SuperFallenShotVfx';
+import irenaPierceCutInImg from '../assets/4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png';
 
 interface SingleVisualEffectOverlayProps {
   effect: VisualEffect;
@@ -858,8 +859,11 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
   const popAlpha = t > 0.75 ? (1 - t) / 0.25 : 1;
   const yOffset = -30 - t * 45;
 
+  const cutInCharacter = CHARACTERS.find(c => c.name === effect.actorName);
   const cutInSrc = effect.effectType === 'SPECIAL_FEATHER'
-    ? CHARACTERS.find(c => c.name === effect.actorName)?.specialCutInSrc
+    ? effect.skillName === '穿羽' && cutInCharacter?.id === 'irena'
+      ? irenaPierceCutInImg
+      : cutInCharacter?.specialCutInSrc
     : undefined;
   return (
     <div
