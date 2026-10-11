@@ -209,6 +209,47 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
               );
             })}
           </div>
+          <div
+            role="status"
+            aria-label="挑戦レベルの特殊ルール"
+            aria-live="polite"
+            style={{
+              marginTop: '10px',
+              padding: '10px 11px',
+              borderRadius: '10px',
+              border: '1px solid rgba(144,202,249,0.24)',
+              background: 'rgba(8,14,24,0.72)',
+              color: '#C9D5E8',
+              fontSize: '10px',
+              lineHeight: 1.55,
+            }}
+          >
+            <div style={{ fontSize: '9px', fontWeight: 900, letterSpacing: '0.12em', color: '#90CAF9', marginBottom: '4px' }}>
+              LV.{selectedLevel} RULES
+            </div>
+            {selectedLevel < 40 ? (
+              <div>装甲なし。レベルに応じてカイザーの能力値が上昇します。</div>
+            ) : (
+              <>
+                <div>
+                  <strong style={{ color: '#B3E5FC' }}>鉄壁装甲：</strong>
+                  装甲ゲージがある間、直接ヒットのHPダメージを25%軽減。破壊すると2ターン被ダメージ×1.3。通常は再展開しません。
+                </div>
+                {selectedLevel >= 70 && (
+                  <div style={{ marginTop: '4px' }}>
+                    <strong style={{ color: '#CE93D8' }}>行動適応：</strong>
+                    同じ行動を繰り返すと、対抗行動を選びやすくなります。
+                  </div>
+                )}
+                {selectedLevel === 100 && (
+                  <div style={{ marginTop: '4px' }}>
+                    <strong style={{ color: '#FFB74D' }}>最終試練：</strong>
+                    HP50%で第2フェーズへ移行。攻撃系×1.25・速さ×1.15となり、装甲を初期耐久値の50%で再展開します。大ダメージでも移行は飛ばせません。
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </section>
 
         <section style={{

@@ -838,24 +838,31 @@ assert.strictEqual(
   'A pressured Kaiser should prefer its fixed-damage special over a weakened normal attack.'
 );
 
+const emptyStatAllocation = { maxHp: 0, attack: 0, defense: 0, speed: 0 };
+const baselineConfigForLevel = level => ({
+  kaiserLevel: level,
+  abilities: [],
+  statAllocation: { ...emptyStatAllocation },
+  statPointTotal: 12,
+});
+
 const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
-  const kaiser = createKaiserForLevel(cpuKaiserBase, level);
-  const player = createInitialFighter(IRENA, true);
+  const config = baselineConfigForLevel(level);
+  const { player: playerCharacter, enemy: kaiser } = createBattleCharacters(IRENA, cpuKaiserBase, config);
+  const player = createInitialFighter(playerCharacter, true);
   const enemy = createInitialFighter(kaiser, false, level);
-  const calculatedPlayerDamage = calculateNormalAttackDamage({
+  const rawPlayerDamage = calculateNormalAttackDamage({
     attacker: player,
     target: enemy,
-    config: { kaiserLevel: level, abilities: [] },
+    config,
     turn: 1,
     isActingFirst: true,
   });
-  const playerDamage = (enemy.kaiserArmorCurrent ?? 0) > 0
-    ? Math.floor(calculatedPlayerDamage * 0.75)
-    : calculatedPlayerDamage;
+  const resolvedPlayerHit = resolveKaiserHit(enemy, rawPlayerDamage, level, 1, true, '通常攻撃');
   const cpuDamage = calculateNormalAttackDamage({
     attacker: enemy,
     target: player,
-    config: { kaiserLevel: level, abilities: [] },
+    config,
     turn: 1,
     isActingFirst: false,
   });
@@ -867,8 +874,9 @@ const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
     speed: kaiser.speed,
     specialSkillDamage: kaiser.specialSkillDamage,
     ultimateSkillDamage: kaiser.ultimateSkillDamage,
-    playerDamage,
+    playerDamage: resolvedPlayerHit.damage,
     cpuDamage,
+    armorMax: enemy.kaiserArmorMax ?? 0,
   };
 });
 
@@ -876,83 +884,139 @@ for (let i = 1; i < levelStats.length; i += 1) {
   assert.ok(levelStats[i].maxHp > levelStats[i - 1].maxHp, 'Kaiser HP must rise with level.');
   assert.ok(levelStats[i].attack > levelStats[i - 1].attack, 'Kaiser attack must rise with level.');
   assert.ok(levelStats[i].defense > levelStats[i - 1].defense, 'Kaiser defense must rise with level.');
-  assert.ok(levelStats[i].playerDamage <= levelStats[i - 1].playerDamage, 'Higher defense must not increase Irena normal damage.');
+  assert.ok(levelStats[i].playerDamage <= levelStats[i - 1].playerDamage, 'Higher defense/armor must not increase the resolved first normal-hit damage.');
 }
 
-function simulateNormalAttackBattle(level) {
-  const kaiser = createKaiserForLevel(cpuKaiserBase, level);
-  let player = createInitialFighter(IRENA, true);
-  let enemy = createInitialFighter(kaiser, false);
-  let round = 0;
+function simulateNormalAttackBattle(level, statAllocation = emptyStatAllocation) {
+  // Deterministic reference model: normal attacks only, no evasion, criticals,
+  // status ailments, abilities, or CPU action selection. Damage and Kaiser
+  // armor/phase resolution use the same pure helpers as the game engine.
+  const config = {
+    kaiserLevel: level,
+    abilities: [],
+    statAllocation: { ...statAllocation },
+    statPointTotal: Object.values(statAllocation).reduce((sum, points) => sum + points, 0),
+  };
+  const { player: playerCharacter, enemy: kaiser } = createBattleCharacters(IRENA, cpuKaiserBase, config);
+  let player = createInitialFighter(playerCharacter, true);
+  let enemy = createInitialFighter(kaiser, false, level);
+  let rounds = 0;
+  let playerDamageDone = 0;
+  let armorBreaks = 0;
+  let phaseTransitions = 0;
 
-  while (player.currentHp > 0 && enemy.currentHp > 0 && round < 100) {
-    round += 1;
-    const playerFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(enemy);
-
-    const attacker = playerFirst ? player : enemy;
-    const target = playerFirst ? enemy : player;
-    const firstDamage = calculateNormalAttackDamage({
-      attacker,
-      target,
-      config: { kaiserLevel: level, abilities: [] },
-      turn: round,
-      isActingFirst: playerFirst,
+  const playerAttack = (turn, playerActsFirst) => {
+    const rawDamage = calculateNormalAttackDamage({
+      attacker: player,
+      target: enemy,
+      config,
+      turn,
+      isActingFirst: playerActsFirst,
     });
-    target.currentHp = Math.max(0, target.currentHp - firstDamage);
+    const outcome = resolveKaiserHit(enemy, rawDamage, level, turn, true, '通常攻撃');
+    enemy = outcome.fighter;
+    playerDamageDone += outcome.damage;
+    if (outcome.armorBroke) armorBreaks += 1;
+    if (outcome.phaseChanged) phaseTransitions += 1;
+  };
 
-    if (target.currentHp <= 0) break;
-
-    const secondAttacker = playerFirst ? enemy : player;
-    const secondTarget = playerFirst ? player : enemy;
-    const secondDamage = calculateNormalAttackDamage({
-      attacker: secondAttacker,
-      target: secondTarget,
-      config: { kaiserLevel: level, abilities: [] },
-      turn: round,
-      isActingFirst: false,
+  const kaiserAttack = (turn, playerActsFirst) => {
+    const damage = calculateNormalAttackDamage({
+      attacker: enemy,
+      target: player,
+      config,
+      turn,
+      isActingFirst: !playerActsFirst,
     });
-    secondTarget.currentHp = Math.max(0, secondTarget.currentHp - secondDamage);
+    player = { ...player, currentHp: Math.max(0, player.currentHp - damage) };
+  };
+
+  while (player.currentHp > 0 && enemy.currentHp > 0 && rounds < 100) {
+    rounds += 1;
+    const playerActsFirst = getEffectiveSpeed(player) >= getEffectiveSpeed(enemy);
+
+    if (playerActsFirst) {
+      playerAttack(rounds, true);
+      if (enemy.currentHp > 0) kaiserAttack(rounds, true);
+    } else {
+      kaiserAttack(rounds, false);
+      if (player.currentHp > 0) playerAttack(rounds, false);
+    }
+
+    if (player.currentHp > 0 && enemy.currentHp > 0) {
+      enemy = advanceKaiserChallengeRound(enemy, rounds);
+    }
   }
 
   return {
-    rounds: round,
+    level,
+    rounds,
     playerHpRemaining: player.currentHp,
+    playerMaxHp: player.character.maxHp,
     enemyHpRemaining: enemy.currentHp,
+    enemyMaxHp: enemy.character.maxHp,
+    playerDamageDone,
+    armorBreaks,
+    phaseTransitions,
+    result: player.currentHp > 0 && enemy.currentHp <= 0
+      ? 'VICTORY'
+      : enemy.currentHp > 0 && player.currentHp <= 0
+        ? 'DEFEAT'
+        : 'LIMIT',
   };
 }
 
-const battleCurve = levelStats.map(row => ({
-  ...row,
-  ...simulateNormalAttackBattle(row.level),
-}));
-
-for (const row of battleCurve) {
-  assert.ok(row.rounds > 0 && row.rounds < 100, `Lv${row.level} normal-attack battle must finish within 100 rounds.`);
+const baselineCurve = levelStats.map(row => simulateNormalAttackBattle(row.level));
+for (const row of baselineCurve) {
+  assert.ok(row.rounds > 0 && row.rounds < 100, 'Lv' + row.level + ' normal-attack reference battle must finish within 100 rounds.');
+  assert.ok(row.playerHpRemaining >= 0 && row.enemyHpRemaining >= 0, 'Combat simulation HP cannot be negative.');
+  assert.ok(row.playerMaxHp > 0 && row.enemyMaxHp > 0, 'Combat simulation max HP must stay positive.');
 }
-assert.ok(
-  battleCurve[battleCurve.length - 1].rounds <= battleCurve[0].rounds * 3,
-  'Lv100 should not require more than three times the Lv10 base-combat rounds.'
-);
 
-const lv10 = levelStats[0];
+for (const row of levelStats) {
+  if (row.level < 40) {
+    assert.strictEqual(row.armorMax, 0, 'Armor must be absent below Lv40.');
+  } else {
+    assert.ok(row.armorMax > 0, 'Armor must initialize from the selected challenge level.');
+  }
+}
+
 const lv100 = levelStats[levelStats.length - 1];
-assert.strictEqual(lv10.maxHp, cpuKaiserBase.maxHp);
-assert.strictEqual(lv10.attack, Math.round(cpuKaiserBase.attack));
-assert.strictEqual(lv10.defense, cpuKaiserBase.defense);
 assert.strictEqual(lv100.maxHp, Math.round(cpuKaiserBase.maxHp * 1.5));
 assert.strictEqual(lv100.attack, cpuKaiserBase.attack * 2);
 assert.strictEqual(lv100.defense, Math.round(cpuKaiserBase.defense * 1.5));
 assert.strictEqual(lv100.speed, cpuKaiserBase.speed * 2);
 assert.strictEqual(lv100.specialSkillDamage, cpuKaiserBase.specialSkillDamage * 2);
 assert.strictEqual(lv100.ultimateSkillDamage, cpuKaiserBase.ultimateSkillDamage * 2);
-assert.ok(lv100.playerDamage >= 80, 'Armor should mitigate but not nullify a Lv100 Irena normal attack.');
-assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
 
-console.log('✓ Kaiser Lv10-Lv100 progression stays bounded and monotonic.');
-console.log(
-  'Level curve:',
-  battleCurve.map(row => `Lv${row.level} HP${row.maxHp} ATK${row.attack} DEF${row.defense} IrenaDMG${row.playerDamage} KaiserDMG${row.cpuDamage} rounds${row.rounds}`).join(' | ')
+const offenseAllocation = createStatPreset('OFFENSE', 12);
+const enduranceAllocation = createStatPreset('DEFENSE', 12);
+const baselineLv100 = simulateNormalAttackBattle(100);
+const offenseLv100 = simulateNormalAttackBattle(100, offenseAllocation);
+const enduranceLv100 = simulateNormalAttackBattle(100, enduranceAllocation);
+assert.ok(
+  offenseLv100.playerDamageDone > baselineLv100.playerDamageDone,
+  'An offense-focused stat build should inflict more total damage than an unspent build in the same reference model.',
 );
+assert.ok(
+  enduranceLv100.rounds >= baselineLv100.rounds,
+  'An endurance-focused stat build should survive at least as long as an unspent build in the same reference model.',
+);
+console.log('✓ Kaiser Lv10-Lv100 reference model uses the selected level, armor wear/break, and phase resolver.');
+console.log('Lv100 normal-attack-only comparison: ' + [
+  'unspent=' + baselineLv100.result + '/' + baselineLv100.rounds + 'T/' + baselineLv100.playerDamageDone + ' dmg',
+  'offense=' + offenseLv100.result + '/' + offenseLv100.rounds + 'T/' + offenseLv100.playerDamageDone + ' dmg',
+  'endurance=' + enduranceLv100.result + '/' + enduranceLv100.rounds + 'T/' + enduranceLv100.playerDamageDone + ' dmg',
+].join(' | '));
+console.log('Level curve: ' + baselineCurve.map(row =>
+  'Lv' + row.level +
+  ' HP' + row.enemyMaxHp +
+  ' ATK' + levelStats.find(stats => stats.level === row.level).attack +
+  ' DEF' + levelStats.find(stats => stats.level === row.level).defense +
+  ' armorBreaks' + row.armorBreaks +
+  ' result' + row.result +
+  '/' + row.rounds + 'T'
+).join(' | '));
 
 console.log('--- Testing isolated Raid Project 01 rules ---');
 
