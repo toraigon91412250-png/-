@@ -384,7 +384,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                     }}
                   >
                     <span style={{ whiteSpace: 'nowrap' }}>{choice.label}</span>
-                    <span style={{ fontSize: '8px', fontWeight: 800, opacity: selected ? 1 : 0.8, whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 800, opacity: selected ? 1 : 0.88, whiteSpace: 'nowrap' }}>
                       {choice.detail}
                     </span>
                   </button>
@@ -546,7 +546,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
                   ? `${specialDamagePreview}ダメ / 倍率×${superFallenMultiplier.toFixed(1)} / 1T充填`
                   : selectedFeatherSplitMode
-                    ? `${specialDamagePreview}ダメ · ${selectedFeatherSplitMode === 'PIERCE' ? FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2) : FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}×${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
+                    ? `${specialDamagePreview}ダメ${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
                     : `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
                 : `CT:${selectedSpecialCooldownRemaining}T`}
           </span>
