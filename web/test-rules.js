@@ -41,6 +41,59 @@ const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 const {
+  INITIAL_IRENA_TALENT_PROGRESS,
+  addIrenaBattleExperience,
+  applyIrenaTalentModifiers,
+  getAvailableIrenaTalentPoints,
+  getIrenaLevel,
+  getIrenaLevelProgress,
+  getIrenaTalentPointsForLevel,
+  getIrenaXpForLevel,
+  normalizeIrenaTalentProgress,
+} = await import('./src/utils/irenaTalentSystem.ts');
+
+assert.strictEqual(getIrenaLevel(0), 1);
+assert.strictEqual(getIrenaLevel(80), 2, 'The first talent level should be reachable after one win.');
+assert.strictEqual(getIrenaLevel(180), 3, 'Level requirements should rise as Irena grows.');
+assert.strictEqual(getIrenaLevel(getIrenaXpForLevel(20)), 20, 'Irena should stop at the configured level cap.');
+assert.strictEqual(getIrenaLevel(getIrenaXpForLevel(20) + 1000), 20, 'Excess experience must not exceed the level cap.');
+assert.strictEqual(getIrenaTalentPointsForLevel(1), 0);
+assert.strictEqual(getIrenaTalentPointsForLevel(2), 1);
+assert.strictEqual(getIrenaTalentPointsForLevel(4), 2);
+assert.strictEqual(getIrenaTalentPointsForLevel(20), 9);
+
+const firstWinTalentProgress = addIrenaBattleExperience(INITIAL_IRENA_TALENT_PROGRESS, true);
+assert.strictEqual(firstWinTalentProgress.experience, 100);
+assert.strictEqual(getIrenaLevel(firstWinTalentProgress.experience), 2);
+assert.strictEqual(getAvailableIrenaTalentPoints(firstWinTalentProgress), 1);
+assert.strictEqual(
+  addIrenaBattleExperience(INITIAL_IRENA_TALENT_PROGRESS, false).experience,
+  35,
+  'Defeat should still provide a smaller amount of talent experience.',
+);
+
+const allIrenaTalents = normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(20),
+  ranks: { WIND_READ: 3, FEATHER_RESONANCE: 3, ABYSS_RESONANCE: 3 },
+});
+const talentAdjustedIrena = applyIrenaTalentModifiers(IRENA, allIrenaTalents);
+assert.strictEqual(talentAdjustedIrena.speed, IRENA.speed + 15);
+assert.strictEqual(talentAdjustedIrena.evasionRate, 0.28);
+assert.strictEqual(talentAdjustedIrena.specialSkillDamage, Math.round(IRENA.specialSkillDamage * 1.18));
+assert.strictEqual(talentAdjustedIrena.ultimateSkillDamage, Math.round(IRENA.ultimateSkillDamage * 1.24));
+assert.strictEqual(talentAdjustedIrena.defense, IRENA.defense - 9);
+assert.strictEqual(
+  getIrenaLevelProgress(getIrenaXpForLevel(20)).progressPercent,
+  100,
+  'The level progress bar should be full at the maximum level.',
+);
+assert.deepStrictEqual(
+  normalizeIrenaTalentProgress({ experience: 0, ranks: { WIND_READ: 3, FEATHER_RESONANCE: 3, ABYSS_RESONANCE: 3 } }).ranks,
+  { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0 },
+  'A save cannot claim talent ranks before earning talent points.',
+);
+console.log('✓ Irena experience, talent points, save normalization, and talent effects are verified.');
+const {
   normalizeKaiserChallengeProgress,
   getSelectableKaiserLevels,
   resolveKaiserChallengeResult,
