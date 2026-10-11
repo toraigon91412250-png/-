@@ -17,10 +17,10 @@ import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
-import { preloadAllGameImages } from './utils/imagePreload';
+import { preloadAllGameImages, preloadRecruitmentImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'RECRUITMENT_LOADING' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -141,6 +141,14 @@ export const App: React.FC = () => {
     setImprintProgress(next);
     setBattleSetup(prev => ({ ...prev, imprints: next.equippedIds }));
     setImprintMessage('刻印の解除を保存しました。');
+  };
+
+  const handleOpenRecruitment = () => {
+    refreshProgress();
+    setScreen('RECRUITMENT_LOADING');
+    void preloadRecruitmentImages().finally(() => {
+      setScreen(current => current === 'RECRUITMENT_LOADING' ? 'RECRUITMENT' : current);
+    });
   };
 
   const handleOpenImprintGacha = () => {
@@ -324,6 +332,7 @@ export const App: React.FC = () => {
       )}
 
       {isBattleDeploying && <BattleDeployOverlay />}
+      {screen === 'RECRUITMENT_LOADING' && <BattleDeployOverlay variant="gacha" />}
       {screen === 'SELECT' ? (
         <CharacterSelectScreen
           overallStats={overallStats}
@@ -339,10 +348,7 @@ export const App: React.FC = () => {
         <GachaHubScreen
           imprintTickets={raidRewardProgress.imprintTickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
-          onOpenRecruitment={() => {
-            refreshProgress();
-            setScreen('RECRUITMENT');
-          }}
+          onOpenRecruitment={handleOpenRecruitment}
           onOpenImprintGacha={handleOpenImprintGacha}
           onOpenImprints={handleOpenImprints}
         />
@@ -397,6 +403,8 @@ export const App: React.FC = () => {
           onBack={() => setScreen('SELECT')}
           onRaidRewardProgressChange={setRaidRewardProgress}
         />
+      ) : screen === 'RECRUITMENT_LOADING' ? (
+        <div style={{ width: '100%', height: '100%', background: '#080A11' }} aria-hidden="true" />
       ) : screen === 'RECRUITMENT' ? (
         <RecruitmentScreen
           progress={recruitmentProgress}
@@ -425,7 +433,7 @@ export const App: React.FC = () => {
           onAddImprintTickets={handleDeveloperAddImprintTickets}
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
-          onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenRecruitment={handleOpenRecruitment}
           onOpenBattleSetup={handleOpenBattleSetup}
           onReset={handleDeveloperReset}
         />
