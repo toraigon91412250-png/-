@@ -115,7 +115,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '12px', marginTop: '20px' }}>
             <div>
               <div style={{ color: '#AFA7C5', fontSize: '10px', fontWeight: 850, letterSpacing: '0.12em' }}>IRENA LEVEL</div>
-              <div style={{ marginTop: '2px', fontSize: '36px', lineHeight: 1.1, fontWeight: 950 }}>Lv.{levelProgress.level}<span style={{ fontSize: '12px', color: '#C7B7E5' }}> / {IRENA_TALENT_MAX_LEVEL}</span></div>
+              <div aria-label={`いれーなレベル ${levelProgress.level}`} style={{ marginTop: '2px', fontSize: '36px', lineHeight: 1.1, fontWeight: 950 }}>Lv.{levelProgress.level}<span style={{ fontSize: '12px', color: '#C7B7E5' }}> / {IRENA_TALENT_MAX_LEVEL}</span></div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#AFA7C5', fontSize: '10px', fontWeight: 850 }}>才能ポイント</div>
