@@ -34,7 +34,7 @@ async function startBattleWithImprints(page: Page, equippedIds: string[]) {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem('duel_arena_imprint_progress', JSON.stringify({
-      unlockedIds: ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT'],
+      unlockedIds: ['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT', 'FEATHER_SPLIT'],
       equippedIds: ids,
     }));
     Math.random = () => 0.99;
@@ -219,7 +219,7 @@ test('developer tools can add imprint tickets and unlock all registered imprints
   await page.getByRole('button', { name: '開発者ツール' }).click();
   await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
   await expect(page.getByLabel('刻印ガチャチケットの所持数 0')).toBeVisible();
-  await expect(page.getByLabel('解放済み刻印 1 / 7')).toBeVisible();
+  await expect(page.getByLabel('解放済み刻印 1 / 8')).toBeVisible();
 
   await page.getByRole('button', { name: '刻印ガチャチケットを10枚追加' }).click();
   await expect(page.getByLabel('刻印ガチャチケットの所持数 10')).toBeVisible();
@@ -229,11 +229,11 @@ test('developer tools can add imprint tickets and unlock all registered imprints
   })).toBe(10);
 
   await page.getByRole('button', { name: '登録済みの刻印をすべて解放' }).click();
-  await expect(page.getByLabel('解放済み刻印 7 / 7')).toBeVisible();
+  await expect(page.getByLabel('解放済み刻印 8 / 8')).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
     const imprints = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
     return imprints.unlockedIds;
-  })).toEqual(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT']);
+  })).toEqual(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT', 'FEATHER_SPLIT']);
   expect(pageErrors, 'Developer imprint testing controls must not raise uncaught errors.').toEqual([]);
 });
 
@@ -653,4 +653,49 @@ test('Costly Shot spends HP to reset special cooldown and allows the next Feathe
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('button', { name: /^羽弾/ }).first()).toBeEnabled();
   expect(pageErrors, 'Costly Shot cooldown reset should not raise uncaught errors.').toEqual([]);
+});
+
+
+test('Feather Split keeps its selector compact and independently cools down each mode', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await startBattleWithImprints(page, ['FEATHER_SPLIT']);
+
+  const modeGroup = page.getByRole('group', { name: '羽撃ち分け・特殊技選択' });
+  const pierceChoice = page.getByRole('button', { name: '穿羽を選択' });
+  const rapidChoice = page.getByRole('button', { name: '連羽を選択' });
+  await expect(modeGroup).toBeVisible();
+  await expect(pierceChoice).toBeVisible();
+  await expect(rapidChoice).toBeVisible();
+  await expect(pierceChoice).toHaveAttribute('aria-pressed', 'true');
+  await expect(rapidChoice).toHaveAttribute('aria-pressed', 'false');
+
+  const pierceAction = page.getByRole('button', { name: /^穿羽/ }).last();
+  await expect(pierceAction).toBeEnabled();
+  const turnOne = page.getByText(/^第\s*1\s*ターン$/);
+  await expect(turnOne).toBeVisible();
+  await pierceAction.click();
+  await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 2T');
+
+  await rapidChoice.click();
+  await expect(rapidChoice).toHaveAttribute('aria-pressed', 'true');
+  await expect(pierceChoice).toHaveAttribute('aria-pressed', 'false');
+  const rapidAction = page.getByRole('button', { name: /^連羽/ }).last();
+  await expect(rapidAction).toBeEnabled();
+  await expect(rapidAction).toContainText('交互+15%');
+  const turnTwo = page.getByText(/^第\s*2\s*ターン$/);
+  await expect(turnTwo).toBeVisible();
+  await rapidAction.click();
+
+  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
+  await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
+  // The alternation indicator belongs to the next selected mode, not the mode just used.
+  await pierceChoice.click();
+  await expect(pierceChoice).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByLabel(/交互ボーナス準備中：与ダメージ\+15%/)).toBeVisible();
+
+  expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });

@@ -112,6 +112,11 @@ export interface BattleFighter {
   buffDamageBonus: number; // 0 when not buffed; default buff is 125
   featherChargeBonus: number; // 0 until Irena's normal attacks build Feather power
   featherChargeCount: number; // number of successful Irena normal attacks since last Feather
+  /** Independent cooldowns for the two Feather Split variants; optional for old fighter snapshots. */
+  featherPierceCooldownRemaining?: number;
+  featherRapidCooldownRemaining?: number;
+  /** Last Feather Split mode used during this battle, for the one-hit alternation bonus. */
+  lastFeatherSplitMode?: FeatherSplitMode | null;
   isSuperFallenShotCharging: boolean;
   isEvading: boolean;
   isPlayer: boolean;
@@ -211,7 +216,7 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
 
-export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT';
+export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT' | 'FEATHER_SPLIT';
 
 export interface ImprintProgress {
   unlockedIds: ImprintId[];
@@ -246,7 +251,8 @@ export interface BattleSetupConfig {
 }
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';
-export type IrenaSpecialSkillId = 'FEATHER' | 'SUPER_FALLEN_SHOT';
+export type FeatherSplitMode = 'PIERCE' | 'RAPID';
+export type IrenaSpecialSkillId = 'FEATHER' | 'FEATHER_PIERCE' | 'FEATHER_RAPID' | 'SUPER_FALLEN_SHOT';
 export type FeatherSkillPath = 'ABYSS' | 'JUDGMENT' | 'CHARGE';
 export type RuinSkillPath = 'EXECUTION' | 'ANNIHILATION';
 

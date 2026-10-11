@@ -38,7 +38,7 @@ const {
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
-const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST } = await import('./src/utils/imprintSystem.ts');
+const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
@@ -586,6 +586,58 @@ assert.deepStrictEqual(unequipImprint('FORESIGHT')?.equippedIds, [], 'An equippe
 assert.strictEqual(equipImprint('FORESIGHT')?.equippedIds.includes('FORESIGHT'), true, 'Re-equipping after removal must work.');
 assert.strictEqual(unlockImprint('FORESIGHT')?.unlockedIds.length, 1, 'Duplicate acquisition must not duplicate ownership.');
 assert.strictEqual(MAX_EQUIPPED_IMPRINTS, 3, 'The imprint loadout has three slots.');
+
+assert.strictEqual(FEATHER_SPLIT_PIERCE_MULTIPLIER, 1.3);
+assert.strictEqual(FEATHER_SPLIT_RAPID_MULTIPLIER, 0.7);
+assert.strictEqual(FEATHER_SPLIT_ALTERNATION_BONUS, 0.15);
+assert.strictEqual(FEATHER_SPLIT_PIERCE_COOLDOWN, 3);
+assert.strictEqual(FEATHER_SPLIT_RAPID_COOLDOWN, 2);
+assert.strictEqual(getFeatherSplitModeForSkill('FEATHER_PIERCE'), 'PIERCE');
+assert.strictEqual(getFeatherSplitModeForSkill('FEATHER_RAPID'), 'RAPID');
+assert.strictEqual(getFeatherSplitModeForSkill('FEATHER'), null);
+assert.deepStrictEqual(resolveFeatherSplitDamage(100, 'PIERCE', null), {
+  damage: 130, baseMultiplier: 1.3, multiplier: 1.3, alternatingBonusApplied: false,
+});
+assert.deepStrictEqual(resolveFeatherSplitDamage(100, 'RAPID', null), {
+  damage: 70, baseMultiplier: 0.7, multiplier: 0.7, alternatingBonusApplied: false,
+});
+const splitAlternation = resolveFeatherSplitDamage(100, 'RAPID', 'PIERCE');
+assert.strictEqual(splitAlternation.damage, 81, 'Switching modes should add the one-use 15% bonus.');
+assert.strictEqual(splitAlternation.alternatingBonusApplied, true);
+assert.strictEqual(splitAlternation.multiplier, 0.7 * 1.15);
+assert.strictEqual(resolveFeatherSplitDamage(100, 'PIERCE', 'PIERCE').alternatingBonusApplied, false,
+  'Repeating the same mode must not trigger alternation.');
+assert.strictEqual(resolveFeatherSplitDamage(Number.NaN, 'PIERCE', null).damage, 0,
+  'Invalid damage must be sanitized.');
+const splitCooldownFighter = {
+  specialCooldownRemaining: 5,
+  featherPierceCooldownRemaining: 2,
+  featherRapidCooldownRemaining: 1,
+};
+assert.strictEqual(getSpecialCooldownRemaining(splitCooldownFighter, 'FEATHER_PIERCE', true), 2);
+assert.strictEqual(getSpecialCooldownRemaining(splitCooldownFighter, 'FEATHER_RAPID', true), 1);
+assert.strictEqual(getSpecialCooldownRemaining(splitCooldownFighter, 'FEATHER_PIERCE', false), 5,
+  'Without the imprint, legacy shared cooldown remains authoritative.');
+assert.strictEqual(IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'FEATHER_SPLIT'), true,
+  'Feather Split must be registered as an obtainable imprint.');
+assert.deepStrictEqual(normalizeEquippedImprints(['FEATHER_SPLIT', 'FEATHER_SPLIT']), ['FEATHER_SPLIT']);
+const splitDamageConfig = { kaiserLevel: 10, abilities: [], imprints: ['FEATHER_SPLIT'] };
+const splitDamageAttacker = createInitialFighter(IRENA, true);
+const splitDamageTarget = createInitialFighter(KAISER, false);
+assert.strictEqual(calculateSpecialDamage({
+  attacker: splitDamageAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_PIERCE',
+}), 156, 'Piercing should scale the otherwise 120-damage baseline by 1.30.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: splitDamageAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), 84, 'Rapid should scale the otherwise 120-damage baseline by 0.70.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: { ...splitDamageAttacker, lastFeatherSplitMode: 'PIERCE' },
+  target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), 97, 'Alternation bonus must be included in the displayed/computed damage.');
+
 assert.deepStrictEqual(normalizeEquippedImprints(['FORESIGHT', 'FORESIGHT', 'UNKNOWN', null]), ['FORESIGHT']);
 assert.deepStrictEqual(normalizeEquippedImprints(['BLOOD_TEAR', 'BLOOD_MEDIA']), ['BLOOD_TEAR'],
   'Legacy saves containing both blood imprints must normalize to one effect.');

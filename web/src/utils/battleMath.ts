@@ -7,6 +7,7 @@ import {
   getIrenaSuperFallenShotMultiplier,
 } from '../types/game';
 import { GAME_BALANCE } from '../data/gameBalance';
+import { getFeatherSplitModeForSkill, resolveFeatherSplitDamage } from './imprintSystem';
 import {
   applyDynamicAbilityModifiers,
   applyJudgmentDefense,
@@ -175,6 +176,16 @@ export function calculateSpecialDamage(context: DamageContext): number {
   if (judgmentActive) {
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel))
       + Math.round(target.currentHp * GAME_BALANCE.JUDGMENT_MAX_HP_BONUS);
+  }
+
+  const featherSplitMode = getFeatherSplitModeForSkill(context.specialSkillId);
+  if (
+    attacker.isPlayer &&
+    isIrenaSpecial &&
+    featherSplitMode &&
+    context.config.imprints?.includes('FEATHER_SPLIT')
+  ) {
+    damage = resolveFeatherSplitDamage(damage, featherSplitMode, attacker.lastFeatherSplitMode).damage;
   }
 
   return Math.max(0, applyFallenExecution(
