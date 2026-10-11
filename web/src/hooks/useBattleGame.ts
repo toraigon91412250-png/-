@@ -370,14 +370,18 @@ export function useBattleGame(
       updateState(prev => ({ ...prev, enemy: outcome.fighter }));
       if (outcome.armorWasActive) {
         addLog(
-          `🛡️【鉄壁装甲】耐久 ${outcome.armorBefore} → ${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}。HPダメージは25%軽減。`,
+          outcome.phaseChanged
+            ? `🛡️【鉄壁装甲】第2フェーズ移行により装甲を${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}で再展開。`
+            : `🛡️【鉄壁装甲】耐久 ${outcome.armorBefore} → ${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}。HPダメージは25%軽減。`,
           'PASSIVE_TRIGGER',
           turn,
         );
       }
-      if (outcome.armorBroke) {
+      // Phase two redeploys armor immediately, so its fresh armor state takes
+      // precedence over any break/broken-state message from the same hit.
+      if (outcome.armorBroke && !outcome.phaseChanged) {
         addLog('💥【鉄壁装甲破壊】カイザーが2ターンの装甲破壊状態に入った！ 被ダメージ×1.3。', 'PASSIVE_TRIGGER', turn);
-      } else if (outcome.armorWasBroken && isDirectHit) {
+      } else if (!outcome.phaseChanged && outcome.armorWasBroken && isDirectHit) {
         addLog(
           `⚔️【装甲破壊中】カイザーへのダメージ×1.3（残り${Math.max(1, stateRef.current.enemy.kaiserArmorBrokenTurns ?? 1)}ターン）。`,
           'PASSIVE_TRIGGER',
@@ -1061,6 +1065,12 @@ export function useBattleGame(
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
         let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        // Capture armor state before resolving this hit; the hit itself may break it
+        // or trigger phase two's immediate armor redeployment.
+        const armorWasActiveForHit =
+          target.character.id === 'kaiser' &&
+          stateRef.current.battleConfig.kaiserLevel >= 40 &&
+          (stateRef.current.enemy.kaiserArmorCurrent ?? 0) > 0;
         const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '通常攻撃');
         finalDamage = hitOutcome.damage;
 
@@ -1072,7 +1082,7 @@ export function useBattleGame(
           );
         }
 
-        const heavyArmorTriggered = target.character.id === 'kaiser';
+        const heavyArmorTriggered = target.character.id === 'kaiser' && !armorWasActiveForHit;
         if (hadBuff) {
           addLog(
             `⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！`,
