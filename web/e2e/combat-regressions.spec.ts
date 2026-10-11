@@ -98,7 +98,8 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /堕天の才能盤　Lv\.2/ })).toBeVisible();
+  const homeTalentButton = page.getByRole('button', { name: '堕天の才能盤を開く' });
+  await expect(homeTalentButton).toContainText('Lv.2');
   await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
