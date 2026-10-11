@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Eye, Feather, MoonStar, Sparkles, Wind } from 'lucide-react';
+import { ArrowLeft, Eye, Feather, MoonStar, Sparkles } from 'lucide-react';
 import {
   getAvailableIrenaTalentPoints,
   getIrenaLevelProgress,
