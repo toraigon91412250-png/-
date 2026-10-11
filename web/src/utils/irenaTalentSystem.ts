@@ -193,6 +193,9 @@ export function applyIrenaTalentModifiers(
     speed: character.speed + WIND_READ * 5,
     evasionRate: Math.min(0.4, character.evasionRate + WIND_READ * 0.01),
     specialSkillDamage: Math.round(character.specialSkillDamage * (1 + FEATHER_RESONANCE * 0.06)),
+    specialSkillDescription: FEATHER_RESONANCE > 0
+      ? `${character.specialSkillDescription}（才能効果：羽弾ダメージ +${FEATHER_RESONANCE * 6}%）`
+      : character.specialSkillDescription,
     ultimateSkillDamage: Math.round(character.ultimateSkillDamage * (1 + ABYSS_RESONANCE * 0.08)),
     defense: Math.max(0, character.defense - ABYSS_RESONANCE * 3),
   };
