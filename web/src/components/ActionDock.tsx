@@ -262,7 +262,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           )}
           {selectedSpecialSkill !== 'SUPER_FALLEN_SHOT' && (
             <span
-              aria-label={\`羽弾蓄積 +\${player.featherChargeBonus}、回数 \${Math.min(player.featherChargeCount, featherChargeMaxCount)} / \${featherChargeMaxCount}\`}
+              aria-label={`羽弾蓄積 +${player.featherChargeBonus}、回数 ${Math.min(player.featherChargeCount, featherChargeMaxCount)} / ${featherChargeMaxCount}`}
               style={{
                 fontSize: '10px',
                 fontWeight: 800,
@@ -274,12 +274,12 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 whiteSpace: 'nowrap',
               }}
             >
-              🪶 +{player.featherChargeBonus} · {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount} · {featherChargeAtMax ? 'MAX' : \`次+\${nextFeatherChargeRange[0]}〜\${nextFeatherChargeRange[1]}\`}
+              🪶 +{player.featherChargeBonus} · {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount} · {featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
             </span>
           )}
           {hasSelectedModeAlternationBonus && (
             <span
-              aria-label={\`交互ボーナス準備中：与ダメージ+\${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%\`}
+              aria-label={`交互ボーナス準備中：与ダメージ+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%`}
               style={{
                 fontSize: '10px',
                 fontWeight: 900,
@@ -326,7 +326,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           aria-label={hasFeatherSplitImprint ? '羽撃ち分け・特殊技選択' : '特殊技選択'}
           style={{
             display: 'grid',
-            gridTemplateColumns: \`repeat(\${hasFeatherSplitImprint ? (hasSuperFallenShot ? 3 : 2) : 2}, minmax(0, 1fr))\`,
+            gridTemplateColumns: `repeat(${hasFeatherSplitImprint ? (hasSuperFallenShot ? 3 : 2) : 2}, minmax(0, 1fr))`,
             gap: '5px',
             marginBottom: '6px',
           }}
@@ -337,7 +337,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 {
                   id: 'FEATHER_PIERCE' as const,
                   label: '🪽 穿羽',
-                  detail: \`\${FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2)}× · \${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true) > 0 ? \`CT \${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true)}T\` : '使用可'}\`,
+                  detail: `${FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2)}× · ${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true)}T` : '使用可'}`,
                   accent: '#EA80FC',
                   background: 'rgba(123,31,162,.34)',
                   text: '#F3E5F5',
@@ -345,7 +345,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 {
                   id: 'FEATHER_RAPID' as const,
                   label: '🪶 連羽',
-                  detail: \`\${FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}× · \${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true) > 0 ? \`CT \${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true)}T\` : '使用可'}\`,
+                  detail: `${FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}× · ${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true)}T` : '使用可'}`,
                   accent: '#80CBC4',
                   background: 'rgba(0,121,107,.28)',
                   text: '#D7FFF8',
@@ -356,7 +356,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                   <button
                     key={choice.id}
                     type="button"
-                    aria-label={\`\${choice.id === 'FEATHER_PIERCE' ? '穿羽' : '連羽'}を選択\`}
+                    aria-label={`${choice.id === 'FEATHER_PIERCE' ? '穿羽' : '連羽'}を選択`}
                     aria-pressed={selected}
                     title={choice.id === 'FEATHER_PIERCE'
                       ? '穿羽：高火力、出血付与あり、CT3。交互に使うと与ダメージ+15%。'
@@ -367,7 +367,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                       minWidth: 0,
                       minHeight: '38px',
                       borderRadius: '8px',
-                      border: selected ? \`1px solid \${choice.accent}\` : '1px solid #39445C',
+                      border: selected ? `1px solid ${choice.accent}` : '1px solid #39445C',
                       background: selected ? choice.background : 'rgba(16,21,32,.9)',
                       color: selected ? choice.text : '#98A6BC',
                       fontSize: '10px',
@@ -626,7 +626,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>♻️ 代償撃ち</span>
             <span style={{ fontSize: '10px', fontWeight: 700 }}>
-              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {selectedSpecialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : 'リセット不要'}
+              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {selectedSpecialCooldownRemaining > 0 ? `${selectedSpecialCooldownRemaining} → 0` : 'リセット不要'}
             </span>
           </button>
         </div>
