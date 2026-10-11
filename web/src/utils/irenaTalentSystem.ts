@@ -187,6 +187,8 @@ export function applyIrenaTalentModifiers(
 ): CharacterDef {
   const normalized = normalizeIrenaTalentProgress(progress);
   const { WIND_READ, FEATHER_RESONANCE, ABYSS_RESONANCE } = normalized.ranks;
+  const talentBaseSpecialSkillDamage = character.talentBaseSpecialSkillDamage ?? character.specialSkillDamage;
+  const talentSpecialDamageMultiplier = 1 + FEATHER_RESONANCE * 0.06;
   const talentBaseUltimateSkillDamage = character.talentBaseUltimateSkillDamage ?? character.ultimateSkillDamage;
   const talentUltimateDamageMultiplier = 1 + ABYSS_RESONANCE * 0.08;
 
@@ -194,7 +196,9 @@ export function applyIrenaTalentModifiers(
     ...character,
     speed: character.speed + WIND_READ * 5,
     evasionRate: Math.min(0.4, character.evasionRate + WIND_READ * 0.01),
-    specialSkillDamage: Math.round(character.specialSkillDamage * (1 + FEATHER_RESONANCE * 0.06)),
+    specialSkillDamage: Math.round(talentBaseSpecialSkillDamage * talentSpecialDamageMultiplier),
+    talentBaseSpecialSkillDamage,
+    talentSpecialDamageMultiplier,
     specialSkillDescription: FEATHER_RESONANCE > 0
       ? `${character.specialSkillDescription}（才能効果：羽弾ダメージ +${FEATHER_RESONANCE * 6}%）`
       : character.specialSkillDescription,
