@@ -3,6 +3,7 @@ import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { CharacterSelectScreen } from './components/CharacterSelectScreen';
+import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
 import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
@@ -19,15 +20,19 @@ import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
+import { applyIrenaTalentModifiers, loadIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
+import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS'>('SELECT');
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
   const [kaiserChallengeProgress, setKaiserChallengeProgress] = useState(() => loadKaiserChallengeProgress());
+  const [irenaTalentProgress, setIrenaTalentProgress] = useState(() => loadIrenaTalentProgress());
+  const [irenaTalentMessage, setIrenaTalentMessage] = useState<string | null>(null);
   const [availableStatPoints, setAvailableStatPoints] = useState(() => loadStatPoints());
   const [raidRewardProgress, setRaidRewardProgress] = useState(() => loadRaidRewardProgress());
   const [imprintProgress, setImprintProgress] = useState(() => loadImprintProgress());
@@ -42,7 +47,7 @@ export const App: React.FC = () => {
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
-  const upgradedIrena = getIrenaWithSkillProgress(skillProgress);
+  const upgradedIrena = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
 
   const {
     state: battleState,
@@ -66,6 +71,7 @@ export const App: React.FC = () => {
       setRecruitmentProgress(loadRecruitmentProgress());
       setAbilityProgress(loadAbilityProgress());
       setAvailableStatPoints(loadStatPoints());
+      setIrenaTalentProgress(loadIrenaTalentProgress());
       const completedLevel = battleState.battleConfig.kaiserLevel;
       const playerWon = battleState.winnerIsPlayer === true;
       const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
@@ -80,6 +86,7 @@ export const App: React.FC = () => {
   const refreshProgress = () => {
     setRaidRewardProgress(loadRaidRewardProgress());
     setKaiserChallengeProgress(loadKaiserChallengeProgress());
+    setIrenaTalentProgress(loadIrenaTalentProgress());
     const currentImprintProgress = loadImprintProgress();
     setImprintProgress(currentImprintProgress);
     setOverallStats(loadOverallStats());
@@ -143,6 +150,22 @@ export const App: React.FC = () => {
     setBattleSetup(prev => ({ ...prev, imprints: current.equippedIds }));
     setImprintMessage(null);
     setScreen('IMPRINTS');
+  };
+
+  const handleOpenTalentBoard = () => {
+    setIrenaTalentProgress(loadIrenaTalentProgress());
+    setIrenaTalentMessage(null);
+    setScreen('IRENA_TALENTS');
+  };
+
+  const handleSpendIrenaTalentPoint = (id: IrenaTalentId) => {
+    const next = spendIrenaTalentPoint(id);
+    if (!next) {
+      setIrenaTalentMessage('才能ポイントが足りないか、保存に失敗しました。');
+      return;
+    }
+    setIrenaTalentProgress(next);
+    setIrenaTalentMessage('才能を強化しました。次の戦闘から効果が反映されます。');
   };
 
   const handleEquipImprint = (id: ImprintId) => {
@@ -310,6 +333,8 @@ export const App: React.FC = () => {
   const handleDeveloperReset = () => {
     const reset = resetProgressForDeveloper();
     setKaiserChallengeProgress(resetKaiserChallengeProgress());
+    setIrenaTalentProgress(loadIrenaTalentProgress());
+    setIrenaTalentMessage(null);
     setOverallStats(reset.overallStats);
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
@@ -366,6 +391,19 @@ export const App: React.FC = () => {
           onUseRaidCoreFragment={handleUseRaidCoreFragment}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
+          irenaTalentProgress={irenaTalentProgress}
+          onOpenTalentBoard={handleOpenTalentBoard}
+        />
+      ) : screen === 'IRENA_TALENTS' ? (
+        <IrenaTalentBoard
+          progress={irenaTalentProgress}
+          message={irenaTalentMessage}
+          onSpendPoint={handleSpendIrenaTalentPoint}
+          onBack={() => {
+            setIrenaTalentMessage(null);
+            refreshProgress();
+            setScreen('SELECT');
+          }}
         />
       ) : screen === 'GACHA_HUB' ? (
         <GachaHubScreen
