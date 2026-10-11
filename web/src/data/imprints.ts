@@ -84,6 +84,16 @@ export const IMPRINT_DEFINITIONS: readonly ImprintDefinition[] = [
     effect: 'HPを固定値200消費し、特殊技のクールタイムを0にする。発動自体で相手にダメージは与えない。',
     usageLimit: '1ターンを消費する。HPが200以下、または超堕天撃の充填中は使用不可。',
   },
+  {
+    id: 'FEATHER_SPLIT',
+    name: '羽撃ち分け',
+    symbol: '🪽',
+    category: '技切替',
+    description: '羽弾を「穿羽」と「連羽」に切り替え、一撃の威力と回転率を使い分ける。',
+    trigger: '装備中、特殊技の選択欄から「穿羽」または「連羽」を選択して羽弾を使用する。',
+    effect: '穿羽：与ダメージ×1.30、クールタイム3。連羽：与ダメージ×0.70、クールタイム2。前回と異なるモードで羽弾を使用すると、その攻撃に交互ボーナス+15%。出血など羽弾本来の追加効果は両モードで発動する。',
+    usageLimit: 'モードごとにクールタイムを独立管理。交互ボーナスは1回の攻撃にのみ適用し、重複しない。',
+  },
 ] as const;
 
 export function isImprintId(value: unknown): value is ImprintId {
