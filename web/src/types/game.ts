@@ -90,6 +90,10 @@ export interface CharacterDef {
   hasSuperFallenShot?: boolean;
   ultimateSkillName: string;
   ultimateSkillDamage: number;
+  /** Ultimate damage before the talent multiplier, retained for consistent scaling of all variants. */
+  talentBaseUltimateSkillDamage?: number;
+  /** Multiplier from Abyss Resonance; also applies to fixed-power ultimate variants. */
+  talentUltimateDamageMultiplier?: number;
   ultimateSlogan: string;
   imageSrc: string;
   selectImageSrc?: string; // キャラ選択画面用（未指定なら imageSrc）
