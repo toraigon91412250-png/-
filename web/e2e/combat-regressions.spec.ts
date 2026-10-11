@@ -734,6 +734,13 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
   const cutinRequested = new Promise<void>(resolve => { markCutinRequested = resolve; });
 
   await page.route('**/4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png*', async route => {
+    // Vite requests imported assets as JavaScript modules with ?import.
+    // Let that module load so React can render; block only the actual image request.
+    const requestUrl = new URL(route.request().url());
+    if (requestUrl.searchParams.has('import')) {
+      await route.continue();
+      return;
+    }
     markCutinRequested();
     await cutinGate;
     await route.continue();
