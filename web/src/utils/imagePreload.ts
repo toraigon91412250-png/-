@@ -13,7 +13,7 @@ import strongShotImage from '../assets/IMG_1155.jpeg';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 
-const PUBLIC_IMAGES = [
+const RECRUITMENT_IMAGES = [
   'assets/recruitment/1791110297970.jpg',
   'assets/recruitment/1791110298323.jpg',
   'assets/recruitment/1791110298431.jpg',
@@ -77,6 +77,12 @@ const preloadImage = (src: string): Promise<void> => {
 
 export const preloadAllGameImages = (): Promise<void[]> => {
   if (typeof window === 'undefined') return Promise.resolve([]);
-  const publicImages = PUBLIC_IMAGES.map(path => import.meta.env.BASE_URL + path);
-  return Promise.all([...SRC_IMAGES, ...publicImages].map(preloadImage));
+  return Promise.all(SRC_IMAGES.map(preloadImage));
+};
+
+/** Load large summon-only artwork when the player enters the recruitment screen. */
+export const preloadRecruitmentImages = (): Promise<void[]> => {
+  if (typeof window === 'undefined') return Promise.resolve([]);
+  const recruitmentImages = RECRUITMENT_IMAGES.map(path => import.meta.env.BASE_URL + path);
+  return Promise.all(recruitmentImages.map(preloadImage));
 };

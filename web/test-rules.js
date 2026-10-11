@@ -36,7 +36,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -1338,6 +1338,61 @@ assert.strictEqual(resolveRaidAction(raidTerminalState, 'ATTACK', () => 0.5), ra
 
 console.log('✓ Raid 36-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
 
+
+
+
+
+
+console.log('--- Testing storage failure rollback ---');
+const recruitKeyForSaveTest = 'duel_arena_recruitment_progress';
+const abilityKeyForSaveTest = 'duel_arena_ability_progress';
+const skillKeyForSaveTest = 'duel_arena_irena_skill_progress';
+const statsKeyForSaveTest = 'duel_arena_battle_stats';
+const pointsKeyForSaveTest = 'duel_arena_stat_points';
+
+const beforeRecruitmentFailure = new Map([
+  [recruitKeyForSaveTest, storageValues.get(recruitKeyForSaveTest)],
+  [abilityKeyForSaveTest, storageValues.get(abilityKeyForSaveTest)],
+  [skillKeyForSaveTest, storageValues.get(skillKeyForSaveTest)],
+]);
+storageValues.set(recruitKeyForSaveTest, JSON.stringify({
+  tickets: 10, totalPulls: 0, collectedIds: [], lastResults: [],
+}));
+const recruitmentTransactionBefore = new Map([
+  [recruitKeyForSaveTest, storageValues.get(recruitKeyForSaveTest)],
+  [abilityKeyForSaveTest, storageValues.get(abilityKeyForSaveTest)],
+  [skillKeyForSaveTest, storageValues.get(skillKeyForSaveTest)],
+]);
+const setItemBeforeRecruitmentFailure = globalThis.localStorage.setItem;
+globalThis.localStorage.setItem = (key, value) => {
+  if (key === skillKeyForSaveTest) throw new Error('simulated storage write failure');
+  storageValues.set(key, String(value));
+};
+assert.strictEqual(performRecruitment(1), null, 'A summon must fail when any reward save fails.');
+for (const key of [recruitKeyForSaveTest, abilityKeyForSaveTest, skillKeyForSaveTest]) {
+  assert.strictEqual(storageValues.get(key), recruitmentTransactionBefore.get(key),
+    'A failed summon must restore its previous saved value: ' + key);
+}
+globalThis.localStorage.setItem = setItemBeforeRecruitmentFailure;
+
+const battleTransactionKeys = [statsKeyForSaveTest, skillKeyForSaveTest, recruitKeyForSaveTest, pointsKeyForSaveTest];
+const battleTransactionBefore = new Map(battleTransactionKeys.map(key => [key, storageValues.get(key)]));
+const setItemBeforeBattleFailure = globalThis.localStorage.setItem;
+globalThis.localStorage.setItem = (key, value) => {
+  if (key === recruitKeyForSaveTest) throw new Error('simulated storage write failure');
+  storageValues.set(key, String(value));
+};
+const failedBattleSave = saveBattleResult(true);
+assert.strictEqual(failedBattleSave.persisted, false, 'A battle must report when reward persistence fails.');
+for (const key of battleTransactionKeys) {
+  assert.strictEqual(storageValues.get(key), battleTransactionBefore.get(key),
+    'A failed battle reward save must restore its previous saved value: ' + key);
+}
+globalThis.localStorage.setItem = setItemBeforeBattleFailure;
+for (const [key, value] of beforeRecruitmentFailure) {
+  if (value === undefined) storageValues.delete(key);
+  else storageValues.set(key, value);
+}
+console.log('✓ Recruitment and battle reward writes roll back instead of leaving partial progression.');
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
-
-

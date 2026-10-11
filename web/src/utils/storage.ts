@@ -10,6 +10,46 @@ const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
 const STAT_POINTS_KEY = 'duel_arena_stat_points';
 const RAID_REWARD_PROGRESS_KEY = 'duel_arena_raid_reward_progress';
 
+interface StorageWrite {
+  key: string;
+  value: string;
+}
+
+/**
+ * Persist related progression keys as one best-effort transaction. localStorage
+ * has no native transaction API, so restore previous values if any write fails
+ * rather than leaving battle or summon rewards partially applied.
+ */
+function persistStorageTransaction(writes: StorageWrite[]): boolean {
+  const previous: Array<{ key: string; value: string | null }> = [];
+
+  try {
+    for (const { key } of writes) {
+      previous.push({ key, value: localStorage.getItem(key) });
+    }
+  } catch {
+    return false;
+  }
+
+  try {
+    for (const { key, value } of writes) {
+      localStorage.setItem(key, value);
+    }
+    return true;
+  } catch {
+    for (let index = previous.length - 1; index >= 0; index -= 1) {
+      const saved = previous[index];
+      try {
+        if (saved.value === null) localStorage.removeItem(saved.key);
+        else localStorage.setItem(saved.key, saved.value);
+      } catch {
+        // Rollback is best-effort when the storage backend itself is failing.
+      }
+    }
+    return false;
+  }
+}
+
 
 const INITIAL_SKILL_PROGRESS: IrenaSkillProgress = {
   shards: 50,
@@ -427,10 +467,11 @@ function persistAbilityProgress(progress: AbilityProgress): AbilityProgress {
   const normalized = normalizeAbilityProgress(progress);
   try {
     localStorage.setItem(ABILITY_PROGRESS_KEY, JSON.stringify(normalized));
+    return normalized;
   } catch {
-    // ignore
+    // Never present an unsaved upgrade/reward as the current progression.
+    return loadAbilityProgress();
   }
-  return normalized;
 }
 
 export function addAbilityShards(abilityId: AbilityId, amount: number): AbilityProgress {
@@ -652,10 +693,11 @@ function persistSkillProgress(progress: IrenaSkillProgress): IrenaSkillProgress 
   const normalized = normalizeSkillProgress(progress);
   try {
     localStorage.setItem(SKILL_PROGRESS_KEY, JSON.stringify(normalized));
+    return normalized;
   } catch {
-    // ignore
+    // Never present an unsaved upgrade/reward as the current progression.
+    return loadSkillProgress();
   }
-  return normalized;
 }
 
 export function addSkillShards(amount: number): IrenaSkillProgress {
@@ -714,7 +756,12 @@ export function chooseIrenaSkillPath(
   return persistSkillProgress({ ...current, ruinPath: path });
 }
 
-export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallStats {
+export interface BattleResultSave {
+  stats: OverallStats;
+  persisted: boolean;
+}
+
+export function saveBattleResult(playerWon: boolean, masteryBonus = 0): BattleResultSave {
   const current = loadOverallStats();
   const updated: OverallStats = {
     totalBattles: current.totalBattles + 1,
@@ -722,16 +769,31 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): OverallS
     losses: current.losses + (playerWon ? 0 : 1),
   };
 
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch {
-    // ignore
+  const currentSkills = loadSkillProgress();
+  const nextSkills = normalizeSkillProgress({
+    ...currentSkills,
+    shards: currentSkills.shards + getBattleReward(playerWon, masteryBonus),
+  });
+  const currentRecruitment = loadRecruitmentProgress();
+  const nextRecruitment = normalizeRecruitmentProgress({
+    ...currentRecruitment,
+    tickets: currentRecruitment.tickets + 1,
+  });
+  const writes: StorageWrite[] = [
+    { key: STORAGE_KEY, value: JSON.stringify(updated) },
+    { key: SKILL_PROGRESS_KEY, value: JSON.stringify(nextSkills) },
+    { key: RECRUITMENT_KEY, value: JSON.stringify(nextRecruitment) },
+  ];
+
+  if (playerWon) {
+    writes.push({
+      key: STAT_POINTS_KEY,
+      value: String(loadBaseStatPoints() + STAT_POINTS_PER_WIN),
+    });
   }
 
-  addSkillShards(getBattleReward(playerWon, masteryBonus));
-  addRecruitmentTickets(1);
-  if (playerWon) addStatPoints(STAT_POINTS_PER_WIN);
-  return updated;
+  const persisted = persistStorageTransaction(writes);
+  return { stats: persisted ? updated : current, persisted };
 }
 
 
@@ -780,10 +842,11 @@ function persistRecruitmentProgress(progress: RecruitmentProgress): RecruitmentP
   const normalized = normalizeRecruitmentProgress(progress);
   try {
     localStorage.setItem(RECRUITMENT_KEY, JSON.stringify(normalized));
+    return normalized;
   } catch {
-    // ignore
+    // Never present unsaved tickets/collection progress as if the save succeeded.
+    return loadRecruitmentProgress();
   }
-  return normalized;
 }
 
 export function addRecruitmentTickets(amount: number): RecruitmentProgress {
@@ -915,15 +978,22 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
     };
   }
 
-  persistAbilityProgress(abilityProgress);
-  persistSkillProgress(skillProgress);
-  const nextProgress = persistRecruitmentProgress({
+  const nextAbilityProgress = normalizeAbilityProgress(abilityProgress);
+  const nextSkillProgress = normalizeSkillProgress(skillProgress);
+  const nextProgress = normalizeRecruitmentProgress({
     ...current,
     tickets: nextTickets,
     totalPulls: current.totalPulls + normalizedCount,
     collectedIds: Array.from(collected),
     lastResults: current.lastResults.concat(draws.map(draw => draw.reward.id)).slice(-20),
   });
+
+  const persisted = persistStorageTransaction([
+    { key: ABILITY_PROGRESS_KEY, value: JSON.stringify(nextAbilityProgress) },
+    { key: SKILL_PROGRESS_KEY, value: JSON.stringify(nextSkillProgress) },
+    { key: RECRUITMENT_KEY, value: JSON.stringify(nextProgress) },
+  ]);
+  if (!persisted) return null;
 
   return { progress: nextProgress, results: draws };
 }

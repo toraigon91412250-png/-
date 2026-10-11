@@ -1979,13 +1979,20 @@ export function useBattleGame(
     yinYangDefensePendingRef.current = false;
     const masteryBonus = battleMasteryRewardRef.current;
     const reward = getBattleReward(winnerIsPlayer, masteryBonus);
-    saveBattleResult(winnerIsPlayer, masteryBonus);
+    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus);
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);
     } else {
       soundManager.playDefeat();
       addLog('💀 敗北しました... 再挑戦してみましょう！', 'DEFEAT', stateRef.current.turnNumber);
+    }
+    if (!saveOutcome.persisted) {
+      addLog(
+        '⚠️ 保存に失敗しました。今回の報酬は記録されていません。ブラウザの保存容量・保存設定を確認してください。',
+        'SYSTEM',
+        stateRef.current.turnNumber,
+      );
     }
     updateState(prev => ({
       ...prev,
@@ -1995,7 +2002,7 @@ export function useBattleGame(
       visualEffects: [],
       judgmentReady: false,
       isAnimating: false,
-      lastBattleReward: reward,
+      lastBattleReward: saveOutcome.persisted ? reward : 0,
       lastBattleMasteryReward: masteryBonus,
     }));
   };
