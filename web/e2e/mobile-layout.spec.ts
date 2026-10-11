@@ -56,3 +56,50 @@ test('mobile pages permit browser zoom for accessibility', async ({ page }) => {
   expect(viewport).not.toContain('user-scalable=no');
   expect(viewport).not.toMatch(/maximum-scale\s*=\s*1(?:\.0)?/);
 });
+
+test('mobile battle setup keeps the start action anchored and stat controls easy to tap', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile layout contract');
+
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  const viewport = page.viewportSize();
+  expect(viewport).not.toBeNull();
+
+  const root = page.locator('.battle-setup-screen');
+  const footer = page.locator('.battle-setup-action-footer');
+  const startButton = page.locator('.battle-setup-start-button');
+  await expect(footer).toBeVisible();
+  await expect(startButton).toBeVisible();
+
+  const footerBefore = await footer.boundingBox();
+  const startBefore = await startButton.boundingBox();
+  expect(footerBefore).not.toBeNull();
+  expect(startBefore).not.toBeNull();
+  expect(footerBefore!.y + footerBefore!.height).toBeLessThanOrEqual(viewport!.height + 1);
+  expect(startBefore!.y).toBeGreaterThanOrEqual(footerBefore!.y);
+  expect(startBefore!.y + startBefore!.height).toBeLessThanOrEqual(viewport!.height + 1);
+
+  const hpPlus = page.getByRole('button', { name: 'HPを1P増やす' });
+  const hpPlusBox = await hpPlus.boundingBox();
+  expect(hpPlusBox).not.toBeNull();
+  expect(hpPlusBox!.width).toBeGreaterThanOrEqual(44);
+  expect(hpPlusBox!.height).toBeGreaterThanOrEqual(44);
+
+  await root.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  const footerAfter = await footer.boundingBox();
+  const startAfter = await startButton.boundingBox();
+  expect(footerAfter).not.toBeNull();
+  expect(startAfter).not.toBeNull();
+  expect(Math.abs(footerAfter!.y - footerBefore!.y)).toBeLessThan(2);
+  expect(Math.abs(startAfter!.y - startBefore!.y)).toBeLessThan(2);
+});
