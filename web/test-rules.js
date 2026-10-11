@@ -418,6 +418,17 @@ const criticalDamage = calculateNormalAttackDamage({
 
 assert.strictEqual(normalDamage, 180);
 assert.strictEqual(criticalDamage, 280);
+const attackTalentFighter = createInitialFighter(attackTalentBuild, true);
+assert.strictEqual(calculateNormalAttackDamage({
+  attacker: attackTalentFighter,
+  target: attackTarget,
+  config,
+  turn: 1,
+  isActingFirst: true,
+}), normalDamage + (attackTalentBuild.attack - IRENA.attack),
+  'Raven Assault must improve real normal-attack damage, not only the displayed stat.');
+assert.strictEqual(createInitialFighter(defensiveTalentBuild, true).currentHp, defensiveTalentBuild.maxHp,
+  'Last Wing must increase starting HP along with the displayed maximum.');
 const armoredAttackTarget = createInitialFighter(KAISER, false, 40);
 const rawNormalDamageAgainstArmor = calculateNormalAttackDamage({
   attacker: attackBase,
