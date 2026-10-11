@@ -114,7 +114,7 @@ test('Irena talent board opens from home and persists spent talent points', asyn
   await page.getByRole('button', { name: '才能を振り直すことを確定' }).click();
   await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
-  await expect(page.getByRole('status')).toContainText('経験値は維持');
+  await expect(page.getByRole('status').filter({ hasText: '経験値は維持' })).toBeVisible();
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
