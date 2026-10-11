@@ -121,15 +121,14 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const levelRules = page.getByRole('status', { name: '挑戦レベルの特殊ルール' });
-  await expect(levelRules).toContainText('装甲なし');
-  await page.getByRole('button', { name: /Lv\.50/ }).click();
   await expect(levelRules).toContainText('鉄壁装甲');
-  await page.getByRole('button', { name: /Lv\.70/ }).click();
-  await expect(levelRules).toContainText('行動適応');
-  await page.getByRole('button', { name: /Lv\.100/ }).click();
   await expect(levelRules).toContainText('最終試練');
   await expect(levelRules).toContainText('HP50%');
-  await page.getByRole('button', { name: /Lv\.50/ }).click();
+
+  await page.getByRole('button', { name: /Lv\.90/ }).click();
+  await expect(levelRules).toContainText('鉄壁装甲');
+  await expect(levelRules).toContainText('行動適応');
+  await page.getByRole('button', { name: /Lv\.100/ }).click();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
   const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
