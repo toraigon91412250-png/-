@@ -103,3 +103,50 @@ test('mobile battle setup keeps the start action anchored and stat controls easy
   expect(Math.abs(footerAfter!.y - footerBefore!.y)).toBeLessThan(2);
   expect(Math.abs(startAfter!.y - startBefore!.y)).toBeLessThan(2);
 });
+
+
+test('mobile setup layout fits narrow portrait and short landscape viewports', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile viewport contract');
+
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  const root = page.locator('.battle-setup-screen');
+  const footer = page.locator('.battle-setup-action-footer');
+  const startButton = page.locator('.battle-setup-start-button');
+  const hpPlus = page.getByRole('button', { name: 'HPを1P増やす' });
+
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 667, height: 375 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(footer).toBeVisible();
+    await expect(startButton).toBeVisible();
+
+    const rootBox = await root.boundingBox();
+    const footerBox = await footer.boundingBox();
+    const startBox = await startButton.boundingBox();
+    expect(rootBox).not.toBeNull();
+    expect(footerBox).not.toBeNull();
+    expect(startBox).not.toBeNull();
+
+    expect(footerBox!.x).toBeGreaterThanOrEqual(-1);
+    expect(footerBox!.x + footerBox!.width).toBeLessThanOrEqual(viewport.width + 1);
+    expect(footerBox!.y + footerBox!.height).toBeLessThanOrEqual(viewport.height + 1);
+    expect(startBox!.y).toBeGreaterThanOrEqual(footerBox!.y);
+    expect(startBox!.y + startBox!.height).toBeLessThanOrEqual(viewport.height + 1);
+    expect(rootBox!.width).toBeLessThanOrEqual(viewport.width + 1);
+
+    const hpPlusBox = await hpPlus.boundingBox();
+    expect(hpPlusBox).not.toBeNull();
+    expect(hpPlusBox!.width).toBeGreaterThanOrEqual(44);
+    expect(hpPlusBox!.height).toBeGreaterThanOrEqual(44);
+  }
+});
