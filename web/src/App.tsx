@@ -17,7 +17,7 @@ import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
-import { preloadAllGameImages, preloadRecruitmentImages } from './utils/imagePreload';
+import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
   } = useBattleGame(IRENA, KAISER, difficulty, battleSetup);
 
   useEffect(() => {
-    void preloadAllGameImages();
+    void preloadBattleImages();
   }, []);
 
   // Reload stats whenever battle is finished
@@ -188,11 +188,18 @@ export const App: React.FC = () => {
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
-    const minimumDeployMs = 1100;
+    const minimumDeploy = new Promise<void>(resolve => {
+      window.setTimeout(resolve, 1100);
+    });
 
-    // Image preloading is best-effort only. Do not block battle visibility on
-    // an image decode that may never settle.
-    window.setTimeout(() => setIsBattleDeploying(false), minimumDeployMs);
+    // Keep the deployment overlay over the battle until all battle artwork,
+    // including the dedicated 穿羽 cut-in, has finished loading/decoding.
+    // The preload helper settles on both load and error, so a missing optional
+    // image cannot permanently lock the player out of combat.
+    void Promise.all([preloadBattleImages(), minimumDeploy]).then(
+      () => setIsBattleDeploying(false),
+      () => setIsBattleDeploying(false),
+    );
   };
   const handleUpgradeSkill = (skillId: 'FEATHER' | 'RUIN') => {
     const next = upgradeIrenaSkill(skillId);
