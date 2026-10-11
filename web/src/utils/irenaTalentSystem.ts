@@ -7,12 +7,19 @@ export const IRENA_TALENT_MAX_POINTS = 9;
 export const IRENA_TALENT_WIN_XP = 100;
 export const IRENA_TALENT_LOSS_XP = 35;
 
-export type IrenaTalentId = 'WIND_READ' | 'FEATHER_RESONANCE' | 'ABYSS_RESONANCE';
+export type IrenaTalentId =
+  | 'WIND_READ'
+  | 'FEATHER_RESONANCE'
+  | 'ABYSS_RESONANCE'
+  | 'RAVEN_ASSAULT'
+  | 'LAST_WING';
 
 export interface IrenaTalentRanks {
   WIND_READ: number;
   FEATHER_RESONANCE: number;
   ABYSS_RESONANCE: number;
+  RAVEN_ASSAULT: number;
+  LAST_WING: number;
 }
 
 export interface IrenaTalentProgress {
@@ -26,6 +33,8 @@ export const INITIAL_IRENA_TALENT_PROGRESS: IrenaTalentProgress = {
     WIND_READ: 0,
     FEATHER_RESONANCE: 0,
     ABYSS_RESONANCE: 0,
+    RAVEN_ASSAULT: 0,
+    LAST_WING: 0,
   },
 };
 
@@ -33,6 +42,8 @@ const TALENT_IDS: readonly IrenaTalentId[] = [
   'WIND_READ',
   'FEATHER_RESONANCE',
   'ABYSS_RESONANCE',
+  'RAVEN_ASSAULT',
+  'LAST_WING',
 ];
 
 export function getIrenaXpForLevel(level: number): number {
@@ -115,6 +126,8 @@ export function normalizeIrenaTalentProgress(value: unknown): IrenaTalentProgres
     WIND_READ: 0,
     FEATHER_RESONANCE: 0,
     ABYSS_RESONANCE: 0,
+    RAVEN_ASSAULT: 0,
+    LAST_WING: 0,
   };
   let pointsRemaining = pointsAllowed;
 
@@ -181,12 +194,34 @@ export function spendIrenaTalentPoint(id: IrenaTalentId): IrenaTalentProgress | 
   return saveIrenaTalentProgress(next) ? next : null;
 }
 
+/** Reset the allocation without losing XP or level, so players can freely try builds. */
+export function resetIrenaTalentRanks(): IrenaTalentProgress | null {
+  const current = loadIrenaTalentProgress();
+  const next = normalizeIrenaTalentProgress({
+    experience: current.experience,
+    ranks: {
+      WIND_READ: 0,
+      FEATHER_RESONANCE: 0,
+      ABYSS_RESONANCE: 0,
+      RAVEN_ASSAULT: 0,
+      LAST_WING: 0,
+    },
+  });
+  return saveIrenaTalentProgress(next) ? next : null;
+}
+
 export function applyIrenaTalentModifiers(
   character: CharacterDef,
   progress: IrenaTalentProgress,
 ): CharacterDef {
   const normalized = normalizeIrenaTalentProgress(progress);
-  const { WIND_READ, FEATHER_RESONANCE, ABYSS_RESONANCE } = normalized.ranks;
+  const { WIND_READ, FEATHER_RESONANCE, ABYSS_RESONANCE, RAVEN_ASSAULT, LAST_WING } = normalized.ranks;
+  const talentBaseMaxHp = character.talentBaseMaxHp ?? character.maxHp;
+  const talentBaseAttack = character.talentBaseAttack ?? character.attack;
+  const talentBaseDefense = character.talentBaseDefense ?? character.defense;
+  const talentBaseSpeed = character.talentBaseSpeed ?? character.speed;
+  const talentBaseEvasionRate = character.talentBaseEvasionRate ?? character.evasionRate;
+  const talentBaseSpecialSkillDescription = character.talentBaseSpecialSkillDescription ?? character.specialSkillDescription;
   const talentBaseSpecialSkillDamage = character.talentBaseSpecialSkillDamage ?? character.specialSkillDamage;
   const talentSpecialDamageMultiplier = 1 + FEATHER_RESONANCE * 0.06;
   const talentBaseUltimateSkillDamage = character.talentBaseUltimateSkillDamage ?? character.ultimateSkillDamage;
@@ -194,17 +229,25 @@ export function applyIrenaTalentModifiers(
 
   return {
     ...character,
-    speed: character.speed + WIND_READ * 5,
-    evasionRate: Math.min(0.4, character.evasionRate + WIND_READ * 0.01),
+    maxHp: Math.round(talentBaseMaxHp * (1 + LAST_WING * 0.05)),
+    attack: Math.round(talentBaseAttack * (1 + RAVEN_ASSAULT * 0.05)),
+    defense: Math.max(0, talentBaseDefense - ABYSS_RESONANCE * 3),
+    speed: talentBaseSpeed + WIND_READ * 5,
+    evasionRate: Math.min(0.4, talentBaseEvasionRate + WIND_READ * 0.01),
     specialSkillDamage: Math.round(talentBaseSpecialSkillDamage * talentSpecialDamageMultiplier),
+    talentBaseMaxHp,
+    talentBaseAttack,
+    talentBaseDefense,
+    talentBaseSpeed,
+    talentBaseEvasionRate,
+    talentBaseSpecialSkillDescription,
     talentBaseSpecialSkillDamage,
     talentSpecialDamageMultiplier,
     specialSkillDescription: FEATHER_RESONANCE > 0
-      ? `${character.specialSkillDescription}（才能効果：羽弾ダメージ +${FEATHER_RESONANCE * 6}%）`
-      : character.specialSkillDescription,
+      ? `${talentBaseSpecialSkillDescription}（才能効果：羽弾ダメージ +${FEATHER_RESONANCE * 6}%）`
+      : talentBaseSpecialSkillDescription,
     ultimateSkillDamage: Math.round(talentBaseUltimateSkillDamage * talentUltimateDamageMultiplier),
     talentBaseUltimateSkillDamage,
     talentUltimateDamageMultiplier,
-    defense: Math.max(0, character.defense - ABYSS_RESONANCE * 3),
   };
 }
