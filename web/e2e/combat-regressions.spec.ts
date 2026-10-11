@@ -83,6 +83,16 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await page.getByRole('button', { name: /バトル開始/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  const levelRules = page.getByRole('status', { name: '挑戦レベルの特殊ルール' });
+  await expect(levelRules).toContainText('装甲なし');
+  await page.getByRole('button', { name: /Lv\.50/ }).click();
+  await expect(levelRules).toContainText('鉄壁装甲');
+  await page.getByRole('button', { name: /Lv\.70/ }).click();
+  await expect(levelRules).toContainText('行動適応');
+  await page.getByRole('button', { name: /Lv\.100/ }).click();
+  await expect(levelRules).toContainText('最終試練');
+  await expect(levelRules).toContainText('HP50%');
   await page.getByRole('button', { name: /Lv\.50/ }).click();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
@@ -96,6 +106,66 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await expect(armorStatus).toContainText('鉄壁装甲');
   await expect(armorStatus).toContainText(/\d+ \/ \d+/);
   expect(pageErrors, 'Kaiser armor should render without uncaught browser errors.').toEqual([]);
+});
+
+test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page }) => {
+  test.setTimeout(90_000);
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stat_points', '12');
+    window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
+      coreFragments: 0,
+      imprintTickets: 0,
+      bonusStatPoints: 120,
+      claimedVictoryRunIds: [],
+    }));
+    window.localStorage.setItem('duel_arena_ability_progress', JSON.stringify({
+      levels: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 5, JUDGMENT: 5 },
+      shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+    }));
+    // Avoid critical-hit variance so this end-to-end path stays repeatable.
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /Lv\.100/ }).click();
+  await page.getByRole('button', { name: '耐久' }).click();
+  await page.getByRole('button', { name: /断罪/ }).click();
+  await page.getByRole('button', { name: /堕天王/ }).click();
+  await expect(page.getByText(/残り\s*0P\s*\/\s*132P/)).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  const phaseTwo = page.getByRole('status', { name: 'カイザー第2フェーズ' });
+  const turnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
+  for (let actionCount = 0; actionCount < 28 && await phaseTwo.count() === 0; actionCount += 1) {
+    const currentTurn = await turnMarker.innerText();
+    const feather = page.getByRole('button', { name: /^羽弾/ }).first();
+    if (await feather.isEnabled()) {
+      await feather.click();
+    } else {
+      await page.getByRole('button', { name: /^攻撃/ }).first().click();
+    }
+    await expect(turnMarker).not.toHaveText(currentTurn, { timeout: 20_000 });
+  }
+
+  await expect(phaseTwo).toBeVisible();
+  await expect(phaseTwo).toContainText('第2フェーズ');
+  const armorStatus = page.getByRole('status', { name: 'カイザー装甲' });
+  await expect(armorStatus).toBeVisible();
+  await expect(armorStatus).toContainText('825');
+  expect(pageErrors, 'Kaiser Lv100 phase transition should not raise uncaught browser errors.').toEqual([]);
 });
 
 test('imprint loadout can be equipped, unequipped, persisted, and carried into battle', async ({ page }) => {
