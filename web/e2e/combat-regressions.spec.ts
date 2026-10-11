@@ -71,6 +71,35 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
+
+test('recruitment images load on entry and show a summon loading screen on mobile', async ({ page }) => {
+  const recruitmentRequests: string[] = [];
+  await page.route('**/assets/recruitment/**', async route => {
+    recruitmentRequests.push(route.request().url());
+    await new Promise(resolve => setTimeout(resolve, 350));
+    await route.abort();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.waitForTimeout(100);
+  expect(recruitmentRequests, 'Summon artwork should not preload on the home screen.').toEqual([]);
+
+  await page.getByRole('button', { name: 'ガチャ' }).click();
+  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
+  expect(recruitmentRequests, 'Opening the gacha hub should not preload summon artwork yet.').toEqual([]);
+
+  await page.getByRole('button', { name: '権能ガチャを開く' }).click();
+  const loading = page.getByRole('status', { name: '召喚準備中' });
+  await expect(loading).toBeVisible();
+  await expect(loading).toContainText('BLACK WING / SUMMONING...');
+  await expect(loading.locator('.battle-deploy-progress')).toBeVisible();
+
+  await expect(page.getByText('何が現れるかは、召喚した瞬間に決まる')).toBeVisible({ timeout: 10_000 });
+  await expect(loading).toBeHidden();
+  expect(recruitmentRequests.length, 'Summon artwork should start loading only after entry is requested.').toBeGreaterThan(0);
+});
+
 test('Kaiser armor is visible in live combat from challenge level 40 onward', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
