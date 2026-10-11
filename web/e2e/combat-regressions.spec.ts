@@ -90,6 +90,10 @@ test('Irena talent board opens from home and persists spent talent points', asyn
   await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
 
   const windTalent = page.getByRole('region', { name: '風読み' });
+  const ravenTalent = page.getByRole('region', { name: '黒翼の牙' });
+  const lastWingTalent = page.getByRole('region', { name: '不屈の翼' });
+  await expect(ravenTalent).toContainText('攻撃力 +0%');
+  await expect(lastWingTalent).toContainText('最大HP +0%');
   await expect(windTalent).toContainText('0/3');
   await page.getByRole('button', { name: '風読みを強化' }).click();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
@@ -104,6 +108,19 @@ test('Irena talent board opens from home and persists spent talent points', asyn
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('1/3');
+
+  await page.getByRole('button', { name: '才能ポイントを振り直す' }).click();
+  await expect(page.getByRole('alertdialog', { name: '才能振り直しの確認' })).toBeVisible();
+  await page.getByRole('button', { name: '才能を振り直すことを確定' }).click();
+  await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
+  await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
+  await expect(page.getByRole('status')).toContainText('経験値は維持');
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+  await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
+  await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
 });
 
 test('Kaiser challenge selector starts at level 10 and hides future levels', async ({ page }) => {
@@ -175,7 +192,10 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await expect(armorStatus).toBeVisible();
   await expect(armorStatus).toContainText('鉄壁装甲');
   await expect(armorStatus).toContainText(/\d+ \/ \d+/);
-  expect(pageErrors, 'Kaiser armor should render without uncaught browser errors.').toEqual([]);
+  const attackForecast = page.locator('button:visible').filter({ hasText: /^攻撃/ }).first();
+  await expect(attackForecast).toContainText(/HP\s*\d+〜\d+/);
+  await expect(attackForecast).toContainText('装甲耐久');
+  expect(pageErrors, 'Kaiser armor and its HP/armor damage forecast should render without uncaught browser errors.').toEqual([]);
 });
 
 test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page }) => {
