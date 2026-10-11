@@ -1,9 +1,9 @@
 import React from 'react';
 import { BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
 import { Flame } from 'lucide-react';
-import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { calculateHitDamagePreview, calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
-import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
+import { applyDynamicAbilityModifiers, hasAbility } from '../utils/abilitySystem';
 import {
   COSTLY_SHOT_HP_COST,
   FEATHER_SPLIT_ALTERNATION_BONUS,
@@ -61,8 +61,33 @@ export const ActionDock: React.FC<ActionDockProps> = ({
     judgmentReady,
   };
   const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS) : 0;
+  const isFallenExecutionPreview = hasAbility(battleConfig, 'FALLEN') &&
+    player.currentHp > 1 && player.currentHp <= player.character.maxHp * 0.05;
+  const previewDamageSource = isFallenExecutionPreview ? '堕天・終局' : '';
   const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
+  const normalAttackPreview = calculateHitDamagePreview(
+    estimatedAttackDamage, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
+  );
+  const criticalAttackPreview = calculateHitDamagePreview(
+    criticalAttackDamage, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
+  );
+  const hasActiveKaiserArmor = enemy.character.id === 'kaiser' &&
+    battleConfig.kaiserLevel >= 40 && (enemy.kaiserArmorCurrent ?? 0) > 0;
+  const isKaiserArmorBroken = enemy.character.id === 'kaiser' &&
+    !hasActiveKaiserArmor && (enemy.kaiserArmorBrokenTurns ?? 0) > 0;
+  const formatHitPreview = (preview: ReturnType<typeof calculateHitDamagePreview>) => {
+    const label = `HP${preview.hpDamage}`;
+    if (preview.armorWasActive) return `${label} 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}`;
+    if (preview.armorWasBroken) return `${label} 装甲破壊×1.3`;
+    return `${label}${preview.phaseChanged ? ' 第2形態へ' : ''}`;
+  };
+  const specialPreviewDetails = (preview: ReturnType<typeof calculateHitDamagePreview>) =>
+    hasActiveKaiserArmor && preview.armorWasActive
+      ? `HP${preview.hpDamage} / 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}`
+      : isKaiserArmorBroken && preview.armorWasBroken
+        ? `HP${preview.hpDamage} / 装甲破壊×1.3`
+        : `HP${preview.hpDamage}ダメ${preview.phaseChanged ? '・第2形態へ' : ''}`;
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
   const hasFeatherSplitImprint = player.character.id === 'irena' && (battleConfig.imprints?.includes('FEATHER_SPLIT') ?? false);
   const hasYinYangImprint = battleConfig.imprints?.includes('YIN_YANG') ?? false;
@@ -82,10 +107,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const featherChargeAtMax = player.featherChargeCount >= featherChargeMaxCount;
   const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
   const superFallenMultiplier = getIrenaSuperFallenShotMultiplier(featherSkillLevel);
-  const specialDamagePreview = calculateSpecialDamage({
+  const specialDamageRaw = calculateSpecialDamage({
     ...damageContext,
     specialSkillId: selectedSpecialSkill,
   });
+  const specialDamagePreview = calculateHitDamagePreview(
+    specialDamageRaw, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
+  );
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
       onSelectedSpecialSkillChange('FEATHER');
@@ -160,10 +188,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       onCinematicActiveChange(false);
     }, 1300);
   };
-  const ultimateDamagePreview = calculateUltimateDamage({
+  const ultimateDamageRaw = calculateUltimateDamage({
     ...damageContext,
     ultimateVariant: hasUnlockedOmnipotence ? 'OMNIPOTENCE' : undefined,
   });
+  const ultimateDamagePreview = calculateHitDamagePreview(
+    ultimateDamageRaw, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
+  );
 
   return (
     <div
@@ -467,6 +498,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         {/* 1. 攻撃 */}
         <button
           onClick={() => onAction('ATTACK')}
+          title="HPダメージ予測（通常攻撃〜会心）。カイザーの装甲中はHPへのダメージと装甲耐久の減少を分けて表示します。"
+          aria-label={`攻撃。HPダメージ ${normalAttackPreview.hpDamage}〜${criticalAttackPreview.hpDamage}${hasActiveKaiserArmor ? `、装甲耐久-${normalAttackPreview.armorDamage}〜-${criticalAttackPreview.armorDamage}` : ''}`}
           disabled={!isEnabled}
           style={{
             height: '56px',
@@ -486,9 +519,21 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
         >
           <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>攻撃</span>
-          <span style={{ fontSize: '10px', fontWeight: 700, color: isEnabled ? '#90CAF9' : '#5A6678', whiteSpace: 'nowrap' }}>
-            約{estimatedAttackDamage}〜{criticalAttackDamage}ダメ
+          <span style={{ fontSize: '10px', fontWeight: 800, color: isEnabled ? '#90CAF9' : '#5A6678', whiteSpace: 'nowrap' }}>
+            HP {normalAttackPreview.hpDamage}〜{criticalAttackPreview.hpDamage}
           </span>
+          {hasActiveKaiserArmor && (
+            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>
+              装甲耐久 −{normalAttackPreview.armorDamage}〜−{criticalAttackPreview.armorDamage}
+              {(normalAttackPreview.armorWillBreak || criticalAttackPreview.armorWillBreak) ? '（破壊可能）' : ''}
+            </span>
+          )}
+          {isKaiserArmorBroken && (
+            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>装甲破壊中 ×1.3</span>
+          )}
+          {(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) && (
+            <span style={{ fontSize: '9px', fontWeight: 850, color: '#FFE082', whiteSpace: 'nowrap' }}>第2形態への移行あり</span>
+          )}
         </button>
 
         {/* 2. 回避 */}
@@ -560,10 +605,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ? '次ターン自動発射'
               : isSpecialReady
                 ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
-                  ? `${specialDamagePreview}ダメ / 倍率×${superFallenMultiplier.toFixed(1)} / 1T充填`
+                  ? `${specialPreviewDetails(specialDamagePreview)} / ×${superFallenMultiplier.toFixed(1)} / 1T充填`
                   : selectedFeatherSplitMode
-                    ? `${specialDamagePreview}ダメ${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
-                    : `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
+                    ? `${specialPreviewDetails(specialDamagePreview)}${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
+                    : `${specialPreviewDetails(specialDamagePreview)}（蓄積+${player.featherChargeBonus}）`
                 : `CT:${selectedSpecialCooldownRemaining}T`}
           </span>
         </button>
@@ -791,7 +836,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 boxShadow: 'inset 0 0 14px rgba(0,0,0,0.35)',
               }}
             >
-              {isUltimateReady ? `${ultimateDamagePreview}ダメ [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
+              {isUltimateReady ? `${formatHitPreview(ultimateDamagePreview)} [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
             </div>
           </button>
         </div>
