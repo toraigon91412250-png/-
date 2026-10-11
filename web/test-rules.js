@@ -429,6 +429,11 @@ assert.strictEqual(
   'Three Abyss Resonance ranks must scale OMNIPOTENCE fixed damage by +24%.',
 );
 
+const oneFeatherRankIrena = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(2),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 1, ABYSS_RESONANCE: 0 },
+}));
+
 const fallenConfig = { kaiserLevel: 10, abilities: [{ id: 'FALLEN', level: 1 }] };
 const fallenAtTwelvePointFivePercent = createInitialFighter(IRENA, true);
 fallenAtTwelvePointFivePercent.currentHp = 500;
@@ -774,6 +779,40 @@ assert.strictEqual(calculateSpecialDamage({
   attacker: splitDamageAttacker, target: splitDamageTarget, config: splitDamageConfig,
   turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
 }), 84, 'Rapid should scale the otherwise 120-damage baseline by 0.70.');
+
+const oneFeatherRankAttacker = createInitialFighter(oneFeatherRankIrena, true);
+const oneFeatherRankDamage = calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config,
+  turn: 1, isActingFirst: true,
+});
+assert.strictEqual(oneFeatherRankDamage, Math.round(120 * 1.06),
+  'Feather Resonance should increase final Feather damage by exactly 6% after target defense.');
+const fullTalentFeatherDamage = calculateSpecialDamage({
+  attacker: fullTalentAttacker, target: splitDamageTarget, config,
+  turn: 1, isActingFirst: true,
+});
+assert.strictEqual(fullTalentFeatherDamage, Math.round(120 * 1.18),
+  'Three Feather Resonance ranks should increase final Feather damage by exactly 18%.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_PIERCE',
+}), Math.round(156 * 1.06),
+  'Feather Resonance should consistently scale the final Piercing hit.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), Math.round(84 * 1.06),
+  'Feather Resonance should consistently scale the final Rapid hit.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: { ...oneFeatherRankAttacker, lastFeatherSplitMode: 'PIERCE' },
+  target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), Math.round(97 * 1.06),
+  'Feather Resonance should scale the final hit after the alternation bonus, without double application.');
+assert.strictEqual(getEffectiveSpeed(fullTalentAttacker), IRENA.speed + 15,
+  'Wind Reading speed must flow through the actual effective-speed calculation.');
+assert.strictEqual(getEffectiveDefense(fullTalentAttacker), IRENA.defense - 9,
+  'Abyss Resonance defense reduction must flow through the actual effective-defense calculation.');
 assert.strictEqual(calculateSpecialDamage({
   attacker: { ...splitDamageAttacker, lastFeatherSplitMode: 'PIERCE' },
   target: splitDamageTarget, config: splitDamageConfig,
