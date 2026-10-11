@@ -673,10 +673,10 @@ test('Feather Split keeps its selector compact and independently cools down each
 
   const pierceAction = page.getByRole('button', { name: /^穿羽/ }).last();
   await expect(pierceAction).toBeEnabled();
-  const turnOne = page.getByText(/^第\\s*1\\s*ターン$/);
+  const turnOne = page.getByText(/^第\s*1\s*ターン$/);
   await expect(turnOne).toBeVisible();
   await pierceAction.click();
-  await expect(page.getByText(/^第\\s*2\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 2T');
 
   await rapidChoice.click();
@@ -685,11 +685,11 @@ test('Feather Split keeps its selector compact and independently cools down each
   const rapidAction = page.getByRole('button', { name: /^連羽/ }).last();
   await expect(rapidAction).toBeEnabled();
   await expect(rapidAction).toContainText('交互+15%');
-  const turnTwo = page.getByText(/^第\\s*2\\s*ターン$/);
+  const turnTwo = page.getByText(/^第\s*2\s*ターン$/);
   await expect(turnTwo).toBeVisible();
   await rapidAction.click();
 
-  await expect(page.getByText(/^第\\s*3\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
   await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
   await expect(page.getByText(/羽撃ち分け・交互ボーナス/).first()).toBeVisible();
