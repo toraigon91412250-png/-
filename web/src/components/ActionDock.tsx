@@ -76,17 +76,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
     battleConfig.kaiserLevel >= 40 && (enemy.kaiserArmorCurrent ?? 0) > 0;
   const isKaiserArmorBroken = enemy.character.id === 'kaiser' &&
     !hasActiveKaiserArmor && (enemy.kaiserArmorBrokenTurns ?? 0) > 0;
-  const formatHitPreview = (preview: ReturnType<typeof calculateHitDamagePreview>) => {
-    const label = `HP${preview.hpDamage}`;
-    if (preview.armorWasActive) return `${label} 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}`;
-    if (preview.armorWasBroken) return `${label} 装甲破壊×1.3`;
-    return `${label}${preview.phaseChanged ? ' 第2形態へ' : ''}`;
-  };
+  const formatHitPreview = (preview: ReturnType<typeof calculateHitDamagePreview>) =>
+    `HP ${preview.hpDamage}${preview.phaseChanged ? '・第2形態へ' : ''}`;
   const specialPreviewDetails = (preview: ReturnType<typeof calculateHitDamagePreview>) =>
     hasActiveKaiserArmor && preview.armorWasActive
-      ? `HP${preview.hpDamage} / 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}`
+      ? `HP${preview.hpDamage} 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}${preview.phaseChanged ? '・第2形態' : ''}`
       : isKaiserArmorBroken && preview.armorWasBroken
-        ? `HP${preview.hpDamage} / 装甲破壊×1.3`
+        ? `HP${preview.hpDamage} 破壊×1.3${preview.phaseChanged ? '・第2形態' : ''}`
         : `HP${preview.hpDamage}ダメ${preview.phaseChanged ? '・第2形態へ' : ''}`;
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
   const hasFeatherSplitImprint = player.character.id === 'irena' && (battleConfig.imprints?.includes('FEATHER_SPLIT') ?? false);
@@ -526,12 +522,15 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>
               装甲耐久 −{normalAttackPreview.armorDamage}〜−{criticalAttackPreview.armorDamage}
               {(normalAttackPreview.armorWillBreak || criticalAttackPreview.armorWillBreak) ? '（破壊可能）' : ''}
+              {(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) ? '・第2形態' : ''}
             </span>
           )}
           {isKaiserArmorBroken && (
-            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>装甲破壊中 ×1.3</span>
+            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>
+              装甲破壊中 ×1.3{(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) ? '・第2形態' : ''}
+            </span>
           )}
-          {(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) && (
+          {!hasActiveKaiserArmor && !isKaiserArmorBroken && (normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) && (
             <span style={{ fontSize: '9px', fontWeight: 850, color: '#FFE082', whiteSpace: 'nowrap' }}>第2形態への移行あり</span>
           )}
         </button>
