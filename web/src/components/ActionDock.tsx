@@ -4,7 +4,14 @@ import { Flame } from 'lucide-react';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
-import { COSTLY_SHOT_HP_COST } from '../utils/imprintSystem';
+import {
+  COSTLY_SHOT_HP_COST,
+  FEATHER_SPLIT_ALTERNATION_BONUS,
+  FEATHER_SPLIT_PIERCE_MULTIPLIER,
+  FEATHER_SPLIT_RAPID_MULTIPLIER,
+  getFeatherSplitModeForSkill,
+  getSpecialCooldownRemaining,
+} from '../utils/imprintSystem';
 
 interface ActionDockProps {
   player: BattleFighter;
@@ -57,10 +64,18 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
   const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
   const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
+  const hasFeatherSplitImprint = player.character.id === 'irena' && (battleConfig.imprints?.includes('FEATHER_SPLIT') ?? false);
   const hasYinYangImprint = battleConfig.imprints?.includes('YIN_YANG') ?? false;
   const hasCostlyShotImprint = battleConfig.imprints?.includes('COSTLY_SHOT') ?? false;
   const isChargingSuperFallenShot = player.isSuperFallenShotCharging;
-  const isSpecialReady = player.specialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
+  const selectedFeatherSplitMode = hasFeatherSplitImprint ? getFeatherSplitModeForSkill(selectedSpecialSkill) : null;
+  const selectedSpecialCooldownRemaining = getSpecialCooldownRemaining(player, selectedSpecialSkill, hasFeatherSplitImprint);
+  const isSpecialReady = selectedSpecialCooldownRemaining <= 0 && !isChargingSuperFallenShot;
+  const hasSelectedModeAlternationBonus = Boolean(
+    selectedFeatherSplitMode &&
+    player.lastFeatherSplitMode &&
+    selectedFeatherSplitMode !== player.lastFeatherSplitMode
+  );
   const isUltimateReady = player.ultimateGauge >= 3;
   const featherSkillLevel = player.character.featherSkillLevel || 1;
   const featherChargeMaxCount = getIrenaFeatherMaxChargeCount(featherSkillLevel);
@@ -74,8 +89,19 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
       onSelectedSpecialSkillChange('FEATHER');
+      return;
     }
-  }, [hasSuperFallenShot, selectedSpecialSkill]);
+    if (hasFeatherSplitImprint && selectedSpecialSkill === 'FEATHER') {
+      onSelectedSpecialSkillChange('FEATHER_PIERCE');
+      return;
+    }
+    if (
+      !hasFeatherSplitImprint &&
+      (selectedSpecialSkill === 'FEATHER_PIERCE' || selectedSpecialSkill === 'FEATHER_RAPID')
+    ) {
+      onSelectedSpecialSkillChange('FEATHER');
+    }
+  }, [hasSuperFallenShot, hasFeatherSplitImprint, selectedSpecialSkill, onSelectedSpecialSkillChange]);
 
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const featherPathName =
@@ -234,19 +260,38 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ⚡【強化中】攻撃+{buffDamageBonus}
             </span>
           )}
-          {selectedSpecialSkill === 'FEATHER' && (
+          {selectedSpecialSkill !== 'SUPER_FALLEN_SHOT' && (
             <span
+              aria-label={\`羽弾蓄積 +\${player.featherChargeBonus}、回数 \${Math.min(player.featherChargeCount, featherChargeMaxCount)} / \${featherChargeMaxCount}\`}
               style={{
                 fontSize: '10px',
-                fontWeight: 700,
+                fontWeight: 800,
                 color: '#B2DFDB',
                 backgroundColor: 'rgba(38, 166, 154, 0.16)',
                 border: '1px solid rgba(128, 203, 196, 0.45)',
-                padding: '1px 5px',
-                borderRadius: '4px',
+                padding: '2px 6px',
+                borderRadius: '999px',
+                whiteSpace: 'nowrap',
               }}
             >
-              🪶【羽弾蓄積】+{player.featherChargeBonus}　回数 {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount}　{featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
+              🪶 +{player.featherChargeBonus} · {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount} · {featherChargeAtMax ? 'MAX' : \`次+\${nextFeatherChargeRange[0]}〜\${nextFeatherChargeRange[1]}\`}
+            </span>
+          )}
+          {hasSelectedModeAlternationBonus && (
+            <span
+              aria-label={\`交互ボーナス準備中：与ダメージ+\${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%\`}
+              style={{
+                fontSize: '10px',
+                fontWeight: 900,
+                color: '#FFE8A3',
+                background: 'rgba(255,193,7,0.13)',
+                border: '1px solid rgba(255,224,130,0.45)',
+                borderRadius: '999px',
+                padding: '2px 6px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              ↔ 交互 +{Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%
             </span>
           )}
         </div>
@@ -275,34 +320,117 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       </div>
 
       {/* Row 1: Normal Commands (いれーなは強化コマンドなし) */}
-      {hasSuperFallenShot && (
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginBottom:'6px' }}>
-          <button
-            type="button"
-            onClick={() => onSelectedSpecialSkillChange('FEATHER')}
-            disabled={!isEnabled || isChargingSuperFallenShot}
-            style={{
-              minHeight:'30px', borderRadius:'8px',
-              border: selectedSpecialSkill === 'FEATHER' ? '1px solid #EA80FC' : '1px solid #39445C',
-              background: selectedSpecialSkill === 'FEATHER' ? 'rgba(123,31,162,.34)' : 'rgba(16,21,32,.9)',
-              color: selectedSpecialSkill === 'FEATHER' ? '#F3E5F5' : '#98A6BC',
-              fontSize:'10px', fontWeight:900,
-              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
-            }}
-          >羽弾</button>
-          <button
-            type="button"
-            onClick={() => onSelectedSpecialSkillChange('SUPER_FALLEN_SHOT')}
-            disabled={!isEnabled || isChargingSuperFallenShot}
-            style={{
-              minHeight:'30px', borderRadius:'8px',
-              border: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '1px solid #FFE082' : '1px solid #39445C',
-              background: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? 'rgba(117,56,12,.34)' : 'rgba(16,21,32,.9)',
-              color: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '#FFE082' : '#98A6BC',
-              fontSize:'10px', fontWeight:900,
-              cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
-            }}
-          >⚡超堕天撃</button>
+      {(hasFeatherSplitImprint || hasSuperFallenShot) && (
+        <div
+          role="group"
+          aria-label={hasFeatherSplitImprint ? '羽撃ち分け・特殊技選択' : '特殊技選択'}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: \`repeat(\${hasFeatherSplitImprint ? (hasSuperFallenShot ? 3 : 2) : 2}, minmax(0, 1fr))\`,
+            gap: '5px',
+            marginBottom: '6px',
+          }}
+        >
+          {hasFeatherSplitImprint ? (
+            <>
+              {([
+                {
+                  id: 'FEATHER_PIERCE' as const,
+                  label: '🪽 穿羽',
+                  detail: \`\${FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2)}× · \${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true) > 0 ? \`CT \${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true)}T\` : '使用可'}\`,
+                  accent: '#EA80FC',
+                  background: 'rgba(123,31,162,.34)',
+                  text: '#F3E5F5',
+                },
+                {
+                  id: 'FEATHER_RAPID' as const,
+                  label: '🪶 連羽',
+                  detail: \`\${FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}× · \${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true) > 0 ? \`CT \${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true)}T\` : '使用可'}\`,
+                  accent: '#80CBC4',
+                  background: 'rgba(0,121,107,.28)',
+                  text: '#D7FFF8',
+                },
+              ]).map(choice => {
+                const selected = selectedSpecialSkill === choice.id;
+                return (
+                  <button
+                    key={choice.id}
+                    type="button"
+                    aria-label={\`\${choice.id === 'FEATHER_PIERCE' ? '穿羽' : '連羽'}を選択\`}
+                    aria-pressed={selected}
+                    title={choice.id === 'FEATHER_PIERCE'
+                      ? '穿羽：高火力、出血付与あり、CT3。交互に使うと与ダメージ+15%。'
+                      : '連羽：低火力、CT2。交互に使うと与ダメージ+15%。'}
+                    onClick={() => onSelectedSpecialSkillChange(choice.id)}
+                    disabled={!isEnabled || isChargingSuperFallenShot}
+                    style={{
+                      minWidth: 0,
+                      minHeight: '38px',
+                      borderRadius: '8px',
+                      border: selected ? \`1px solid \${choice.accent}\` : '1px solid #39445C',
+                      background: selected ? choice.background : 'rgba(16,21,32,.9)',
+                      color: selected ? choice.text : '#98A6BC',
+                      fontSize: '10px',
+                      fontWeight: 900,
+                      cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '2px',
+                      padding: '3px 2px',
+                      lineHeight: 1.15,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <span style={{ whiteSpace: 'nowrap' }}>{choice.label}</span>
+                    <span style={{ fontSize: '8px', fontWeight: 800, opacity: selected ? 1 : 0.8, whiteSpace: 'nowrap' }}>
+                      {choice.detail}
+                    </span>
+                  </button>
+                );
+              })}
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onSelectedSpecialSkillChange('FEATHER')}
+              aria-label="羽弾を選択"
+              aria-pressed={selectedSpecialSkill === 'FEATHER'}
+              disabled={!isEnabled || isChargingSuperFallenShot}
+              style={{
+                minWidth: 0,
+                minHeight: '38px',
+                borderRadius: '8px',
+                border: selectedSpecialSkill === 'FEATHER' ? '1px solid #EA80FC' : '1px solid #39445C',
+                background: selectedSpecialSkill === 'FEATHER' ? 'rgba(123,31,162,.34)' : 'rgba(16,21,32,.9)',
+                color: selectedSpecialSkill === 'FEATHER' ? '#F3E5F5' : '#98A6BC',
+                fontSize: '10px',
+                fontWeight: 900,
+                cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
+              }}
+            >羽弾</button>
+          )}
+          {hasSuperFallenShot && (
+            <button
+              type="button"
+              onClick={() => onSelectedSpecialSkillChange('SUPER_FALLEN_SHOT')}
+              aria-label="超堕天撃を選択"
+              aria-pressed={selectedSpecialSkill === 'SUPER_FALLEN_SHOT'}
+              disabled={!isEnabled || isChargingSuperFallenShot}
+              style={{
+                minWidth: 0,
+                minHeight: '38px',
+                borderRadius: '8px',
+                border: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '1px solid #FFE082' : '1px solid #39445C',
+                background: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? 'rgba(117,56,12,.34)' : 'rgba(16,21,32,.9)',
+                color: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '#FFE082' : '#98A6BC',
+                fontSize: '10px',
+                fontWeight: 900,
+                cursor: !isEnabled || isChargingSuperFallenShot ? 'not-allowed' : 'pointer',
+              }}
+            >⚡超堕天撃</button>
+          )}
         </div>
       )}
 
@@ -396,7 +524,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           onMouseUp={e => isEnabled && isSpecialReady && (e.currentTarget.style.transform = 'scale(1)')}
         >
           <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>
-            {selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '超堕天撃' : '羽弾'}
+            {selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
+              ? '超堕天撃'
+              : selectedSpecialSkill === 'FEATHER_PIERCE'
+                ? '穿羽'
+                : selectedSpecialSkill === 'FEATHER_RAPID'
+                  ? '連羽'
+                  : '羽弾'}
           </span>
           <span
             style={{
@@ -411,8 +545,10 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               : isSpecialReady
                 ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
                   ? `${specialDamagePreview}ダメ / 倍率×${superFallenMultiplier.toFixed(1)} / 1T充填`
-                  : `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
-                : `CD:${player.specialCooldownRemaining}T`}
+                  : selectedFeatherSplitMode
+                    ? `${specialDamagePreview}ダメ · ${selectedFeatherSplitMode === 'PIERCE' ? FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2) : FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}×${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
+                    : `${specialDamagePreview}ダメ（蓄積+${player.featherChargeBonus}）`
+                : `CT:${selectedSpecialCooldownRemaining}T`}
           </span>
         </button>
       </div>
@@ -456,11 +592,11 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           <button
             type="button"
             aria-label="代償撃ち"
-            onClick={() => onAction('COSTLY_SHOT')}
+            onClick={() => onAction('COSTLY_SHOT', undefined, selectedSpecialSkill)}
             disabled={
               !isEnabled ||
               isChargingSuperFallenShot ||
-              player.specialCooldownRemaining <= 0 ||
+              selectedSpecialCooldownRemaining <= 0 ||
               player.currentHp <= COSTLY_SHOT_HP_COST
             }
             style={{
@@ -468,16 +604,16 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               minHeight: '46px',
               padding: '6px 10px',
               borderRadius: '10px',
-              border: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+              border: isEnabled && !isChargingSuperFallenShot && selectedSpecialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
                 ? '1px solid #D7A4D7'
                 : '1px solid #3D3940',
-              background: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+              background: isEnabled && !isChargingSuperFallenShot && selectedSpecialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
                 ? 'linear-gradient(105deg, rgba(52,24,57,0.98), rgba(44,35,62,0.98))'
                 : 'rgba(26,30,40,0.92)',
-              color: isEnabled && !isChargingSuperFallenShot && player.specialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
+              color: isEnabled && !isChargingSuperFallenShot && selectedSpecialCooldownRemaining > 0 && player.currentHp > COSTLY_SHOT_HP_COST
                 ? '#F6D7FF'
                 : '#667085',
-              cursor: !isEnabled || isChargingSuperFallenShot || player.specialCooldownRemaining <= 0 || player.currentHp <= COSTLY_SHOT_HP_COST
+              cursor: !isEnabled || isChargingSuperFallenShot || selectedSpecialCooldownRemaining <= 0 || player.currentHp <= COSTLY_SHOT_HP_COST
                 ? 'not-allowed'
                 : 'pointer',
               display: 'flex',
@@ -490,7 +626,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>♻️ 代償撃ち</span>
             <span style={{ fontSize: '10px', fontWeight: 700 }}>
-              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {player.specialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : 'リセット不要'}
+              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {selectedSpecialCooldownRemaining > 0 ? `${player.specialCooldownRemaining} → 0` : 'リセット不要'}
             </span>
           </button>
         </div>
