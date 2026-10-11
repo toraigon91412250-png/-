@@ -71,12 +71,48 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
+test('Kaiser challenge selector starts at level 10 and hides future levels', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  await expect(page.getByRole('button', { name: /Lv\\.10/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\\.(20|30|40|50|60|70|80|90|100)/ })).toHaveCount(0);
+  await expect(page.getByText(/選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです/)).toBeVisible();
+});
+
+test('Kaiser challenge selector shows only the current level and one previous level', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 30 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  await expect(page.getByRole('button', { name: /Lv\\.20/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\\.30/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\\.10/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Lv\\.(40|50|60|70|80|90|100)/ })).toHaveCount(0);
+  await expect(page.getByText('Lv.30 解放中')).toBeVisible();
+});
+
 test('Kaiser armor is visible in live combat from challenge level 40 onward', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
   });
 
   await page.goto('/');
@@ -116,6 +152,7 @@ test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
     window.localStorage.setItem('duel_arena_stat_points', '12');
     window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
       coreFragments: 0,
