@@ -376,7 +376,58 @@ assert.strictEqual(calculateUltimateDamage({
   turn: 1,
   isActingFirst: true,
   ultimateVariant: 'OMNIPOTENCE',
-}), 1500);
+}), 1500, 'OMNIPOTENCE must keep its original fixed damage without the talent.');
+
+const oneAbyssRankIrena = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(2),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 1 },
+}));
+const oneAbyssRankAttacker = createInitialFighter(oneAbyssRankIrena, true);
+const ultimateDamageContext = {
+  attacker: oneAbyssRankAttacker,
+  target: attackTarget,
+  config,
+  turn: 1,
+  isActingFirst: true,
+};
+assert.strictEqual(
+  calculateUltimateDamage(ultimateDamageContext),
+  Math.round(IRENA.ultimateSkillDamage * 1.08),
+  'The standard ultimate must receive the +8% talent multiplier exactly once.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'RUIN' }),
+  Math.round(Math.max(900, IRENA.ultimateSkillDamage) * 1.08),
+  'RUIN must apply the talent bonus even when its 900 minimum damage is higher than the base skill stat.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'OMNIPOTENCE' }),
+  1620,
+  'OMNIPOTENCE fixed damage must receive the one-rank +8% ultimate talent bonus.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'ALL_GODS' }),
+  0,
+  'The talent multiplier must not alter the special ALL_GODS no-direct-damage calculation.',
+);
+
+const fullTalentAttacker = createInitialFighter(talentAdjustedIrena, true);
+const fullTalentUltimateContext = { ...ultimateDamageContext, attacker: fullTalentAttacker };
+assert.strictEqual(
+  calculateUltimateDamage(fullTalentUltimateContext),
+  Math.round(IRENA.ultimateSkillDamage * 1.24),
+  'Three Abyss Resonance ranks must scale the standard ultimate by +24%.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...fullTalentUltimateContext, ultimateVariant: 'RUIN' }),
+  Math.round(Math.max(900, IRENA.ultimateSkillDamage) * 1.24),
+  'Three ranks must scale RUIN after applying its 900 minimum base damage.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...fullTalentUltimateContext, ultimateVariant: 'OMNIPOTENCE' }),
+  1860,
+  'Three Abyss Resonance ranks must scale OMNIPOTENCE fixed damage by +24%.',
+);
 
 const fallenConfig = { kaiserLevel: 10, abilities: [{ id: 'FALLEN', level: 1 }] };
 const fallenAtTwelvePointFivePercent = createInitialFighter(IRENA, true);
