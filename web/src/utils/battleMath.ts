@@ -139,7 +139,10 @@ export function calculateSpecialDamage(context: DamageContext): number {
   const skillLevel = attacker.character.featherSkillLevel || 1;
   const skillPath = attacker.character.featherSkillPath || null;
   const featherChargeBonus = isIrenaSpecial ? attacker.featherChargeBonus : 0;
-  let damage = Math.max(0, attacker.character.specialSkillDamage + featherChargeBonus - getEffectiveDefense(target));
+  const baseSpecialSkillDamage = isIrenaSpecial
+    ? attacker.character.talentBaseSpecialSkillDamage ?? attacker.character.specialSkillDamage
+    : attacker.character.specialSkillDamage;
+  let damage = Math.max(0, baseSpecialSkillDamage + featherChargeBonus - getEffectiveDefense(target));
 
   if (attacker.isBuffed) {
     damage += attacker.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
@@ -188,6 +191,13 @@ export function calculateSpecialDamage(context: DamageContext): number {
     damage = resolveFeatherSplitDamage(damage, featherSplitMode, attacker.lastFeatherSplitMode).damage;
   }
 
+  // Feather Resonance describes the final direct Feather damage, not its
+  // pre-defense stat. Apply it after defense, skill-path bonuses, and imprint
+  // mode multipliers so the actual hit matches the percentage shown on the board.
+  if (attacker.isPlayer && isIrenaSpecial) {
+    damage = Math.round(damage * (attacker.character.talentSpecialDamageMultiplier ?? 1));
+  }
+
   return Math.max(0, applyFallenExecution(
     damage,
     attacker,
@@ -201,14 +211,23 @@ export function calculateUltimateDamage(context: DamageContext): number {
   const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   const { attacker, target } = prepareFighters(context);
   const isIrena = attacker.character.id === 'irena';
+  // Talent-modified displayed stats are kept for the UI, while this base value
+  // lets every ultimate variant (including fixed-power variants and RUIN's
+  // minimum damage) receive the same talent multiplier exactly once.
+  const baseUltimateSkillDamage = isIrena
+    ? attacker.character.talentBaseUltimateSkillDamage ?? attacker.character.ultimateSkillDamage
+    : attacker.character.ultimateSkillDamage;
+  const talentUltimateDamageMultiplier = isIrena
+    ? attacker.character.talentUltimateDamageMultiplier ?? 1
+    : 1;
   let damage =
     context.ultimateVariant === 'ALL_GODS'
       ? 0
       : context.ultimateVariant === 'RUIN'
-        ? Math.max(900, attacker.character.ultimateSkillDamage)
+        ? Math.max(900, baseUltimateSkillDamage)
         : context.ultimateVariant === 'OMNIPOTENCE'
           ? GAME_BALANCE.OMNIPOTENCE_DAMAGE
-          : attacker.character.ultimateSkillDamage;
+          : baseUltimateSkillDamage;
 
   if (isIrena && context.ultimateVariant === 'RUIN') {
     const ruinLevel = attacker.character.ruinSkillLevel || 1;
@@ -230,6 +249,10 @@ export function calculateUltimateDamage(context: DamageContext): number {
   }
 
   if (context.ultimateVariant === 'ALL_GODS') return 0;
+
+  // Apply the talent to the complete ultimate base, including RUIN's bonus
+  // and OMNIPOTENCE's fixed base damage, before independent buff/judgment effects.
+  damage = Math.round(damage * talentUltimateDamageMultiplier);
 
   if (attacker.isBuffed) {
     damage += attacker.buffDamageBonus || (

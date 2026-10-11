@@ -376,7 +376,63 @@ assert.strictEqual(calculateUltimateDamage({
   turn: 1,
   isActingFirst: true,
   ultimateVariant: 'OMNIPOTENCE',
-}), 1500);
+}), 1500, 'OMNIPOTENCE must keep its original fixed damage without the talent.');
+
+const oneAbyssRankIrena = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(2),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 1 },
+}));
+const oneAbyssRankAttacker = createInitialFighter(oneAbyssRankIrena, true);
+const ultimateDamageContext = {
+  attacker: oneAbyssRankAttacker,
+  target: attackTarget,
+  config,
+  turn: 1,
+  isActingFirst: true,
+};
+assert.strictEqual(
+  calculateUltimateDamage(ultimateDamageContext),
+  Math.round(IRENA.ultimateSkillDamage * 1.08),
+  'The standard ultimate must receive the +8% talent multiplier exactly once.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'RUIN' }),
+  Math.round(Math.max(900, IRENA.ultimateSkillDamage) * 1.08),
+  'RUIN must apply the talent bonus even when its 900 minimum damage is higher than the base skill stat.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'OMNIPOTENCE' }),
+  1620,
+  'OMNIPOTENCE fixed damage must receive the one-rank +8% ultimate talent bonus.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...ultimateDamageContext, ultimateVariant: 'ALL_GODS' }),
+  0,
+  'The talent multiplier must not alter the special ALL_GODS no-direct-damage calculation.',
+);
+
+const fullTalentAttacker = createInitialFighter(talentAdjustedIrena, true);
+const fullTalentUltimateContext = { ...ultimateDamageContext, attacker: fullTalentAttacker };
+assert.strictEqual(
+  calculateUltimateDamage(fullTalentUltimateContext),
+  Math.round(IRENA.ultimateSkillDamage * 1.24),
+  'Three Abyss Resonance ranks must scale the standard ultimate by +24%.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...fullTalentUltimateContext, ultimateVariant: 'RUIN' }),
+  Math.round(Math.max(900, IRENA.ultimateSkillDamage) * 1.24),
+  'Three ranks must scale RUIN after applying its 900 minimum base damage.',
+);
+assert.strictEqual(
+  calculateUltimateDamage({ ...fullTalentUltimateContext, ultimateVariant: 'OMNIPOTENCE' }),
+  1860,
+  'Three Abyss Resonance ranks must scale OMNIPOTENCE fixed damage by +24%.',
+);
+
+const oneFeatherRankIrena = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(2),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 1, ABYSS_RESONANCE: 0 },
+}));
 
 const fallenConfig = { kaiserLevel: 10, abilities: [{ id: 'FALLEN', level: 1 }] };
 const fallenAtTwelvePointFivePercent = createInitialFighter(IRENA, true);
@@ -723,6 +779,52 @@ assert.strictEqual(calculateSpecialDamage({
   attacker: splitDamageAttacker, target: splitDamageTarget, config: splitDamageConfig,
   turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
 }), 84, 'Rapid should scale the otherwise 120-damage baseline by 0.70.');
+
+const oneFeatherRankAttacker = createInitialFighter(oneFeatherRankIrena, true);
+const oneFeatherRankDamage = calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config,
+  turn: 1, isActingFirst: true,
+});
+assert.strictEqual(oneFeatherRankDamage, Math.round(120 * 1.06),
+  'Feather Resonance should increase final Feather damage by exactly 6% after target defense.');
+const fullTalentFeatherDamage = calculateSpecialDamage({
+  attacker: fullTalentAttacker, target: splitDamageTarget, config,
+  turn: 1, isActingFirst: true,
+});
+assert.strictEqual(fullTalentFeatherDamage, Math.round(120 * 1.18),
+  'Three Feather Resonance ranks should increase final Feather damage by exactly 18%.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_PIERCE',
+}), Math.round(156 * 1.06),
+  'Feather Resonance should consistently scale the final Piercing hit.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherRankAttacker, target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), Math.round(84 * 1.06),
+  'Feather Resonance should consistently scale the final Rapid hit.');
+assert.strictEqual(calculateSpecialDamage({
+  attacker: { ...oneFeatherRankAttacker, lastFeatherSplitMode: 'PIERCE' },
+  target: splitDamageTarget, config: splitDamageConfig,
+  turn: 1, isActingFirst: true, specialSkillId: 'FEATHER_RAPID',
+}), Math.round(97 * 1.06),
+  'Feather Resonance should scale the final hit after the alternation bonus, without double application.');
+assert.strictEqual(getEffectiveSpeed(fullTalentAttacker), IRENA.speed + 15,
+  'Wind Reading speed must flow through the actual effective-speed calculation.');
+assert.strictEqual(getEffectiveDefense(fullTalentAttacker), IRENA.defense - 9,
+  'Abyss Resonance defense reduction must flow through the actual effective-defense calculation.');
+
+const oneFeatherBlackWingConfig = { kaiserLevel: 10, abilities: [{ id: 'BLACK_WING', level: 1 }] };
+const oneFeatherWithBlackWing = createBattleCharacters(oneFeatherRankIrena, KAISER, oneFeatherBlackWingConfig).player;
+const oneFeatherWithBlackWingFighter = createInitialFighter(oneFeatherWithBlackWing, true);
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherWithBlackWingFighter,
+  target: splitDamageTarget,
+  config: oneFeatherBlackWingConfig,
+  turn: 1,
+  isActingFirst: true,
+}), Math.round((Math.round(IRENA.specialSkillDamage * 1.2) - KAISER.defense) * 1.06),
+  'Feather Resonance must stack with Black Wing Lv1 without dropping its base-damage bonus or double-applying talent.');
 assert.strictEqual(calculateSpecialDamage({
   attacker: { ...splitDamageAttacker, lastFeatherSplitMode: 'PIERCE' },
   target: splitDamageTarget, config: splitDamageConfig,
