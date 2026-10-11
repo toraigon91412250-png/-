@@ -6,7 +6,10 @@ import {
   getIrenaTalentPointsForLevel,
   IrenaTalentId,
   IrenaTalentProgress,
+  IRENA_TALENT_MAX_LEVEL,
   IRENA_TALENT_MAX_RANK,
+  IRENA_TALENT_WIN_XP,
+  IRENA_TALENT_LOSS_XP,
 } from '../utils/irenaTalentSystem';
 
 interface IrenaTalentBoardProps {
@@ -64,7 +67,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
   const availablePoints = getAvailableIrenaTalentPoints(progress);
   const earnedPoints = getIrenaTalentPointsForLevel(levelProgress.level);
   const spentPoints = Object.values(progress.ranks).reduce((sum, rank) => sum + rank, 0);
-  const maxLevel = levelProgress.level >= 20;
+  const maxLevel = levelProgress.level >= IRENA_TALENT_MAX_LEVEL;
 
   return (
     <div style={{
@@ -112,7 +115,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: '12px', marginTop: '20px' }}>
             <div>
               <div style={{ color: '#AFA7C5', fontSize: '10px', fontWeight: 850, letterSpacing: '0.12em' }}>IRENA LEVEL</div>
-              <div style={{ marginTop: '2px', fontSize: '36px', lineHeight: 1.1, fontWeight: 950 }}>Lv.{levelProgress.level}<span style={{ fontSize: '12px', color: '#C7B7E5' }}> / 20</span></div>
+              <div style={{ marginTop: '2px', fontSize: '36px', lineHeight: 1.1, fontWeight: 950 }}>Lv.{levelProgress.level}<span style={{ fontSize: '12px', color: '#C7B7E5' }}> / {IRENA_TALENT_MAX_LEVEL}</span></div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ color: '#AFA7C5', fontSize: '10px', fontWeight: 850 }}>才能ポイント</div>
@@ -137,7 +140,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
             <span>{maxLevel ? 'MAX' : `次のレベルまで ${levelProgress.nextLevelXp - progress.experience} EXP`}</span>
           </div>
           <div style={{ marginTop: '12px', padding: '9px 10px', borderRadius: '10px', background: 'rgba(9,11,20,0.55)', color: '#D9D2EA', fontSize: '11px', lineHeight: 1.6 }}>
-            勝利で {100} EXP、敗北でも {35} EXP。Lv.2、4、6…で才能ポイントを1獲得。最大Lv.20。
+            勝利で {IRENA_TALENT_WIN_XP} EXP、敗北でも {IRENA_TALENT_LOSS_XP} EXP。Lv.2、4、6…18で才能ポイントを1獲得。最大Lv.{IRENA_TALENT_MAX_LEVEL}。
           </div>
         </header>
 
