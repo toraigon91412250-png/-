@@ -243,6 +243,71 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           <div style={{ marginTop: '5px' }}>
             <HpBar currentHp={fighter.currentHp} maxHp={fighter.character.maxHp} />
           </div>
+          {fighter.character.id === 'kaiser' && fighter.kaiserPhase === 2 && (
+            <div
+              role="status"
+              aria-label="カイザー第2フェーズ"
+              style={{
+                marginTop: '5px',
+                padding: '5px 7px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,82,82,0.75)',
+                background: 'linear-gradient(90deg, rgba(183,28,28,0.28), rgba(255,111,0,0.16))',
+                color: '#FFB4A2',
+                fontSize: '10px',
+                lineHeight: 1.4,
+                fontWeight: 900,
+              }}
+            >
+              最終試練・第2フェーズ：攻撃系×1.25／速度強化
+            </div>
+          )}
+          {fighter.character.id === 'kaiser' && (fighter.kaiserArmorMax ?? 0) > 0 && (
+            <div
+              role="status"
+              aria-label="カイザー装甲"
+              style={{
+                marginTop: '5px',
+                padding: '5px 7px',
+                borderRadius: '6px',
+                border: '1px solid ' + (
+                  (fighter.kaiserArmorCurrent ?? 0) > 0
+                    ? 'rgba(144,202,249,0.65)'
+                    : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
+                      ? 'rgba(255,112,67,0.75)'
+                      : 'rgba(120,144,156,0.35)'
+                ),
+                backgroundColor: (fighter.kaiserArmorCurrent ?? 0) > 0
+                  ? 'rgba(21,101,192,0.18)'
+                  : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
+                    ? 'rgba(191,54,12,0.16)'
+                    : 'rgba(120,144,156,0.07)',
+                color: (fighter.kaiserArmorCurrent ?? 0) > 0 ? '#B3E5FC' : '#FFCCBC',
+                fontSize: '10px',
+                lineHeight: 1.4,
+                fontWeight: 850,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '6px' }}>
+                <span>{(fighter.kaiserArmorCurrent ?? 0) > 0 ? '鉄壁装甲' : (fighter.kaiserArmorBrokenTurns ?? 0) > 0 ? '装甲破壊中' : '装甲破壊済み'}</span>
+                <span>
+                  {(fighter.kaiserArmorCurrent ?? 0) > 0
+                    ? `${fighter.kaiserArmorCurrent} / ${fighter.kaiserArmorMax}`
+                    : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
+                      ? `被ダメージ×1.3 · 残り${fighter.kaiserArmorBrokenTurns}ターン`
+                      : '再生成なし'}
+                </span>
+              </div>
+              <div style={{ marginTop: '4px', height: '5px', background: 'rgba(255,255,255,0.10)', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${Math.max(0, Math.min(100, (fighter.kaiserArmorCurrent ?? 0) / Math.max(1, fighter.kaiserArmorMax ?? 1) * 100))}%`,
+                  background: (fighter.kaiserArmorCurrent ?? 0) > 0 ? 'linear-gradient(90deg, #42A5F5, #B3E5FC)' : 'transparent',
+                  transition: 'width 0.2s ease',
+                }} />
+              </div>
+            </div>
+          )}
           {fighter.activeAilments.length > 0 && (
             <div
               aria-label="状態異常反映後の実効ステータス"

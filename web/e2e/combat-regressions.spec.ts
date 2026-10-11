@@ -71,6 +71,33 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
+test('Kaiser armor is visible in live combat from challenge level 40 onward', async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /Lv\.50/ }).click();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  const armorStatus = page.getByRole('status', { name: 'カイザー装甲' });
+  await expect(armorStatus).toBeVisible();
+  await expect(armorStatus).toContainText('鉄壁装甲');
+  await expect(armorStatus).toContainText(/\d+ \/ \d+/);
+  expect(pageErrors, 'Kaiser armor should render without uncaught browser errors.').toEqual([]);
+});
+
 test('imprint loadout can be equipped, unequipped, persisted, and carried into battle', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));

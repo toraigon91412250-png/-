@@ -63,7 +63,16 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
   const forecastPlayer = applyDynamicAbilityModifiers(state.player, state.battleConfig, state.turnNumber);
   const forecastEnemy = applyDynamicAbilityModifiers(state.enemy, state.battleConfig, state.turnNumber);
   const playerGoesFirst = getEffectiveSpeed(forecastPlayer) >= getEffectiveSpeed(forecastEnemy);
-  const intentMeta = CPU_INTENT_META[state.cpuIntent];
+  const intentMeta = state.enemy.character.id === 'kaiser' &&
+    state.enemy.kaiserPhase === 2 &&
+    state.cpuIntent === 'ULTIMATE'
+    ? {
+        ...CPU_INTENT_META.ULTIMATE,
+        label: '終局・超重撃',
+        hint: '第2フェーズ専用の大技。予告を確認し、回避や先手を取る判断を。',
+        accent: '#FF5252',
+      }
+    : CPU_INTENT_META[state.cpuIntent];
 
   const evasionInfo =
     state.cpuIntent === 'EVADE'

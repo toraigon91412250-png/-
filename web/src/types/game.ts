@@ -116,6 +116,12 @@ export interface BattleFighter {
   isEvading: boolean;
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];
+  /** Kaiser-only armor/phase state. Undefined on older or non-Kaiser fighter objects. */
+  kaiserArmorCurrent?: number;
+  kaiserArmorMax?: number;
+  kaiserArmorBrokenTurns?: number;
+  kaiserArmorBrokenAtTurn?: number;
+  kaiserPhase?: 1 | 2;
 }
 
 export function getEffectiveSpeed(fighter: BattleFighter): number {

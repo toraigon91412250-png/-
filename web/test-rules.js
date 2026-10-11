@@ -30,6 +30,11 @@ const { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } = await impor
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
+const {
+  initializeKaiserChallengeFighter,
+  resolveKaiserHit,
+  advanceKaiserChallengeRound,
+} = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
 const { loadStatPoints, addStatPoints, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
@@ -51,19 +56,144 @@ assert.strictEqual(IRENA.specialSkillDamage, 300);
 assert.strictEqual(IRENA.specialSkillCooldown, 2);
 assert.strictEqual(IRENA.ultimateSkillDamage, 500);
 
-assert.strictEqual(KAISER.maxHp, 2400);
-assert.strictEqual(KAISER.attack, 160);
-assert.strictEqual(KAISER.defense, 140);
-assert.strictEqual(KAISER.speed, 80);
+assert.strictEqual(KAISER.maxHp, 2750);
+assert.strictEqual(KAISER.attack, 187);
+assert.strictEqual(KAISER.defense, 180);
+assert.strictEqual(KAISER.speed, 180);
 assert.strictEqual(KAISER.evasionRate, 0.10);
-assert.strictEqual(KAISER.specialSkillDamage, 375);
+assert.strictEqual(KAISER.specialSkillDamage, 500);
 assert.strictEqual(KAISER.specialSkillCooldown, 1);
-assert.strictEqual(KAISER.ultimateSkillDamage, 500);
+assert.strictEqual(KAISER.ultimateSkillDamage, 700);
 const cpuKaiserBase = CPU_CHARACTERS.find(character => character.id === KAISER.id);
 assert.ok(cpuKaiserBase, 'The runtime CPU roster must contain Kaiser.');
 assert.strictEqual(cpuKaiserBase.maxHp, KAISER.maxHp * 2);
 assert.strictEqual(cpuKaiserBase.attack, KAISER.attack * 1.5);
 console.log('✓ Current character stats and the runtime CPU roster are verified.');
+
+const runtimeKaiserLv10 = createKaiserForLevel(cpuKaiserBase, 10);
+const runtimeKaiserLv50 = createKaiserForLevel(cpuKaiserBase, 50);
+const runtimeKaiserLv100 = createKaiserForLevel(cpuKaiserBase, 100);
+assert.strictEqual(runtimeKaiserLv10.maxHp, 5500);
+assert.strictEqual(runtimeKaiserLv10.attack, 281);
+assert.strictEqual(runtimeKaiserLv10.defense, 180);
+assert.strictEqual(runtimeKaiserLv10.speed, 180);
+assert.strictEqual(runtimeKaiserLv10.specialSkillDamage, 500);
+assert.strictEqual(runtimeKaiserLv10.ultimateSkillDamage, 700);
+assert.deepStrictEqual(
+  [runtimeKaiserLv50.maxHp, runtimeKaiserLv50.attack, runtimeKaiserLv50.defense, runtimeKaiserLv50.speed, runtimeKaiserLv50.specialSkillDamage, runtimeKaiserLv50.ultimateSkillDamage],
+  [6722, 336, 198, 260, 599, 838],
+  'Lv50 stats must follow the existing curve after the new base values.',
+);
+assert.deepStrictEqual(
+  [runtimeKaiserLv100.maxHp, runtimeKaiserLv100.attack, runtimeKaiserLv100.defense, runtimeKaiserLv100.speed, runtimeKaiserLv100.specialSkillDamage, runtimeKaiserLv100.ultimateSkillDamage],
+  [8250, 561, 270, 360, 1000, 1400],
+  'Lv100 stats must remain close to the requested baseline curve.',
+);
+
+const runtimeKaiserLv30Fighter = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 30), false, 30);
+const runtimeKaiserLv40Fighter = createInitialFighter(createKaiserForLevel(cpuKaiserBase, 40), false, 40);
+const kaiserLv10Fighter = createInitialFighter(runtimeKaiserLv10, false, 10);
+const kaiserLv50Fighter = createInitialFighter(runtimeKaiserLv50, false, 50);
+const kaiserLv100Fighter = createInitialFighter(runtimeKaiserLv100, false, 100);
+assert.strictEqual(kaiserLv10Fighter.kaiserArmorMax, 0, 'Lv10 must not deploy armor.');
+assert.strictEqual(runtimeKaiserLv30Fighter.kaiserArmorMax, 0, 'Lv30 must not deploy armor.');
+assert.strictEqual(runtimeKaiserLv40Fighter.kaiserArmorMax, Math.round(runtimeKaiserLv40Fighter.character.maxHp * 0.2), 'Lv40 is the first armor level.');
+assert.strictEqual(kaiserLv50Fighter.kaiserArmorMax, Math.round(runtimeKaiserLv50.maxHp * 0.2));
+assert.strictEqual(kaiserLv50Fighter.kaiserArmorCurrent, kaiserLv50Fighter.kaiserArmorMax);
+assert.strictEqual(kaiserLv100Fighter.kaiserArmorCurrent, Math.round(runtimeKaiserLv100.maxHp * 0.2));
+
+const lowLevelHit = resolveKaiserHit(kaiserLv10Fighter, 100, 10, 1, true, '通常攻撃');
+assert.strictEqual(lowLevelHit.damage, 100, 'Lv10 damage must not be mitigated by armor.');
+const armoredHit = resolveKaiserHit(kaiserLv50Fighter, 1000, 50, 1, true, '通常攻撃');
+assert.strictEqual(armoredHit.damage, 750, 'Armor must reduce HP damage by 25%.');
+assert.strictEqual(
+  armoredHit.fighter.kaiserArmorCurrent,
+  kaiserLv50Fighter.kaiserArmorMax - 1000,
+  'Armor durability must use pre-mitigation damage.',
+);
+assert.strictEqual(armoredHit.fighter.currentHp, kaiserLv50Fighter.currentHp - 750);
+
+const armorBreakTest = resolveKaiserHit(
+  { ...kaiserLv50Fighter, kaiserArmorCurrent: 50 },
+  100,
+  50,
+  2,
+  true,
+  '通常攻撃',
+);
+assert.strictEqual(armorBreakTest.damage, 75);
+assert.strictEqual(armorBreakTest.fighter.kaiserArmorCurrent, 0);
+assert.strictEqual(armorBreakTest.fighter.kaiserArmorBrokenTurns, 2);
+assert.strictEqual(armorBreakTest.armorBroke, true);
+
+// Breaking the armor on the exact hit that crosses Lv100's phase boundary must
+// not leave Kaiser marked as vulnerable after phase two immediately redeploys armor.
+const phaseThreshold = Math.ceil(kaiserLv100Fighter.character.maxHp * 0.5);
+const armorBreakAtPhaseBoundary = resolveKaiserHit({
+  ...kaiserLv100Fighter,
+  currentHp: phaseThreshold + 50,
+  kaiserArmorCurrent: 50,
+}, 100, 100, 2, true, '通常攻撃');
+assert.strictEqual(armorBreakAtPhaseBoundary.phaseChanged, true);
+assert.strictEqual(armorBreakAtPhaseBoundary.armorBroke, true);
+assert.strictEqual(
+  armorBreakAtPhaseBoundary.fighter.kaiserArmorCurrent,
+  Math.round(armorBreakAtPhaseBoundary.fighter.kaiserArmorMax * 0.5),
+  'Phase-two armor redeployment must take precedence over the just-triggered armor break.',
+);
+assert.strictEqual(
+  armorBreakAtPhaseBoundary.fighter.kaiserArmorBrokenTurns,
+  0,
+  'The phase-two armor redeployment must not retain the broken-state vulnerability.',
+);
+const breakTurnEnd = advanceKaiserChallengeRound(armorBreakTest.fighter, 2);
+assert.strictEqual(breakTurnEnd.kaiserArmorBrokenTurns, 2, 'The break turn itself must not consume a vulnerable turn.');
+const brokenHit = resolveKaiserHit(breakTurnEnd, 100, 50, 3, true, '通常攻撃');
+assert.strictEqual(brokenHit.damage, 130, 'A broken Kaiser must receive 1.3x damage.');
+assert.strictEqual(advanceKaiserChallengeRound(brokenHit.fighter, 3).kaiserArmorBrokenTurns, 1);
+assert.strictEqual(advanceKaiserChallengeRound(
+  advanceKaiserChallengeRound(brokenHit.fighter, 3),
+  4,
+).kaiserArmorBrokenTurns, 0);
+
+const lv100OneShot = resolveKaiserHit(
+  kaiserLv100Fighter,
+  kaiserLv100Fighter.character.maxHp * 2,
+  100,
+  1,
+  true,
+  '堕天・終局',
+);
+assert.strictEqual(lv100OneShot.phaseChanged, true);
+assert.strictEqual(lv100OneShot.fighter.currentHp, Math.ceil(runtimeKaiserLv100.maxHp * 0.5));
+assert.strictEqual(lv100OneShot.fighter.kaiserPhase, 2);
+assert.strictEqual(lv100OneShot.fighter.character.attack, Math.round(runtimeKaiserLv100.attack * 1.25));
+assert.strictEqual(lv100OneShot.fighter.character.speed, Math.round(runtimeKaiserLv100.speed * 1.15));
+assert.strictEqual(lv100OneShot.fighter.character.specialSkillDamage, Math.round(runtimeKaiserLv100.specialSkillDamage * 1.25));
+assert.strictEqual(lv100OneShot.fighter.character.ultimateSkillDamage, Math.round(runtimeKaiserLv100.ultimateSkillDamage * 1.25));
+assert.strictEqual(lv100OneShot.fighter.kaiserArmorCurrent, Math.round(lv100OneShot.fighter.kaiserArmorMax * 0.5));
+assert.strictEqual(lv100OneShot.fighter.kaiserArmorBrokenTurns, 0);
+const lv50LethalHit = resolveKaiserHit(
+  kaiserLv50Fighter,
+  kaiserLv50Fighter.character.maxHp * 2,
+  50,
+  1,
+  true,
+  '通常攻撃',
+);
+assert.strictEqual(lv50LethalHit.fighter.currentHp, 0, 'The Lv100 phase boundary must not impose a global damage cap on Lv50.');
+assert.strictEqual(lv50LethalHit.phaseChanged, false, 'The final phase must only exist at Lv100.');
+const lv100HitAfterTransition = resolveKaiserHit(lv100OneShot.fighter, 100, 100, 2, true, '通常攻撃');
+assert.strictEqual(lv100HitAfterTransition.phaseChanged, false, 'Phase 2 must not trigger repeatedly.');
+assert.strictEqual(lv100HitAfterTransition.fighter.character.attack, lv100OneShot.fighter.character.attack, 'Phase buffs must not stack.');
+const executionAfterPhase = resolveKaiserHit(lv100OneShot.fighter, lv100OneShot.fighter.currentHp, 100, 2, true, '堕天・終局');
+assert.strictEqual(executionAfterPhase.fighter.currentHp, 0, 'Conditional execution must remain lethal after the phase transition.');
+const bleedPhaseHit = resolveKaiserHit({
+  ...kaiserLv100Fighter,
+  currentHp: Math.ceil(runtimeKaiserLv100.maxHp * 0.5) + 50,
+}, 100, 100, 3, false, '出血ダメージ');
+assert.strictEqual(bleedPhaseHit.phaseChanged, true, 'Bleed crossing 50% must also start phase 2.');
+console.log('✓ Kaiser armor, two-turn break window, Lv100 phase boundary, single-use scaling, and bleed threshold behavior verified.');
 
 assert.strictEqual(STATUS_AILMENTS.BLEED.defaultDuration, 3);
 assert.strictEqual(STATUS_AILMENTS.BLEED.dotDamage, 30);
@@ -96,7 +226,7 @@ const abyssSpeedAdjusted = applyDynamicAbilityModifiers(
   { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 4 }] },
   2,
 );
-assert.strictEqual(abyssSpeedAdjusted.character.speed, 76);
+assert.strictEqual(abyssSpeedAdjusted.character.speed, 171);
 console.log('✓ Dynamic speed modifiers remain visible to effective-speed calculations.');
 
 const fighterIrena = createInitialFighter(IRENA, true);
@@ -107,11 +237,11 @@ assert.strictEqual(getEffectiveDefense(fighterIrena), 180);
 
 const fighterKaiser = createInitialFighter(KAISER, false);
 fighterKaiser.activeAilments.push({ type: 'PRESSURE', remainingTurns: 2 });
-assert.strictEqual(getEffectiveSpeed(fighterKaiser), 55);
-assert.strictEqual(getEffectiveAttack(fighterKaiser), 135);
+assert.strictEqual(getEffectiveSpeed(fighterKaiser), 155);
+assert.strictEqual(getEffectiveAttack(fighterKaiser), 162);
 
 const aiSpecialDamageReference = Math.max(0, KAISER.specialSkillDamage - IRENA.defense);
-assert.strictEqual(aiSpecialDamageReference, 175);
+assert.strictEqual(aiSpecialDamageReference, 300);
 
 
 const config = { kaiserLevel: 10, abilities: [] };
@@ -132,8 +262,21 @@ const criticalDamage = calculateNormalAttackDamage({
   isActingFirst: true,
 }, true);
 
-assert.strictEqual(normalDamage, 220);
-assert.strictEqual(criticalDamage, 340);
+assert.strictEqual(normalDamage, 180);
+assert.strictEqual(criticalDamage, 280);
+const armoredAttackTarget = createInitialFighter(KAISER, false, 40);
+const rawNormalDamageAgainstArmor = calculateNormalAttackDamage({
+  attacker: attackBase,
+  target: armoredAttackTarget,
+  config: { kaiserLevel: 10, abilities: [] },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(
+  rawNormalDamageAgainstArmor,
+  normalDamage + 20,
+  'Ironclad armor must replace the flat Heavy Armor reduction, not stack with it.',
+);
 
 assert.strictEqual(calculateUltimateDamage({
   attacker: attackBase,
@@ -262,7 +405,7 @@ assert.strictEqual(calculateNormalAttackDamage({
   config,
   turn: 1,
   isActingFirst: true,
-}), 345);
+}), 305);
 
 const lv50Kaiser = createKaiserForLevel(KAISER, 50);
 const maxSkillIrena = createInitialFighter(
@@ -282,14 +425,14 @@ const lv50FeatherDamage = calculateSpecialDamage({
   turn: 1,
   isActingFirst: true,
 });
-assert.strictEqual(lv50Kaiser.maxHp, 2933);
-assert.strictEqual(lv50Kaiser.attack, 192);
-assert.strictEqual(lv50Kaiser.defense, 154);
-assert.strictEqual(lv50Kaiser.speed, 116);
-assert.strictEqual(lv50Kaiser.specialSkillDamage, 449);
-assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 599);
+assert.strictEqual(lv50Kaiser.maxHp, 3361);
+assert.strictEqual(lv50Kaiser.attack, 224);
+assert.strictEqual(lv50Kaiser.defense, 198);
+assert.strictEqual(lv50Kaiser.speed, 260);
+assert.strictEqual(lv50Kaiser.specialSkillDamage, 599);
+assert.strictEqual(lv50Kaiser.ultimateSkillDamage, 838);
 assert.strictEqual(maxSkillIrena.character.specialSkillDamage, 525);
-assert.strictEqual(lv50FeatherDamage, 371);
+assert.strictEqual(lv50FeatherDamage, 327);
 
 assert.strictEqual(getJudgmentThreshold(1), 4);
 assert.strictEqual(getJudgmentThreshold(2), 4);
@@ -326,11 +469,11 @@ const lv5AbyssKaiser = applyDynamicAbilityModifiers(
   { kaiserLevel: 10, abilities: [{ id: 'ABYSS', level: 5 }] },
   2,
 );
-assert.strictEqual(lv4AbyssKaiser.character.attack, 152);
+assert.strictEqual(lv4AbyssKaiser.character.attack, 178);
 assert.strictEqual(lv4AbyssKaiser.character.specialSkillDamage, KAISER.specialSkillDamage);
-assert.strictEqual(lv5AbyssKaiser.character.attack, 150);
-assert.strictEqual(lv5AbyssKaiser.character.specialSkillDamage, 353);
-assert.strictEqual(lv5AbyssKaiser.character.ultimateSkillDamage, 470);
+assert.strictEqual(lv5AbyssKaiser.character.attack, 176);
+assert.strictEqual(lv5AbyssKaiser.character.specialSkillDamage, 470);
+assert.strictEqual(lv5AbyssKaiser.character.ultimateSkillDamage, 658);
 
 const judgmentTarget = createInitialFighter(KAISER, false);
 const judgmentDamage = calculateNormalAttackDamage({
@@ -344,7 +487,7 @@ const judgmentDamage = calculateNormalAttackDamage({
   isActingFirst: true,
   judgmentReady: true,
 });
-assert.strictEqual(judgmentDamage, 1432);
+assert.strictEqual(judgmentDamage, 1454);
 
 const buildAllocation = { maxHp: 3, attack: 4, defense: 2, speed: 3 };
 const allocatedIrena = applyStatAllocation(IRENA, buildAllocation);
@@ -646,14 +789,17 @@ assert.strictEqual(
 const levelStats = BATTLE_CHALLENGE_LEVELS.map(level => {
   const kaiser = createKaiserForLevel(cpuKaiserBase, level);
   const player = createInitialFighter(IRENA, true);
-  const enemy = createInitialFighter(kaiser, false);
-  const playerDamage = calculateNormalAttackDamage({
+  const enemy = createInitialFighter(kaiser, false, level);
+  const calculatedPlayerDamage = calculateNormalAttackDamage({
     attacker: player,
     target: enemy,
     config: { kaiserLevel: level, abilities: [] },
     turn: 1,
     isActingFirst: true,
   });
+  const playerDamage = (enemy.kaiserArmorCurrent ?? 0) > 0
+    ? Math.floor(calculatedPlayerDamage * 0.75)
+    : calculatedPlayerDamage;
   const cpuDamage = calculateNormalAttackDamage({
     attacker: enemy,
     target: player,
@@ -739,7 +885,7 @@ assert.ok(
 const lv10 = levelStats[0];
 const lv100 = levelStats[levelStats.length - 1];
 assert.strictEqual(lv10.maxHp, cpuKaiserBase.maxHp);
-assert.strictEqual(lv10.attack, cpuKaiserBase.attack);
+assert.strictEqual(lv10.attack, Math.round(cpuKaiserBase.attack));
 assert.strictEqual(lv10.defense, cpuKaiserBase.defense);
 assert.strictEqual(lv100.maxHp, Math.round(cpuKaiserBase.maxHp * 1.5));
 assert.strictEqual(lv100.attack, cpuKaiserBase.attack * 2);
@@ -747,7 +893,7 @@ assert.strictEqual(lv100.defense, Math.round(cpuKaiserBase.defense * 1.5));
 assert.strictEqual(lv100.speed, cpuKaiserBase.speed * 2);
 assert.strictEqual(lv100.specialSkillDamage, cpuKaiserBase.specialSkillDamage * 2);
 assert.strictEqual(lv100.ultimateSkillDamage, cpuKaiserBase.ultimateSkillDamage * 2);
-assert.ok(lv100.playerDamage >= 120, 'Lv100 must remain damaging enough for Irena normal attacks.');
+assert.ok(lv100.playerDamage >= 80, 'Armor should mitigate but not nullify a Lv100 Irena normal attack.');
 assert.ok(lv100.cpuDamage > 0, 'Lv100 Kaiser normal attack must remain threatening.');
 
 console.log('✓ Kaiser Lv10-Lv100 progression stays bounded and monotonic.');

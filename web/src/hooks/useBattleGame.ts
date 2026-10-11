@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   BattleAction,
+  BattleChallengeLevel,
   BattleFighter,
   BattleLog,
   BattleSetupConfig,
@@ -26,6 +27,11 @@ import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
 import {
+  advanceKaiserChallengeRound,
+  initializeKaiserChallengeFighter,
+  resolveKaiserHit,
+} from '../utils/kaiserChallenge';
+import {
   BLOOD_MEDIA_EXTRA_BLEED_TURNS,
   COSTLY_SHOT_HP_COST,
   getBloodTearBurstDamage,
@@ -47,8 +53,12 @@ import {
   normalizeEquippedAbilities,
 } from '../utils/abilitySystem';
 
-export function createInitialFighter(character: CharacterDef, isPlayer: boolean): BattleFighter {
-  return {
+export function createInitialFighter(
+  character: CharacterDef,
+  isPlayer: boolean,
+  kaiserLevel: BattleChallengeLevel = 10,
+): BattleFighter {
+  const fighter: BattleFighter = {
     character,
     currentHp: character.maxHp,
     specialCooldownRemaining: 0,
@@ -62,6 +72,7 @@ export function createInitialFighter(character: CharacterDef, isPlayer: boolean)
     isPlayer,
     activeAilments: [],
   };
+  return initializeKaiserChallengeFighter(fighter, kaiserLevel);
 }
 
 export function useBattleGame(
@@ -84,8 +95,10 @@ export function useBattleGame(
   const [state, setState] = useState<BattleUiState>(() => {
     const initialCharacters = createBattleCharacters(initialPlayerChar, initialEnemyChar, normalizedInitialConfig);
     const initialPlayer = createInitialFighter(initialCharacters.player, true);
-    const initialEnemy = createInitialFighter(initialCharacters.enemy, false);
-    const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty);
+    const initialEnemy = createInitialFighter(initialCharacters.enemy, false, normalizedInitialConfig.kaiserLevel);
+    const initialCpuIntent = CpuAi.decideAction(initialEnemy, initialPlayer, initialDifficulty, {
+      kaiserLevel: normalizedInitialConfig.kaiserLevel,
+    });
 
     return {
     turnNumber: 1,
@@ -320,13 +333,11 @@ export function useBattleGame(
     );
     if (windGuardIsEligible) {
       const counterDamage = getWindGuardCounterDamage(target.featherChargeBonus);
-      const nextEnemyHp = Math.max(0, stateRef.current.enemy.currentHp - counterDamage);
-      updateState(prev => ({
-        ...prev,
-        enemy: { ...prev.enemy, currentHp: Math.max(0, prev.enemy.currentHp - counterDamage) },
-      }));
+      const counterHit = resolveKaiserDamage(stateRef.current.enemy, counterDamage, turn, '風守り・反撃');
+      const actualCounterDamage = counterHit.damage;
+      const nextEnemyHp = counterHit.targetHp;
       addLog(
-        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${counterDamage}ダメージ。`,
+        `🪶【風守り・自動反撃】羽弾蓄積+${target.featherChargeBonus}に反応！ CPUへ${actualCounterDamage}ダメージ。`,
         'PASSIVE_TRIGGER',
         turn,
       );
@@ -337,6 +348,60 @@ export function useBattleGame(
     }
 
     return resultingHp;
+  };
+
+  const resolveKaiserDamage = (
+    target: BattleFighter,
+    damage: number,
+    turn: number,
+    source: string,
+    isDirectHit = source !== '出血ダメージ',
+  ): { damage: number; targetHp: number; phaseChanged: boolean } => {
+    if (!target.isPlayer && target.character.id === 'kaiser') {
+      // Use authoritative enemy state; the action-local target may be a dynamic-stat snapshot.
+      const outcome = resolveKaiserHit(
+        stateRef.current.enemy,
+        damage,
+        stateRef.current.battleConfig.kaiserLevel,
+        turn,
+        isDirectHit,
+        source,
+      );
+      updateState(prev => ({ ...prev, enemy: outcome.fighter }));
+      if (outcome.armorWasActive) {
+        addLog(
+          outcome.phaseChanged
+            ? `🛡️【鉄壁装甲】第2フェーズ移行により装甲を${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}で再展開。`
+            : `🛡️【鉄壁装甲】耐久 ${outcome.armorBefore} → ${outcome.armorAfter} / ${outcome.fighter.kaiserArmorMax ?? 0}。HPダメージは25%軽減。`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+      }
+      // Phase two redeploys armor immediately, so its fresh armor state takes
+      // precedence over any break/broken-state message from the same hit.
+      if (outcome.armorBroke && !outcome.phaseChanged) {
+        addLog('💥【鉄壁装甲破壊】カイザーが2ターンの装甲破壊状態に入った！ 被ダメージ×1.3。', 'PASSIVE_TRIGGER', turn);
+      } else if (!outcome.phaseChanged && outcome.armorWasBroken && isDirectHit) {
+        addLog(
+          `⚔️【装甲破壊中】カイザーへのダメージ×1.3（残り${Math.max(1, stateRef.current.enemy.kaiserArmorBrokenTurns ?? 1)}ターン）。`,
+          'PASSIVE_TRIGGER',
+          turn,
+        );
+      }
+      if (outcome.phaseChanged) {
+        addLog(
+          '⚠️【最終試練・第2フェーズ】カイザーの攻撃力・技威力が上昇！ 素早さ強化、鉄壁装甲を50%再展開。',
+          'SYSTEM',
+          turn,
+        );
+      }
+      return { damage: outcome.damage, targetHp: outcome.fighter.currentHp, phaseChanged: outcome.phaseChanged };
+    }
+    return {
+      damage: Math.max(0, Math.floor(damage)),
+      targetHp: resolveIncomingDamage(target, damage, turn, source),
+      phaseChanged: false,
+    };
   };
 
   const restartBattle = useCallback((
@@ -372,7 +437,7 @@ export function useBattleGame(
     };
     const prepared = createBattleCharacters(baseP, baseE, nextConfig);
     const nextPlayer = createInitialFighter(prepared.player, true);
-    const nextEnemy = createInitialFighter(prepared.enemy, false);
+    const nextEnemy = createInitialFighter(prepared.enemy, false, nextConfig.kaiserLevel);
 
     recentPlayerActionsRef.current = [];
     recentCpuActionsRef.current = [];
@@ -388,7 +453,9 @@ export function useBattleGame(
     nextLogId.current = 1;
     cancelPendingBattleWork();
 
-    const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty);
+    const nextCpuIntent = CpuAi.decideAction(nextEnemy, nextPlayer, nextDifficulty, {
+      kaiserLevel: nextConfig.kaiserLevel,
+    });
 
     updateState(prev => ({
       ...prev,
@@ -640,7 +707,8 @@ export function useBattleGame(
       const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
       addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const newHp = resolveIncomingDamage(actor, dotDamage, turn, '出血ダメージ');
+      const bleedOutcome = resolveKaiserDamage(actor, dotDamage, turn, '出血ダメージ', false);
+      const newHp = bleedOutcome.targetHp;
       // Heal only damage that actually landed. For example, Fallen King's survival
       // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
       const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
@@ -990,7 +1058,21 @@ export function useBattleGame(
           },
           isCritical,
         );
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        // Capture armor state before resolving this hit; the hit itself may break it
+        // or trigger phase two's immediate armor redeployment.
+        const armorWasActiveForHit =
+          target.character.id === 'kaiser' &&
+          stateRef.current.battleConfig.kaiserLevel >= 40 &&
+          (stateRef.current.enemy.kaiserArmorCurrent ?? 0) > 0;
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '通常攻撃');
+        finalDamage = hitOutcome.damage;
 
         if (actor.character.id === 'irena' && isActingFirst) {
           addLog(
@@ -1000,7 +1082,7 @@ export function useBattleGame(
           );
         }
 
-        const heavyArmorTriggered = target.character.id === 'kaiser';
+        const heavyArmorTriggered = target.character.id === 'kaiser' && !armorWasActiveForHit;
         if (hadBuff) {
           addLog(
             `⚡【強化消費】強化の効果でダメージ+${buffDamageBonus}！`,
@@ -1051,7 +1133,7 @@ export function useBattleGame(
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '通常攻撃');
+        const newTargetHp = hitOutcome.targetHp;
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
@@ -1205,7 +1287,7 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
-          const finalDamage = calculateSpecialDamage({
+          let finalDamage = calculateSpecialDamage({
             attacker: actor,
             target,
             config: stateRef.current.battleConfig,
@@ -1288,6 +1370,14 @@ export function useBattleGame(
             return true;
           }
 
+          const executionForHit =
+            isActorPlayer &&
+            hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+            target.currentHp > 0 &&
+            actor.currentHp > 1 &&
+            actor.currentHp <= baseActorMaxHp * 0.05;
+          const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '超堕天撃');
+          finalDamage = hitOutcome.damage;
           soundManager.playCritical();
           soundManager.playFeatherShot();
 
@@ -1297,7 +1387,7 @@ export function useBattleGame(
             turn,
           );
 
-          const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, '超堕天撃');
+          const newTargetHp = hitOutcome.targetHp;
 
           updateState(prev => ({
             ...prev,
@@ -1448,7 +1538,15 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '特殊技');
+        finalDamage = hitOutcome.damage;
 
         if (isIrenaSpecial && getAbilityLevel(stateRef.current.battleConfig, 'BLACK_WING') >= 5) {
           addLog('🪽【黒翼】羽弾の最終ダメージが5倍になった！', 'PASSIVE_TRIGGER', turn);
@@ -1510,7 +1608,7 @@ export function useBattleGame(
           addLog('🩸【堕天・終局】5%以下のいれーなの特殊技に即死効果が発動した！', 'PASSIVE_TRIGGER', turn);
         }
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '特殊技');
+        const newTargetHp = hitOutcome.targetHp;
         const appliedAilmentName = actor.character.id === 'irena' ? '出血' : '重圧';
         const effType: EffectType = actor.character.id === 'irena' ? 'SPECIAL_FEATHER' : 'SPECIAL_SMASH';
 
@@ -1542,10 +1640,12 @@ export function useBattleGame(
 
         let postSpecialTargetHp = newTargetHp;
         if (statusOutcome.bloodTearBurstDamage > 0 && newTargetHp > 0) {
-          const burstDamage = statusOutcome.bloodTearBurstDamage;
+          let burstDamage = statusOutcome.bloodTearBurstDamage;
           const burstTarget = { ...target, currentHp: newTargetHp };
           soundManager.playCritical();
-          const bloodTearTargetHp = resolveIncomingDamage(burstTarget, burstDamage, turn, '血裂');
+          const bloodTearOutcome = resolveKaiserDamage(burstTarget, burstDamage, turn, '血裂');
+          burstDamage = bloodTearOutcome.damage;
+          const bloodTearTargetHp = bloodTearOutcome.targetHp;
           updateState(prev => ({
             ...prev,
             player: isActorPlayer ? prev.player : { ...prev.player, currentHp: bloodTearTargetHp },
@@ -1738,7 +1838,15 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
-        const finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const executionForHit =
+          isActorPlayer &&
+          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          target.currentHp > 0 &&
+          actor.currentHp > 1 &&
+          actor.currentHp <= baseActorMaxHp * 0.05;
+        let finalDamage = applyYinYangDefenseToDamage(isActorPlayer, target, calculatedDamage, turn);
+        const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '必殺技');
+        finalDamage = hitOutcome.damage;
 
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
@@ -1768,7 +1876,7 @@ export function useBattleGame(
           turn
         );
 
-        const newTargetHp = resolveIncomingDamage(target, finalDamage, turn, fallenExecution ? '堕天・終局' : '必殺技');
+        const newTargetHp = hitOutcome.targetHp;
         updateState(prev => ({
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
@@ -1979,11 +2087,18 @@ export function useBattleGame(
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
       };
-      const nextEnemy = {
+      const enemyBeforeArmorTick = {
         ...stateRef.current.enemy,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.enemy.specialCooldownRemaining - 1),
       };
+      const nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      if (
+        (enemyBeforeArmorTick.kaiserArmorBrokenTurns ?? 0) > 0 &&
+        (nextEnemy.kaiserArmorBrokenTurns ?? 0) === 0
+      ) {
+        addLog('🛡️【装甲破壊終了】カイザーが立て直した。ただし装甲ゲージは再生成されない。', 'SYSTEM', currentTurn);
+      }
       const aiEnemy = applyDynamicAbilityModifiers(nextEnemy, stateRef.current.battleConfig, currentTurn + 1);
       const aiPlayer = applyDynamicAbilityModifiers(nextPlayer, stateRef.current.battleConfig, currentTurn + 1);
       const nextCpuIntent = CpuAi.decideAction(
@@ -1994,6 +2109,7 @@ export function useBattleGame(
           recentPlayerActions: recentPlayerActionsRef.current,
           recentCpuActions: recentCpuActionsRef.current,
           turnNumber: currentTurn + 1,
+          kaiserLevel: stateRef.current.battleConfig.kaiserLevel,
         }
       );
 
