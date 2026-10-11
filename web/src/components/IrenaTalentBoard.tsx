@@ -60,7 +60,7 @@ const TALENTS: Array<{
     id: 'RAVEN_ASSAULT',
     name: '黒翼の牙',
     subtitle: 'RAVEN ASSAULT',
-    description: '常に攻撃を磨き、通常攻撃と羽弾の蓄積を狙う攻撃型。',
+    description: '通常攻撃で攻め続けたいプレイヤー向けの攻撃型。',
     color: '#FF9B8A',
     icon: <Swords size={23} />,
     effect: rank => `攻撃力 +${rank * 5}%`,
