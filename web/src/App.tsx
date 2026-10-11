@@ -17,7 +17,7 @@ import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
-import { preloadAllGameImages } from './utils/imagePreload';
+import { preloadAllGameImages, preloadRecruitmentImages } from './utils/imagePreload';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
@@ -340,6 +340,7 @@ export const App: React.FC = () => {
           imprintTickets={raidRewardProgress.imprintTickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
           onOpenRecruitment={() => {
+            void preloadRecruitmentImages();
             refreshProgress();
             setScreen('RECRUITMENT');
           }}
