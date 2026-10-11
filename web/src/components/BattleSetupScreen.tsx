@@ -72,7 +72,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   };
 
   return (
-    <div style={{
+    <div className="battle-setup-screen" style={{
       width: '100%',
       height: '100%',
       position: 'relative',
@@ -96,7 +96,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         }}
       />
 
-      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '720px', margin: '0 auto' }}>
+      <div className="battle-setup-content" style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '720px', margin: '0 auto' }}>
         <button type="button" onClick={onBack} style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -137,7 +137,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           backgroundColor: 'rgba(16, 21, 34, 0.94)',
         }}>
           <div style={{ fontSize: '10px', color: '#90CAF9', fontWeight: 900, letterSpacing: '0.16em' }}>CPU DIFFICULTY</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginTop: '8px', marginBottom: '14px' }}>
+          <div className="battle-setup-difficulty-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '8px', marginTop: '8px', marginBottom: '14px' }}>
             {([
               ['NORMAL', 'ノーマル', '状況を見てバランスよく行動'],
               ['EXPERT', 'エキスパート', '先読みと回避・強化を駆使'],
@@ -202,7 +202,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                   }}
                 >
                   <div style={{ fontSize: '15px', fontWeight: 950 }}>Lv.{level}</div>
-                  <div style={{ marginTop: '2px', fontSize: '9px', color: level === 100 ? '#FFB74D' : '#7C879C' }}>
+                  <div className="battle-challenge-level-caption" style={{ marginTop: '2px', fontSize: '9px', color: level === 100 ? '#FFB74D' : '#7C879C' }}>
                     {level === 100 ? '最終試練' : '挑戦レベル'}
                   </div>
                 </button>
@@ -210,6 +210,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             })}
           </div>
           <div
+            className="battle-challenge-rules"
             role="status"
             aria-label="挑戦レベルの特殊ルール"
             aria-live="polite"
@@ -275,7 +276,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
 
           <div style={{ marginTop: '10px' }}>
             <div style={{ fontSize: '9px', color: '#8290A8', fontWeight: 850, marginBottom: '6px' }}>クイックビルド</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '6px' }}>
+            <div className="battle-setup-quickbuild" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '6px' }}>
               {([
                 ['BALANCED', '均衡'],
                 ['OFFENSE', '火力'],
@@ -556,7 +557,8 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           </div>
         </section>
 
-        <div style={{
+        <div className="battle-setup-action-footer">
+        <div className="battle-setup-challenge-summary" style={{
           marginTop: '14px',
           padding: '12px 14px',
           borderRadius: '13px',
@@ -575,6 +577,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         </div>
 
         <button
+          className="battle-setup-start-button"
           type="button"
           onClick={startBattle}
           style={{
@@ -597,8 +600,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           <Play size={21} fill="currentColor" /> 戦闘開始！
         </button>
 
-        <div style={{ marginTop: '9px', textAlign: 'center', fontSize: '9px', color: '#566176' }}>
+        <div className="battle-setup-start-note" style={{ marginTop: '9px', textAlign: 'center', fontSize: '9px', color: '#566176' }}>
           権能は任意で0〜2個まで選択可能。権能なしでも戦闘を開始できます。
+        </div>
         </div>
       </div>
     </div>
