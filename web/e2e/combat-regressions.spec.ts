@@ -749,7 +749,9 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
 
   let deployOverlay: Locator | undefined;
   try {
-    await page.goto('/');
+    // The preloader request is intentionally blocked; don't make navigation
+    // wait for the document load event before we can release that request.
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
     await cutinRequested;
 
