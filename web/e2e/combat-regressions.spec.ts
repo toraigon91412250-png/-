@@ -112,6 +112,7 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 50 }));
   });
 
   await page.goto('/');
