@@ -85,6 +85,10 @@ export interface CharacterDef {
   passiveDescription: string;
   specialSkillName: string;
   specialSkillDamage: number;
+  /** Base Feather damage before the talent multiplier, to keep preview and combat math consistent. */
+  talentBaseSpecialSkillDamage?: number;
+  /** Feather Resonance multiplier for the final direct Feather damage. */
+  talentSpecialDamageMultiplier?: number;
   specialSkillCooldown: number;
   specialSkillDescription: string;
   hasSuperFallenShot?: boolean;
