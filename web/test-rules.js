@@ -234,7 +234,7 @@ assert.strictEqual(armorBreakPreview.armorDamage, 50);
 assert.strictEqual(armorBreakPreview.armorWillBreak, true, 'The preview must warn when this hit breaks armor.');
 
 const brokenArmorPreview = calculateHitDamagePreview(
-  { valueOf: () => 100 } as unknown as number,
+  100,
   { ...runtimeKaiserLv40Fighter, kaiserArmorCurrent: 0, kaiserArmorBrokenTurns: 2 },
   40, 3, '通常攻撃',
 );
