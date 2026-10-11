@@ -747,8 +747,10 @@ test('Feather Split keeps its selector compact and independently cools down each
   await expect(turnOne).toBeVisible();
   await pierceAction.click();
 
-  // The new artwork belongs only to 穿羽, and must load from the uploaded asset.
-  await expect(page.locator('img[src*="4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png"]')).toBeVisible({ timeout: 5_000 });
+  // The new artwork belongs only to 穿羽 and must decode from the uploaded asset.
+  const pierceCutIn = page.locator('img[src*="4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png"]');
+  await expect(pierceCutIn).toBeVisible({ timeout: 5_000 });
+  await expect.poll(() => pierceCutIn.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 2T');
 
