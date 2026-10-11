@@ -40,6 +40,44 @@ const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress,
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
+const {
+  normalizeKaiserChallengeProgress,
+  getSelectableKaiserLevels,
+  resolveKaiserChallengeResult,
+} = await import('./src/utils/kaiserChallengeProgress.ts');
+
+const initialKaiserProgress = normalizeKaiserChallengeProgress(null);
+assert.deepStrictEqual(initialKaiserProgress, { unlockedLevel: 10 });
+assert.deepStrictEqual(getSelectableKaiserLevels(10), [10]);
+assert.deepStrictEqual(getSelectableKaiserLevels(20), [10, 20]);
+assert.deepStrictEqual(getSelectableKaiserLevels(30), [20, 30]);
+assert.deepStrictEqual(getSelectableKaiserLevels(100), [90, 100]);
+assert.deepStrictEqual(
+  resolveKaiserChallengeResult(initialKaiserProgress, 10, true),
+  { unlockedLevel: 20 },
+  'Defeating the current Kaiser level should unlock the next level.',
+);
+assert.deepStrictEqual(
+  resolveKaiserChallengeResult(initialKaiserProgress, 10, false),
+  initialKaiserProgress,
+  'A loss must not unlock the next Kaiser level.',
+);
+assert.deepStrictEqual(
+  resolveKaiserChallengeResult({ unlockedLevel: 30 }, 20, true),
+  { unlockedLevel: 30 },
+  'Winning an older cleared level must not skip progression.',
+);
+assert.deepStrictEqual(
+  resolveKaiserChallengeResult({ unlockedLevel: 100 }, 100, true),
+  { unlockedLevel: 100 },
+  'Level 100 is the final challenge and must not overflow the level list.',
+);
+assert.deepStrictEqual(
+  normalizeKaiserChallengeProgress({ unlockedLevel: 25 }),
+  initialKaiserProgress,
+  'Invalid saved Kaiser levels must fall back to the initial challenge.',
+);
+console.log('✓ Kaiser challenge unlocks are sequential and only retain the previous cleared level.');
 
 assert.strictEqual(getIrenaSuperFallenShotMultiplier(1), 5.6);
 assert.strictEqual(Math.round(getIrenaSuperFallenShotMultiplier(10) * 10) / 10, 7.4);
