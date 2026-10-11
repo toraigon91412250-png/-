@@ -34,6 +34,13 @@ jobs:
         working-directory: web
         run: npm install
 
+      - name: Export regenerated npm lockfile (temporary security investigation step)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-security-generated-lockfile
+          path: web/package-lock.json
+          if-no-files-found: error
+
       - name: Run game tests
         working-directory: web
         run: npm test
