@@ -688,12 +688,11 @@ test('Feather Split keeps its selector compact and independently cools down each
   const turnTwo = page.getByText(/^第\s*2\s*ターン$/);
   await expect(turnTwo).toBeVisible();
   await rapidAction.click();
-  // Verify the execution log while it is current; later turns may not keep old log rows mounted.
-  await expect(page.getByText(/羽撃ち分け・交互ボーナス/).first()).toBeVisible();
 
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
   await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
+  await expect(page.getByText(/羽撃ち分け・交互ボーナス/).first()).toBeVisible();
 
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });
