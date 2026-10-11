@@ -12,8 +12,9 @@ permissions:
   pages: write
   id-token: write
 
+# Keep pull-request checks isolated so they cannot cancel a production Pages deploy.
 concurrency:
-  group: "pages"
+  group: pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
   cancel-in-progress: true
 
 jobs:
