@@ -82,8 +82,8 @@ test('Kaiser challenge selector starts at level 10 and hides future levels', asy
   await page.getByRole('button', { name: /バトル開始/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
-  await expect(page.getByRole('button', { name: /Lv\\.10/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lv\\.(20|30|40|50|60|70|80|90|100)/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Lv\.10/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.(20|30|40|50|60|70|80|90|100)/ })).toHaveCount(0);
   await expect(page.getByText(/選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです/)).toBeVisible();
 });
 
@@ -99,10 +99,10 @@ test('Kaiser challenge selector shows only the current level and one previous le
   await page.getByRole('button', { name: /バトル開始/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
-  await expect(page.getByRole('button', { name: /Lv\\.20/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lv\\.30/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lv\\.10/ })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /Lv\\.(40|50|60|70|80|90|100)/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Lv\.20/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.30/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.10/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Lv\.(40|50|60|70|80|90|100)/ })).toHaveCount(0);
   await expect(page.getByText('Lv.30 解放中')).toBeVisible();
 });
 
