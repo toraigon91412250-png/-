@@ -211,6 +211,51 @@ assert.strictEqual(kaiserLv50Fighter.kaiserArmorMax, Math.round(runtimeKaiserLv5
 assert.strictEqual(kaiserLv50Fighter.kaiserArmorCurrent, kaiserLv50Fighter.kaiserArmorMax);
 assert.strictEqual(kaiserLv100Fighter.kaiserArmorCurrent, Math.round(runtimeKaiserLv100.maxHp * 0.2));
 
+const noArmorPreview = calculateHitDamagePreview(100, kaiserLv10Fighter, 10, 1, '通常攻撃');
+assert.deepStrictEqual(noArmorPreview, {
+  hpDamage: 100,
+  armorDamage: 0,
+  armorWasActive: false,
+  armorWasBroken: false,
+  armorWillBreak: false,
+  phaseChanged: false,
+}, 'Below Lv40, preview HP damage must match live damage without inventing armor.');
+
+const armorPreview = calculateHitDamagePreview(100, runtimeKaiserLv40Fighter, 40, 1, '通常攻撃');
+assert.strictEqual(armorPreview.hpDamage, 75, 'Active armor preview must show the 25% HP damage reduction.');
+assert.strictEqual(armorPreview.armorDamage, 100, 'Armor preview must show durability loss from pre-mitigation damage.');
+assert.strictEqual(armorPreview.armorWasActive, true);
+
+const armorBreakPreview = calculateHitDamagePreview(
+  100, { ...runtimeKaiserLv40Fighter, kaiserArmorCurrent: 50 }, 40, 2, '通常攻撃',
+);
+assert.strictEqual(armorBreakPreview.hpDamage, 75);
+assert.strictEqual(armorBreakPreview.armorDamage, 50);
+assert.strictEqual(armorBreakPreview.armorWillBreak, true, 'The preview must warn when this hit breaks armor.');
+
+const brokenArmorPreview = calculateHitDamagePreview(
+  { valueOf: () => 100 } as unknown as number,
+  { ...runtimeKaiserLv40Fighter, kaiserArmorCurrent: 0, kaiserArmorBrokenTurns: 2 },
+  40, 3, '通常攻撃',
+);
+assert.strictEqual(brokenArmorPreview.hpDamage, 130, 'A broken armor forecast must include the live 1.3x damage rule.');
+assert.strictEqual(brokenArmorPreview.armorWasBroken, true);
+
+const phasePreview = calculateHitDamagePreview(100, {
+  ...kaiserLv100Fighter,
+  currentHp: Math.ceil(kaiserLv100Fighter.character.maxHp * 0.5) + 50,
+  kaiserArmorCurrent: 0,
+  kaiserArmorBrokenTurns: 0,
+}, 100, 4, '通常攻撃');
+assert.strictEqual(phasePreview.hpDamage, 50, 'The forecast must match phase-boundary damage clamping.');
+assert.strictEqual(phasePreview.phaseChanged, true);
+
+const executionBypassesArmorPreview = calculateHitDamagePreview(
+  100, runtimeKaiserLv40Fighter, 40, 1, '堕天・終局',
+);
+assert.strictEqual(executionBypassesArmorPreview.hpDamage, 100,
+  'The preview must preserve the existing Fallen execution armor-bypass rule.');
+
 const lowLevelHit = resolveKaiserHit(kaiserLv10Fighter, 100, 10, 1, true, '通常攻撃');
 assert.strictEqual(lowLevelHit.damage, 100, 'Lv10 damage must not be mitigated by armor.');
 const armoredHit = resolveKaiserHit(kaiserLv50Fighter, 1000, 50, 1, true, '通常攻撃');
