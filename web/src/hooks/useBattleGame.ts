@@ -34,6 +34,11 @@ import {
 import {
   BLOOD_MEDIA_EXTRA_BLEED_TURNS,
   COSTLY_SHOT_HP_COST,
+  FEATHER_SPLIT_ALTERNATION_BONUS,
+  FEATHER_SPLIT_PIERCE_COOLDOWN,
+  FEATHER_SPLIT_RAPID_COOLDOWN,
+  getFeatherSplitModeForSkill,
+  getSpecialCooldownRemaining,
   getBloodTearBurstDamage,
   getTurnExecutionPlan,
   getWindGuardCounterDamage,
@@ -67,6 +72,9 @@ export function createInitialFighter(
     buffDamageBonus: 0,
     featherChargeBonus: 0,
     featherChargeCount: 0,
+    featherPierceCooldownRemaining: 0,
+    featherRapidCooldownRemaining: 0,
+    lastFeatherSplitMode: null,
     isSuperFallenShotCharging: false,
     isEvading: false,
     isPlayer,
@@ -917,9 +925,13 @@ export function useBattleGame(
         if (!isActorPlayer || !stateRef.current.battleConfig.imprints?.includes('COSTLY_SHOT')) {
           return true;
         }
+        const featherSplitEnabled =
+          actor.character.id === 'irena' &&
+          Boolean(stateRef.current.battleConfig.imprints?.includes('FEATHER_SPLIT'));
+        const selectedSplitMode = getFeatherSplitModeForSkill(specialSkillId);
         if (
           actor.currentHp <= COSTLY_SHOT_HP_COST ||
-          actor.specialCooldownRemaining <= 0 ||
+          getSpecialCooldownRemaining(actor, specialSkillId ?? 'FEATHER', featherSplitEnabled) <= 0 ||
           actor.isSuperFallenShotCharging
         ) {
           return true;
@@ -931,7 +943,15 @@ export function useBattleGame(
           player: {
             ...prev.player,
             currentHp: hpAfterCost,
-            specialCooldownRemaining: 0,
+            ...(featherSplitEnabled && selectedSplitMode === 'PIERCE'
+              ? { featherPierceCooldownRemaining: 0 }
+              : {}),
+            ...(featherSplitEnabled && selectedSplitMode === 'RAPID'
+              ? { featherRapidCooldownRemaining: 0 }
+              : {}),
+            ...(!featherSplitEnabled || !selectedSplitMode
+              ? { specialCooldownRemaining: 0 }
+              : {}),
           },
           costlyShotResult: { turn, hpSpent: COSTLY_SHOT_HP_COST },
           visualEffect: {
@@ -1410,6 +1430,17 @@ export function useBattleGame(
         }
 
         const isIrenaSpecial = actor.character.id === 'irena';
+        const featherSplitMode =
+          isActorPlayer &&
+          isIrenaSpecial &&
+          stateRef.current.battleConfig.imprints?.includes('FEATHER_SPLIT')
+            ? getFeatherSplitModeForSkill(specialSkillId)
+            : null;
+        const isAlternatingSplitAttack = Boolean(
+          featherSplitMode &&
+          actor.lastFeatherSplitMode &&
+          featherSplitMode !== actor.lastFeatherSplitMode
+        );
         const irenaSkillLevel = actor.character.featherSkillLevel || 1;
         const irenaSkillPath = actor.character.featherSkillPath || null;
         const featherChargeBonus = isIrenaSpecial ? actor.featherChargeBonus : 0;
@@ -1456,7 +1487,18 @@ export function useBattleGame(
           consumeBuff(isActorPlayer);
         }
 
-        const skillName = actor.character.specialSkillName;
+        const skillName = featherSplitMode === 'PIERCE'
+          ? '穿羽'
+          : featherSplitMode === 'RAPID'
+            ? '連羽'
+            : actor.character.specialSkillName;
+        if (isAlternatingSplitAttack) {
+          addLog(
+            `🪽【羽撃ち分け・交互ボーナス】${skillName}へ切替！ 与ダメージ+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%。`,
+            'PASSIVE_TRIGGER',
+            turn,
+          );
+        }
         let baseDamage = actor.character.specialSkillDamage;
         if (featherChargeBonus > 0) {
           baseDamage += featherChargeBonus;
@@ -1474,11 +1516,27 @@ export function useBattleGame(
         // Special gives +1 ultimate gauge
         gainUltimateGauge(isActorPlayer, actor.character.name, `特殊技『${skillName}』使用`, turn);
 
-        // Set cooldown on actor
-        updateState(prev => (isActorPlayer
-          ? { ...prev, player: { ...prev.player, specialCooldownRemaining: actor.character.specialSkillCooldown } }
-          : { ...prev, enemy: { ...prev.enemy, specialCooldownRemaining: actor.character.specialSkillCooldown } }
-        ));
+        // Each Feather Split form tracks its cooldown independently. Other specials retain the legacy shared timer.
+        if (featherSplitMode) {
+          const splitCooldown = featherSplitMode === 'PIERCE'
+            ? FEATHER_SPLIT_PIERCE_COOLDOWN
+            : FEATHER_SPLIT_RAPID_COOLDOWN;
+          updateState(prev => ({
+            ...prev,
+            player: {
+              ...prev.player,
+              ...(featherSplitMode === 'PIERCE'
+                ? { featherPierceCooldownRemaining: splitCooldown }
+                : { featherRapidCooldownRemaining: splitCooldown }),
+              lastFeatherSplitMode: featherSplitMode,
+            },
+          }));
+        } else {
+          updateState(prev => (isActorPlayer
+            ? { ...prev, player: { ...prev.player, specialCooldownRemaining: actor.character.specialSkillCooldown } }
+            : { ...prev, enemy: { ...prev.enemy, specialCooldownRemaining: actor.character.specialSkillCooldown } }
+          ));
+        }
 
         // Check opponent evasion
         if (target.isEvading || (!isActorPlayer && target.isPlayer && playerEvadeSelectedRef.current)) {
@@ -1958,8 +2016,19 @@ export function useBattleGame(
     // The charge turn is locked: only the automatic release is accepted.
     if (player.isSuperFallenShotCharging && !isForcedSuperFallenShot) return;
 
+    // Resolve the selected mode's own cooldown when Feather Split is equipped. Other specials keep their legacy timer.
+    const featherSplitEnabled =
+      player.character.id === 'irena' &&
+      Boolean(stateRef.current.battleConfig.imprints?.includes('FEATHER_SPLIT'));
+    const selectedFeatherSplitMode = getFeatherSplitModeForSkill(specialSkillId);
+    if (selectedFeatherSplitMode && !featherSplitEnabled) return;
+
     // Check prerequisites
-    if (playerAction === 'SPECIAL' && !isForcedSuperFallenShot && player.specialCooldownRemaining > 0) return;
+    if (
+      playerAction === 'SPECIAL' &&
+      !isForcedSuperFallenShot &&
+      getSpecialCooldownRemaining(player, specialSkillId ?? 'FEATHER', featherSplitEnabled) > 0
+    ) return;
     if (
       specialSkillId === 'SUPER_FALLEN_SHOT' &&
       !isForcedSuperFallenShot &&
@@ -1971,7 +2040,7 @@ export function useBattleGame(
       playerAction === 'COSTLY_SHOT' &&
       (
         !stateRef.current.battleConfig.imprints?.includes('COSTLY_SHOT') ||
-        player.specialCooldownRemaining <= 0 ||
+        getSpecialCooldownRemaining(player, specialSkillId ?? 'FEATHER', featherSplitEnabled) <= 0 ||
         player.currentHp <= COSTLY_SHOT_HP_COST ||
         player.isSuperFallenShotCharging
       )
@@ -2045,7 +2114,7 @@ export function useBattleGame(
         speed,
         currentTurn,
         firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
-        firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
+        firstIsPlayer && (playerAction === 'SPECIAL' || playerAction === 'COSTLY_SHOT') ? specialSkillId : undefined,
       );
       if (!continue1 || stateRef.current.player.currentHp <= 0 || stateRef.current.enemy.currentHp <= 0) {
         const winner = stateRef.current.player.currentHp > 0;
@@ -2063,7 +2132,7 @@ export function useBattleGame(
         speed,
         currentTurn,
         !firstIsPlayer && playerAction === 'ULTIMATE' ? ultimateVariant : undefined,
-        !firstIsPlayer && playerAction === 'SPECIAL' ? specialSkillId : undefined,
+        !firstIsPlayer && (playerAction === 'SPECIAL' || playerAction === 'COSTLY_SHOT') ? specialSkillId : undefined,
       );
       if (!continue2 || stateRef.current.player.currentHp <= 0 || stateRef.current.enemy.currentHp <= 0) {
         const winner = stateRef.current.player.currentHp > 0;
@@ -2086,11 +2155,15 @@ export function useBattleGame(
         ...stateRef.current.player,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
+        featherPierceCooldownRemaining: Math.max(0, (stateRef.current.player.featherPierceCooldownRemaining ?? 0) - 1),
+        featherRapidCooldownRemaining: Math.max(0, (stateRef.current.player.featherRapidCooldownRemaining ?? 0) - 1),
       };
       const enemyBeforeArmorTick = {
         ...stateRef.current.enemy,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.enemy.specialCooldownRemaining - 1),
+        featherPierceCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherPierceCooldownRemaining ?? 0) - 1),
+        featherRapidCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherRapidCooldownRemaining ?? 0) - 1),
       };
       const nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
       if (
