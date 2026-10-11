@@ -813,6 +813,18 @@ assert.strictEqual(getEffectiveSpeed(fullTalentAttacker), IRENA.speed + 15,
   'Wind Reading speed must flow through the actual effective-speed calculation.');
 assert.strictEqual(getEffectiveDefense(fullTalentAttacker), IRENA.defense - 9,
   'Abyss Resonance defense reduction must flow through the actual effective-defense calculation.');
+
+const oneFeatherBlackWingConfig = { kaiserLevel: 10, abilities: [{ id: 'BLACK_WING', level: 1 }] };
+const oneFeatherWithBlackWing = createBattleCharacters(oneFeatherRankIrena, KAISER, oneFeatherBlackWingConfig).player;
+const oneFeatherWithBlackWingFighter = createInitialFighter(oneFeatherWithBlackWing, true);
+assert.strictEqual(calculateSpecialDamage({
+  attacker: oneFeatherWithBlackWingFighter,
+  target: splitDamageTarget,
+  config: oneFeatherBlackWingConfig,
+  turn: 1,
+  isActingFirst: true,
+}), Math.round((Math.round(IRENA.specialSkillDamage * 1.2) - KAISER.defense) * 1.06),
+  'Feather Resonance must stack with Black Wing Lv1 without dropping its base-damage bonus or double-applying talent.');
 assert.strictEqual(calculateSpecialDamage({
   attacker: { ...splitDamageAttacker, lastFeatherSplitMode: 'PIERCE' },
   target: splitDamageTarget, config: splitDamageConfig,
