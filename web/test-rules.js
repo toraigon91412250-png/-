@@ -11,7 +11,7 @@ import {
   getJudgmentThreshold,
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
-import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from './src/utils/battleMath.ts';
+import { calculateHitDamagePreview, calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from './src/utils/battleMath.ts';
 import { applyStatAllocation, createStatPreset, getAbilityBuildMatchPercent, getRemainingStatPoints } from './src/utils/statBuild.ts';
 
 register(
@@ -82,6 +82,24 @@ assert.strictEqual(talentAdjustedIrena.evasionRate, 0.28);
 assert.strictEqual(talentAdjustedIrena.specialSkillDamage, Math.round(IRENA.specialSkillDamage * 1.18));
 assert.strictEqual(talentAdjustedIrena.ultimateSkillDamage, Math.round(IRENA.ultimateSkillDamage * 1.24));
 assert.strictEqual(talentAdjustedIrena.defense, IRENA.defense - 9);
+assert.strictEqual(talentAdjustedIrena.attack, IRENA.attack);
+assert.strictEqual(talentAdjustedIrena.maxHp, IRENA.maxHp);
+const talentAdjustedTwice = applyIrenaTalentModifiers(talentAdjustedIrena, allIrenaTalents);
+assert.strictEqual(talentAdjustedTwice.speed, talentAdjustedIrena.speed, 'Reapplying the same talent ranks must not stack speed twice.');
+assert.strictEqual(talentAdjustedTwice.evasionRate, talentAdjustedIrena.evasionRate, 'Reapplying talents must not stack evasion twice.');
+assert.strictEqual(talentAdjustedTwice.specialSkillDamage, talentAdjustedIrena.specialSkillDamage, 'Reapplying talents must not stack Feather Resonance twice.');
+assert.strictEqual(talentAdjustedTwice.ultimateSkillDamage, talentAdjustedIrena.ultimateSkillDamage, 'Reapplying talents must not stack Abyss Resonance twice.');
+assert.strictEqual(talentAdjustedTwice.specialSkillDescription, talentAdjustedIrena.specialSkillDescription, 'The talent description suffix must not duplicate.');
+const attackTalentBuild = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(6),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0, RAVEN_ASSAULT: 3, LAST_WING: 0 },
+}));
+assert.strictEqual(attackTalentBuild.attack, Math.round(IRENA.attack * 1.15), 'Raven Assault max rank should add 15% attack.');
+const defensiveTalentBuild = applyIrenaTalentModifiers(IRENA, normalizeIrenaTalentProgress({
+  experience: getIrenaXpForLevel(6),
+  ranks: { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0, RAVEN_ASSAULT: 0, LAST_WING: 3 },
+}));
+assert.strictEqual(defensiveTalentBuild.maxHp, Math.round(IRENA.maxHp * 1.15), 'Last Wing max rank should add 15% max HP.');
 assert.strictEqual(
   getIrenaLevelProgress(getIrenaXpForLevel(20)).progressPercent,
   100,
@@ -89,7 +107,7 @@ assert.strictEqual(
 );
 assert.deepStrictEqual(
   normalizeIrenaTalentProgress({ experience: 0, ranks: { WIND_READ: 3, FEATHER_RESONANCE: 3, ABYSS_RESONANCE: 3 } }).ranks,
-  { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0 },
+  { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0, RAVEN_ASSAULT: 0, LAST_WING: 0 },
   'A save cannot claim talent ranks before earning talent points.',
 );
 console.log('✓ Irena experience, talent points, save normalization, and talent effects are verified.');
