@@ -62,6 +62,9 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
       defense: Math.max(0, Math.round(next.defense * statMultiplier)),
       speed: Math.max(1, Math.round(next.speed * statMultiplier)),
       specialSkillDamage: Math.max(1, Math.round(next.specialSkillDamage * featherMultiplier)),
+      ...(next.talentBaseSpecialSkillDamage !== undefined
+        ? { talentBaseSpecialSkillDamage: Math.max(1, Math.round(next.talentBaseSpecialSkillDamage * featherMultiplier)) }
+        : {}),
     };
   }
 
