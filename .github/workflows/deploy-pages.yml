@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -22,8 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref || github.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -35,19 +33,6 @@ jobs:
       - name: Install dependencies
         working-directory: web
         run: npm install
-
-      - name: Commit regenerated npm lockfile (temporary security step)
-        if: github.event_name == 'pull_request'
-        run: |
-          if git diff --quiet -- web/package-lock.json; then
-            echo "package-lock.json already matches package.json"
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add web/package-lock.json
-          git commit -m "security: regenerate lockfile for Vite 6.4.4"
-          git push origin "HEAD:$GITHUB_HEAD_REF"
 
       - name: Run game tests
         working-directory: web
