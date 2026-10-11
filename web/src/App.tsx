@@ -20,7 +20,7 @@ import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
-import { applyIrenaTalentModifiers, loadIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
+import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
 export const App: React.FC = () => {
@@ -166,6 +166,16 @@ export const App: React.FC = () => {
     }
     setIrenaTalentProgress(next);
     setIrenaTalentMessage('才能を強化しました。次の戦闘から効果が反映されます。');
+  };
+
+  const handleResetIrenaTalents = () => {
+    const next = resetIrenaTalentRanks();
+    if (!next) {
+      setIrenaTalentMessage('振り直しの保存に失敗しました。ブラウザの保存設定を確認してください。');
+      return;
+    }
+    setIrenaTalentProgress(next);
+    setIrenaTalentMessage('才能を振り直しました。レベルと経験値は維持されています。');
   };
 
   const handleEquipImprint = (id: ImprintId) => {
@@ -399,6 +409,7 @@ export const App: React.FC = () => {
           progress={irenaTalentProgress}
           message={irenaTalentMessage}
           onSpendPoint={handleSpendIrenaTalentPoint}
+          onResetTalents={handleResetIrenaTalents}
           onBack={() => {
             setIrenaTalentMessage(null);
             refreshProgress();
