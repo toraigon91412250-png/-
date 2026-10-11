@@ -1338,7 +1338,7 @@ assert.strictEqual(resolveRaidAction(raidTerminalState, 'ATTACK', () => 0.5), ra
 
 console.log('✓ Raid 36-case action/telegraph matrix, resource floor, focus value, guard cost, and seeded policy comparison verified.');
 
-console.log('--- ALL TEST ASSERTIONS PASSED! ---');
+
 
 
 
@@ -1394,3 +1394,5 @@ for (const [key, value] of beforeRecruitmentFailure) {
   else storageValues.set(key, value);
 }
 console.log('✓ Recruitment and battle reward writes roll back instead of leaving partial progression.');
+
+console.log('--- ALL TEST ASSERTIONS PASSED! ---');
