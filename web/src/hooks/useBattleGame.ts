@@ -1494,7 +1494,7 @@ export function useBattleGame(
             : actor.character.specialSkillName;
         if (isAlternatingSplitAttack) {
           addLog(
-            `🪽【羽撃ち分け・交互ボーナス】${skillName}へ切替！ 与ダメージ+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%。`,
+            `🪽【羽撃ち分け・交互ボーナス】${skillName}へ切替！ 威力補正+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%。`,
             'PASSIVE_TRIGGER',
             turn,
           );
