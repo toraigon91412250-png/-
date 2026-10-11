@@ -18,6 +18,7 @@ import { BottomNavigation } from './components/BottomNavigation';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadAllGameImages } from './utils/imagePreload';
+import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
 
 export const App: React.FC = () => {
   const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'DEV_TOOLS'>('SELECT');
@@ -26,6 +27,7 @@ export const App: React.FC = () => {
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
+  const [kaiserChallengeProgress, setKaiserChallengeProgress] = useState(() => loadKaiserChallengeProgress());
   const [availableStatPoints, setAvailableStatPoints] = useState(() => loadStatPoints());
   const [raidRewardProgress, setRaidRewardProgress] = useState(() => loadRaidRewardProgress());
   const [imprintProgress, setImprintProgress] = useState(() => loadImprintProgress());
@@ -33,7 +35,7 @@ export const App: React.FC = () => {
   const [imprintMessage, setImprintMessage] = useState<string | null>(null);
   const [imprintGachaMessage, setImprintGachaMessage] = useState<string | null>(null);
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
-    kaiserLevel: 10,
+    kaiserLevel: kaiserChallengeProgress.unlockedLevel,
     abilities: [],
     statAllocation: normalizeStatAllocation(),
     statPointTotal: loadStatPoints(),
@@ -64,11 +66,20 @@ export const App: React.FC = () => {
       setRecruitmentProgress(loadRecruitmentProgress());
       setAbilityProgress(loadAbilityProgress());
       setAvailableStatPoints(loadStatPoints());
+      const completedLevel = battleState.battleConfig.kaiserLevel;
+      const playerWon = battleState.winnerIsPlayer === true;
+      const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
+      setKaiserChallengeProgress(nextChallengeProgress);
+      setBattleSetup(prev => ({
+        ...prev,
+        kaiserLevel: playerWon ? nextChallengeProgress.unlockedLevel : completedLevel,
+      }));
     }
   }, [battleState.phase]);
 
   const refreshProgress = () => {
     setRaidRewardProgress(loadRaidRewardProgress());
+    setKaiserChallengeProgress(loadKaiserChallengeProgress());
     const currentImprintProgress = loadImprintProgress();
     setImprintProgress(currentImprintProgress);
     setOverallStats(loadOverallStats());
@@ -103,12 +114,25 @@ export const App: React.FC = () => {
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
+    const currentKaiserProgress = loadKaiserChallengeProgress();
+    const selectableKaiserLevels = getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
+    setKaiserChallengeProgress(currentKaiserProgress);
     setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
     if (prefill) {
-      setBattleSetup({ ...prefill, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds });
+      setBattleSetup({
+        ...prefill,
+        kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        statPointTotal: currentStatPoints,
+        imprints: currentImprintProgress.equippedIds,
+      });
     } else {
-      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
+      setBattleSetup(prev => ({
+        ...prev,
+        kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        statPointTotal: currentStatPoints,
+        imprints: currentImprintProgress.equippedIds,
+      }));
     }
     setScreen('BATTLE_SETUP');
   };
@@ -278,6 +302,7 @@ export const App: React.FC = () => {
 
   const handleDeveloperReset = () => {
     const reset = resetProgressForDeveloper();
+    setKaiserChallengeProgress(resetKaiserChallengeProgress());
     setOverallStats(reset.overallStats);
     setSkillProgress(reset.skillProgress);
     setRecruitmentProgress(reset.recruitmentProgress);
@@ -374,6 +399,7 @@ export const App: React.FC = () => {
         <BattleSetupScreen
           abilityProgress={abilityProgress}
           availableStatPoints={availableStatPoints}
+          unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           initialConfig={battleSetup}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
