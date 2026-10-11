@@ -187,6 +187,8 @@ export function applyIrenaTalentModifiers(
 ): CharacterDef {
   const normalized = normalizeIrenaTalentProgress(progress);
   const { WIND_READ, FEATHER_RESONANCE, ABYSS_RESONANCE } = normalized.ranks;
+  const talentBaseUltimateSkillDamage = character.talentBaseUltimateSkillDamage ?? character.ultimateSkillDamage;
+  const talentUltimateDamageMultiplier = 1 + ABYSS_RESONANCE * 0.08;
 
   return {
     ...character,
@@ -196,7 +198,9 @@ export function applyIrenaTalentModifiers(
     specialSkillDescription: FEATHER_RESONANCE > 0
       ? `${character.specialSkillDescription}（才能効果：羽弾ダメージ +${FEATHER_RESONANCE * 6}%）`
       : character.specialSkillDescription,
-    ultimateSkillDamage: Math.round(character.ultimateSkillDamage * (1 + ABYSS_RESONANCE * 0.08)),
+    ultimateSkillDamage: Math.round(talentBaseUltimateSkillDamage * talentUltimateDamageMultiplier),
+    talentBaseUltimateSkillDamage,
+    talentUltimateDamageMultiplier,
     defense: Math.max(0, character.defense - ABYSS_RESONANCE * 3),
   };
 }
