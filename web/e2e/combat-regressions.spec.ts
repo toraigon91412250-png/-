@@ -71,6 +71,40 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
+test('Irena talent board opens from home and persists spent talent points', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (!window.localStorage.getItem('duel_arena_irena_talent_progress')) {
+      window.localStorage.setItem('duel_arena_irena_talent_progress', JSON.stringify({
+        experience: 80,
+        ranks: { WIND_READ: 0, FEATHER_RESONANCE: 0, ABYSS_RESONANCE: 0 },
+      }));
+    }
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+
+  await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
+  await expect(page.getByText('Lv.2', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
+
+  const windTalent = page.getByRole('region', { name: '風読み' });
+  await expect(windTalent).toContainText('0/3');
+  await page.getByRole('button', { name: '風読みを強化' }).click();
+  await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
+  await expect(windTalent).toContainText('1/3');
+  await expect(windTalent).toContainText('素早さ +5・回避率 +1%');
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /堕天の才能盤　Lv\.2/ })).toBeVisible();
+  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+  await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
+  await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
+  await expect(page.getByRole('region', { name: '風読み' })).toContainText('1/3');
+});
+
 test('Kaiser challenge selector starts at level 10 and hides future levels', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
