@@ -493,3 +493,148 @@
     animation: none !important;
   }
 }
+
+
+/* Summon loading reuses the battle-deploy layout with a black-wing palette. */
+.battle-deploy-overlay--gacha {
+  background:
+    radial-gradient(ellipse at 50% 43%, rgba(117, 37, 143, .30) 0%, rgba(55, 15, 63, .12) 31%, transparent 55%),
+    radial-gradient(ellipse at 50% 112%, rgba(144, 28, 76, .22), transparent 52%),
+    linear-gradient(142deg, #07040b 0%, #18091e 48%, #07040b 100%);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-grid {
+  background-image:
+    linear-gradient(rgba(184, 105, 214, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184, 105, 214, .12) 1px, transparent 1px);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-sweep {
+  background: linear-gradient(
+    108deg,
+    transparent 43%,
+    rgba(160, 48, 177, .025) 47%,
+    rgba(216, 80, 202, .09) 49.5%,
+    rgba(255, 188, 239, .13) 50%,
+    rgba(153, 43, 133, .045) 52%,
+    transparent 57%
+  );
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-frame {
+  border-color: rgba(190, 111, 220, .18);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-corner {
+  border-color: rgba(220, 143, 255, .76);
+  filter: drop-shadow(0 0 5px rgba(190, 64, 223, .32));
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-brand strong {
+  color: #e2a8ff;
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-system-status i {
+  background: #ed8bff;
+  box-shadow: 0 0 9px rgba(231, 111, 255, .9);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-side-label {
+  color: rgba(199, 135, 219, .62);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-side-label span {
+  color: rgba(255, 129, 195, .8);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-reticle::before {
+  border-color: rgba(180, 91, 210, .32);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-reticle::after {
+  background: linear-gradient(90deg, transparent, rgba(243, 136, 255, .65), transparent);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-ring--outer {
+  border-color: rgba(189, 98, 223, .45);
+  border-top-color: #ffc0ff;
+  border-bottom-color: #8c3eaa;
+  box-shadow: 0 0 15px rgba(162, 58, 196, .13), inset 0 0 13px rgba(162, 58, 196, .09);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-ring--middle {
+  border-color: rgba(190, 114, 222, .6);
+  border-left-color: rgba(245, 201, 255, .86);
+  border-right-color: rgba(245, 201, 255, .86);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-ring--inner {
+  border-color: rgba(222, 142, 255, .48);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-reticle-scan {
+  background: linear-gradient(90deg, transparent, rgba(255, 191, 255, .98), transparent);
+  box-shadow: 0 0 9px rgba(234, 102, 255, .88);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-reticle-core {
+  background: #ed8bff;
+  box-shadow: 0 0 8px 2px rgba(204, 90, 255, .72), 0 0 25px 7px rgba(168, 45, 216, .28);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-eyebrow {
+  color: #e7a5ff;
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-eyebrow span {
+  background: linear-gradient(90deg, transparent, rgba(239, 135, 255, .8));
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-copy h1 {
+  text-shadow: 0 0 17px rgba(221, 101, 255, .28), 0 0 40px rgba(158, 38, 190, .18);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-subtitle {
+  color: rgba(210, 169, 225, .86);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-progress {
+  background: rgba(114, 54, 138, .38);
+  box-shadow: 0 0 13px rgba(187, 77, 221, .13);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-progress span {
+  background: linear-gradient(90deg, #8d36b8, #e38dff 52%, #fff0ff);
+  box-shadow: 0 0 13px rgba(220, 127, 255, .82);
+  transform: translateX(-105%) scaleX(.45);
+  animation: battleDeployGachaProgress 1.45s ease-in-out infinite;
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-footer {
+  border-top-color: rgba(178, 93, 206, .24);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-footer > div + div {
+  border-left-color: rgba(178, 93, 206, .21);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-footer span {
+  color: rgba(187, 140, 208, .8);
+}
+
+.battle-deploy-overlay--gacha .battle-deploy-footer strong {
+  color: rgba(230, 193, 245, .94);
+}
+
+@keyframes battleDeployGachaProgress {
+  0% { transform: translateX(-105%) scaleX(.45); opacity: .55; }
+  50% { transform: translateX(50%) scaleX(.7); opacity: 1; }
+  100% { transform: translateX(220%) scaleX(.45); opacity: .55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-deploy-overlay--gacha .battle-deploy-progress span {
+    transform: scaleX(1);
+    animation: none !important;
+  }
+}

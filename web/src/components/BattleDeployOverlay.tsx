@@ -1,12 +1,19 @@
 import React from 'react';
 import './BattleDeployOverlay.css';
 
-export const BattleDeployOverlay: React.FC = () => (
+interface BattleDeployOverlayProps {
+  variant?: 'battle' | 'gacha';
+}
+
+export const BattleDeployOverlay: React.FC<BattleDeployOverlayProps> = ({ variant = 'battle' }) => {
+  const isGacha = variant === 'gacha';
+
+  return (
   <section
-    className="battle-deploy-overlay"
+    className={isGacha ? 'battle-deploy-overlay battle-deploy-overlay--gacha' : 'battle-deploy-overlay'}
     role="status"
     aria-live="polite"
-    aria-label="戦闘出撃中"
+    aria-label={isGacha ? '召喚準備中' : '戦闘出撃中'}
   >
     <div className="battle-deploy-grid" aria-hidden="true" />
     <div className="battle-deploy-sweep" aria-hidden="true" />
@@ -19,19 +26,19 @@ export const BattleDeployOverlay: React.FC = () => (
 
     <div className="battle-deploy-topbar" aria-hidden="true">
       <span className="battle-deploy-brand">
-        TACTICAL INTERFACE <strong>/ 01</strong>
+        {isGacha ? <>SUMMON INTERFACE <strong>/ 02</strong></> : <>TACTICAL INTERFACE <strong>/ 01</strong></>}
       </span>
       <span className="battle-deploy-system-status">
         <i />
-        SYSTEM INITIALIZING
+        {isGacha ? 'RESONANCE INITIALIZING' : 'SYSTEM INITIALIZING'}
       </span>
     </div>
 
     <div className="battle-deploy-side-label battle-deploy-side-label--left" aria-hidden="true">
-      VECTOR LOCK <span>///</span> 01
+      {isGacha ? <>WING SIGNAL <span>///</span> 01</> : <>VECTOR LOCK <span>///</span> 01</>}
     </div>
     <div className="battle-deploy-side-label battle-deploy-side-label--right" aria-hidden="true">
-      FIELD SCAN <span>///</span> ACTIVE
+      {isGacha ? <>GATE SCAN <span>///</span> ACTIVE</> : <>FIELD SCAN <span>///</span> ACTIVE</>}
     </div>
 
     <div className="battle-deploy-center">
@@ -47,11 +54,11 @@ export const BattleDeployOverlay: React.FC = () => (
       <div className="battle-deploy-copy">
         <div className="battle-deploy-eyebrow">
           <span />
-          BATTLE DEPLOYING...
+          {isGacha ? 'BLACK WING / SUMMONING...' : 'BATTLE DEPLOYING...'}
           <span />
         </div>
-        <h1>戦闘出撃中</h1>
-        <p className="battle-deploy-subtitle">INITIALIZING COMBAT FIELD</p>
+        <h1>{isGacha ? '召喚準備中' : '戦闘出撃中'}</h1>
+        <p className="battle-deploy-subtitle">{isGacha ? 'INITIALIZING SUMMON GATE' : 'INITIALIZING COMBAT FIELD'}</p>
         <div className="battle-deploy-progress" aria-hidden="true">
           <span />
         </div>
@@ -60,19 +67,20 @@ export const BattleDeployOverlay: React.FC = () => (
 
     <div className="battle-deploy-footer" aria-hidden="true">
       <div>
-        <span>COMBAT SYSTEM</span>
+        <span>{isGacha ? 'SUMMON SYSTEM' : 'COMBAT SYSTEM'}</span>
         <strong>STARTING</strong>
       </div>
       <div>
-        <span>TACTICAL LINK</span>
-        <strong>INITIALIZING</strong>
+        <span>{isGacha ? 'WING SIGNAL' : 'TACTICAL LINK'}</span>
+        <strong>{isGacha ? 'SCANNING' : 'INITIALIZING'}</strong>
       </div>
       <div>
-        <span>DEPLOY SEQUENCE</span>
-        <strong>IN PROGRESS</strong>
+        <span>{isGacha ? 'GATE SEQUENCE' : 'DEPLOY SEQUENCE'}</span>
+        <strong>{isGacha ? 'OPENING' : 'IN PROGRESS'}</strong>
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default BattleDeployOverlay;

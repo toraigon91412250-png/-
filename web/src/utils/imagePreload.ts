@@ -13,16 +13,11 @@ import strongShotImage from '../assets/IMG_1155.jpeg';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 
-const PUBLIC_IMAGES = [
+const RECRUITMENT_IMAGES = [
   'assets/recruitment/1791110297970.jpg',
   'assets/recruitment/1791110298323.jpg',
   'assets/recruitment/1791110298431.jpg',
   'assets/recruitment/1791110298566.jpg',
-  'assets/recruitment/black-cloud.png',
-  'assets/recruitment/black-feather.png',
-  'assets/recruitment/irena-summon-1.jpg',
-  'assets/recruitment/irena-summon-2.jpg',
-  'assets/recruitment/space-crack.png',
   'assets/recruitment/開く直前の門.jpg',
 ] as const;
 
@@ -77,6 +72,11 @@ const preloadImage = (src: string): Promise<void> => {
 
 export const preloadAllGameImages = (): Promise<void[]> => {
   if (typeof window === 'undefined') return Promise.resolve([]);
-  const publicImages = PUBLIC_IMAGES.map(path => import.meta.env.BASE_URL + path);
-  return Promise.all([...SRC_IMAGES, ...publicImages].map(preloadImage));
+  return Promise.all(SRC_IMAGES.map(preloadImage));
+};
+
+export const preloadRecruitmentImages = (): Promise<void[]> => {
+  if (typeof window === 'undefined') return Promise.resolve([]);
+  const publicImages = RECRUITMENT_IMAGES.map(path => import.meta.env.BASE_URL + path);
+  return Promise.all(publicImages.map(preloadImage));
 };
