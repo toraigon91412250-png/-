@@ -751,7 +751,7 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
   try {
     // The preloader request is intentionally blocked; don't make navigation
     // wait for the document load event before we can release that request.
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'commit' });
     await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
     await cutinRequested;
 
@@ -772,7 +772,7 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
 
   if (!deployOverlay) throw new Error('Battle deployment overlay was not created.');
   await expect(deployOverlay).toBeHidden({ timeout: 20_000 });
-  await expect(page.getByText(/^第\\s*1\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 
   const pierceAction = page.getByRole('button', { name: /^穿羽/ }).last();
   await expect(pierceAction).toBeEnabled();
