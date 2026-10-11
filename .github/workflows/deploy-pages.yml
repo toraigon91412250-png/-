@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -34,12 +34,18 @@ jobs:
         working-directory: web
         run: npm install
 
-      - name: Export regenerated npm lockfile (temporary security investigation step)
-        uses: actions/upload-artifact@v4
-        with:
-          name: vite-security-generated-lockfile
-          path: web/package-lock.json
-          if-no-files-found: error
+      - name: Commit regenerated npm lockfile (temporary security step)
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --quiet -- web/package-lock.json; then
+            echo "package-lock.json already matches package.json"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/package-lock.json
+          git commit -m "security: regenerate lockfile for Vite 6.4.4"
+          git push origin "HEAD:$GITHUB_HEAD_REF"
 
       - name: Run game tests
         working-directory: web
