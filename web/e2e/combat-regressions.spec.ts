@@ -772,7 +772,12 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
   await expect(deployOverlay).toBeHidden({ timeout: 20_000 });
   await expect(page.getByText(/^第\\s*1\\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 
+  const pierceAction = page.getByRole('button', { name: /^穿羽/ }).last();
+  await expect(pierceAction).toBeEnabled();
+  await pierceAction.click();
+
   const cutin = page.locator('img[src*="4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png"]');
+  await expect(cutin).toBeVisible({ timeout: 5_000 });
   await expect.poll(() => cutin.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 });
 
