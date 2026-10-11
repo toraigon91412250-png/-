@@ -89,6 +89,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
   const [phase, setPhase] = useState<SummonPhase>('IDLE');
   const [summonStep, setSummonStep] = useState<SummonStep>('BLACKOUT');
   const [lastResults, setLastResults] = useState<RecruitmentDraw[]>([]);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const lastResult = lastResults[lastResults.length - 1] ?? null;
   const timersRef = useRef<number[]>([]);
 
@@ -117,6 +118,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
     timersRef.current.forEach(timer => window.clearTimeout(timer));
     timersRef.current = [];
     setLastResults([]);
+    setSaveError(null);
     setSummonStep('BLACKOUT');
     setPhase('SUMMONING');
 
@@ -135,11 +137,13 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
       const outcomes = onRecruit(count);
       if (outcomes && outcomes.length > 0) {
         setLastResults(outcomes);
+        setSaveError(null);
         schedule(950, () => {
           setPhase('RESULT');
           timersRef.current = [];
         });
       } else {
+        setSaveError('保存に失敗したため召喚を確定できませんでした。チケットと所持状況は変更していません。ブラウザの保存容量・保存設定を確認してください。');
         setPhase('IDLE');
         setSummonStep('BLACKOUT');
       }
@@ -256,6 +260,24 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
             </div>
           </div>
         </header>
+        {saveError && (
+          <div
+            role="status"
+            aria-live="polite"
+            style={{
+              marginBottom: 10,
+              padding: '10px 12px',
+              borderRadius: 10,
+              border: '1px solid rgba(255,138,101,.45)',
+              background: 'rgba(72,28,24,.48)',
+              color: '#FFCCBC',
+              fontSize: 12,
+              lineHeight: 1.5,
+            }}
+          >
+            {saveError}
+          </div>
+        )}
 
         <section style={{
           position:'relative',
