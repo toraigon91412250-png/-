@@ -747,7 +747,7 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
     }));
   });
 
-  let deployOverlay: ReturnType<Page['getByRole']> | undefined;
+  let deployOverlay: Locator | undefined;
   try {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
