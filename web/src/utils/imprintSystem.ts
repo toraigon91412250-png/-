@@ -1,4 +1,4 @@
-import type { BattleAction, ImprintId, PlayerBattleAction } from '../types/game';
+import type { BattleAction, BattleFighter, FeatherSplitMode, ImprintId, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
 import { isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
 export const BLOOD_TEAR_DAMAGE_MULTIPLIER = 1.5;
@@ -6,7 +6,66 @@ export const BLOOD_MEDIA_EXTRA_BLEED_TURNS = 1;
 export const WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE = 0.001;
 export const WIND_GUARD_MAX_REDUCTION = 0.4;
 export const WIND_GUARD_COUNTER_DAMAGE_MULTIPLIER = 0.25;
+
 export const COSTLY_SHOT_HP_COST = 200;
+
+/** Feather Split keeps the deliberate trade-off between a heavy, slower shot and a lighter, faster one. */
+export const FEATHER_SPLIT_PIERCE_MULTIPLIER = 1.3;
+export const FEATHER_SPLIT_RAPID_MULTIPLIER = 0.7;
+export const FEATHER_SPLIT_ALTERNATION_BONUS = 0.15;
+export const FEATHER_SPLIT_PIERCE_COOLDOWN = 3;
+export const FEATHER_SPLIT_RAPID_COOLDOWN = 2;
+
+export function getFeatherSplitModeForSkill(skillId: IrenaSpecialSkillId | undefined): FeatherSplitMode | null {
+  if (skillId === 'FEATHER_PIERCE') return 'PIERCE';
+  if (skillId === 'FEATHER_RAPID') return 'RAPID';
+  return null;
+}
+
+type SpecialCooldownSnapshot = Pick<
+  BattleFighter,
+  'specialCooldownRemaining' | 'featherPierceCooldownRemaining' | 'featherRapidCooldownRemaining'
+>;
+
+/** Return the cooldown for the selected special, falling back safely for older fighter snapshots. */
+export function getSpecialCooldownRemaining(
+  fighter: SpecialCooldownSnapshot,
+  skillId: IrenaSpecialSkillId | undefined,
+  featherSplitEnabled: boolean,
+): number {
+  const value = featherSplitEnabled && skillId === 'FEATHER_PIERCE'
+    ? fighter.featherPierceCooldownRemaining ?? 0
+    : featherSplitEnabled && skillId === 'FEATHER_RAPID'
+      ? fighter.featherRapidCooldownRemaining ?? 0
+      : fighter.specialCooldownRemaining;
+  return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+}
+
+export interface FeatherSplitDamageResult {
+  damage: number;
+  baseMultiplier: number;
+  multiplier: number;
+  alternatingBonusApplied: boolean;
+}
+
+export function resolveFeatherSplitDamage(
+  baseDamage: number,
+  mode: FeatherSplitMode,
+  lastMode: FeatherSplitMode | null | undefined,
+): FeatherSplitDamageResult {
+  const safeDamage = Number.isFinite(baseDamage) ? Math.max(0, baseDamage) : 0;
+  const baseMultiplier = mode === 'PIERCE'
+    ? FEATHER_SPLIT_PIERCE_MULTIPLIER
+    : FEATHER_SPLIT_RAPID_MULTIPLIER;
+  const alternatingBonusApplied = lastMode != null && lastMode !== mode;
+  const multiplier = baseMultiplier * (alternatingBonusApplied ? 1 + FEATHER_SPLIT_ALTERNATION_BONUS : 1);
+  return {
+    damage: Math.max(0, Math.round(safeDamage * multiplier)),
+    baseMultiplier,
+    multiplier,
+    alternatingBonusApplied,
+  };
+}
 
 /** The two blood imprints represent mutually exclusive ways to use Bleed. */
 export function getOpposingBloodImprint(id: ImprintId): ImprintId | null {
