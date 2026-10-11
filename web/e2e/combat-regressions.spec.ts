@@ -746,6 +746,9 @@ test('Feather Split keeps its selector compact and independently cools down each
   const turnOne = page.getByText(/^第\s*1\s*ターン$/);
   await expect(turnOne).toBeVisible();
   await pierceAction.click();
+
+  // The new artwork belongs only to 穿羽, and must load from the uploaded asset.
+  await expect(page.locator('img[src*="4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png"]')).toBeVisible({ timeout: 5_000 });
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 2T');
 
@@ -759,6 +762,8 @@ test('Feather Split keeps its selector compact and independently cools down each
   await expect(turnTwo).toBeVisible();
   await rapidAction.click();
 
+  // 連羽 keeps the original Irena cut-in instead of reusing the 穿羽 artwork.
+  await expect(page.locator('img[src*="img_irena_cutin"]')).toBeVisible({ timeout: 5_000 });
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
   await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
