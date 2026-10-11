@@ -219,7 +219,7 @@ test('developer tools can add imprint tickets and unlock all registered imprints
   await page.getByRole('button', { name: '開発者ツール' }).click();
   await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
   await expect(page.getByLabel('刻印ガチャチケットの所持数 0')).toBeVisible();
-  await expect(page.getByLabel('解放済み刻印 1 / 7')).toBeVisible();
+  await expect(page.getByLabel('解放済み刻印 1 / 8')).toBeVisible();
 
   await page.getByRole('button', { name: '刻印ガチャチケットを10枚追加' }).click();
   await expect(page.getByLabel('刻印ガチャチケットの所持数 10')).toBeVisible();
@@ -229,11 +229,11 @@ test('developer tools can add imprint tickets and unlock all registered imprints
   })).toBe(10);
 
   await page.getByRole('button', { name: '登録済みの刻印をすべて解放' }).click();
-  await expect(page.getByLabel('解放済み刻印 7 / 7')).toBeVisible();
+  await expect(page.getByLabel('解放済み刻印 8 / 8')).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
     const imprints = JSON.parse(window.localStorage.getItem('duel_arena_imprint_progress') || '{}');
     return imprints.unlockedIds;
-  })).toEqual(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT']);
+  })).toEqual(['FORESIGHT', 'CHANT_HUNT', 'YIN_YANG', 'BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'COSTLY_SHOT', 'FEATHER_SPLIT']);
   expect(pageErrors, 'Developer imprint testing controls must not raise uncaught errors.').toEqual([]);
 });
 
@@ -688,11 +688,12 @@ test('Feather Split keeps its selector compact and independently cools down each
   const turnTwo = page.getByText(/^第\s*2\s*ターン$/);
   await expect(turnTwo).toBeVisible();
   await rapidAction.click();
+  // Verify the execution log while it is current; later turns may not keep old log rows mounted.
+  await expect(page.getByText(/羽撃ち分け・交互ボーナス/).first()).toBeVisible();
 
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(modeGroup.getByRole('button', { name: '穿羽を選択' })).toContainText('CT 1T');
   await expect(modeGroup.getByRole('button', { name: '連羽を選択' })).toContainText('CT 1T');
-  await expect(page.getByText(/羽撃ち分け・交互ボーナス/).first()).toBeVisible();
 
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });
