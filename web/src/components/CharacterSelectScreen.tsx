@@ -4,7 +4,7 @@ import { getIrenaWithSkillProgress, KAISER } from '../data/characters';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { Swords, Trophy, Play, CheckCircle, Gem, Sparkles, ChevronRight } from 'lucide-react';
 import SkillUpgradeModal from './SkillUpgradeModal';
-import { getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
+import { applyIrenaTalentModifiers, getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
 import type { IrenaTalentProgress } from '../utils/irenaTalentSystem';
 
 interface CharacterSelectScreenProps {
@@ -45,7 +45,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
     return path ? labels[path] ?? path : '';
   };
 
-  const playerChar = getIrenaWithSkillProgress(skillProgress);
+  const playerChar = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
   const talentLevelProgress = getIrenaLevelProgress(irenaTalentProgress.experience);
   const availableTalentPoints = getAvailableIrenaTalentPoints(irenaTalentProgress);
   const winRate = overallStats.totalBattles > 0
