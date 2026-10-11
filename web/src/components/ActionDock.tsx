@@ -167,6 +167,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
 
   return (
     <div
+      className="battle-action-dock"
       style={{
         backgroundColor: '#0F121C',
         borderTopLeftRadius: '16px',
@@ -336,6 +337,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       {/* Row 1: Normal Commands (いれーなは強化コマンドなし) */}
       {(hasFeatherSplitImprint || hasSuperFallenShot) && (
         <div
+          className="battle-special-selector"
           role="group"
           aria-label={hasFeatherSplitImprint ? '羽撃ち分け・特殊技選択' : '特殊技選択'}
           style={{

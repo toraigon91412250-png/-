@@ -280,7 +280,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   onToggleSound,
   onToggleSpeed,
 }) => {
-  const [isWide, setIsWide] = useState(window.innerWidth >= 680);
+  // Short landscape viewports are phones, not the desktop two-column layout.
+  const [isWide, setIsWide] = useState(window.innerWidth >= 680 && window.innerHeight >= 600);
   const [screenShake, setScreenShake] = useState(false);
   const [isUltimateCinematicActive, setIsUltimateCinematicActive] = useState(false);
   const [selectedSpecialSkill, setSelectedSpecialSkill] = useState<IrenaSpecialSkillId>('FEATHER');
@@ -316,7 +317,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
   };
 
   useEffect(() => {
-    const handleResize = () => setIsWide(window.innerWidth >= 680);
+    const handleResize = () => setIsWide(window.innerWidth >= 680 && window.innerHeight >= 600);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -388,6 +389,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 
   return (
     <div
+      className="battle-screen-root"
       style={{
         width: '100%',
         height: '100%',
@@ -560,6 +562,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
       )}
 
       <div
+        className="battle-arena-container"
         style={{
           flex: 1,
           position: 'relative',
@@ -575,19 +578,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         {!isWide ? (
           /* Mobile Layout (Vertical stack) */
           <div
+            className="battle-mobile-layout"
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
               maxWidth: '520px',
               width: '100%',
               margin: '0 auto',
-              overflowY: 'auto',
+              overflow: 'hidden',
               minHeight: 0,
-              WebkitOverflowScrolling: 'touch',
             }}
           >
+            <div className="battle-mobile-scroll">
             {/* 1. Enemy Card */}
             <FighterCard
               fighter={state.enemy}
@@ -645,8 +648,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             </div>
 
             <TacticalForecast state={state} compact />
+            </div>
 
             {/* 5. Action Command Dock */}
+            <div className="battle-mobile-action-area">
             <ActionDock
               player={state.player}
               enemy={state.enemy}
@@ -661,6 +666,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               irenaUltimateUses={irenaUltimateUses}
               onIrenaUltimateAction={handleIrenaUltimateAction}
             />
+            </div>
           </div>
         ) : (
           <>
