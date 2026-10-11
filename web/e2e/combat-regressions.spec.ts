@@ -726,6 +726,70 @@ test('Costly Shot spends HP to reset special cooldown and allows the next Feathe
 });
 
 
+
+test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading', async ({ page }) => {
+  let releaseCutinRequest!: () => void;
+  let markCutinRequested!: () => void;
+  const cutinGate = new Promise<void>(resolve => { releaseCutinRequest = resolve; });
+  const cutinRequested = new Promise<void>(resolve => { markCutinRequested = resolve; });
+
+  await page.route('**/4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png*', async route => {
+    // Vite requests imported assets as JavaScript modules with ?import.
+    // Let that module load so React can render; block only the actual image request.
+    const requestUrl = new URL(route.request().url());
+    if (requestUrl.searchParams.has('import')) {
+      await route.continue();
+      return;
+    }
+    markCutinRequested();
+    await cutinGate;
+    await route.continue();
+  });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_imprint_progress', JSON.stringify({
+      unlockedIds: ['FORESIGHT', 'FEATHER_SPLIT'],
+      equippedIds: ['FEATHER_SPLIT'],
+    }));
+  });
+
+  let deployOverlay: Locator | undefined;
+  try {
+    // The preloader request is intentionally blocked, so return as soon as
+    // navigation commits and wait for React to render the heading separately.
+    await page.goto('/', { waitUntil: 'commit' });
+    await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+    await cutinRequested;
+
+    await page.getByRole('button', { name: /バトル開始/ }).click();
+    await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+    await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+    deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+    await expect(deployOverlay).toBeVisible();
+
+    // Longer than the minimum animation duration: the still-loading cut-in
+    // must keep the field covered so the first turn cannot start prematurely.
+    await page.waitForTimeout(1_300);
+    await expect(deployOverlay).toBeVisible();
+  } finally {
+    releaseCutinRequest();
+  }
+
+  if (!deployOverlay) throw new Error('Battle deployment overlay was not created.');
+  await expect(deployOverlay).toBeHidden({ timeout: 20_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  const pierceAction = page.getByRole('button', { name: /^穿羽/ }).last();
+  await expect(pierceAction).toBeEnabled();
+  await pierceAction.click();
+
+  const cutin = page.locator('img[src*="4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png"]');
+  await expect(cutin).toBeVisible({ timeout: 5_000 });
+  await expect.poll(() => cutin.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+});
+
 test('Feather Split keeps its selector compact and independently cools down each mode', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
