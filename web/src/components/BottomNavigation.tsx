@@ -11,8 +11,8 @@ interface BottomNavigationProps {
 
 const NAV_ITEMS = [
   { id: 'HOME', label: 'ホーム', english: 'HOME', icon: Home },
-  { id: 'GACHA', label: '召喚', english: 'SUMMON', icon: Sparkles },
-  { id: 'BATTLE', label: '挑戦', english: 'BATTLE', icon: Swords },
+  { id: 'GACHA', label: 'ガチャ', english: 'SUMMON', icon: Sparkles },
+  { id: 'BATTLE', label: '戦闘', english: 'BATTLE', icon: Swords },
   { id: 'RAID', label: 'レイド', english: 'RAID', icon: Skull },
 ] as const;
 
