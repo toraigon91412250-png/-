@@ -1,0 +1,36 @@
+.bottom-navigation {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 450;
+  padding: 7px 10px 4px; border-top: 1px solid rgba(137,148,179,.15);
+  background: linear-gradient(180deg,rgba(13,16,27,.95),rgba(8,10,17,.995));
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+}
+.bottom-navigation__inner { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; width: 100%; max-width: 640px; margin: 0 auto; }
+.bottom-navigation__item {
+  position: relative; min-width: 0; min-height: 58px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px; padding: 5px 2px;
+  border: 1px solid transparent; border-radius: 11px; background: transparent;
+  color: #8E98AE; cursor: pointer; font: inherit; -webkit-tap-highlight-color: transparent;
+  transition: background 140ms ease,color 140ms ease,border-color 140ms ease;
+}
+.bottom-navigation__item:hover { color: #D5D9E6; background: rgba(255,255,255,.035); }
+.bottom-navigation__item.is-active {
+  border-color: rgba(237,198,115,.28);
+  background: linear-gradient(145deg,rgba(113,79,37,.28),rgba(55,43,37,.18));
+  color: #F6D894;
+}
+.bottom-navigation__item.is-active::before {
+  content: ""; position: absolute; top: -1px; left: 33%; right: 33%; height: 2px;
+  border-radius: 0 0 4px 4px; background: #F0C878; box-shadow: 0 0 12px rgba(240,200,120,.42);
+}
+.bottom-navigation__icon { display: grid; place-items: center; min-height: 21px; }
+.bottom-navigation__label { overflow: hidden; max-width: 100%; font-size: 10px; line-height: 1.25; font-weight: 950; text-overflow: ellipsis; white-space: nowrap; }
+.bottom-navigation__english { font-size: 7px; line-height: 1.15; font-weight: 900; letter-spacing: .11em; opacity: .6; }
+.bottom-navigation__item:focus-visible { outline: 2px solid #FFE0A0; outline-offset: 2px; }
+@media (max-width: 380px) {
+  .bottom-navigation { padding: 5px 6px 3px; }
+  .bottom-navigation__inner { gap: 4px; }
+  .bottom-navigation__item { min-height: 54px; border-radius: 9px; }
+  .bottom-navigation__label { font-size: 9px; }
+  .bottom-navigation__english { font-size: 6px; letter-spacing: .07em; }
+}
+@media (prefers-reduced-motion: reduce) { .bottom-navigation__item { transition-duration: .01ms; } }
