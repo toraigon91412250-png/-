@@ -71,7 +71,7 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
-test('Irena talent board opens from home and persists spent talent points', async ({ page }) => {
+test('Irena talent board opens from growth hub and persists spent talent points', async ({ page }) => {
   await page.addInitScript(() => {
     if (!window.localStorage.getItem('duel_arena_irena_talent_progress')) {
       window.localStorage.setItem('duel_arena_irena_talent_progress', JSON.stringify({
@@ -83,6 +83,8 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'キャラクター育成' })).toBeVisible();
   await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
 
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
@@ -102,9 +104,10 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  const homeTalentButton = page.getByRole('button', { name: '堕天の才能盤を開く' });
-  await expect(homeTalentButton).toContainText('Lv.2');
-  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  const growthTalentButton = page.getByRole('button', { name: '堕天の才能盤を開く' });
+  await expect(growthTalentButton).toContainText('Lv.2');
+  await growthTalentButton.click();
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('1/3');
@@ -118,6 +121,7 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
   await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
   await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
@@ -451,20 +455,21 @@ test('raid-exclusive core fragment can be used in the main game for permanent st
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.locator('details[aria-label="レイド限定アイテム"] summary').click();
-  const useItem = page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' });
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '強化', exact: true })).toBeVisible();
+  const useItem = page.getByRole('button', { name: '1個使う', exact: true });
   await expect(useItem).toBeEnabled();
-  await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
+  await expect(page.locator('.growth-hub__core-copy small')).toContainText('所持 1 個');
 
   await useItem.click();
   await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'レイドをクリアすると入手できます' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '素材不足', exact: true })).toBeDisabled();
   await expect.poll(() => page.evaluate(() => {
     const reward = JSON.parse(window.localStorage.getItem('duel_arena_raid_reward_progress') || '{}');
     return { coreFragments: reward.coreFragments, bonusStatPoints: reward.bonusStatPoints };
   })).toEqual({ coreFragments: 0, bonusStatPoints: 2 });
 
-  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await page.getByRole('button', { name: '戦闘', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
 
@@ -555,11 +560,12 @@ test('raid victory grants its exclusive item and the item upgrades the main-game
 
   await page.getByRole('button', { name: '本編に戻る' }).last().click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.locator('details[aria-label="レイド限定アイテム"] summary').click();
-  await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
-  await page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' }).click();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '強化', exact: true })).toBeVisible();
+  await expect(page.locator('.growth-hub__core-copy small')).toContainText('所持 1 個');
+  await page.getByRole('button', { name: '1個使う', exact: true }).click();
   await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
-  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await page.getByRole('button', { name: '戦闘', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
 

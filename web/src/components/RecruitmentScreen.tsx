@@ -6,7 +6,7 @@ import {
   RecruitmentRewardDef,
 } from '../data/recruitment';
 import { AbilityId, AbilityProgress, RecruitmentProgress } from '../types/game';
-import { ABILITY_DEFINITIONS } from '../data/abilities';
+import AbilityUpgradePanel from './AbilityUpgradePanel';
 
 interface Props {
   progress: RecruitmentProgress;
@@ -735,58 +735,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
           </div>
         )}
 
-        <section style={{
-          marginTop:14, padding:'14px 13px', borderRadius:16,
-          border:'1px solid #3A3046', background:'rgba(12,9,18,.84)',
-        }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
-            <div>
-              <div style={{ color:'#B39DDB', fontSize:9, fontWeight:950, letterSpacing:'.18em' }}>POWER GROWTH</div>
-              <div style={{ marginTop:3, color:'#FFF', fontSize:15, fontWeight:950 }}>権能育成</div>
-            </div>
-            <div style={{ color:'#8F849B', fontSize:9 }}>最大Lv.5</div>
-          </div>
-          <div style={{ display:'grid', gap:7, marginTop:10 }}>
-            {ABILITY_DEFINITIONS.map(ability => {
-              const level = abilityProgress.levels[ability.id];
-              const shards = abilityProgress.shards[ability.id];
-              const cost = level >= 5 ? null : 40 + Math.max(0, level - 1) * 40;
-              const canUpgrade = level > 0 && cost !== null && shards >= cost;
-              return (
-                <div key={ability.id} style={{
-                  display:'flex', alignItems:'center', gap:9, padding:'9px',
-                  borderRadius:11, border:'1px solid #27202F', background:'rgba(24,18,31,.76)',
-                }}>
-                  <div style={{ width:35, height:35, borderRadius:9, display:'grid', placeItems:'center', background:'rgba(179,157,219,.08)', fontSize:18 }}>
-                    {ability.symbol}
-                  </div>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:11, fontWeight:950, color:'#FFF' }}>
-                      {ability.name} <span style={{ color:'#FFE082' }}>Lv.{level > 0 ? level : '—'}</span>
-                    </div>
-                    <div style={{ marginTop:3, fontSize:9, color:'#85808A' }}>
-                      {level > 0 ? `欠片 ${shards}${cost !== null ? ` / ${cost}` : ' / MAX'}` : '未解放'}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    disabled={!canUpgrade}
-                    onClick={() => onUpgradeAbility(ability.id)}
-                    style={{
-                      minWidth:72, height:32, borderRadius:8,
-                      border:'1px solid rgba(179,157,219,.35)',
-                      background:canUpgrade ? '#4A235F' : '#17141C',
-                      color:canUpgrade ? '#FFF' : '#5F5A64',
-                      fontSize:9, fontWeight:950, cursor:canUpgrade ? 'pointer' : 'not-allowed',
-                    }}
-                  >
-                    {level >= 5 ? 'MAX' : 'Lv.UP'}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <AbilityUpgradePanel progress={abilityProgress} onUpgrade={onUpgradeAbility} />
 
         <section style={{
           marginTop:18, padding:'13px 13px 14px', borderRadius:16,

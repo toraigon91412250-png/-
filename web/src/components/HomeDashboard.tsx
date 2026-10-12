@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ArrowUpRight,
   BookOpen,
-  ChevronDown,
-  ChevronRight,
   Crown,
   Gem,
   Shield,
-  Sparkles,
   Swords,
   Target,
   Ticket,
@@ -18,128 +15,45 @@ import {
 import type {
   AbilityProgress,
   BattleChallengeLevel,
-  ImprintProgress,
-  IrenaSkillId,
   IrenaSkillProgress,
   OverallStats,
   RaidRewardProgress,
   RecruitmentProgress,
-  FeatherSkillPath,
-  RuinSkillPath,
 } from '../types/game';
 import { getIrenaWithSkillProgress } from '../data/characters';
-import { IMPRINT_DEFINITIONS, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
-import { applyIrenaTalentModifiers, getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
-import type { IrenaTalentProgress } from '../utils/irenaTalentSystem';
-import SkillUpgradeModal from './SkillUpgradeModal';
 import './HomeDashboard.css';
 
 interface HomeDashboardProps {
   overallStats: OverallStats;
   onStartBattle: () => void;
-  skillProgress: IrenaSkillProgress;
-  raidRewardProgress: RaidRewardProgress;
-  raidItemMessage: string | null;
-  onUseRaidCoreFragment: () => void;
-  onUpgradeSkill: (skillId: IrenaSkillId) => void;
-  onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
-  irenaTalentProgress: IrenaTalentProgress;
-  onOpenTalentBoard: () => void;
-  onOpenDeveloperTools: () => void;
-  onOpenGacha: () => void;
-  onOpenImprints: () => void;
-  onOpenRaid: () => void;
+  onOpenGrowth: () => void;
   unlockedKaiserLevel: BattleChallengeLevel;
   availableStatPoints: number;
-  abilityProgress: AbilityProgress;
-  imprintProgress: ImprintProgress;
+  skillProgress: IrenaSkillProgress;
+  raidRewardProgress: RaidRewardProgress;
   recruitmentProgress: RecruitmentProgress;
+  abilityProgress: AbilityProgress;
+  onOpenDeveloperTools: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   overallStats,
   onStartBattle,
-  skillProgress,
-  raidRewardProgress,
-  raidItemMessage,
-  onUseRaidCoreFragment,
-  onUpgradeSkill,
-  onChooseSkillPath,
-  irenaTalentProgress,
-  onOpenTalentBoard,
-  onOpenDeveloperTools,
-  onOpenGacha,
-  onOpenImprints,
-  onOpenRaid,
+  onOpenGrowth,
   unlockedKaiserLevel,
   availableStatPoints,
-  abilityProgress,
-  imprintProgress,
+  skillProgress,
+  raidRewardProgress,
   recruitmentProgress,
+  abilityProgress,
+  onOpenDeveloperTools,
 }) => {
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const playerChar = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
-  const talentLevelProgress = getIrenaLevelProgress(irenaTalentProgress.experience);
-  const availableTalentPoints = getAvailableIrenaTalentPoints(irenaTalentProgress);
+  const playerChar = getIrenaWithSkillProgress(skillProgress);
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
   const unlockedAbilities = Object.values(abilityProgress.levels).filter(level => level > 0).length;
   const challengeProgress = Math.max(0, Math.min(100, unlockedKaiserLevel));
-  const equippedCount = imprintProgress.equippedIds.length;
-  const imprintLabel = imprintProgress.unlockedIds.length + '/' + IMPRINT_DEFINITIONS.length;
-
-  const recommendation = availableTalentPoints > 0
-    ? {
-        eyebrow: '育成ポイントが使えます',
-        title: '才能盤を強化する',
-        description: '未使用ポイントを使って育成を進め、次の挑戦に備えよう。',
-        buttonLabel: '才能盤を開く',
-        onClick: onOpenTalentBoard,
-        icon: <Sparkles size={21} />,
-        tone: 'talent',
-      }
-    : skillProgress.shards > 0
-      ? {
-          eyebrow: '強化素材を所持',
-          title: '技を強化する',
-          description: '羽弾や破壊の権能を強化して、戦力を整えよう。',
-          buttonLabel: '技の強化を開く',
-          onClick: () => setUpgradeOpen(true),
-          icon: <Zap size={21} />,
-          tone: 'skill',
-        }
-      : recruitmentProgress.tickets > 0
-        ? {
-            eyebrow: '召喚チケットを所持',
-            title: '新しい権能を召喚する',
-            description: '所持チケットを使って、新しい権能を狙えます。',
-            buttonLabel: '召喚ハブへ',
-            onClick: onOpenGacha,
-            icon: <Crown size={21} />,
-            tone: 'summon',
-          }
-        : raidRewardProgress.imprintTickets > 0
-          ? {
-              eyebrow: '刻印チケットを所持',
-              title: '新しい刻印を確認する',
-              description: '召喚ハブから刻印召喚へ進めます。',
-              buttonLabel: '召喚ハブへ',
-              onClick: onOpenGacha,
-              icon: <Gem size={21} />,
-              tone: 'imprint',
-            }
-          : imprintProgress.unlockedIds.length > equippedCount
-            ? {
-                eyebrow: '装備を見直せます',
-                title: '刻印を編成する',
-                description: '所持している刻印を最大3つまで装備できます。今の戦い方に合わせて組み替えよう。',
-                buttonLabel: '刻印管理を開く',
-                onClick: onOpenImprints,
-                icon: <Shield size={21} />,
-                tone: 'imprint',
-              }
-            : null;
 
   return (
     <main className="home-dashboard">
@@ -208,24 +122,17 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </section>
 
-        {recommendation ? (
-          <section className={'home-dashboard__recommendation home-dashboard__recommendation--' + recommendation.tone} aria-labelledby="home-recommendation-title">
-            <div className="home-dashboard__recommendation-symbol" aria-hidden="true">{recommendation.icon}</div>
-            <div className="home-dashboard__recommendation-copy">
-              <p className="home-dashboard__section-kicker">{recommendation.eyebrow}</p>
-              <h2 id="home-recommendation-title">{recommendation.title}</h2>
-              <p>{recommendation.description}</p>
-            </div>
-            <button type="button" className="home-dashboard__recommendation-action" onClick={recommendation.onClick}>
-              {recommendation.buttonLabel} <ChevronRight size={17} aria-hidden="true" />
-            </button>
-          </section>
-        ) : (
-          <p className="home-dashboard__ready-note">
-            <Trophy size={17} aria-hidden="true" />
-            <span><strong>育成素材の確認は完了。</strong> 次はカイザーへの挑戦で報酬を集めよう。</span>
-          </p>
-        )}
+        <section className="home-dashboard__growth-entry" aria-labelledby="home-growth-entry-title">
+          <span className="home-dashboard__growth-entry-icon" aria-hidden="true"><Target size={22} /></span>
+          <div className="home-dashboard__growth-entry-copy">
+            <p className="home-dashboard__section-kicker">育成・編成</p>
+            <h2 id="home-growth-entry-title">強化メニューをひとつに集約</h2>
+            <p>ステータス・才能盤・技・権能・刻印の管理はこちらから。</p>
+          </div>
+          <button type="button" className="home-dashboard__growth-entry-action" onClick={onOpenGrowth}>
+            強化を開く <ArrowUpRight size={18} aria-hidden="true" />
+          </button>
+        </section>
 
         <section className="home-dashboard__section home-dashboard__section--resources" aria-labelledby="home-resource-title">
           <div className="home-dashboard__section-heading">
@@ -255,105 +162,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </section>
 
-        <section className="home-dashboard__section" aria-labelledby="home-growth-title">
-          <div className="home-dashboard__section-heading">
-            <div>
-              <p className="home-dashboard__section-kicker">強化メニュー</p>
-              <h2 id="home-growth-title">育成・編成</h2>
-            </div>
-            <span className="home-dashboard__section-note">準備してから挑戦</span>
-          </div>
-          <div className="home-dashboard__growth-grid">
-            <button className="home-dashboard__action-card home-dashboard__action-card--stats" type="button" aria-label="ステータスを配分する" onClick={onStartBattle}>
-              <span className="home-dashboard__action-icon"><Target size={20} aria-hidden="true" /></span>
-              <span className="home-dashboard__action-copy">
-                <strong>ステータス配分</strong>
-                <small>上限 {availableStatPoints.toLocaleString('ja-JP')}P の範囲で振り分け</small>
-              </span>
-              <ChevronRight size={17} aria-hidden="true" />
-            </button>
-            <button className="home-dashboard__action-card home-dashboard__action-card--talent" type="button" aria-label="堕天の才能盤を開く" onClick={onOpenTalentBoard}>
-              <span className="home-dashboard__action-icon"><Sparkles size={20} aria-hidden="true" /></span>
-              <span className="home-dashboard__action-copy">
-                <strong>堕天の才能盤</strong>
-                <small>Lv.{talentLevelProgress.level} / 20 ・ {availableTalentPoints > 0 ? '未使用 ' + availableTalentPoints + 'P' : '戦闘で経験値を獲得'}</small>
-              </span>
-              <ChevronRight size={17} aria-hidden="true" />
-            </button>
-            <button className="home-dashboard__action-card home-dashboard__action-card--skills" type="button" aria-label="技の強化を開く" onClick={() => setUpgradeOpen(true)}>
-              <span className="home-dashboard__action-icon"><Zap size={20} aria-hidden="true" /></span>
-              <span className="home-dashboard__action-copy">
-                <strong>技の強化</strong>
-                <small>羽弾 Lv.{skillProgress.featherLevel} ・ 破壊の権能 Lv.{skillProgress.ruinLevel}</small>
-              </span>
-              <ChevronRight size={17} aria-hidden="true" />
-            </button>
-          </div>
-        </section>
-
-        <section className="home-dashboard__section" aria-labelledby="home-content-title">
-          <div className="home-dashboard__section-heading">
-            <div>
-              <p className="home-dashboard__section-kicker">コンテンツ</p>
-              <h2 id="home-content-title">召喚・刻印・レイド</h2>
-            </div>
-            <span className="home-dashboard__section-note">各コンテンツへ直接移動</span>
-          </div>
-          <div className="home-dashboard__content-grid">
-            <button className="home-dashboard__content-card home-dashboard__content-card--summon" type="button" aria-label="召喚コンテンツを開く" onClick={onOpenGacha}>
-              <span className="home-dashboard__content-icon"><Crown size={21} aria-hidden="true" /></span>
-              <span className="home-dashboard__content-text">
-                <strong>黒翼召喚</strong>
-                <small>権能を獲得・強化する</small>
-              </span>
-              <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
-            </button>
-            <button className="home-dashboard__content-card home-dashboard__content-card--imprints" type="button" aria-label="刻印を管理" onClick={onOpenImprints}>
-              <span className="home-dashboard__content-icon"><Shield size={21} aria-hidden="true" /></span>
-              <span className="home-dashboard__content-text">
-                <strong>刻印管理</strong>
-                <small>{equippedCount}/{MAX_EQUIPPED_IMPRINTS} 装備中 ・ {imprintLabel} 種類を解放</small>
-              </span>
-              <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
-            </button>
-            <button className="home-dashboard__content-card home-dashboard__content-card--raid" type="button" aria-label="深淵レイドを開く" onClick={onOpenRaid}>
-              <span className="home-dashboard__content-icon"><Gem size={21} aria-hidden="true" /></span>
-              <span className="home-dashboard__content-text">
-                <strong>深淵レイド</strong>
-                <small>勝利報酬で刻印チケット・核片を獲得</small>
-              </span>
-              <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
-            </button>
-          </div>
-        </section>
-
-        <details className="home-dashboard__core-details" aria-label="レイド限定アイテム">
-          <summary>
-            <span><Gem size={17} aria-hidden="true" /> 深淵核片・アイテム</span>
-            <span aria-label={"深淵核片の所持数 " + raidRewardProgress.coreFragments}>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} aria-hidden="true" /></span>
-          </summary>
-          <div className="home-dashboard__core-details-body">
-            <div className="home-dashboard__core-summary">
-              <span className="home-dashboard__reward-mark"><Gem size={21} aria-hidden="true" /></span>
-              <div>
-                <p className="home-dashboard__section-kicker">レイド限定アイテム</p>
-                <h3>深淵核片</h3>
-                <p>レイド勝利で入手。1個使うとステータス配分上限が永続的に +2P。</p>
-              </div>
-              <div className="home-dashboard__core-count"><small>累計ボーナス</small><strong>+{raidRewardProgress.bonusStatPoints}P</strong></div>
-            </div>
-            <button
-              type="button"
-              className="home-dashboard__core-use"
-              onClick={onUseRaidCoreFragment}
-              disabled={raidRewardProgress.coreFragments <= 0}
-            >
-              {raidRewardProgress.coreFragments > 0 ? '深淵核片を使用する（+2P・永続）' : 'レイドをクリアすると入手できます'}
-            </button>
-            {raidItemMessage && <p className="home-dashboard__core-message" role="status" aria-live="polite">{raidItemMessage}</p>}
-          </div>
-        </details>
-
         <section className="home-dashboard__record" aria-label="通算戦績">
           <div className="home-dashboard__record-title"><Trophy size={18} aria-hidden="true" /><span>通算戦績</span></div>
           <div className="home-dashboard__record-stat"><strong>{overallStats.totalBattles}</strong><small>戦</small></div>
@@ -363,7 +171,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </section>
 
         <footer className="home-dashboard__footer">
-          <span className="home-dashboard__footer-note"><BookOpen size={15} aria-hidden="true" /> 迷ったら育成・編成を確認してから挑戦。</span>
+          <span className="home-dashboard__footer-note"><BookOpen size={15} aria-hidden="true" /> 育成・編成は下部の「強化」から確認できます。</span>
           <span className="home-dashboard__footer-unlocks">{unlockedAbilities}/5 権能解放</span>
           <button className="home-dashboard__developer-link" type="button" aria-label="開発者ツール" onClick={onOpenDeveloperTools}>
             <Wrench size={13} aria-hidden="true" /> 開発者ツール
@@ -371,14 +179,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </footer>
       </div>
 
-      {upgradeOpen && (
-        <SkillUpgradeModal
-          progress={skillProgress}
-          onUpgrade={onUpgradeSkill}
-          onChoosePath={onChooseSkillPath}
-          onClose={() => setUpgradeOpen(false)}
-        />
-      )}
     </main>
   );
 };

@@ -167,7 +167,7 @@ test('mobile bottom navigation removes unused space below the tabs', async ({ pa
   expect(navigationBox!.height).toBeLessThanOrEqual(72);
   expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
 
-  for (const label of ['ホーム', '戦闘', 'ガチャ', 'レイド']) {
+  for (const label of ['ホーム', '強化', 'ガチャ', '戦闘', 'レイド']) {
     await expect(navigation.getByRole('button', { name: label })).toBeVisible();
   }
 });
@@ -184,33 +184,35 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(home.locator('.home-dashboard__primary-copy strong')).toHaveText('挑戦の準備');
   await expect(home.locator('.home-dashboard__content-value')).toHaveCount(0);
 
-  const growth = home.locator('.home-dashboard__growth-grid');
+  await expect(page.getByRole('heading', { name: '強化メニューをひとつに集約' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '強化を開く' })).toBeVisible();
+  await expect(home.locator('.home-dashboard__growth-grid')).toHaveCount(0);
+  await expect(home.locator('.home-dashboard__content-grid')).toHaveCount(0);
+
+  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
+  await navigation.getByRole('button', { name: '強化' }).click();
+  const growthHub = page.locator('.growth-hub');
+  await expect(growthHub).toBeVisible();
   for (const label of [
-    'ステータスを配分する',
+    'ステータス配分を開く',
     '堕天の才能盤を開く',
     '技の強化を開く',
+    '黒翼召喚で権能・欠片を集める',
+    '管理する',
   ]) {
-    await expect(growth.getByRole('button', { name: label })).toBeVisible();
-  }
-
-  const content = home.locator('.home-dashboard__content-grid');
-  for (const label of [
-    '召喚コンテンツを開く',
-    '刻印を管理',
-    '深淵レイドを開く',
-  ]) {
-    await expect(content.getByRole('button', { name: label })).toBeVisible();
+    await expect(growthHub.getByRole('button', { name: label })).toBeVisible();
   }
 
   const hasHorizontalOverflow = await page.evaluate(() => {
     const dashboard = document.querySelector('.home-dashboard');
+    const growth = document.querySelector('.growth-hub');
     return document.documentElement.scrollWidth > window.innerWidth
       || document.body.scrollWidth > window.innerWidth
-      || Boolean(dashboard && dashboard.scrollWidth > dashboard.clientWidth + 1);
+      || Boolean(dashboard && dashboard.scrollWidth > dashboard.clientWidth + 1)
+      || Boolean(growth && growth.scrollWidth > growth.clientWidth + 1);
   });
   expect(hasHorizontalOverflow).toBe(false);
 
-  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
   await navigation.getByRole('button', { name: 'ガチャ' }).click();
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
   await navigation.getByRole('button', { name: 'ホーム' }).click();

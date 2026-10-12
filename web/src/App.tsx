@@ -3,6 +3,7 @@ import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
+import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
@@ -24,7 +25,7 @@ import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserCha
 import { addIrenaBattleExperience, applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, saveIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
-type AppScreen = 'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
+type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
 
 // These screens already have their own transition or combat presentation.
 const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
@@ -53,6 +54,11 @@ export const App: React.FC = () => {
   const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
   const [imprintMessage, setImprintMessage] = useState<string | null>(null);
   const [imprintGachaMessage, setImprintGachaMessage] = useState<string | null>(null);
+  const [battleSetupReturnScreen, setBattleSetupReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
+  const [talentReturnScreen, setTalentReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
+  const [imprintReturnScreen, setImprintReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
+  const [recruitmentReturnScreen, setRecruitmentReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
+  const [raidReturnScreen, setRaidReturnScreen] = useState<'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB'>('SELECT');
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: kaiserChallengeProgress.unlockedLevel,
     abilities: [],
@@ -177,7 +183,8 @@ export const App: React.FC = () => {
     setRaidItemMessage(`深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 ${nextStatPoints}P。`);
   };
 
-  const handleOpenBattleSetup = (prefill?: BattleSetupConfig) => {
+  const handleOpenBattleSetup = (prefill?: BattleSetupConfig, returnTo: 'SELECT' | 'GROWTH_HUB' = 'SELECT') => {
+    setBattleSetupReturnScreen(returnTo);
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
@@ -204,7 +211,8 @@ export const App: React.FC = () => {
     setScreen('BATTLE_SETUP');
   };
 
-  const handleOpenImprints = () => {
+  const handleOpenImprints = (returnTo: 'GACHA_HUB' | 'GROWTH_HUB' = 'GACHA_HUB') => {
+    setImprintReturnScreen(returnTo);
     const current = loadImprintProgress();
     setImprintProgress(current);
     setBattleSetup(prev => ({ ...prev, imprints: current.equippedIds }));
@@ -212,7 +220,8 @@ export const App: React.FC = () => {
     navigateToScreen('IMPRINTS');
   };
 
-  const handleOpenTalentBoard = () => {
+  const handleOpenTalentBoard = (returnTo: 'SELECT' | 'GROWTH_HUB' = 'SELECT') => {
+    setTalentReturnScreen(returnTo);
     setIrenaTalentProgress(loadIrenaTalentProgress());
     setIrenaTalentMessage(null);
     navigateToScreen('IRENA_TALENTS');
@@ -264,6 +273,13 @@ export const App: React.FC = () => {
     refreshProgress();
     setImprintGachaMessage(null);
     navigateToScreen('IMPRINT_GACHA');
+  };
+
+  const handleOpenRecruitment = (returnTo: 'GACHA_HUB' | 'GROWTH_HUB' = 'GACHA_HUB') => {
+    setRecruitmentReturnScreen(returnTo);
+    const recruitmentAssetsReady = preloadRecruitmentImages();
+    refreshProgress();
+    navigateToScreen('RECRUITMENT', recruitmentAssetsReady);
   };
 
   const handleDrawImprintGacha = () => {
@@ -429,29 +445,35 @@ export const App: React.FC = () => {
         <HomeDashboard
           overallStats={overallStats}
           onStartBattle={() => handleOpenBattleSetup()}
+          onOpenGrowth={() => {
+            refreshProgress();
+            navigateToScreen('GROWTH_HUB');
+          }}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
-          raidItemMessage={raidItemMessage}
-          onUseRaidCoreFragment={handleUseRaidCoreFragment}
-          onUpgradeSkill={handleUpgradeSkill}
-          onChooseSkillPath={handleChooseSkillPath}
-          irenaTalentProgress={irenaTalentProgress}
-          onOpenTalentBoard={handleOpenTalentBoard}
+          recruitmentProgress={recruitmentProgress}
           onOpenDeveloperTools={handleOpenDeveloperTools}
-          onOpenGacha={() => {
-            refreshProgress();
-            navigateToScreen('GACHA_HUB');
-          }}
-          onOpenImprints={handleOpenImprints}
-          onOpenRaid={() => {
-            refreshProgress();
-            navigateToScreen('RAID_PROTOTYPE');
-          }}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           availableStatPoints={availableStatPoints}
           abilityProgress={abilityProgress}
+        />
+      ) : screen === 'GROWTH_HUB' ? (
+        <GrowthHubScreen
+          availableStatPoints={availableStatPoints}
+          skillProgress={skillProgress}
+          irenaTalentProgress={irenaTalentProgress}
+          abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
-          recruitmentProgress={recruitmentProgress}
+          raidRewardProgress={raidRewardProgress}
+          raidItemMessage={raidItemMessage}
+          onOpenBattleSetup={() => handleOpenBattleSetup(undefined, 'GROWTH_HUB')}
+          onOpenTalentBoard={() => handleOpenTalentBoard('GROWTH_HUB')}
+          onUpgradeSkill={handleUpgradeSkill}
+          onChooseSkillPath={handleChooseSkillPath}
+          onUpgradeAbility={handleUpgradeAbility}
+          onOpenRecruitment={() => handleOpenRecruitment('GROWTH_HUB')}
+          onOpenImprints={() => handleOpenImprints('GROWTH_HUB')}
+          onUseRaidCoreFragment={handleUseRaidCoreFragment}
         />
       ) : screen === 'IRENA_TALENTS' ? (
         <IrenaTalentBoard
@@ -462,7 +484,7 @@ export const App: React.FC = () => {
           onBack={() => {
             setIrenaTalentMessage(null);
             refreshProgress();
-            navigateToScreen('SELECT');
+            navigateToScreen(talentReturnScreen);
           }}
         />
       ) : screen === 'GACHA_HUB' ? (
@@ -471,13 +493,9 @@ export const App: React.FC = () => {
           recruitmentTickets={recruitmentProgress.tickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
           equippedImprints={imprintProgress.equippedIds.length}
-          onOpenRecruitment={() => {
-            const recruitmentAssetsReady = preloadRecruitmentImages();
-            refreshProgress();
-            navigateToScreen('RECRUITMENT', recruitmentAssetsReady);
-          }}
+          onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenImprintGacha={handleOpenImprintGacha}
-          onOpenImprints={handleOpenImprints}
+          onOpenImprints={() => handleOpenImprints('GACHA_HUB')}
         />
       ) : screen === 'IMPRINTS' ? (
         <ImprintScreen
@@ -488,7 +506,7 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintMessage(null);
-            navigateToScreen('GACHA_HUB');
+            navigateToScreen(imprintReturnScreen);
           }}
         />
       ) : screen === 'IMPRINT_GACHA' ? (
@@ -511,7 +529,7 @@ export const App: React.FC = () => {
           initialConfig={battleSetup}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
-          onBack={() => setScreen('SELECT')}
+          onBack={() => navigateToScreen(battleSetupReturnScreen)}
           onStartBattle={handleStartBattle}
         />
       ) : screen === 'BATTLE' ? (
@@ -528,7 +546,7 @@ export const App: React.FC = () => {
         />
       ) : screen === 'RAID_PROTOTYPE' ? (
         <RaidGame
-          onBack={() => setScreen('SELECT')}
+          onBack={() => navigateToScreen(raidReturnScreen)}
           onRaidRewardProgressChange={setRaidRewardProgress}
         />
       ) : screen === 'RECRUITMENT' ? (
@@ -537,7 +555,7 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
           onUpgradeAbility={handleUpgradeAbility}
-          onBack={() => navigateToScreen('GACHA_HUB')}
+          onBack={() => navigateToScreen(recruitmentReturnScreen)}
         />
       ) : (
         <DeveloperToolsScreen
@@ -559,24 +577,28 @@ export const App: React.FC = () => {
           onAddImprintTickets={handleDeveloperAddImprintTickets}
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
-          onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={handleOpenBattleSetup}
           onReset={handleDeveloperReset}
         />
       )}
-      {(screen === 'SELECT' || screen === 'GACHA_HUB') && (
+      {(screen === 'SELECT' || screen === 'GROWTH_HUB' || screen === 'GACHA_HUB') && (
         <BottomNavigation
-          active={screen === 'SELECT' ? 'HOME' : 'GACHA'}
+          active={screen === 'SELECT' ? 'HOME' : screen === 'GROWTH_HUB' ? 'GROWTH' : 'GACHA'}
           onNavigate={(tab: MainTab) => {
             if (tab === 'HOME') {
               navigateToScreen('SELECT');
+            } else if (tab === 'GROWTH') {
+              refreshProgress();
+              navigateToScreen('GROWTH_HUB');
             } else if (tab === 'GACHA') {
               refreshProgress();
               navigateToScreen('GACHA_HUB');
             } else if (tab === 'BATTLE') {
-              handleOpenBattleSetup();
+              handleOpenBattleSetup(undefined, screen === 'GROWTH_HUB' ? 'GROWTH_HUB' : 'SELECT');
             } else {
               refreshProgress();
+              setRaidReturnScreen(screen);
               setScreen('RAID_PROTOTYPE');
             }
           }}
