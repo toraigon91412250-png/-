@@ -202,8 +202,8 @@
 }
 @media (max-width: 380px) {
   .home-dashboard { padding-right: 9px; padding-left: 9px; }
-  .home-dashboard__brand-title { font-size: 11px; }
-  .home-dashboard__brand-subtitle { font-size: 6px; letter-spacing: .08em; }
+  .home-dashboard__brand-title { font-size: 12px; }
+  .home-dashboard__brand-subtitle { font-size: 8px; letter-spacing: .02em; }
   .home-dashboard__challenge-chip { padding: 7px 8px; font-size: 9px; }
   .home-dashboard__hero { min-height: 322px; }
   .home-dashboard__hero-copy { width: 94%; padding-left: 13px; padding-right: 11px; }
@@ -212,7 +212,7 @@
   .home-dashboard__hero-foot { gap: 5px 8px; font-size: 7px; }
   .home-dashboard__resource { gap: 6px; padding: 8px; }
   .home-dashboard__resource-icon { width: 28px; height: 28px; }
-  .home-dashboard__resource-copy small { font-size: 8px; }
+  .home-dashboard__resource-copy small { font-size: 10px; }
   .home-dashboard__resource-copy strong { font-size: 16px; }
   .home-dashboard__action-card { padding: 10px; }
   .home-dashboard__content-value { max-width: 75px; overflow: hidden; text-overflow: ellipsis; }
