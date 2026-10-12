@@ -11,9 +11,8 @@ test('growth tab centralizes progression controls without removing raid reward a
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  const navigation = page.locator('.bottom-navigation');
-  await expect(navigation.getByRole('button', { name: '強化', exact: true })).toBeVisible();
-  await navigation.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
+  await page.getByRole('button', { name: '強化を開く', exact: true }).click();
 
   await expect(page.getByRole('heading', { name: '強化', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'キャラクター育成' })).toBeVisible();

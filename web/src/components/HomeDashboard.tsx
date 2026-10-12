@@ -206,7 +206,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </section>
 
         <footer className="home-dashboard__footer">
-          <span className="home-dashboard__footer-note"><BookOpen size={15} aria-hidden="true" /> 育成・編成は下部の「強化」から確認できます。</span>
+          <span className="home-dashboard__footer-note"><BookOpen size={15} aria-hidden="true" /> 育成・編成は強化メニューから確認できます。</span>
           <span className="home-dashboard__footer-unlocks">{unlockedAbilities}/5 権能解放</span>
           <button className="home-dashboard__developer-link" type="button" aria-label="開発者ツール" onClick={onOpenDeveloperTools}>
             <Wrench size={13} aria-hidden="true" /> 開発者ツール
