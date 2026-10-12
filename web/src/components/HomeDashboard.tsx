@@ -313,7 +313,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <span className="home-dashboard__content-icon"><Shield size={21} aria-hidden="true" /></span>
               <span className="home-dashboard__content-text">
                 <strong>刻印管理</strong>
-                <small>{equippedCount}/3 装備中 ・ {imprintLabel} 種類を解放</small>
+                <small>{equippedCount}/' + MAX_EQUIPPED_IMPRINTS + ' 装備中 ・ {imprintLabel} 種類を解放</small>
               </span>
               <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
             </button>
