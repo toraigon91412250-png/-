@@ -71,7 +71,7 @@ test('bottom navigation separates the main sections and opens battle preparation
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
 
-test('Irena talent board opens from home and persists spent talent points', async ({ page }) => {
+test('Irena talent board opens from growth hub and persists spent talent points', async ({ page }) => {
   await page.addInitScript(() => {
     if (!window.localStorage.getItem('duel_arena_irena_talent_progress')) {
       window.localStorage.setItem('duel_arena_irena_talent_progress', JSON.stringify({
@@ -83,6 +83,8 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'キャラクター育成' })).toBeVisible();
   await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
 
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
@@ -102,9 +104,10 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  const homeTalentButton = page.getByRole('button', { name: '堕天の才能盤を開く' });
-  await expect(homeTalentButton).toContainText('Lv.2');
-  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
+  const growthTalentButton = page.getByRole('button', { name: '堕天の才能盤を開く' });
+  await expect(growthTalentButton).toContainText('Lv.2');
+  await growthTalentButton.click();
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('1/3');
@@ -118,6 +121,7 @@ test('Irena talent board opens from home and persists spent talent points', asyn
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '強化', exact: true }).click();
   await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
   await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
