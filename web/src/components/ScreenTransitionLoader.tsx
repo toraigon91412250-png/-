@@ -21,7 +21,8 @@ const SCREEN_TRANSITION_ARTWORK = [
   { name: 'IMG_1179.jpeg', src: loadingIrenaNight, hasLoadingText: true },
 ] as const;
 
-const MINIMUM_TRANSITION_TIME_MS = 760;
+// About five times longer than the original 760ms transition, for a more readable image beat.
+const MINIMUM_TRANSITION_TIME_MS = 3_800;
 
 export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
   transitionIndex,
