@@ -970,11 +970,12 @@ test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({
   // The transient battle log can leave the visible log window before this assertion resolves.
   // Prove the automatic release through its impact: by turn three, Kaiser has lost over 500 HP.
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 30_000 });
-  const kaiserHp = page.getByText(/HP\s+\d+\s*\/\s*5500\s*\(\d+%\)/);
+  // HpBar renders the current/max number in its own span, separate from the "HP" label.
+  const kaiserHp = page.getByText(/\b\d+\s*\/\s*5500\s*\(\d+%\)/);
   await expect(kaiserHp).toBeVisible();
   await expect.poll(async () => {
     const hpText = await kaiserHp.textContent();
-    const match = hpText?.match(/HP\s+(\d+)\s*\/\s*5500/);
+    const match = hpText?.match(/(\d+)\s*\/\s*5500/);
     return match ? Number(match[1]) : 5500;
   }).toBeLessThan(5000);
   await expect(specialAction).toContainText('CT:4T');
