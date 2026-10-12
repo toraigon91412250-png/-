@@ -35,13 +35,6 @@ jobs:
         working-directory: web
         run: npm install
 
-      - name: Diagnose npm audit warning (temporary)
-        working-directory: web
-        shell: bash
-        run: |
-          npm audit --json > /tmp/npm-audit.json || true
-          node -e "const a=require('/tmp/npm-audit.json'); const out=Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,isDirect:v.isDirect,range:v.range,via:(v.via||[]).map(x=>typeof x==='string'?x:{name:x.name,title:x.title,url:x.url,range:x.range,severity:x.severity}),effects:v.effects,nodes:v.nodes,fixAvailable:v.fixAvailable})); console.log(JSON.stringify({metadata:a.metadata, vulnerabilities:out},null,2))"
-      
       - name: Run game tests
         working-directory: web
         run: npm test
