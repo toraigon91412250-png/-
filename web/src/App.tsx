@@ -493,7 +493,9 @@ export const App: React.FC = () => {
       ) : screen === 'GACHA_HUB' ? (
         <GachaHubScreen
           imprintTickets={raidRewardProgress.imprintTickets}
+          recruitmentTickets={recruitmentProgress.tickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
+          equippedImprints={imprintProgress.equippedIds.length}
           onOpenRecruitment={() => {
             const recruitmentAssetsReady = preloadRecruitmentImages();
             refreshProgress();
