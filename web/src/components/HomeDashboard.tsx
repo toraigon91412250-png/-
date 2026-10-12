@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   ArrowUpRight,
   BookOpen,
+  ChevronDown,
   ChevronRight,
   Crown,
   Gem,
@@ -163,7 +164,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="home-dashboard__section-note">強化できる場所をひとまとめ</span>
           </div>
           <div className="home-dashboard__growth-grid">
-            <button className="home-dashboard__growth-card home-dashboard__growth-card--talent" type="button" onClick={onOpenTalentBoard}>
+            <button className="home-dashboard__growth-card home-dashboard__growth-card--talent" type="button" aria-label="堕天の才能盤を開く" onClick={onOpenTalentBoard}>
               <span className="home-dashboard__growth-icon"><Sparkles size={20} /></span>
               <span className="home-dashboard__growth-title">才能盤</span>
               <span className="home-dashboard__growth-value">Lv.{talentLevelProgress.level}<small> / 20</small></span>
@@ -214,21 +215,33 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </section>
 
-        {raidRewardProgress.coreFragments > 0 && (
-          <section className="home-dashboard__reward-callout" aria-labelledby="home-reward-title">
-            <div className="home-dashboard__reward-mark"><Gem size={21} /></div>
-            <div className="home-dashboard__reward-copy">
-              <span className="home-dashboard__section-kicker">REWARD AVAILABLE</span>
-              <h2 id="home-reward-title">深淵核片を使用できます</h2>
-              <p>1個消費すると、ステータス配分上限が永続的に +2P。現在のボーナスは +{raidRewardProgress.bonusStatPoints}P。</p>
+        <details className="home-dashboard__core-details" aria-label="レイド限定アイテム">
+          <summary>
+            <span><Gem size={17} /> 深淵核片・アイテム</span>
+            <span>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} /></span>
+          </summary>
+          <div className="home-dashboard__core-details-body">
+            <div className="home-dashboard__core-summary">
+              <span className="home-dashboard__reward-mark"><Gem size={21} /></span>
+              <div>
+                <span className="home-dashboard__section-kicker">RAID EXCLUSIVE ITEM</span>
+                <h2>深淵核片</h2>
+                <p>レイド勝利で入手。1個使うとステータス配分上限が永続的に +2P。</p>
+              </div>
+              <div className="home-dashboard__core-count"><small>累計ボーナス</small><strong>+{raidRewardProgress.bonusStatPoints}P</strong></div>
             </div>
-            <button type="button" onClick={onUseRaidCoreFragment}>1個使う</button>
-            {raidItemMessage && <p className="home-dashboard__reward-message" role="status">{raidItemMessage}</p>}
-          </section>
-        )}
-        {!raidRewardProgress.coreFragments && raidItemMessage && (
-          <p className="home-dashboard__inline-message" role="status">{raidItemMessage}</p>
-        )}
+            <button
+              type="button"
+              className="home-dashboard__core-use"
+              onClick={onUseRaidCoreFragment}
+              disabled={raidRewardProgress.coreFragments <= 0}
+            >
+              {raidRewardProgress.coreFragments > 0 ? '深淵核片を使用する（+2P・永続）' : 'レイドをクリアすると入手できます'}
+            </button>
+            {raidItemMessage && <p className="home-dashboard__core-message" role="status" aria-live="polite">{raidItemMessage}</p>}
+          </div>
+        </details>
+        {raidItemMessage && <p className="home-dashboard__inline-message" role="status" aria-live="polite">{raidItemMessage}</p>}
 
         <section className="home-dashboard__record" aria-label="通算戦績">
           <div className="home-dashboard__record-title"><Trophy size={18} /><span>通算戦績</span></div>
