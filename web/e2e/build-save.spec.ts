@@ -29,7 +29,7 @@ test('named builds save, rename, overwrite, load, and delete the combined battle
   await page.getByLabel('新しいビルド名').fill('先手型');
   await page.getByRole('button', { name: '保存', exact: true }).click();
   await expect(page.getByRole('heading', { name: '先手型', exact: true })).toBeVisible();
-  await expect(page.getByRole('status')).toContainText('ビルドを保存しました。');
+  await expect(page.locator('.build-save-panel__message')).toContainText('ビルドを保存しました。');
 
   await page.getByRole('button', { name: '名前変更', exact: true }).click();
   await page.getByLabel('ビルド名', { exact: true }).last().fill('先手・黒翼');
@@ -38,11 +38,11 @@ test('named builds save, rename, overwrite, load, and delete the combined battle
 
   await page.getByRole('button', { name: '攻撃力を1P増やす' }).click();
   await page.getByRole('button', { name: '上書き', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('現在の構成で上書きしました');
+  await expect(page.locator('.build-save-panel__message')).toContainText('現在の構成で上書きしました');
 
   await page.getByRole('button', { name: 'HPを1P減らす' }).click();
   await page.getByRole('button', { name: '読み込む', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('を読み込みました。');
+  await expect(page.locator('.build-save-panel__message')).toContainText('を読み込みました。');
   await expect(page.getByText(/3P使用中/)).toBeVisible();
 
   await expect.poll(() => page.evaluate(() => {
