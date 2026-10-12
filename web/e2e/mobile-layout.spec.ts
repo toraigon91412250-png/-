@@ -173,6 +173,7 @@ test('mobile bottom navigation removes unused space below the tabs', async ({ pa
 });
 
 test('home dashboard exposes its main routes and remains usable on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
 
   const home = page.locator('.home-dashboard');
@@ -181,12 +182,16 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(page.getByRole('heading', { name: 'カイザー最終試練' })).toBeVisible();
   await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
 
-  await expect(page.getByRole('button', { name: 'ステータスを配分する' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '堕天の才能盤を開く' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '技の強化を開く' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '召喚コンテンツを開く' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '刻印を管理' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '深淵レイドを開く' })).toBeVisible();
+  for (const label of [
+    'ステータスを配分する',
+    '堕天の才能盤を開く',
+    '技の強化を開く',
+    '召喚コンテンツを開く',
+    '刻印を管理',
+    '深淵レイドを開く',
+  ]) {
+    await expect(page.getByRole('button', { name: label })).toBeVisible();
+  }
 
   const hasHorizontalOverflow = await page.evaluate(() => {
     const dashboard = document.querySelector('.home-dashboard');
@@ -199,6 +204,7 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
   await navigation.getByRole('button', { name: 'ガチャ' }).click();
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
-  await page.getByRole('navigation', { name: 'メインナビゲーション' }).getByRole('button', { name: 'ホーム' }).click();
-  await expect(page.locator('.home-dashboard')).toBeVisible();
+  await navigation.getByRole('button', { name: 'ホーム' }).click();
+  await expect(home).toBeVisible();
+  await expect(navigation).toBeVisible();
 });
