@@ -604,7 +604,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               ? '次ターン自動発射'
               : isSpecialReady
                 ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
-                  ? `${specialPreviewDetails(specialDamagePreview)} / ×${superFallenMultiplier.toFixed(1)} / 1T充填`
+                  ? `今T充填（0ダメ） · ×${superFallenMultiplier.toFixed(1)} · 次T発射`
                   : selectedFeatherSplitMode
                     ? `${specialPreviewDetails(specialDamagePreview)}${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
                     : `${specialPreviewDetails(specialDamagePreview)}（蓄積+${player.featherChargeBonus}）`
