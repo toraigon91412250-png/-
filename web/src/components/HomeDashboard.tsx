@@ -172,7 +172,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <span className="home-dashboard__growth-description">{availableTalentPoints > 0 ? '未使用ポイント ' + availableTalentPoints + 'P' : '戦闘で経験値を獲得'}</span>
               <span className="home-dashboard__card-arrow"><ChevronRight size={16} /></span>
             </button>
-            <button className="home-dashboard__growth-card home-dashboard__growth-card--skills" type="button" onClick={() => setUpgradeOpen(true)}>
+            <button className="home-dashboard__growth-card home-dashboard__growth-card--skills" type="button" aria-label="技を強化・ビルドを育てる" onClick={() => setUpgradeOpen(true)}>
               <span className="home-dashboard__growth-icon"><Zap size={20} /></span>
               <span className="home-dashboard__growth-title">技の強化</span>
               <span className="home-dashboard__growth-value">羽弾 Lv.{skillProgress.featherLevel}</span>
@@ -218,7 +218,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <details className="home-dashboard__core-details" aria-label="レイド限定アイテム">
           <summary>
             <span><Gem size={17} /> 深淵核片・アイテム</span>
-            <span>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} /></span>
+            <span aria-label={"深淵核片の所持数 " + raidRewardProgress.coreFragments}>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} /></span>
           </summary>
           <div className="home-dashboard__core-details-body">
             <div className="home-dashboard__core-summary">
@@ -241,7 +241,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             {raidItemMessage && <p className="home-dashboard__core-message" role="status" aria-live="polite">{raidItemMessage}</p>}
           </div>
         </details>
-        {raidItemMessage && <p className="home-dashboard__inline-message" role="status" aria-live="polite">{raidItemMessage}</p>}
 
         <section className="home-dashboard__record" aria-label="通算戦績">
           <div className="home-dashboard__record-title"><Trophy size={18} /><span>通算戦績</span></div>
