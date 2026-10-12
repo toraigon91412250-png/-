@@ -41,7 +41,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
           <span className="gacha-hub__brand-mark"><Sparkles size={20} /></span>
           <div>
             <p className="gacha-hub__eyebrow">SUMMONS & LOADOUT</p>
-            <h1>召喚・刻印</h1>
+            <h1>ガチャ</h1>
             <p className="gacha-hub__lead">戦い方を増やす力を集めて、自分のビルドに組み込もう。</p>
           </div>
         </header>
