@@ -16,6 +16,7 @@ import { ImprintGachaScreen } from './components/ImprintGachaScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
+import { ScreenTransitionLoader } from './components/ScreenTransitionLoader';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
@@ -23,8 +24,21 @@ import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserCha
 import { addIrenaBattleExperience, applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, saveIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
+type AppScreen = 'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
+
+// These screens already have their own transition or combat presentation.
+const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
+  'BATTLE_SETUP',
+  'BATTLE',
+  'RAID_PROTOTYPE',
+  'DEV_TOOLS',
+]);
+
 export const App: React.FC = () => {
-  const [screen, setScreen] = useState<'SELECT' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS'>('SELECT');
+  const [screen, setScreen] = useState<AppScreen>('SELECT');
+  const [isScreenTransitioning, setIsScreenTransitioning] = useState(false);
+  const [screenTransitionIndex, setScreenTransitionIndex] = useState(0);
+  const [screenTransitionWaitFor, setScreenTransitionWaitFor] = useState<Promise<unknown> | null>(null);
   const [difficulty, setDifficulty] = useState<CpuDifficulty>('NORMAL');
   const [overallStats, setOverallStats] = useState(() => loadOverallStats());
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
@@ -46,6 +60,30 @@ export const App: React.FC = () => {
     statPointTotal: loadStatPoints(),
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
+
+  const handleScreenTransitionComplete = React.useCallback(() => {
+    setIsScreenTransitioning(false);
+    setScreenTransitionWaitFor(null);
+  }, []);
+
+  const navigateToScreen = (nextScreen: AppScreen, waitFor?: Promise<unknown>) => {
+    if (nextScreen === screen) return;
+
+    const shouldShowTransition =
+      !SCREENS_WITH_EXISTING_TRANSITIONS.has(screen)
+      && !SCREENS_WITH_EXISTING_TRANSITIONS.has(nextScreen);
+
+    setScreen(nextScreen);
+    if (!shouldShowTransition) {
+      setIsScreenTransitioning(false);
+      setScreenTransitionWaitFor(null);
+      return;
+    }
+
+    setScreenTransitionIndex(index => index + 1);
+    setScreenTransitionWaitFor(waitFor ?? Promise.resolve());
+    setIsScreenTransitioning(true);
+  };
 
   const hasAwardedTalentExperienceRef = React.useRef(false);
 
@@ -171,13 +209,13 @@ export const App: React.FC = () => {
     setImprintProgress(current);
     setBattleSetup(prev => ({ ...prev, imprints: current.equippedIds }));
     setImprintMessage(null);
-    setScreen('IMPRINTS');
+    navigateToScreen('IMPRINTS');
   };
 
   const handleOpenTalentBoard = () => {
     setIrenaTalentProgress(loadIrenaTalentProgress());
     setIrenaTalentMessage(null);
-    setScreen('IRENA_TALENTS');
+    navigateToScreen('IRENA_TALENTS');
   };
 
   const handleSpendIrenaTalentPoint = (id: IrenaTalentId) => {
@@ -225,7 +263,7 @@ export const App: React.FC = () => {
   const handleOpenImprintGacha = () => {
     refreshProgress();
     setImprintGachaMessage(null);
-    setScreen('IMPRINT_GACHA');
+    navigateToScreen('IMPRINT_GACHA');
   };
 
   const handleDrawImprintGacha = () => {
@@ -435,7 +473,7 @@ export const App: React.FC = () => {
           onBack={() => {
             setIrenaTalentMessage(null);
             refreshProgress();
-            setScreen('SELECT');
+            navigateToScreen('SELECT');
           }}
         />
       ) : screen === 'GACHA_HUB' ? (
@@ -443,9 +481,9 @@ export const App: React.FC = () => {
           imprintTickets={raidRewardProgress.imprintTickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
           onOpenRecruitment={() => {
-            void preloadRecruitmentImages();
+            const recruitmentAssetsReady = preloadRecruitmentImages();
             refreshProgress();
-            setScreen('RECRUITMENT');
+            navigateToScreen('RECRUITMENT', recruitmentAssetsReady);
           }}
           onOpenImprintGacha={handleOpenImprintGacha}
           onOpenImprints={handleOpenImprints}
@@ -459,7 +497,7 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintMessage(null);
-            setScreen('GACHA_HUB');
+            navigateToScreen('GACHA_HUB');
           }}
         />
       ) : screen === 'IMPRINT_GACHA' ? (
@@ -471,7 +509,7 @@ export const App: React.FC = () => {
           onBack={() => {
             refreshProgress();
             setImprintGachaMessage(null);
-            setScreen('GACHA_HUB');
+            navigateToScreen('GACHA_HUB');
           }}
         />
       ) : screen === 'BATTLE_SETUP' ? (
@@ -508,7 +546,7 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           onRecruit={handleRecruit}
           onUpgradeAbility={handleUpgradeAbility}
-          onBack={() => setScreen('GACHA_HUB')}
+          onBack={() => navigateToScreen('GACHA_HUB')}
         />
       ) : (
         <DeveloperToolsScreen
@@ -540,10 +578,10 @@ export const App: React.FC = () => {
           active={screen === 'SELECT' ? 'HOME' : 'GACHA'}
           onNavigate={(tab: MainTab) => {
             if (tab === 'HOME') {
-              setScreen('SELECT');
+              navigateToScreen('SELECT');
             } else if (tab === 'GACHA') {
               refreshProgress();
-              setScreen('GACHA_HUB');
+              navigateToScreen('GACHA_HUB');
             } else if (tab === 'BATTLE') {
               handleOpenBattleSetup();
             } else {
@@ -551,6 +589,14 @@ export const App: React.FC = () => {
               setScreen('RAID_PROTOTYPE');
             }
           }}
+        />
+      )}
+      {isScreenTransitioning && (
+        <ScreenTransitionLoader
+          key={screenTransitionIndex}
+          transitionIndex={screenTransitionIndex}
+          waitFor={screenTransitionWaitFor}
+          onComplete={handleScreenTransitionComplete}
         />
       )}
     </div>
