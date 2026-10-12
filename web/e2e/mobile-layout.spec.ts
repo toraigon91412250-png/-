@@ -181,6 +181,8 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'カイザー最終試練' })).toBeVisible();
   await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
+  await expect(home.locator('.home-dashboard__primary-copy strong')).toHaveText('挑戦の準備');
+  await expect(home.locator('.home-dashboard__content-value')).toHaveCount(0);
 
   const growth = home.locator('.home-dashboard__growth-grid');
   for (const label of [
