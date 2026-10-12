@@ -938,7 +938,7 @@ test('Feather Split keeps its selector compact and independently cools down each
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });
 
-test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({ page }) => {
+test('Super Fallen Shot resolves without its cinematic overlay or animation delays', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -970,12 +970,13 @@ test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({
   await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
   await expect(specialAction).not.toContainText(/HP\d+ダメ/);
 
+  const resolutionStartedAt = Date.now();
   await specialAction.click();
-  await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toBeVisible();
+  await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toHaveCount(0);
 
-  // The transient battle log can leave the visible log window before this assertion resolves.
-  // Prove the automatic release through its impact: by turn three, Kaiser has lost over 500 HP.
-  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 30_000 });
+  // The automatic second-turn release and damage must continue without the removed cinematic wait.
+  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 10_000 });
+  expect(Date.now() - resolutionStartedAt).toBeLessThan(10_000);
   // HpBar renders the current/max number in its own span, separate from the "HP" label.
   const kaiserHp = page.getByText(/\b\d+\s*\/\s*5500\s*\(\d+%\)/);
   await expect(kaiserHp).toBeVisible();
