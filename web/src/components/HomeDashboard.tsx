@@ -104,8 +104,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <div className="home-dashboard__brand">
             <span className="home-dashboard__brand-mark"><Swords size={20} /></span>
             <div>
-              <div className="home-dashboard__brand-title">DARKWING ARENA</div>
-              <div className="home-dashboard__brand-subtitle">BATTLE & GROWTH</div>
+              <h1 className="home-dashboard__brand-title">バトルアリーナデュエル</h1>
+              <div className="home-dashboard__brand-subtitle">DARKWING · BATTLE & GROWTH</div>
             </div>
           </div>
           <div className="home-dashboard__challenge-chip">
@@ -121,7 +121,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
           <div className="home-dashboard__hero-copy">
             <div className="home-dashboard__eyebrow"><Crown size={13} /> CURRENT MISSION</div>
-            <h1 id="home-dashboard-title">カイザー最終試練</h1>
+            <h2 id="home-dashboard-title">カイザー最終試練</h2>
             <p className="home-dashboard__hero-level">CHALLENGE <strong>Lv.{unlockedKaiserLevel}</strong><span> / 100</span></p>
             <p className="home-dashboard__hero-description">
               今の挑戦を突破して、次の強敵を解放しよう。ステータス・権能・刻印を整えてから出撃。
@@ -131,7 +131,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
             <div className="home-dashboard__hero-actions">
               <button className="home-dashboard__primary-action" type="button" onClick={onStartBattle}>
-                <Swords size={18} /> 挑戦の準備をする <ArrowUpRight size={16} />
+                <Swords size={18} /> バトル開始 <ArrowUpRight size={16} />
               </button>
               <button className="home-dashboard__secondary-action" type="button" onClick={onOpenTalentBoard}>
                 才能を確認 <ChevronRight size={16} />
