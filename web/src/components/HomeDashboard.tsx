@@ -53,17 +53,6 @@ interface HomeDashboardProps {
   recruitmentProgress: RecruitmentProgress;
 }
 
-const pathLabel = (path: string | null) => {
-  const labels: Record<string, string> = {
-    ABYSS: '深淵',
-    JUDGMENT: '断罪',
-    CHARGE: '蓄積',
-    EXECUTION: '処刑',
-    ANNIHILATION: '殲滅',
-  };
-  return path ? labels[path] ?? path : '';
-};
-
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   overallStats,
   onStartBattle,
