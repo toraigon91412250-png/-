@@ -182,15 +182,22 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(page.getByRole('heading', { name: 'カイザー最終試練' })).toBeVisible();
   await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
 
+  const growth = home.locator('.home-dashboard__growth-grid');
   for (const label of [
     'ステータスを配分する',
     '堕天の才能盤を開く',
     '技の強化を開く',
+  ]) {
+    await expect(growth.getByRole('button', { name: label })).toBeVisible();
+  }
+
+  const content = home.locator('.home-dashboard__content-grid');
+  for (const label of [
     '召喚コンテンツを開く',
     '刻印を管理',
     '深淵レイドを開く',
   ]) {
-    await expect(page.getByRole('button', { name: label })).toBeVisible();
+    await expect(content.getByRole('button', { name: label })).toBeVisible();
   }
 
   const hasHorizontalOverflow = await page.evaluate(() => {
