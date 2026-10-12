@@ -1662,4 +1662,76 @@ for (const [key, value] of beforeRecruitmentFailure) {
 }
 console.log('✓ Recruitment and battle reward writes roll back instead of leaving partial progression.');
 
+
+const {
+  BUILD_SAVES_STORAGE_KEY,
+  validateBuildSnapshot,
+  loadSavedBuilds,
+  saveNewBuild,
+  overwriteSavedBuild,
+  renameSavedBuild,
+  deleteSavedBuild,
+} = await import('./src/utils/buildSaveSystem.ts');
+const buildContext = {
+  availableStatPoints: 12,
+  abilityLevels: { ABYSS: 1, FALLEN: 0, BLACK_WING: 2, FALLEN_KING: 0, JUDGMENT: 1 },
+  unlockedImprintIds: ['FORESIGHT', 'FEATHER_SPLIT', 'BLOOD_TEAR'],
+};
+const buildSnapshot = {
+  statAllocation: { maxHp: 3, attack: 4, defense: 2, speed: 3 },
+  abilityIds: ['ABYSS', 'BLACK_WING'],
+  imprintIds: ['FORESIGHT', 'FEATHER_SPLIT'],
+};
+const priorBuildSaves = storageValues.get(BUILD_SAVES_STORAGE_KEY);
+storageValues.delete(BUILD_SAVES_STORAGE_KEY);
+assert.strictEqual(validateBuildSnapshot(buildSnapshot, buildContext).valid, true);
+assert.strictEqual(validateBuildSnapshot({
+  ...buildSnapshot, statAllocation: { maxHp: 20, attack: 0, defense: 0, speed: 0 },
+}, buildContext).valid, false, 'Build loading must reject allocations beyond the current point cap.');
+assert.strictEqual(validateBuildSnapshot({
+  ...buildSnapshot, abilityIds: ['ABYSS', 'FALLEN'],
+}, buildContext).valid, false, 'Build loading must reject currently locked abilities.');
+assert.strictEqual(validateBuildSnapshot({
+  ...buildSnapshot, imprintIds: ['FORESIGHT', 'COSTLY_SHOT'],
+}, buildContext).valid, false, 'Build loading must reject currently unowned imprints.');
+assert.strictEqual(validateBuildSnapshot({
+  ...buildSnapshot, imprintIds: ['BLOOD_TEAR', 'BLOOD_MEDIA'],
+}, buildContext).valid, false, 'Build loading must reject mutually exclusive blood imprints.');
+assert.deepStrictEqual(loadSavedBuilds(), []);
+let buildResult = saveNewBuild('攻守型', buildSnapshot, buildContext, 1000);
+assert.strictEqual(buildResult.success, true);
+assert.strictEqual(buildResult.saves.length, 1);
+const savedBuildId = buildResult.saves[0].id;
+assert.deepStrictEqual(buildResult.saves[0].snapshot, buildSnapshot);
+buildResult = renameSavedBuild(savedBuildId, '深淵・黒翼型');
+assert.strictEqual(buildResult.success, true);
+assert.strictEqual(buildResult.saves[0].name, '深淵・黒翼型');
+buildResult = overwriteSavedBuild(savedBuildId, {
+  ...buildSnapshot,
+  statAllocation: { maxHp: 2, attack: 5, defense: 2, speed: 3 },
+}, buildContext, 2000);
+assert.strictEqual(buildResult.success, true);
+assert.deepStrictEqual(buildResult.saves[0].snapshot.statAllocation, { maxHp: 2, attack: 5, defense: 2, speed: 3 });
+assert.strictEqual(buildResult.saves[0].createdAt, 1000, 'Overwrite must preserve the original creation date.');
+assert.strictEqual(buildResult.saves[0].updatedAt, 2000);
+assert.strictEqual(deleteSavedBuild(savedBuildId).success, true);
+assert.deepStrictEqual(loadSavedBuilds(), []);
+if (priorBuildSaves === undefined) storageValues.delete(BUILD_SAVES_STORAGE_KEY);
+else storageValues.set(BUILD_SAVES_STORAGE_KEY, priorBuildSaves);
+
+const { replaceEquippedImprints } = await import('./src/utils/storage.ts');
+const priorImprintProgress = storageValues.get(IMPRINT_PROGRESS_STORAGE_KEY);
+storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, JSON.stringify({
+  unlockedIds: ['FORESIGHT', 'FEATHER_SPLIT', 'BLOOD_TEAR', 'BLOOD_MEDIA'],
+  equippedIds: ['FORESIGHT'],
+}));
+const replacedImprintProgress = replaceEquippedImprints(['FEATHER_SPLIT']);
+assert.deepStrictEqual(replacedImprintProgress?.equippedIds, ['FEATHER_SPLIT']);
+assert.strictEqual(replaceEquippedImprints(['COSTLY_SHOT']), null, 'An unowned imprint must not enter the equipped loadout.');
+assert.strictEqual(replaceEquippedImprints(['BLOOD_TEAR', 'BLOOD_MEDIA']), null, 'Mutually exclusive blood imprints must not be equipped together.');
+assert.deepStrictEqual(loadImprintProgress().equippedIds, ['FEATHER_SPLIT'], 'Rejected imprint sets must not change the active loadout.');
+if (priorImprintProgress === undefined) storageValues.delete(IMPRINT_PROGRESS_STORAGE_KEY);
+else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, priorImprintProgress);
+console.log('✓ Named build saves validate progression, persist, rename, overwrite, and delete without touching progression keys.');
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
