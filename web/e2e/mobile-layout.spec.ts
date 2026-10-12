@@ -150,3 +150,24 @@ test('mobile setup layout fits narrow portrait and short landscape viewports', a
     expect(hpPlusBox!.height).toBeGreaterThanOrEqual(44);
   }
 });
+
+test('mobile bottom navigation removes unused space below the tabs', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile bottom navigation contract');
+
+  await page.goto('/');
+
+  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
+  await expect(navigation).toBeVisible();
+
+  const viewport = page.viewportSize();
+  expect(viewport).not.toBeNull();
+
+  const navigationBox = await navigation.boundingBox();
+  expect(navigationBox).not.toBeNull();
+  expect(navigationBox!.height).toBeLessThanOrEqual(72);
+  expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
+
+  for (const label of ['ホーム', '戦闘', 'ガチャ', 'レイド']) {
+    await expect(navigation.getByRole('button', { name: label })).toBeVisible();
+  }
+});

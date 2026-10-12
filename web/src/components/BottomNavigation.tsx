@@ -24,7 +24,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ active, onNa
       right: 0,
       bottom: 0,
       zIndex: 450,
-      padding: '8px 12px calc(8px + env(safe-area-inset-bottom, 0px))',
+      padding: '8px 12px 4px',
       borderTop: '1px solid rgba(116,137,173,0.22)',
       background: 'linear-gradient(180deg, rgba(10,13,22,0.9), rgba(10,13,22,0.985))',
       backdropFilter: 'blur(16px)',
