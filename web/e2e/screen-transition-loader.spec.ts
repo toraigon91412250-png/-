@@ -12,7 +12,7 @@ test('regular screen changes show loading artwork, while developer tools, battle
 
   // Home -> gacha hub uses the first dedicated loading illustration for roughly 1.8 seconds.
   const firstTransitionStartedAt = Date.now();
-  await page.getByRole('button', { name: 'ガチャ', exact: true }).click();
+  await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
   await expect(loader).toBeVisible();
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1177.jpeg');
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
@@ -33,7 +33,7 @@ test('regular screen changes show loading artwork, while developer tools, battle
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1178.jpeg');
   await expect(loader).toBeHidden({ timeout: 5_000 });
 
-  await page.getByRole('button', { name: 'ホーム', exact: true }).click();
+  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
   await expect(loader).toBeVisible();
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1179.jpeg');
   await expect(loader).toBeHidden({ timeout: 5_000 });
@@ -46,13 +46,13 @@ test('regular screen changes show loading artwork, while developer tools, battle
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(loader).toHaveCount(0);
 
-  await page.getByRole('button', { name: '戦闘', exact: true }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(loader).toHaveCount(0);
   await page.getByRole('button', { name: '戻る', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'レイド', exact: true }).click();
+  await page.getByRole('button', { name: '深淵レイドを開く' }).click();
   await expect(page.getByRole('heading', { name: '戦闘準備完了' })).toBeVisible();
   await expect(loader).toHaveCount(0);
 

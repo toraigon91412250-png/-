@@ -151,25 +151,17 @@ test('mobile setup layout fits narrow portrait and short landscape viewports', a
   }
 });
 
-test('mobile bottom navigation removes unused space below the tabs', async ({ page }) => {
-  test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile bottom navigation contract');
+test('mobile home has no removed bottom navigation or reserved tab space', async ({ page }) => {
+  test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile home layout contract');
 
   await page.goto('/');
+  const home = page.locator('.home-dashboard');
+  await expect(home).toBeVisible();
+  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '強化を開く' })).toBeVisible();
 
-  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
-  await expect(navigation).toBeVisible();
-
-  const viewport = page.viewportSize();
-  expect(viewport).not.toBeNull();
-
-  const navigationBox = await navigation.boundingBox();
-  expect(navigationBox).not.toBeNull();
-  expect(navigationBox!.height).toBeLessThanOrEqual(72);
-  expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
-
-  for (const label of ['ホーム', '強化', 'ガチャ', '戦闘', 'レイド']) {
-    await expect(navigation.getByRole('button', { name: label })).toBeVisible();
-  }
+  const paddingBottom = await home.evaluate(element => Number.parseFloat(getComputedStyle(element).paddingBottom));
+  expect(paddingBottom).toBeLessThanOrEqual(32);
 });
 
 test('home dashboard exposes its main routes and remains usable on narrow screens', async ({ page }) => {
@@ -199,8 +191,7 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   });
   expect(homeHasHorizontalOverflow).toBe(false);
 
-  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
-  await navigation.getByRole('button', { name: '強化' }).click();
+  await page.getByRole('button', { name: '強化を開く' }).click();
   const growthHub = page.locator('.growth-hub');
   await expect(growthHub).toBeVisible();
   for (const label of [
@@ -223,9 +214,11 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   });
   expect(hasHorizontalOverflow).toBe(false);
 
-  await navigation.getByRole('button', { name: 'ガチャ' }).click();
-  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
-  await navigation.getByRole('button', { name: 'ホーム' }).click();
+  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
   await expect(home).toBeVisible();
-  await expect(navigation).toBeVisible();
+  await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
+  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
+  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await expect(home).toBeVisible();
+  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
 });
