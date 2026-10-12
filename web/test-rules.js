@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { register } from 'node:module';
+import { readFile } from 'node:fs/promises';
 import { BATTLE_CHALLENGE_LEVELS, getEffectiveSpeed, getEffectiveAttack, getEffectiveDefense, STATUS_AILMENTS } from './src/types/game.ts';
 import {
   applyDynamicAbilityModifiers,
@@ -51,6 +52,18 @@ const {
   getIrenaXpForLevel,
   normalizeIrenaTalentProgress,
 } = await import('./src/utils/irenaTalentSystem.ts');
+
+const appSourceForTalentXpRegression = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
+assert.doesNotMatch(
+  appSourceForTalentXpRegression,
+  /\baddIrenaBattleExperience\s*\(/,
+  'App must not grant talent EXP separately after saveBattleResult has persisted it.',
+);
+assert.match(
+  appSourceForTalentXpRegression,
+  /setIrenaTalentProgress\(loadIrenaTalentProgress\(\)\)/,
+  'App must reload persisted talent progress after a battle result.',
+);
 
 assert.strictEqual(getIrenaLevel(0), 1);
 assert.strictEqual(getIrenaLevel(80), 2, 'The first talent level should be reachable after one win.');
@@ -757,6 +770,45 @@ globalThis.localStorage = {
 assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the initial 12 points.');
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');
 assert.strictEqual(loadStatPoints(), 14);
+
+// A single battle-result save is the sole source of battle talent EXP.
+const talentProgressKeyForRewardTest = 'duel_arena_irena_talent_progress';
+const battleRewardTestKeys = [
+  'duel_arena_battle_stats',
+  'duel_arena_irena_skill_progress',
+  talentProgressKeyForRewardTest,
+  'duel_arena_recruitment_progress',
+  'duel_arena_stat_points',
+];
+const battleRewardStateBeforeTest = new Map(
+  battleRewardTestKeys.map(key => [key, storageValues.get(key)]),
+);
+const windowDescriptorBeforeTalentRewardTest = Object.getOwnPropertyDescriptor(globalThis, 'window');
+try {
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    writable: true,
+    value: { localStorage: globalThis.localStorage },
+  });
+  storageValues.set(talentProgressKeyForRewardTest, JSON.stringify(INITIAL_IRENA_TALENT_PROGRESS));
+  const singleBattleReward = saveBattleResult(true);
+  assert.strictEqual(singleBattleReward.persisted, true, 'A normal battle result should persist all rewards.');
+  assert.strictEqual(
+    JSON.parse(storageValues.get(talentProgressKeyForRewardTest)).experience,
+    100,
+    'One victory save must grant exactly 100 talent EXP.',
+  );
+} finally {
+  for (const [key, value] of battleRewardStateBeforeTest) {
+    if (value === undefined) storageValues.delete(key);
+    else storageValues.set(key, value);
+  }
+  if (windowDescriptorBeforeTalentRewardTest) {
+    Object.defineProperty(globalThis, 'window', windowDescriptorBeforeTalentRewardTest);
+  } else {
+    Reflect.deleteProperty(globalThis, 'window');
+  }
+}
 
 // Raid-exclusive reward persistence, idempotent victory claims, and permanent stat-point redemption.
 const pointsBeforeRaidRewardTest = storageValues.get('duel_arena_stat_points');
