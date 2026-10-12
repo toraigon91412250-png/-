@@ -10,15 +10,15 @@ test('regular screen changes show loading artwork, while developer tools, battle
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(loader).toHaveCount(0);
 
-  // Home -> gacha hub uses the first dedicated loading illustration for roughly 3.8 seconds.
+  // Home -> gacha hub uses the first dedicated loading illustration for roughly 1.8 seconds.
   const firstTransitionStartedAt = Date.now();
   await page.getByRole('button', { name: 'ガチャ', exact: true }).click();
   await expect(loader).toBeVisible();
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1177.jpeg');
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
   await expect(loader).toBeHidden({ timeout: 5_000 });
-  expect(Date.now() - firstTransitionStartedAt, 'The standard screen loader should stay visible for about five times as long as before.')
-    .toBeGreaterThanOrEqual(3_600);
+  expect(Date.now() - firstTransitionStartedAt, 'The standard screen loader should remain visible for its 1.8-second minimum duration.')
+    .toBeGreaterThanOrEqual(1_700);
 
   // The recruitment transition waits for its summon artwork to preload.
   await page.getByRole('button', { name: '権能ガチャを開く' }).click();

@@ -22,7 +22,7 @@ const SCREEN_TRANSITION_ARTWORK = [
 ] as const;
 
 // About five times longer than the original 760ms transition, for a more readable image beat.
-const MINIMUM_TRANSITION_TIME_MS = 3_800;
+const MINIMUM_TRANSITION_TIME_MS = 1_800;
 
 export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
   transitionIndex,
