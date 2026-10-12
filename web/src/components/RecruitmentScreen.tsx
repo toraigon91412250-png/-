@@ -6,6 +6,7 @@ import {
   RecruitmentRewardDef,
 } from '../data/recruitment';
 import { AbilityId, AbilityProgress, RecruitmentProgress } from '../types/game';
+import AbilityUpgradePanel from './AbilityUpgradePanel';
 
 interface Props {
   progress: RecruitmentProgress;
