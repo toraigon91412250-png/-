@@ -106,8 +106,6 @@
 .home-dashboard__content-text { display: flex; flex-direction: column; min-width: 0; gap: 5px; }
 .home-dashboard__content-text strong { color: #F6F6FC; font-size: 13px; font-weight: 900; line-height: 1.35; }
 .home-dashboard__content-text small { color: #A4ACBF; font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
-.home-dashboard__content-value { align-self: start; padding: 5px 6px; border: 1px solid rgba(191,160,235,.17); border-radius: 7px; color: #D8C5F1; font-size: 9px; font-weight: 850; white-space: nowrap; }
-.home-dashboard__content-card--imprints .home-dashboard__content-value { color: #A6E4DD; border-color: rgba(103,211,209,.18); }
 .home-dashboard__content-arrow { color: #8C98B0; }
 .home-dashboard__core-details { margin-top: 15px; overflow: hidden; border: 1px solid rgba(144,156,187,.15); border-radius: 13px; background: rgba(18,22,34,.78); }
 .home-dashboard__core-details summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 11px 14px; color: #D9DDEC; font-size: 11px; font-weight: 850; cursor: pointer; list-style: none; }
@@ -189,7 +187,6 @@
   .home-dashboard__content-icon { width: 34px; height: 34px; border-radius: 10px; }
   .home-dashboard__content-text strong { font-size: 12px; }
   .home-dashboard__content-text small { font-size: 10px; }
-  .home-dashboard__content-value { font-size: 8px; padding: 4px 5px; }
   .home-dashboard__content-arrow { display: none; }
   .home-dashboard__record { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding: 12px; }
   .home-dashboard__record-title { grid-column: 1 / -1; font-size: 11px; }
@@ -209,13 +206,12 @@
   .home-dashboard__hero-copy { width: 94%; padding-left: 13px; padding-right: 11px; }
   .home-dashboard__hero h2 { max-width: 235px; font-size: 23px; }
   .home-dashboard__hero-description { max-width: 245px; font-size: 10px; }
-  .home-dashboard__hero-foot { gap: 5px 8px; font-size: 7px; }
+  .home-dashboard__hero-foot { gap: 5px 8px; font-size: 8px; }
   .home-dashboard__resource { gap: 6px; padding: 8px; }
   .home-dashboard__resource-icon { width: 28px; height: 28px; }
   .home-dashboard__resource-copy small { font-size: 10px; }
   .home-dashboard__resource-copy strong { font-size: 16px; }
   .home-dashboard__action-card { padding: 10px; }
-  .home-dashboard__content-value { max-width: 75px; overflow: hidden; text-overflow: ellipsis; }
 }
 @media (prefers-reduced-motion: reduce) {
   .home-dashboard * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }

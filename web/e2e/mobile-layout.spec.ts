@@ -10,7 +10,7 @@ test('mobile battle keeps primary commands visible while the arena scrolls', asy
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
@@ -67,7 +67,7 @@ test('mobile battle setup keeps the start action anchored and stat controls easy
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const viewport = page.viewportSize();
@@ -114,7 +114,7 @@ test('mobile setup layout fits narrow portrait and short landscape viewports', a
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const root = page.locator('.battle-setup-screen');
@@ -180,7 +180,9 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(home).toBeVisible();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'カイザー最終試練' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /挑戦の準備/ })).toBeVisible();
+  await expect(home.locator('.home-dashboard__primary-copy strong')).toHaveText('挑戦の準備');
+  await expect(home.locator('.home-dashboard__content-value')).toHaveCount(0);
 
   const growth = home.locator('.home-dashboard__growth-grid');
   for (const label of [

@@ -190,12 +190,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <button
                 className="home-dashboard__primary-action"
                 type="button"
-                aria-label={'バトル開始、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
+                aria-label={'挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
                 onClick={onStartBattle}
               >
                 <Swords size={19} aria-hidden="true" />
                 <span className="home-dashboard__primary-copy">
-                  <strong>バトル開始</strong>
+                  <strong>挑戦の準備</strong>
                   <small>カイザー Lv.{unlockedKaiserLevel} に挑戦</small>
                 </span>
                 <ArrowUpRight size={18} aria-hidden="true" />
@@ -230,7 +230,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section home-dashboard__section--resources" aria-labelledby="home-resource-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">所持リソース</p>
+              <p className="home-dashboard__section-kicker">素材・チケット</p>
               <h2 id="home-resource-title">所持リソース</h2>
             </div>
             <span className="home-dashboard__section-note">現在の所持数</span>
@@ -258,7 +258,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section" aria-labelledby="home-growth-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">育成・編成</p>
+              <p className="home-dashboard__section-kicker">強化メニュー</p>
               <h2 id="home-growth-title">育成・編成</h2>
             </div>
             <span className="home-dashboard__section-note">準備してから挑戦</span>
@@ -306,7 +306,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <strong>黒翼召喚</strong>
                 <small>権能を獲得・強化する</small>
               </span>
-              <span className="home-dashboard__content-value">{recruitmentProgress.tickets} 枚</span>
               <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
             </button>
             <button className="home-dashboard__content-card home-dashboard__content-card--imprints" type="button" aria-label="刻印を管理" onClick={onOpenImprints}>
@@ -323,7 +322,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <strong>深淵レイド</strong>
                 <small>勝利報酬で刻印チケット・核片を獲得</small>
               </span>
-              <span className="home-dashboard__content-value">{raidRewardProgress.coreFragments} 核片</span>
               <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
             </button>
           </div>

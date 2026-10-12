@@ -6,7 +6,6 @@ import {
   Crown,
   Eye,
   Gem,
-  Layers,
   Sparkles,
   Ticket,
 } from 'lucide-react';
@@ -40,7 +39,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
         <header className="gacha-hub__header">
           <span className="gacha-hub__brand-mark"><Sparkles size={20} /></span>
           <div>
-            <p className="gacha-hub__eyebrow">SUMMONS & LOADOUT</p>
+            <p className="gacha-hub__eyebrow">召喚・編成</p>
             <h1>ガチャ</h1>
             <p className="gacha-hub__lead">戦い方を増やす力を集めて、自分のビルドに組み込もう。</p>
           </div>
@@ -55,16 +54,12 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
             <span className="gacha-hub__inventory-label"><Gem size={14} /> 刻印チケット</span>
             <strong>{imprintTickets.toLocaleString('ja-JP')} <small>枚</small></strong>
           </div>
-          <div>
-            <span className="gacha-hub__inventory-label"><Layers size={14} /> 刻印コレクション</span>
-            <strong>{unlockedImprints}<small> / {IMPRINT_DEFINITIONS.length}</small></strong>
-          </div>
         </section>
 
         <section className="gacha-hub__section" aria-labelledby="gacha-hub-pick-title">
           <div className="gacha-hub__section-heading">
             <div>
-              <p className="gacha-hub__eyebrow">CHOOSE YOUR REWARD</p>
+              <p className="gacha-hub__eyebrow">召喚メニュー</p>
               <h2 id="gacha-hub-pick-title">何を強化する？</h2>
             </div>
             <span>獲得先を選ぶ</span>
@@ -77,7 +72,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
                 <span className="gacha-hub__summon-icon"><Crown size={24} /></span>
                 <span className="gacha-hub__summon-open"><ArrowUpRight size={19} /></span>
               </span>
-              <span className="gacha-hub__summon-kicker">ABILITY RECRUITMENT</span>
+              <span className="gacha-hub__summon-kicker">権能の獲得・強化</span>
               <strong className="gacha-hub__summon-title">黒翼召喚</strong>
               <span className="gacha-hub__summon-description">権能本体や強化用の欠片を獲得。権能を解放して、戦闘の選択肢を増やす。</span>
               <span className="gacha-hub__summon-bottom">
@@ -92,7 +87,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
                 <span className="gacha-hub__summon-icon"><Gem size={24} /></span>
                 <span className="gacha-hub__summon-open"><ArrowUpRight size={19} /></span>
               </span>
-              <span className="gacha-hub__summon-kicker">IMPRINT ARCHIVE</span>
+              <span className="gacha-hub__summon-kicker">刻印の獲得</span>
               <strong className="gacha-hub__summon-title">刻印召喚</strong>
               <span className="gacha-hub__summon-description">戦闘中に発動する刻印を獲得。回避・反撃・出血など、勝ち筋を組み立てる。</span>
               <span className="gacha-hub__summon-bottom">
@@ -106,7 +101,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
         <section className="gacha-hub__collection" aria-labelledby="gacha-hub-collection-title">
           <div className="gacha-hub__collection-icon"><Eye size={23} /></div>
           <div className="gacha-hub__collection-main">
-            <p className="gacha-hub__eyebrow">BUILD MANAGEMENT</p>
+            <p className="gacha-hub__eyebrow">刻印の編成</p>
             <h2 id="gacha-hub-collection-title">刻印管理</h2>
             <p>所持している刻印から最大3つを選んで装備。発動条件と効果を確認して、挑戦相手に合わせよう。</p>
             <div className="gacha-hub__collection-progress" aria-label={'刻印の収集率 ' + imprintCompletion + 'パーセント'}>
