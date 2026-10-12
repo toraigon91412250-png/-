@@ -128,6 +128,34 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   }, [hasSuperFallenShot, hasFeatherSplitImprint, selectedSpecialSkill, onSelectedSpecialSkillChange]);
 
 
+  // Charge consumes the current turn; dispatch exactly once when the following player turn becomes actionable.
+  // The refs guard against repeat effects (including Strict Mode/effect re-runs) for the same turn.
+  const superFallenShotChargeTurnRef = React.useRef<number | null>(
+    isChargingSuperFallenShot ? turnNumber - 1 : null,
+  );
+  const superFallenShotAutoFireTurnRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    if (!isChargingSuperFallenShot) {
+      superFallenShotChargeTurnRef.current = null;
+      superFallenShotAutoFireTurnRef.current = null;
+      return;
+    }
+
+    if (superFallenShotChargeTurnRef.current === null) {
+      superFallenShotChargeTurnRef.current = turnNumber;
+    }
+    const chargeTurn = superFallenShotChargeTurnRef.current;
+    if (
+      !isEnabled ||
+      turnNumber <= chargeTurn ||
+      superFallenShotAutoFireTurnRef.current === turnNumber
+    ) return;
+
+    superFallenShotAutoFireTurnRef.current = turnNumber;
+    onAction('SPECIAL', undefined, 'SUPER_FALLEN_SHOT');
+  }, [isEnabled, isChargingSuperFallenShot, turnNumber, onAction]);
+
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const featherPathName =
     player.character.featherSkillPath === 'ABYSS'
