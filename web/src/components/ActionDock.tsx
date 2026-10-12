@@ -478,12 +478,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         </div>
       )}
 
-      {isChargingSuperFallenShot && (
-        <div style={{ marginBottom:'6px', padding:'7px 9px', borderRadius:'9px', border:'1px solid rgba(255,224,130,.58)', background:'linear-gradient(90deg,rgba(65,38,11,.72),rgba(11,12,18,.9))', color:'#FFE082', fontSize:'10px', fontWeight:900, textAlign:'center' }}>
-          ⚡🪶 超堕天撃 充填中 — 次のターン自動発射 / 充填中 DEF 0
-        </div>
-      )}
-
       <div
         style={{
           display: 'grid',

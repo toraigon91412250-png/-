@@ -1265,26 +1265,6 @@ export function useBattleGame(
             turn,
           );
 
-          updateState(prev => ({
-            ...prev,
-            visualEffect: {
-              targetIsPlayer: true,
-              damage: 0,
-              effectType: 'SUPER_FALLEN_CHARGE',
-              isCritical: false,
-              isEvade: false,
-              isBuff: false,
-              isUltimate: false,
-              actorName: actor.character.name,
-              skillName: '超堕天撃',
-              statusAilmentName: '',
-              bannerText: '⚡🪶『超堕天撃』CHARGE',
-              effectId: nextVisualEffectId.current++,
-            },
-          }));
-
-          await sleep(2800 / speed);
-          updateState(prev => ({ ...prev, visualEffect: null }));
           return true;
         }
 
@@ -1346,49 +1326,8 @@ export function useBattleGame(
             }
           }
 
-          const effectId = nextVisualEffectId.current++;
-          updateState(prev => ({
-            ...prev,
-            visualEffect: {
-              targetIsPlayer: !isActorPlayer,
-              damage: 0,
-              effectType: 'SUPER_FALLEN_SHOT',
-              isCritical: false,
-              isEvade: isEvaded,
-              isBuff: false,
-              isUltimate: false,
-              actorName: actor.character.name,
-              skillName: '超堕天撃',
-              statusAilmentName: '',
-              bannerText: isEvaded
-                ? '💨『超堕天撃』MISS!'
-                : '⚡🪶『超堕天撃』発射準備！',
-              effectId,
-            },
-          }));
-
-          // The visual peaks before the hit lands, so the damage application
-          // happens on the launch beat rather than when the animation begins.
-          const impactDelay = 3000 / speed;
-          const totalDuration = 5600 / speed;
-          const remainingDuration = Math.max(0, totalDuration - impactDelay);
-
-          await sleep(impactDelay);
-
-          if (isEvaded) {
-            updateState(prev => ({
-              ...prev,
-              visualEffect: prev.visualEffect?.effectId === effectId
-                ? {
-                    ...prev.visualEffect,
-                    bannerText: '💨『超堕天撃』MISS!',
-                  }
-                : prev.visualEffect,
-            }));
-            await sleep(remainingDuration);
-            updateState(prev => ({ ...prev, visualEffect: null }));
-            return true;
-          }
+          // Resolve the shot immediately; its former cinematic wait is removed.
+          if (isEvaded) return true;
 
           const executionForHit =
             isActorPlayer &&
@@ -1398,8 +1337,6 @@ export function useBattleGame(
             actor.currentHp <= baseActorMaxHp * 0.05;
           const hitOutcome = resolveKaiserDamage(target, finalDamage, turn, executionForHit ? '堕天・終局' : '超堕天撃');
           finalDamage = hitOutcome.damage;
-          soundManager.playCritical();
-          soundManager.playFeatherShot();
 
           addLog(
             `⚡🪶【超堕天撃】${actor.character.name}が電撃をまとった羽弾を撃ち出す！ ${target.character.name}に ${finalDamage} ダメージ！（倍率×${multiplier.toFixed(1)}）`,
@@ -1413,17 +1350,7 @@ export function useBattleGame(
             ...prev,
             player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
             enemy: isActorPlayer ? { ...prev.enemy, currentHp: newTargetHp } : prev.enemy,
-            visualEffect: prev.visualEffect?.effectId === effectId
-              ? {
-                  ...prev.visualEffect,
-                  damage: finalDamage,
-                  bannerText: `⚡🪶『超堕天撃』-${finalDamage}!`,
-                }
-              : prev.visualEffect,
           }));
-
-          await sleep(remainingDuration);
-          updateState(prev => ({ ...prev, visualEffect: null }));
 
           if (newTargetHp <= 0) return false;
           return true;

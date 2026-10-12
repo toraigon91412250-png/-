@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { VisualEffect } from '../types/game';
 import { CHARACTERS } from '../data/characters';
-import { SuperFallenShotVfx } from './SuperFallenShotVfx';
 import irenaPierceCutInImg from '../assets/4269B24F-33D7-4AC8-8D99-BA584A72BA7D.png';
 
 interface SingleVisualEffectOverlayProps {
@@ -865,6 +864,10 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
       ? irenaPierceCutInImg
       : cutInCharacter?.specialCutInSrc
     : undefined;
+
+  // Super Fallen Shot keeps its gameplay state but no longer renders a cinematic or overlay.
+  if (isSuperFallenCharge || isSuperFallenShot) return null;
+
   return (
     <div
       style={{
@@ -934,26 +937,6 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
             height: '100%',
             pointerEvents: 'none',
           }}
-        />
-      )}
-
-      {/* Dedicated 超堕天撃 VFX */}
-      {isSuperFallenCharge && (
-        <SuperFallenShotVfx
-          key={`super-fallen-charge-${effect.effectId}`}
-          mode="CHARGE"
-          progress={t}
-          durationMs={2800 / Math.max(0.1, speedMultiplier)}
-        />
-      )}
-      {isSuperFallenShot && (
-        <SuperFallenShotVfx
-          key={`super-fallen-shot-${effect.effectId}`}
-          mode="SHOT"
-          progress={t}
-          durationMs={5600 / Math.max(0.1, speedMultiplier)}
-          damage={effect.damage}
-          isEvade={effect.isEvade}
         />
       )}
 

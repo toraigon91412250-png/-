@@ -7,10 +7,6 @@ import irenaPierceCutInImage from '../assets/4269B24F-33D7-4AC8-8D99-BA584A72BA7
 import kaiserImage from '../assets/img_kaiser.jpg';
 import victoryImage from '../assets/いれーな勝利演出.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
-import beamImage from '../assets/IMG_1151.jpeg';
-import chargeBackgroundImage from '../assets/IMG_1152.jpeg';
-import controlledShotImage from '../assets/IMG_1154.jpeg';
-import strongShotImage from '../assets/IMG_1155.jpeg';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 
@@ -38,10 +34,6 @@ const BATTLE_IMAGES = [
   kaiserImage,
   victoryImage,
   battleBackground,
-  beamImage,
-  chargeBackgroundImage,
-  controlledShotImage,
-  strongShotImage,
   raidBossArt,
   raidIrenaCutin,
 ] as const;
