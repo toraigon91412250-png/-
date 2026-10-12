@@ -449,6 +449,15 @@ export const App: React.FC = () => {
             refreshProgress();
             navigateToScreen('GROWTH_HUB');
           }}
+          onOpenGacha={() => {
+            refreshProgress();
+            navigateToScreen('GACHA_HUB');
+          }}
+          onOpenRaid={() => {
+            refreshProgress();
+            setRaidReturnScreen('SELECT');
+            setScreen('RAID_PROTOTYPE');
+          }}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
           recruitmentProgress={recruitmentProgress}

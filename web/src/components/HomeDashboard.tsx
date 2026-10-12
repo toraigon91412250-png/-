@@ -2,6 +2,7 @@ import React from 'react';
 import {
   ArrowUpRight,
   BookOpen,
+  ChevronRight,
   Crown,
   Gem,
   Shield,
@@ -27,6 +28,8 @@ interface HomeDashboardProps {
   overallStats: OverallStats;
   onStartBattle: () => void;
   onOpenGrowth: () => void;
+  onOpenGacha: () => void;
+  onOpenRaid: () => void;
   unlockedKaiserLevel: BattleChallengeLevel;
   availableStatPoints: number;
   skillProgress: IrenaSkillProgress;
@@ -40,6 +43,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   overallStats,
   onStartBattle,
   onOpenGrowth,
+  onOpenGacha,
+  onOpenRaid,
   unlockedKaiserLevel,
   availableStatPoints,
   skillProgress,
@@ -63,7 +68,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="home-dashboard__brand-mark" aria-hidden="true"><Swords size={21} /></span>
             <div className="home-dashboard__brand-copy">
               <h1 className="home-dashboard__brand-title">バトルアリーナデュエル</h1>
-              <p className="home-dashboard__brand-subtitle">育成・編成・挑戦</p>
+              <p className="home-dashboard__brand-subtitle">TACTICAL 1 VS 1 · TURN-BASED</p>
             </div>
           </div>
           <div className="home-dashboard__challenge-chip" aria-label={'挑戦可能レベル Lv.' + unlockedKaiserLevel}>
@@ -78,7 +83,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <img src={playerChar.selectImageSrc ?? playerChar.imageSrc} alt="" />
           </div>
           <div className="home-dashboard__hero-copy">
-            <p className="home-dashboard__eyebrow"><Crown size={13} aria-hidden="true" /> 現在の挑戦</p>
+            <p className="home-dashboard__eyebrow"><Crown size={14} aria-hidden="true" /> MAIN CHALLENGE <span>メインコンテンツ</span></p>
             <h2 id="home-dashboard-title">カイザー最終試練</h2>
             <p className="home-dashboard__hero-level">
               <span>挑戦可能レベル</span>
@@ -97,8 +102,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
             <p className="home-dashboard__hero-description">
               {unlockedKaiserLevel >= 100
-                ? 'Lv.100に挑戦できます。ステータス・権能・刻印を整えて、最終試練へ。'
-                : '勝利すると次のレベルが解放されます。育成を整えて、次の強敵へ。'}
+                ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
+                : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
             </p>
             <div className="home-dashboard__hero-actions">
               <button
@@ -125,13 +130,43 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__growth-entry" aria-labelledby="home-growth-entry-title">
           <span className="home-dashboard__growth-entry-icon" aria-hidden="true"><Target size={22} /></span>
           <div className="home-dashboard__growth-entry-copy">
-            <p className="home-dashboard__section-kicker">育成・編成</p>
+            <p className="home-dashboard__section-kicker">YOUR NEXT STEP <span>育成・編成</span></p>
             <h2 id="home-growth-entry-title">強化メニューをひとつに集約</h2>
             <p>ステータス・才能盤・技・権能・刻印の管理はこちらから。</p>
           </div>
           <button type="button" className="home-dashboard__growth-entry-action" onClick={onOpenGrowth}>
             強化を開く <ArrowUpRight size={18} aria-hidden="true" />
           </button>
+        </section>
+
+        <section className="home-dashboard__section home-dashboard__section--modes" aria-labelledby="home-modes-title">
+          <div className="home-dashboard__section-heading">
+            <div>
+              <p className="home-dashboard__section-kicker">EXPLORE THE ARENA</p>
+              <h2 id="home-modes-title">コンテンツ</h2>
+            </div>
+            <span className="home-dashboard__section-note">行き先を選ぶ</span>
+          </div>
+          <div className="home-dashboard__mode-grid">
+            <button className="home-dashboard__mode-card home-dashboard__mode-card--summon" type="button" onClick={onOpenGacha} aria-label="黒翼召喚を開く">
+              <span className="home-dashboard__mode-art" aria-hidden="true"><Crown size={28} /></span>
+              <span className="home-dashboard__mode-copy">
+                <small>POWER UP</small>
+                <strong>黒翼召喚</strong>
+                <span>新たな権能と強化用の欠片を集める。</span>
+              </span>
+              <span className="home-dashboard__mode-meta"><span><Ticket size={14} /> チケット {recruitmentProgress.tickets} 枚</span><ChevronRight size={18} /></span>
+            </button>
+            <button className="home-dashboard__mode-card home-dashboard__mode-card--raid" type="button" onClick={onOpenRaid} aria-label="深淵レイドを開く">
+              <span className="home-dashboard__mode-art" aria-hidden="true"><Gem size={28} /></span>
+              <span className="home-dashboard__mode-copy">
+                <small>HIGH-LEVEL CONTENT</small>
+                <strong>深淵レイド</strong>
+                <span>勝利報酬で刻印チケットや核片を獲得。</span>
+              </span>
+              <span className="home-dashboard__mode-meta"><span><Gem size={14} /> 核片 {raidRewardProgress.coreFragments} 個</span><ChevronRight size={18} /></span>
+            </button>
+          </div>
         </section>
 
         <section className="home-dashboard__section home-dashboard__section--resources" aria-labelledby="home-resource-title">
