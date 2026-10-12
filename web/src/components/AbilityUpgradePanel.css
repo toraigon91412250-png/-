@@ -1,0 +1,99 @@
+.ability-upgrade-panel {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(190, 164, 237, .22);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(26, 21, 37, .96), rgba(13, 16, 27, .98));
+  color: #F7F5FC;
+}
+.ability-upgrade-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ability-upgrade-panel__eyebrow {
+  margin: 0 0 4px;
+  color: #B39DDB;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+.ability-upgrade-panel__header h2 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.35;
+  font-weight: 950;
+}
+.ability-upgrade-panel__header p:not(.ability-upgrade-panel__eyebrow) {
+  margin: 5px 0 0;
+  color: #A7A9BC;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.ability-upgrade-panel__header > span {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border: 1px solid rgba(179, 157, 219, .22);
+  border-radius: 8px;
+  color: #C9B8E7;
+  background: rgba(179, 157, 219, .07);
+  font-size: 10px;
+  font-weight: 850;
+}
+.ability-upgrade-panel__list { display: grid; gap: 8px; }
+.ability-upgrade-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(151, 159, 188, .13);
+  border-radius: 12px;
+  background: rgba(9, 11, 19, .72);
+}
+.ability-upgrade-panel__symbol {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(179, 157, 219, .16);
+  border-radius: 11px;
+  background: rgba(179, 157, 219, .08);
+  font-size: 19px;
+}
+.ability-upgrade-panel__details { display: flex; flex: 1; flex-direction: column; gap: 5px; min-width: 0; }
+.ability-upgrade-panel__details strong { color: #F6F4FB; font-size: 13px; font-weight: 900; line-height: 1.4; }
+.ability-upgrade-panel__details strong span { color: #FFE082; white-space: nowrap; }
+.ability-upgrade-panel__details small { color: #9295A8; font-size: 11px; line-height: 1.45; overflow-wrap: anywhere; }
+.ability-upgrade-panel__row button {
+  min-width: 76px;
+  min-height: 40px;
+  flex: 0 0 auto;
+  padding: 0 10px;
+  border: 1px solid rgba(179, 157, 219, .35);
+  border-radius: 9px;
+  background: #4A235F;
+  color: #FFF;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.ability-upgrade-panel__row button:disabled {
+  border-color: rgba(151, 159, 188, .1);
+  background: #17141C;
+  color: #77717E;
+  cursor: not-allowed;
+}
+.ability-upgrade-panel button:focus-visible { outline: 2px solid #FFE0A0; outline-offset: 3px; }
+@media (max-width: 380px) {
+  .ability-upgrade-panel { padding: 12px; }
+  .ability-upgrade-panel__row { gap: 8px; padding: 8px; }
+  .ability-upgrade-panel__symbol { width: 34px; height: 34px; }
+  .ability-upgrade-panel__row button { min-width: 62px; padding: 0 7px; }
+  .ability-upgrade-panel__details strong { font-size: 12px; }
+  .ability-upgrade-panel__details small { font-size: 10px; }
+}
