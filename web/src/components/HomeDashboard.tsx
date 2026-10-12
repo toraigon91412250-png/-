@@ -200,7 +200,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="home-dashboard__section-note">強化素材と新しい挑戦</span>
           </div>
           <div className="home-dashboard__content-grid">
-            <button className="home-dashboard__content-card home-dashboard__content-card--summon" type="button" onClick={onOpenGacha}>
+            <button className="home-dashboard__content-card home-dashboard__content-card--summon" type="button" aria-label="召喚コンテンツを開く" onClick={onOpenGacha}>
               <span className="home-dashboard__content-icon"><Crown size={21} /></span>
               <span className="home-dashboard__content-text"><strong>召喚・ガチャ</strong><small>権能と刻印を獲得して戦術を広げる</small></span>
               <span className="home-dashboard__content-count">{recruitmentProgress.tickets} 枚</span>
