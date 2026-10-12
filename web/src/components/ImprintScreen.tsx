@@ -14,7 +14,7 @@ interface ImprintScreenProps {
 export const ImprintScreen: React.FC<ImprintScreenProps> = ({ progress, message, onEquip, onUnequip, onBack }) => {
   const equippedCount = progress.equippedIds.length;
   return (
-    <main style={{
+    <main className="imprint-screen" style={{
       width: '100%', height: '100%', boxSizing: 'border-box', overflowY: 'auto',
       padding: '18px 14px 30px', color: '#F3F8FF',
       background: 'radial-gradient(ellipse at top, #172D42 0%, #0A0D16 62%)',
