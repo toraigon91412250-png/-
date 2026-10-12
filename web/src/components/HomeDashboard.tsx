@@ -123,8 +123,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           ? {
               eyebrow: '刻印チケットを所持',
               title: '新しい刻印を確認する',
-              description: '刻印チケット ' + raidRewardProgress.imprintTickets + '枚。刻印召喚から新しい効果を狙えます。',
-              buttonLabel: '刻印召喚へ',
+              description: '刻印チケット ' + raidRewardProgress.imprintTickets + '枚。召喚ハブから刻印召喚へ進めます。',
+              buttonLabel: '召喚ハブへ',
               onClick: onOpenGacha,
               icon: <Gem size={21} />,
               tone: 'imprint',
