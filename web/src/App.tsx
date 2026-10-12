@@ -553,6 +553,8 @@ export const App: React.FC = () => {
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
           abilityProgress={abilityProgress}
+          imprintProgress={imprintProgress}
+          onApplySavedBuild={handleApplySavedBuild}
           availableStatPoints={availableStatPoints}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           initialConfig={battleSetup}
