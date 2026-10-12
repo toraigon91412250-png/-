@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Skull, Sparkles, Swords } from 'lucide-react';
+import './BottomNavigation.css';
 
 export type MainTab = 'HOME' | 'GACHA' | 'BATTLE' | 'RAID';
 
@@ -9,28 +10,15 @@ interface BottomNavigationProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'HOME', label: 'ホーム', icon: Home },
-  { id: 'GACHA', label: 'ガチャ', icon: Sparkles },
-  { id: 'BATTLE', label: '戦闘', icon: Swords },
-  { id: 'RAID', label: 'レイド', icon: Skull },
+  { id: 'HOME', label: 'ホーム', english: 'HOME', icon: Home },
+  { id: 'GACHA', label: 'ガチャ', english: 'SUMMON', icon: Sparkles },
+  { id: 'BATTLE', label: '戦闘', english: 'BATTLE', icon: Swords },
+  { id: 'RAID', label: 'レイド', english: 'RAID', icon: Skull },
 ] as const;
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ active, onNavigate }) => (
-  <nav
-    aria-label="メインナビゲーション"
-    style={{
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 450,
-      padding: '8px 12px 4px',
-      borderTop: '1px solid rgba(116,137,173,0.22)',
-      background: 'linear-gradient(180deg, rgba(10,13,22,0.9), rgba(10,13,22,0.985))',
-      backdropFilter: 'blur(16px)',
-    }}
-  >
-    <div style={{ width: '100%', maxWidth: '640px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '6px' }}>
+  <nav className="bottom-navigation" aria-label="メインナビゲーション">
+    <div className="bottom-navigation__inner">
       {NAV_ITEMS.map(item => {
         const Icon = item.icon;
         const selected = active === item.id;
@@ -38,30 +26,20 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ active, onNa
           <button
             key={item.id}
             type="button"
+            className={'bottom-navigation__item' + (selected ? ' is-active' : '')}
             onClick={() => onNavigate(item.id)}
             aria-current={selected ? 'page' : undefined}
-            style={{
-              minWidth: 0,
-              minHeight: '58px',
-              padding: '6px 2px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              borderRadius: '11px',
-              border: selected ? '1px solid rgba(255,213,79,0.58)' : '1px solid transparent',
-              background: selected ? 'linear-gradient(145deg, rgba(87,65,26,0.66), rgba(40,34,24,0.55))' : 'transparent',
-              color: selected ? '#FFE082' : '#929EB3',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
+            aria-label={item.label}
+            title={item.label}
           >
-            <Icon size={20} strokeWidth={selected ? 2.5 : 2} />
-            <span style={{ fontSize: '10px', lineHeight: 1.2, fontWeight: selected ? 950 : 800 }}>{item.label}</span>
+            <span className="bottom-navigation__icon"><Icon size={19} strokeWidth={selected ? 2.5 : 2} /></span>
+            <span className="bottom-navigation__label">{item.label}</span>
+            <span className="bottom-navigation__english">{item.english}</span>
           </button>
         );
       })}
     </div>
   </nav>
 );
+
+export default BottomNavigation;

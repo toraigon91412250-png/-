@@ -30,7 +30,7 @@ export const ImprintGachaScreen: React.FC<ImprintGachaScreenProps> = ({
   };
 
   return (
-    <main style={{
+    <main className="imprint-gacha-screen" style={{
       width: '100%', height: '100%', boxSizing: 'border-box', overflowY: 'auto',
       padding: '18px 14px 30px', color: '#F3F8FF',
       background: 'radial-gradient(ellipse at top, #25183F 0%, #0A0D16 64%)',

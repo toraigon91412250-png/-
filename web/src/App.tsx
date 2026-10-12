@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
 import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
-import { CharacterSelectScreen } from './components/CharacterSelectScreen';
+import { HomeDashboard } from './components/HomeDashboard';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
@@ -452,7 +452,7 @@ export const App: React.FC = () => {
 
       {isBattleDeploying && <BattleDeployOverlay />}
       {screen === 'SELECT' ? (
-        <CharacterSelectScreen
+        <HomeDashboard
           overallStats={overallStats}
           onStartBattle={() => handleOpenBattleSetup()}
           skillProgress={skillProgress}
@@ -463,6 +463,20 @@ export const App: React.FC = () => {
           onChooseSkillPath={handleChooseSkillPath}
           irenaTalentProgress={irenaTalentProgress}
           onOpenTalentBoard={handleOpenTalentBoard}
+          onOpenGacha={() => {
+            refreshProgress();
+            navigateToScreen('GACHA_HUB');
+          }}
+          onOpenImprints={handleOpenImprints}
+          onOpenRaid={() => {
+            refreshProgress();
+            navigateToScreen('RAID_PROTOTYPE');
+          }}
+          unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
+          availableStatPoints={availableStatPoints}
+          abilityProgress={abilityProgress}
+          imprintProgress={imprintProgress}
+          recruitmentProgress={recruitmentProgress}
         />
       ) : screen === 'IRENA_TALENTS' ? (
         <IrenaTalentBoard
@@ -479,7 +493,9 @@ export const App: React.FC = () => {
       ) : screen === 'GACHA_HUB' ? (
         <GachaHubScreen
           imprintTickets={raidRewardProgress.imprintTickets}
+          recruitmentTickets={recruitmentProgress.tickets}
           unlockedImprints={imprintProgress.unlockedIds.length}
+          equippedImprints={imprintProgress.equippedIds.length}
           onOpenRecruitment={() => {
             const recruitmentAssetsReady = preloadRecruitmentImages();
             refreshProgress();
