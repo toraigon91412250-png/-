@@ -576,7 +576,7 @@ export const App: React.FC = () => {
           onAddImprintTickets={handleDeveloperAddImprintTickets}
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
-          onOpenRecruitment={() => setScreen('RECRUITMENT')}
+          onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={handleOpenBattleSetup}
           onReset={handleDeveloperReset}
         />
@@ -594,7 +594,7 @@ export const App: React.FC = () => {
               refreshProgress();
               navigateToScreen('GACHA_HUB');
             } else if (tab === 'BATTLE') {
-              handleOpenBattleSetup();
+              handleOpenBattleSetup(undefined, screen === 'GROWTH_HUB' ? 'GROWTH_HUB' : 'SELECT');
             } else {
               refreshProgress();
               setScreen('RAID_PROTOTYPE');
