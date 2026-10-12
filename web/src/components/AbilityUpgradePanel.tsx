@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbilityId, AbilityProgress } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
+import './AbilityUpgradePanel.css';
 
 interface AbilityUpgradePanelProps {
   progress: AbilityProgress;
