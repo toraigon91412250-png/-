@@ -10,10 +10,10 @@ interface BottomNavigationProps {
 }
 
 const NAV_ITEMS = [
-  { id: 'HOME', label: 'ホーム', english: 'HOME', icon: Home },
-  { id: 'GACHA', label: 'ガチャ', english: 'SUMMON', icon: Sparkles },
-  { id: 'BATTLE', label: '戦闘', english: 'BATTLE', icon: Swords },
-  { id: 'RAID', label: 'レイド', english: 'RAID', icon: Skull },
+  { id: 'HOME', label: 'ホーム', icon: Home },
+  { id: 'GACHA', label: 'ガチャ', icon: Sparkles },
+  { id: 'BATTLE', label: '戦闘', icon: Swords },
+  { id: 'RAID', label: 'レイド', icon: Skull },
 ] as const;
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ active, onNavigate }) => (
@@ -32,9 +32,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ active, onNa
             aria-label={item.label}
             title={item.label}
           >
-            <span className="bottom-navigation__icon"><Icon size={19} strokeWidth={selected ? 2.5 : 2} /></span>
+            <span className="bottom-navigation__icon"><Icon size={20} strokeWidth={selected ? 2.5 : 2} aria-hidden="true" /></span>
             <span className="bottom-navigation__label">{item.label}</span>
-            <span className="bottom-navigation__english">{item.english}</span>
           </button>
         );
       })}

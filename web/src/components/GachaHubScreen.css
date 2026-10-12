@@ -73,3 +73,32 @@
   .gacha-hub__manage-button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .gacha-hub * { transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+
+/* Final readability pass: the inventory is information, the cards are actions. */
+.gacha-hub { padding-top: max(18px, env(safe-area-inset-top, 0px)); }
+.gacha-hub__inventory > div { min-height: 88px; justify-content: space-between; padding: 13px 14px; }
+.gacha-hub__inventory-label { font-size: clamp(9px, 1.2vw, 11px); line-height: 1.45; }
+.gacha-hub__inventory strong { font-size: clamp(19px, 2.4vw, 24px); font-variant-numeric: tabular-nums; }
+.gacha-hub__summon-card { min-height: 240px; padding: 19px; }
+.gacha-hub__summon-description { font-size: 12px; line-height: 1.75; }
+.gacha-hub__summon-bottom { font-size: 11px; line-height: 1.45; }
+.gacha-hub__collection-main > p:not(.gacha-hub__eyebrow) { font-size: 11px; line-height: 1.7; }
+.gacha-hub__manage-button { min-height: 44px; }
+.gacha-hub button:focus-visible { outline-offset: 3px; }
+@media (max-width: 600px) {
+  .gacha-hub { padding-bottom: calc(103px + env(safe-area-inset-bottom, 0px)); }
+  .gacha-hub__summon-card { min-height: 0; padding: 15px; }
+  .gacha-hub__summon-description { font-size: 11px; }
+  .gacha-hub__summon-bottom { padding-top: 14px; }
+  .gacha-hub__collection-main > p:not(.gacha-hub__eyebrow) { font-size: 11px; }
+}
+@media (max-width: 380px) {
+  .gacha-hub { padding-right: 9px; padding-left: 9px; }
+  .gacha-hub__inventory { gap: 5px; }
+  .gacha-hub__inventory > div { min-height: 85px; padding: 9px 7px; }
+  .gacha-hub__inventory-label { align-items: flex-start; font-size: 8px; }
+  .gacha-hub__inventory-label svg { margin-top: 1px; }
+  .gacha-hub__inventory strong { font-size: 16px; }
+  .gacha-hub__summon-title { font-size: 19px; }
+}
