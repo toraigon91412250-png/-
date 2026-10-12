@@ -1,8 +1,8 @@
 import React from 'react';
-import { Home, Skull, Sparkles, Swords } from 'lucide-react';
+import { Home, Skull, Sparkles, Swords, Zap } from 'lucide-react';
 import './BottomNavigation.css';
 
-export type MainTab = 'HOME' | 'GACHA' | 'BATTLE' | 'RAID';
+export type MainTab = 'HOME' | 'GROWTH' | 'GACHA' | 'BATTLE' | 'RAID';
 
 interface BottomNavigationProps {
   active: MainTab;
@@ -11,6 +11,7 @@ interface BottomNavigationProps {
 
 const NAV_ITEMS = [
   { id: 'HOME', label: 'ホーム', icon: Home },
+  { id: 'GROWTH', label: '強化', icon: Zap },
   { id: 'GACHA', label: 'ガチャ', icon: Sparkles },
   { id: 'BATTLE', label: '戦闘', icon: Swords },
   { id: 'RAID', label: 'レイド', icon: Skull },
