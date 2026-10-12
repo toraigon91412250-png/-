@@ -58,6 +58,7 @@ export const App: React.FC = () => {
   const [talentReturnScreen, setTalentReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
   const [imprintReturnScreen, setImprintReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
   const [recruitmentReturnScreen, setRecruitmentReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
+  const [raidReturnScreen, setRaidReturnScreen] = useState<'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB'>('SELECT');
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: kaiserChallengeProgress.unlockedLevel,
     abilities: [],
@@ -545,7 +546,7 @@ export const App: React.FC = () => {
         />
       ) : screen === 'RAID_PROTOTYPE' ? (
         <RaidGame
-          onBack={() => setScreen('SELECT')}
+          onBack={() => navigateToScreen(raidReturnScreen)}
           onRaidRewardProgressChange={setRaidRewardProgress}
         />
       ) : screen === 'RECRUITMENT' ? (
@@ -597,6 +598,7 @@ export const App: React.FC = () => {
               handleOpenBattleSetup(undefined, screen === 'GROWTH_HUB' ? 'GROWTH_HUB' : 'SELECT');
             } else {
               refreshProgress();
+              setRaidReturnScreen(screen);
               setScreen('RAID_PROTOTYPE');
             }
           }}
