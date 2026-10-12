@@ -7,6 +7,7 @@ import {
   getIrenaSuperFallenShotMultiplier,
 } from '../types/game';
 import { GAME_BALANCE } from '../data/gameBalance';
+import { resolveKaiserHit } from './kaiserChallenge';
 import { getFeatherSplitModeForSkill, resolveFeatherSplitDamage } from './imprintSystem';
 import {
   applyDynamicAbilityModifiers,
@@ -16,6 +17,48 @@ import {
   getJudgmentDefenseIgnore,
   hasAbility,
 } from './abilitySystem';
+
+export interface DamagePreviewResolution {
+  /** Damage the target will actually lose from current HP. */
+  hpDamage: number;
+  /** Amount removed from Kaiser armor durability by the same hit. */
+  armorDamage: number;
+  armorWasActive: boolean;
+  armorWasBroken: boolean;
+  armorWillBreak: boolean;
+  phaseChanged: boolean;
+}
+
+/** Resolve an already-calculated hit through the same mitigation/phase rules as live combat. */
+export function calculateHitDamagePreview(
+  rawDamage: number,
+  target: BattleFighter,
+  level: BattleSetupConfig['kaiserLevel'],
+  turn: number,
+  source = '',
+): DamagePreviewResolution {
+  const safeDamage = Math.max(0, Math.floor(Number.isFinite(rawDamage) ? rawDamage : 0));
+  if (target.character.id !== 'kaiser' || target.isPlayer) {
+    return {
+      hpDamage: Math.min(Math.max(0, target.currentHp), safeDamage),
+      armorDamage: 0,
+      armorWasActive: false,
+      armorWasBroken: false,
+      armorWillBreak: false,
+      phaseChanged: false,
+    };
+  }
+
+  const hit = resolveKaiserHit(target, safeDamage, level, turn, true, source);
+  return {
+    hpDamage: hit.damage,
+    armorDamage: hit.armorWasActive ? Math.min(hit.armorBefore, safeDamage) : 0,
+    armorWasActive: hit.armorWasActive,
+    armorWasBroken: hit.armorWasBroken,
+    armorWillBreak: hit.armorBroke,
+    phaseChanged: hit.phaseChanged,
+  };
+}
 
 export interface DamageContext {
   attacker: BattleFighter;

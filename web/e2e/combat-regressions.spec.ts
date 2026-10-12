@@ -90,6 +90,10 @@ test('Irena talent board opens from home and persists spent talent points', asyn
   await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
 
   const windTalent = page.getByRole('region', { name: '風読み' });
+  const ravenTalent = page.getByRole('region', { name: '黒翼の牙' });
+  const lastWingTalent = page.getByRole('region', { name: '不屈の翼' });
+  await expect(ravenTalent).toContainText('攻撃力 +0%');
+  await expect(lastWingTalent).toContainText('最大HP +0%');
   await expect(windTalent).toContainText('0/3');
   await page.getByRole('button', { name: '風読みを強化' }).click();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
@@ -104,6 +108,19 @@ test('Irena talent board opens from home and persists spent talent points', asyn
   await expect(page.getByRole('heading', { name: '堕天の才能盤' })).toBeVisible();
   await expect(page.getByLabel('未使用才能ポイント 0')).toBeVisible();
   await expect(page.getByRole('region', { name: '風読み' })).toContainText('1/3');
+
+  await page.getByRole('button', { name: '才能ポイントを振り直す' }).click();
+  await expect(page.getByRole('alertdialog', { name: '才能振り直しの確認' })).toBeVisible();
+  await page.getByRole('button', { name: '才能を振り直すことを確定' }).click();
+  await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
+  await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
+  await expect(page.getByRole('status').filter({ hasText: '経験値は維持' })).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '堕天の才能盤を開く' }).click();
+  await expect(page.getByLabel('未使用才能ポイント 1')).toBeVisible();
+  await expect(page.getByRole('region', { name: '風読み' })).toContainText('0/3');
 });
 
 test('Kaiser challenge selector starts at level 10 and hides future levels', async ({ page }) => {
@@ -175,7 +192,10 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
   await expect(armorStatus).toBeVisible();
   await expect(armorStatus).toContainText('鉄壁装甲');
   await expect(armorStatus).toContainText(/\d+ \/ \d+/);
-  expect(pageErrors, 'Kaiser armor should render without uncaught browser errors.').toEqual([]);
+  const attackForecast = page.locator('button:visible').filter({ hasText: /^攻撃/ }).first();
+  await expect(attackForecast).toContainText(/HP\s*\d+〜\d+/);
+  await expect(attackForecast).toContainText('装甲耐久');
+  expect(pageErrors, 'Kaiser armor and its HP/armor damage forecast should render without uncaught browser errors.').toEqual([]);
 });
 
 test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page }) => {
@@ -910,4 +930,53 @@ test('Feather Split keeps its selector compact and independently cools down each
   await expect(page.getByLabel(/交互ボーナス準備中：与ダメージ\+15%/)).toBeVisible();
 
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
+});
+
+test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_irena_skill_progress', JSON.stringify({
+      shards: 0,
+      featherPath: null,
+      ruinPath: null,
+      featherLevel: 1,
+      ruinLevel: 1,
+      superFallenShotUnlocked: true,
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  await page.getByRole('button', { name: '超堕天撃を選択' }).click();
+  const dock = page.locator('.battle-action-dock');
+  const specialAction = dock.locator('button').filter({ hasText: /^超堕天撃/ });
+  await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
+  await expect(specialAction).not.toContainText(/HP\d+ダメ/);
+
+  await specialAction.click();
+  await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toBeVisible();
+
+  // The transient battle log can leave the visible log window before this assertion resolves.
+  // Prove the automatic release through its impact: by turn three, Kaiser has lost over 500 HP.
+  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 30_000 });
+  // HpBar renders the current/max number in its own span, separate from the "HP" label.
+  const kaiserHp = page.getByText(/\b\d+\s*\/\s*5500\s*\(\d+%\)/);
+  await expect(kaiserHp).toBeVisible();
+  await expect.poll(async () => {
+    const hpText = await kaiserHp.textContent();
+    const match = hpText?.match(/(\d+)\s*\/\s*5500/);
+    return match ? Number(match[1]) : 5500;
+  }).toBeLessThan(5000);
+  await expect(specialAction).toContainText('CT:4T');
 });

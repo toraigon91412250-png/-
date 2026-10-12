@@ -377,15 +377,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 
   const isActionEnabled = state.phase === 'SELECT_ACTION' && !state.player.isSuperFallenShotCharging;
 
+  // Keep the latest dispatcher without restarting the charge-release timer on callback identity changes.
+  const onActionRef = React.useRef(onAction);
+  onActionRef.current = onAction;
+
   useEffect(() => {
     if (state.phase !== 'SELECT_ACTION' || !state.player.isSuperFallenShotCharging) return;
 
     const timer = window.setTimeout(() => {
-      onAction('SPECIAL', undefined, 'SUPER_FALLEN_SHOT');
+      onActionRef.current('SPECIAL', undefined, 'SUPER_FALLEN_SHOT');
     }, 480);
 
     return () => window.clearTimeout(timer);
-  }, [state.phase, state.player.isSuperFallenShotCharging, onAction]);
+  }, [state.phase, state.player.isSuperFallenShotCharging, state.turnNumber]);
 
   return (
     <div

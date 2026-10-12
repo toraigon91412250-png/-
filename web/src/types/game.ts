@@ -81,10 +81,18 @@ export interface CharacterDef {
   defense: number;
   speed: number;
   evasionRate: number; // e.g. 0.25 (25%) for Irena, 0.10 (10%) for Kaiser
+  /** Base values kept by the talent system so applying the same talent loadout twice stays idempotent. */
+  talentBaseMaxHp?: number;
+  talentBaseAttack?: number;
+  talentBaseDefense?: number;
+  talentBaseSpeed?: number;
+  talentBaseEvasionRate?: number;
   passiveName: string;
   passiveDescription: string;
   specialSkillName: string;
   specialSkillDamage: number;
+  /** Base skill description and value retained before talent modifiers. */
+  talentBaseSpecialSkillDescription?: string;
   /** Base Feather damage before the talent multiplier, to keep preview and combat math consistent. */
   talentBaseSpecialSkillDamage?: number;
   /** Feather Resonance multiplier for the final direct Feather damage. */
