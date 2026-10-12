@@ -93,7 +93,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     ? {
         eyebrow: '育成ポイントが使えます',
         title: '才能盤を強化する',
-        description: '未使用の才能ポイント ' + availableTalentPoints + 'P。育成を進めて次の挑戦に備えよう。',
+        description: '未使用ポイントを使って育成を進め、次の挑戦に備えよう。',
         buttonLabel: '才能盤を開く',
         onClick: onOpenTalentBoard,
         icon: <Sparkles size={21} />,
@@ -103,7 +103,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
       ? {
           eyebrow: '強化素材を所持',
           title: '技を強化する',
-          description: '技の欠片 ' + skillProgress.shards + '個。羽弾や破壊の権能を強化できます。',
+          description: '羽弾や破壊の権能を強化して、戦力を整えよう。',
           buttonLabel: '技の強化を開く',
           onClick: () => setUpgradeOpen(true),
           icon: <Zap size={21} />,
@@ -113,7 +113,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         ? {
             eyebrow: '召喚チケットを所持',
             title: '新しい権能を召喚する',
-            description: '黒翼召喚チケット ' + recruitmentProgress.tickets + '枚。召喚ハブで所持数を確認できます。',
+            description: '所持チケットを使って、新しい権能を狙えます。',
             buttonLabel: '召喚ハブへ',
             onClick: onOpenGacha,
             icon: <Crown size={21} />,
@@ -123,7 +123,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           ? {
               eyebrow: '刻印チケットを所持',
               title: '新しい刻印を確認する',
-              description: '刻印チケット ' + raidRewardProgress.imprintTickets + '枚。召喚ハブから刻印召喚へ進めます。',
+              description: '召喚ハブから刻印召喚へ進めます。',
               buttonLabel: '召喚ハブへ',
               onClick: onOpenGacha,
               icon: <Gem size={21} />,
@@ -149,7 +149,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="home-dashboard__brand-mark" aria-hidden="true"><Swords size={21} /></span>
             <div className="home-dashboard__brand-copy">
               <h1 className="home-dashboard__brand-title">バトルアリーナデュエル</h1>
-              <p className="home-dashboard__brand-subtitle">DARKWING · BATTLE & GROWTH</p>
+              <p className="home-dashboard__brand-subtitle">育成・編成・挑戦</p>
             </div>
           </div>
           <div className="home-dashboard__challenge-chip" aria-label={'挑戦可能レベル Lv.' + unlockedKaiserLevel}>
@@ -164,7 +164,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <img src={playerChar.selectImageSrc ?? playerChar.imageSrc} alt="" />
           </div>
           <div className="home-dashboard__hero-copy">
-            <p className="home-dashboard__eyebrow"><Crown size={13} aria-hidden="true" /> CURRENT CHALLENGE</p>
+            <p className="home-dashboard__eyebrow"><Crown size={13} aria-hidden="true" /> 現在の挑戦</p>
             <h2 id="home-dashboard-title">カイザー最終試練</h2>
             <p className="home-dashboard__hero-level">
               <span>挑戦可能レベル</span>
@@ -230,7 +230,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section home-dashboard__section--resources" aria-labelledby="home-resource-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">YOUR INVENTORY</p>
+              <p className="home-dashboard__section-kicker">所持リソース</p>
               <h2 id="home-resource-title">所持リソース</h2>
             </div>
             <span className="home-dashboard__section-note">現在の所持数</span>
@@ -258,7 +258,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section" aria-labelledby="home-growth-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">GROWTH & BUILD</p>
+              <p className="home-dashboard__section-kicker">育成・編成</p>
               <h2 id="home-growth-title">育成・編成</h2>
             </div>
             <span className="home-dashboard__section-note">準備してから挑戦</span>
@@ -294,7 +294,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section" aria-labelledby="home-content-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">GAME CONTENTS</p>
+              <p className="home-dashboard__section-kicker">コンテンツ</p>
               <h2 id="home-content-title">召喚・刻印・レイド</h2>
             </div>
             <span className="home-dashboard__section-note">各コンテンツへ直接移動</span>
@@ -329,16 +329,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </section>
 
-        <details className="home-dashboard__core-details">
+        <details className="home-dashboard__core-details" aria-label="レイド限定アイテム">
           <summary>
             <span><Gem size={17} aria-hidden="true" /> 深淵核片・アイテム</span>
-            <span>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} aria-hidden="true" /></span>
+            <span aria-label={"深淵核片の所持数 " + raidRewardProgress.coreFragments}>所持 {raidRewardProgress.coreFragments} 個 <ChevronDown size={15} aria-hidden="true" /></span>
           </summary>
           <div className="home-dashboard__core-details-body">
             <div className="home-dashboard__core-summary">
               <span className="home-dashboard__reward-mark"><Gem size={21} aria-hidden="true" /></span>
               <div>
-                <p className="home-dashboard__section-kicker">RAID EXCLUSIVE ITEM</p>
+                <p className="home-dashboard__section-kicker">レイド限定アイテム</p>
                 <h3>深淵核片</h3>
                 <p>レイド勝利で入手。1個使うとステータス配分上限が永続的に +2P。</p>
               </div>
