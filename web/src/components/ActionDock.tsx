@@ -128,12 +128,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   }, [hasSuperFallenShot, hasFeatherSplitImprint, selectedSpecialSkill, onSelectedSpecialSkillChange]);
 
 
-  // The charge occupies one full turn; release automatically as soon as the next player action window opens.
-  React.useEffect(() => {
-    if (!isEnabled || !isChargingSuperFallenShot) return;
-    onAction('SPECIAL', undefined, 'SUPER_FALLEN_SHOT');
-  }, [isEnabled, isChargingSuperFallenShot, onAction]);
-
   const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
   const featherPathName =
     player.character.featherSkillPath === 'ABYSS'
