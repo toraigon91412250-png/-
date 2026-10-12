@@ -91,7 +91,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
   const maxLevel = levelProgress.level >= IRENA_TALENT_MAX_LEVEL;
 
   return (
-    <div style={{
+    <div className="talent-board-screen" style={{
       width: '100%',
       height: '100%',
       overflowY: 'auto',
