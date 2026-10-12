@@ -190,12 +190,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <button
                 className="home-dashboard__primary-action"
                 type="button"
-                aria-label={'バトル開始、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
+                aria-label={'バトル開始の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
                 onClick={onStartBattle}
               >
                 <Swords size={19} aria-hidden="true" />
                 <span className="home-dashboard__primary-copy">
-                  <strong>バトル開始</strong>
+                  <strong>挑戦の準備</strong>
                   <small>カイザー Lv.{unlockedKaiserLevel} に挑戦</small>
                 </span>
                 <ArrowUpRight size={18} aria-hidden="true" />
@@ -306,7 +306,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <strong>黒翼召喚</strong>
                 <small>権能を獲得・強化する</small>
               </span>
-              <span className="home-dashboard__content-value">{recruitmentProgress.tickets} 枚</span>
               <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
             </button>
             <button className="home-dashboard__content-card home-dashboard__content-card--imprints" type="button" aria-label="刻印を管理" onClick={onOpenImprints}>
@@ -323,7 +322,6 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <strong>深淵レイド</strong>
                 <small>勝利報酬で刻印チケット・核片を獲得</small>
               </span>
-              <span className="home-dashboard__content-value">{raidRewardProgress.coreFragments} 核片</span>
               <ArrowUpRight size={17} className="home-dashboard__content-arrow" aria-hidden="true" />
             </button>
           </div>

@@ -12,7 +12,7 @@
 .gacha-hub__eyebrow { margin: 0; color: #A98AD7; font-size: 9px; line-height: 1.45; font-weight: 1000; letter-spacing: .19em; }
 .gacha-hub h1 { margin: 4px 0 5px; color: #F8F7FC; font-size: clamp(25px,4vw,34px); line-height: 1.15; font-weight: 1000; letter-spacing: -.04em; }
 .gacha-hub__lead { margin: 0; color: #9FA7BA; font-size: 12px; line-height: 1.7; }
-.gacha-hub__inventory { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; margin-top: 20px; }
+.gacha-hub__inventory { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin-top: 20px; }
 .gacha-hub__inventory > div { min-width: 0; display: flex; flex-direction: column; gap: 9px; padding: 13px; border: 1px solid rgba(151,159,188,.16); border-radius: 13px; background: linear-gradient(145deg,rgba(23,27,42,.96),rgba(14,17,29,.96)); }
 .gacha-hub__inventory-label { display: flex; align-items: center; gap: 6px; color: #9FA9BF; font-size: 10px; line-height: 1.4; font-weight: 800; }
 .gacha-hub__inventory-label svg { flex: 0 0 auto; color: #D4B6FF; }
@@ -60,7 +60,7 @@
   .gacha-hub { padding: 15px 11px calc(95px + env(safe-area-inset-bottom,0px)); }
   .gacha-hub__inventory { gap: 6px; margin-top: 16px; }
   .gacha-hub__inventory > div { padding: 10px 8px; gap: 8px; border-radius: 11px; }
-  .gacha-hub__inventory-label { align-items: flex-start; font-size: 8px; }
+  .gacha-hub__inventory-label { align-items: flex-start; font-size: 9px; }
   .gacha-hub__inventory strong { font-size: 18px; }
   .gacha-hub__section { margin-top: 22px; }
   .gacha-hub__summon-grid { grid-template-columns: 1fr; gap: 9px; }
