@@ -963,4 +963,9 @@ test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({
   const specialAction = dock.locator('button').filter({ hasText: /^超堕天撃/ });
   await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
   await expect(specialAction).not.toContainText(/HP\d+ダメ/);
+
+  await specialAction.click();
+  await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toBeVisible();
+  // No further player command is issued: the release should happen automatically on turn two.
+  await expect(page.getByText(/電撃をまとった羽弾を撃ち出す！/)).toBeVisible({ timeout: 30_000 });
 });
