@@ -7,7 +7,6 @@ import {
   Gem,
   Shield,
   Sparkles,
-  Swords,
   Target,
   Ticket,
   Zap,
