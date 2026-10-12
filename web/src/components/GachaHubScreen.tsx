@@ -6,7 +6,6 @@ import {
   Crown,
   Eye,
   Gem,
-  Layers,
   Sparkles,
   Ticket,
 } from 'lucide-react';
