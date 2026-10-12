@@ -9,7 +9,7 @@ async function startFreshBattle(page: Page) {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   // A fresh save must show the documented initial 12 stat points, not zero.
@@ -42,7 +42,7 @@ async function startBattleWithImprints(page: Page, equippedIds: string[]) {
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
@@ -131,7 +131,7 @@ test('Kaiser challenge selector starts at level 10 and hides future levels', asy
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   await expect(page.getByRole('button', { name: /Lv\.10/ })).toBeVisible();
@@ -148,7 +148,7 @@ test('Kaiser challenge selector shows only the current level and one previous le
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   await expect(page.getByRole('button', { name: /Lv\.20/ })).toBeVisible();
@@ -169,7 +169,7 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const levelRules = page.getByRole('status', { name: '挑戦レベルの特殊ルール' });
@@ -224,7 +224,7 @@ test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /Lv\.100/ }).click();
   await page.getByRole('button', { name: '耐久' }).click();
@@ -300,7 +300,7 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   await page.getByLabel('見切りを装備').click();
   await page.getByRole('button', { name: '本編に戻る' }).click();
   await page.getByRole('button', { name: 'ホーム' }).click();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
   await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeVisible();
@@ -413,7 +413,7 @@ test('Yin-Yang Conversion protects the current turn, preserves pressure, and adv
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
   const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
@@ -464,7 +464,7 @@ test('raid-exclusive core fragment can be used in the main game for permanent st
     return { coreFragments: reward.coreFragments, bonusStatPoints: reward.bonusStatPoints };
   })).toEqual({ coreFragments: 0, bonusStatPoints: 2 });
 
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
 
@@ -559,7 +559,7 @@ test('raid victory grants its exclusive item and the item upgrades the main-game
   await expect(page.getByLabel('深淵核片の所持数 1')).toBeVisible();
   await page.getByRole('button', { name: '深淵核片を使用する（+2P・永続）' }).click();
   await expect(page.getByText('深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 14P。')).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText(/残り\s*14P\s*\/\s*14P/)).toBeVisible();
 
@@ -748,7 +748,7 @@ test('leaving during an executing turn cancels the battle and keeps the selectio
 
   // Wait past the normal turn animation window to catch stale asynchronous work.
   await page.waitForTimeout(3_000);
-  await expect(page.getByRole('button', { name: /バトル開始/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /挑戦の準備/ })).toBeVisible();
   await expect(page.getByTitle('戻る')).toHaveCount(0);
 
   expect(pageErrors, 'Cancelling a battle should not raise uncaught JavaScript errors.').toEqual([]);
@@ -853,7 +853,7 @@ test('battle deployment waits for the dedicated 穿羽 cut-in to finish loading'
     await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
     await cutinRequested;
 
-    await page.getByRole('button', { name: /バトル開始/ }).click();
+    await page.getByRole('button', { name: /挑戦の準備/ }).click();
     await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
     await page.getByRole('button', { name: /戦闘開始/ }).click();
 
@@ -949,7 +949,7 @@ test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 

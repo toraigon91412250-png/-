@@ -10,7 +10,7 @@ test('mobile battle keeps primary commands visible while the arena scrolls', asy
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
@@ -67,7 +67,7 @@ test('mobile battle setup keeps the start action anchored and stat controls easy
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const viewport = page.viewportSize();
@@ -114,7 +114,7 @@ test('mobile setup layout fits narrow portrait and short landscape viewports', a
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
 
   const root = page.locator('.battle-setup-screen');
