@@ -190,7 +190,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <button
                 className="home-dashboard__primary-action"
                 type="button"
-                aria-label={'バトル開始の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
+                aria-label={'挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
                 onClick={onStartBattle}
               >
                 <Swords size={19} aria-hidden="true" />
@@ -230,7 +230,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section home-dashboard__section--resources" aria-labelledby="home-resource-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">所持リソース</p>
+              <p className="home-dashboard__section-kicker">素材・チケット</p>
               <h2 id="home-resource-title">所持リソース</h2>
             </div>
             <span className="home-dashboard__section-note">現在の所持数</span>
@@ -258,7 +258,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         <section className="home-dashboard__section" aria-labelledby="home-growth-title">
           <div className="home-dashboard__section-heading">
             <div>
-              <p className="home-dashboard__section-kicker">育成・編成</p>
+              <p className="home-dashboard__section-kicker">強化メニュー</p>
               <h2 id="home-growth-title">育成・編成</h2>
             </div>
             <span className="home-dashboard__section-note">準備してから挑戦</span>
