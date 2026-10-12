@@ -71,7 +71,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
           </div>
 
           <div className="gacha-hub__summon-grid">
-            <button className="gacha-hub__summon-card gacha-hub__summon-card--ability" type="button" onClick={onOpenRecruitment} aria-label="黒翼召喚を開く">
+            <button className="gacha-hub__summon-card gacha-hub__summon-card--ability" type="button" onClick={onOpenRecruitment} aria-label="権能ガチャを開く">
               <span className="gacha-hub__summon-glow" />
               <span className="gacha-hub__summon-top">
                 <span className="gacha-hub__summon-icon"><Crown size={24} /></span>
@@ -86,7 +86,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
               </span>
             </button>
 
-            <button className="gacha-hub__summon-card gacha-hub__summon-card--imprint" type="button" onClick={onOpenImprintGacha} aria-label="刻印召喚を開く">
+            <button className="gacha-hub__summon-card gacha-hub__summon-card--imprint" type="button" onClick={onOpenImprintGacha} aria-label="刻印ガチャを開く">
               <span className="gacha-hub__summon-glow" />
               <span className="gacha-hub__summon-top">
                 <span className="gacha-hub__summon-icon"><Gem size={24} /></span>
@@ -117,7 +117,7 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
               <span>装備中 {equippedImprints}/3</span>
             </div>
           </div>
-          <button type="button" className="gacha-hub__manage-button" onClick={onOpenImprints}>
+          <button type="button" className="gacha-hub__manage-button" aria-label="刻印を管理" onClick={onOpenImprints}>
             管理する <ChevronRight size={16} />
           </button>
         </section>
