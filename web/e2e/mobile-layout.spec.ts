@@ -191,6 +191,14 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   await expect(home.locator('.home-dashboard__growth-grid')).toHaveCount(0);
   await expect(home.locator('.home-dashboard__content-grid')).toHaveCount(0);
 
+  const homeHasHorizontalOverflow = await page.evaluate(() => {
+    const dashboard = document.querySelector('.home-dashboard');
+    return document.documentElement.scrollWidth > window.innerWidth
+      || document.body.scrollWidth > window.innerWidth
+      || Boolean(dashboard && dashboard.scrollWidth > dashboard.clientWidth + 1);
+  });
+  expect(homeHasHorizontalOverflow).toBe(false);
+
   const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
   await navigation.getByRole('button', { name: '強化' }).click();
   const growthHub = page.locator('.growth-hub');
