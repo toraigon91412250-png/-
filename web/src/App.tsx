@@ -20,7 +20,7 @@ import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
-import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
+import { addIrenaBattleExperience, applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, saveIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
 export const App: React.FC = () => {
@@ -47,6 +47,8 @@ export const App: React.FC = () => {
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
 
+  const hasAwardedTalentExperienceRef = React.useRef(false);
+
   const upgradedIrena = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
 
   const {
@@ -63,24 +65,44 @@ export const App: React.FC = () => {
     void preloadBattleImages();
   }, []);
 
-  // Reload stats whenever battle is finished
+  // Reload progression when a battle ends and award Irena EXP exactly once per completed battle.
   useEffect(() => {
-    if (battleState.phase === 'BATTLE_FINISHED') {
-      setOverallStats(loadOverallStats());
-      setSkillProgress(loadSkillProgress());
-      setRecruitmentProgress(loadRecruitmentProgress());
-      setAbilityProgress(loadAbilityProgress());
-      setAvailableStatPoints(loadStatPoints());
-      setIrenaTalentProgress(loadIrenaTalentProgress());
-      const completedLevel = battleState.battleConfig.kaiserLevel;
-      const playerWon = battleState.winnerIsPlayer === true;
-      const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
-      setKaiserChallengeProgress(nextChallengeProgress);
-      setBattleSetup(prev => ({
-        ...prev,
-        kaiserLevel: playerWon ? nextChallengeProgress.unlockedLevel : completedLevel,
-      }));
+    if (battleState.phase !== 'BATTLE_FINISHED') {
+      hasAwardedTalentExperienceRef.current = false;
+      return;
     }
+
+    setOverallStats(loadOverallStats());
+    setSkillProgress(loadSkillProgress());
+    setRecruitmentProgress(loadRecruitmentProgress());
+    setAbilityProgress(loadAbilityProgress());
+    setAvailableStatPoints(loadStatPoints());
+
+    const completedLevel = battleState.battleConfig.kaiserLevel;
+    const playerWon = battleState.winnerIsPlayer === true;
+
+    if (!hasAwardedTalentExperienceRef.current) {
+      hasAwardedTalentExperienceRef.current = true;
+      const savedProgress = loadIrenaTalentProgress();
+      if (battleState.player.character.id === 'irena') {
+        const nextTalentProgress = addIrenaBattleExperience(savedProgress, playerWon);
+        if (saveIrenaTalentProgress(nextTalentProgress)) {
+          setIrenaTalentProgress(nextTalentProgress);
+        } else {
+          setIrenaTalentProgress(savedProgress);
+          setIrenaTalentMessage('才能EXPを保存できませんでした。ブラウザの保存設定を確認してください。');
+        }
+      } else {
+        setIrenaTalentProgress(savedProgress);
+      }
+    }
+
+    const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
+    setKaiserChallengeProgress(nextChallengeProgress);
+    setBattleSetup(prev => ({
+      ...prev,
+      kaiserLevel: playerWon ? nextChallengeProgress.unlockedLevel : completedLevel,
+    }));
   }, [battleState.phase]);
 
   const refreshProgress = () => {
