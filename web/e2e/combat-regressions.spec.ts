@@ -966,6 +966,16 @@ test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({
 
   await specialAction.click();
   await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toBeVisible();
-  // No further player command is issued: the release should happen automatically on turn two.
-  await expect(page.getByText(/電撃をまとった羽弾を撃ち出す！/)).toBeVisible({ timeout: 30_000 });
+
+  // The transient battle log can leave the visible log window before this assertion resolves.
+  // Prove the automatic release through its impact: by turn three, Kaiser has lost over 500 HP.
+  await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 30_000 });
+  const kaiserHp = page.getByText(/HP\s+\d+\s*\/\s*5500\s*\(\d+%\)/);
+  await expect(kaiserHp).toBeVisible();
+  await expect.poll(async () => {
+    const hpText = await kaiserHp.textContent();
+    const match = hpText?.match(/HP\s+(\d+)\s*\/\s*5500/);
+    return match ? Number(match[1]) : 5500;
+  }).toBeLessThan(5000);
+  await expect(specialAction).toContainText('CT:4T');
 });
