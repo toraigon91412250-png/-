@@ -931,3 +931,36 @@ test('Feather Split keeps its selector compact and independently cools down each
 
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });
+
+test('Super Fallen Shot forecast shows zero damage on its charge turn', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_irena_skill_progress', JSON.stringify({
+      shards: 0,
+      featherPath: null,
+      ruinPath: null,
+      featherLevel: 1,
+      ruinLevel: 1,
+      superFallenShotUnlocked: true,
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /バトル開始/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  await page.getByRole('button', { name: '超堕天撃を選択' }).click();
+  const dock = page.locator('.battle-action-dock');
+  const specialAction = dock.locator('button').filter({ hasText: /^超堕天撃/ });
+  await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
+  await expect(specialAction).not.toContainText(/HP\d+ダメ/);
+});
