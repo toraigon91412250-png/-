@@ -28,7 +28,7 @@ import type {
 import { getIrenaWithSkillProgress } from '../data/characters';
 import { IMPRINT_DEFINITIONS, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import { applyIrenaTalentModifiers, getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
-import type { IrenaTalentProgress, IrenaTalentId } from '../utils/irenaTalentSystem';
+import type { IrenaTalentProgress } from '../utils/irenaTalentSystem';
 import SkillUpgradeModal from './SkillUpgradeModal';
 import './HomeDashboard.css';
 
