@@ -186,6 +186,8 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
 
   await expect(page.getByRole('heading', { name: '強化メニューをひとつに集約' })).toBeVisible();
   await expect(page.getByRole('button', { name: '強化を開く' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '黒翼召喚を開く' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '深淵レイドを開く' })).toBeVisible();
   await expect(home.locator('.home-dashboard__growth-grid')).toHaveCount(0);
   await expect(home.locator('.home-dashboard__content-grid')).toHaveCount(0);
 
