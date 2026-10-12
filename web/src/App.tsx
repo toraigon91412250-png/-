@@ -267,6 +267,20 @@ export const App: React.FC = () => {
     setImprintMessage('刻印の解除を保存しました。');
   };
 
+  const handleApplySavedBuild = (config: BattleSetupConfig): { success: boolean; message?: string } => {
+    const nextImprints = replaceEquippedImprints(config.imprints ?? []);
+    if (!nextImprints) {
+      return {
+        success: false,
+        message: '刻印の解放状況が変わったか、保存に失敗したためビルドを読み込めませんでした。',
+      };
+    }
+    setImprintProgress(nextImprints);
+    setBattleSetup({ ...config, imprints: [...nextImprints.equippedIds] });
+    setImprintMessage(null);
+    return { success: true };
+  };
+
   const handleOpenImprintGacha = () => {
     refreshProgress();
     setImprintGachaMessage(null);
