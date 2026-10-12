@@ -13,6 +13,7 @@ import {
   Ticket,
   Trophy,
   Zap,
+  Wrench,
 } from 'lucide-react';
 import type {
   AbilityProgress,
@@ -44,6 +45,7 @@ interface HomeDashboardProps {
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
   irenaTalentProgress: IrenaTalentProgress;
   onOpenTalentBoard: () => void;
+  onOpenDeveloperTools: () => void;
   onOpenGacha: () => void;
   onOpenImprints: () => void;
   onOpenRaid: () => void;
@@ -65,6 +67,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onChooseSkillPath,
   irenaTalentProgress,
   onOpenTalentBoard,
+  onOpenDeveloperTools,
   onOpenGacha,
   onOpenImprints,
   onOpenRaid,
@@ -114,7 +117,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <h2 id="home-dashboard-title">カイザー最終試練</h2>
             <p className="home-dashboard__hero-level">CHALLENGE <strong>Lv.{unlockedKaiserLevel}</strong><span> / 100</span></p>
             <p className="home-dashboard__hero-description">
-              今の挑戦を突破して、次の強敵を解放しよう。ステータス・権能・刻印を整えてから出撃。
+              次の強敵に挑もう。ステータス・権能・刻印を整えてから出撃。
             </p>
             <div className="home-dashboard__hero-progress" aria-label={'最終試練の進行 ' + challengeProgress + 'パーセント'}>
               <span style={{ width: challengeProgress + '%' }} />
@@ -135,14 +138,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
         </section>
 
         <section className="home-dashboard__resources" aria-label="所持リソース">
-          <div className="home-dashboard__resource">
+          <button className="home-dashboard__resource home-dashboard__resource--button" type="button" aria-label="ステータスを配分する" onClick={onStartBattle}>
             <span className="home-dashboard__resource-icon home-dashboard__resource-icon--gold"><Target size={16} /></span>
             <span className="home-dashboard__resource-copy"><small>ステ振りポイント</small><strong>{availableStatPoints.toLocaleString('ja-JP')} <em>P</em></strong></span>
-          </div>
-          <div className="home-dashboard__resource">
+            <ChevronRight size={15} />
+          </button>
+          <button className="home-dashboard__resource home-dashboard__resource--button" type="button" aria-label="技の強化を開く" onClick={() => setUpgradeOpen(true)}>
             <span className="home-dashboard__resource-icon home-dashboard__resource-icon--purple"><Sparkles size={16} /></span>
             <span className="home-dashboard__resource-copy"><small>技の欠片</small><strong>{skillProgress.shards.toLocaleString('ja-JP')}</strong></span>
-          </div>
+            <ChevronRight size={15} />
+          </button>
           <button className="home-dashboard__resource home-dashboard__resource--button" type="button" onClick={onOpenGacha}>
             <span className="home-dashboard__resource-icon home-dashboard__resource-icon--gold"><Ticket size={16} /></span>
             <span className="home-dashboard__resource-copy"><small>召喚チケット</small><strong>{recruitmentProgress.tickets.toLocaleString('ja-JP')}</strong></span>
@@ -252,8 +257,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         <section className="home-dashboard__footer-note">
           <BookOpen size={15} />
-          <span>迷ったら「育成・編成」で準備し、「挑戦の準備をする」からバトルへ。</span>
+          <span>迷ったら「育成・編成」で準備し、「バトル開始」から出撃。</span>
           <span className="home-dashboard__footer-unlocks">{unlockedAbilities}/5 権能解放</span>
+          <button className="home-dashboard__developer-link" type="button" aria-label="開発者ツール" onClick={onOpenDeveloperTools}>
+            <Wrench size={12} /> 開発者ツール
+          </button>
         </section>
       </div>
 
