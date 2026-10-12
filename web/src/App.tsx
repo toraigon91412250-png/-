@@ -16,9 +16,7 @@ import { ImprintScreen } from './components/ImprintScreen';
 import { ImprintGachaScreen } from './components/ImprintGachaScreen';
 import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { GachaHubScreen } from './components/GachaHubScreen';
-import { BottomNavigation } from './components/BottomNavigation';
 import { ScreenTransitionLoader } from './components/ScreenTransitionLoader';
-import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
@@ -483,6 +481,10 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => handleOpenRecruitment('GROWTH_HUB')}
           onOpenImprints={() => handleOpenImprints('GROWTH_HUB')}
           onUseRaidCoreFragment={handleUseRaidCoreFragment}
+          onBackHome={() => {
+            refreshProgress();
+            navigateToScreen('SELECT');
+          }}
         />
       ) : screen === 'IRENA_TALENTS' ? (
         <IrenaTalentBoard
@@ -505,6 +507,10 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenImprintGacha={handleOpenImprintGacha}
           onOpenImprints={() => handleOpenImprints('GACHA_HUB')}
+          onBackHome={() => {
+            refreshProgress();
+            navigateToScreen('SELECT');
+          }}
         />
       ) : screen === 'IMPRINTS' ? (
         <ImprintScreen
@@ -589,28 +595,6 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={handleOpenBattleSetup}
           onReset={handleDeveloperReset}
-        />
-      )}
-      {(screen === 'SELECT' || screen === 'GROWTH_HUB' || screen === 'GACHA_HUB') && (
-        <BottomNavigation
-          active={screen === 'SELECT' ? 'HOME' : screen === 'GROWTH_HUB' ? 'GROWTH' : 'GACHA'}
-          onNavigate={(tab: MainTab) => {
-            if (tab === 'HOME') {
-              navigateToScreen('SELECT');
-            } else if (tab === 'GROWTH') {
-              refreshProgress();
-              navigateToScreen('GROWTH_HUB');
-            } else if (tab === 'GACHA') {
-              refreshProgress();
-              navigateToScreen('GACHA_HUB');
-            } else if (tab === 'BATTLE') {
-              handleOpenBattleSetup(undefined, screen === 'GROWTH_HUB' ? 'GROWTH_HUB' : 'SELECT');
-            } else {
-              refreshProgress();
-              setRaidReturnScreen(screen);
-              setScreen('RAID_PROTOTYPE');
-            }
-          }}
         />
       )}
       {isScreenTransitioning && (
