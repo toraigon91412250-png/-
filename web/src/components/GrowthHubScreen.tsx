@@ -21,6 +21,7 @@ import type {
   FeatherSkillPath,
   RuinSkillPath,
 } from '../types/game';
+import { getIrenaWithSkillProgress } from '../data/characters';
 import { getAvailableIrenaTalentPoints, getIrenaLevelProgress } from '../utils/irenaTalentSystem';
 import type { IrenaTalentProgress } from '../utils/irenaTalentSystem';
 import SkillUpgradeModal from './SkillUpgradeModal';
@@ -63,6 +64,7 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
   onUseRaidCoreFragment,
 }) => {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const playerChar = getIrenaWithSkillProgress(skillProgress);
   const talentLevelProgress = getIrenaLevelProgress(irenaTalentProgress.experience);
   const availableTalentPoints = getAvailableIrenaTalentPoints(irenaTalentProgress);
   const unlockedAbilities = Object.values(abilityProgress.levels).filter(level => level > 0).length;
@@ -76,7 +78,18 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
           <div className="growth-hub__header-copy">
             <p className="growth-hub__eyebrow">CHARACTER DEVELOPMENT</p>
             <h1>強化</h1>
-            <p>育成と編成をここに集約。準備を整えて次の挑戦へ。</p>
+            <p>育成状況を確認し、次の戦いに向けてビルドを整えよう。</p>
+            <div className="growth-hub__header-badges">
+              <span><Target size={14} aria-hidden="true" /> 配分上限 {availableStatPoints.toLocaleString('ja-JP')}P</span>
+              <span><Sparkles size={14} aria-hidden="true" /> 才能 Lv.{talentLevelProgress.level}</span>
+              <span><Crown size={14} aria-hidden="true" /> 権能 {unlockedAbilities}/5</span>
+            </div>
+          </div>
+          <div className="growth-hub__hero-art" aria-hidden="true">
+            <span className="growth-hub__hero-rune" />
+            <span className="growth-hub__hero-glow" />
+            <img src={playerChar.selectImageSrc ?? playerChar.imageSrc} alt="" />
+            <span className="growth-hub__hero-character-label">BATTLE BUILD <strong>01</strong></span>
           </div>
         </header>
 
