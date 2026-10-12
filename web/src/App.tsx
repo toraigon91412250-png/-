@@ -324,7 +324,7 @@ export const App: React.FC = () => {
   const handleStartBattle = (config: BattleSetupConfig) => {
     const battleConfigWithImprints: BattleSetupConfig = {
       ...config,
-      imprints: [...imprintProgress.equippedIds],
+      imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
     };
     setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
