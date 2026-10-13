@@ -209,7 +209,9 @@ export const App: React.FC = () => {
     setAvailableStatPoints(currentStatPoints);
     const requestedPlayerCharacterId = mode === 'STELLA'
       ? STELLA.id
-      : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
+      : mode === 'NORMAL'
+        ? IRENA.id
+        : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
     const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
       abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT');
 
