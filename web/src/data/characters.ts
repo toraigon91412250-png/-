@@ -4,8 +4,8 @@ import irenaSelectImg from '../assets/img_irena_select.jpg';
 import irenaIconImg from '../assets/img_irena_icon.jpg';
 import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 import kaiserImg from '../assets/img_kaiser.jpg';
-import stellaImage from '../assets/IMG_1185.jpeg';
-import stellaCutInImage from '../assets/IMG_1186.jpeg';
+import stellaImage from '../assets/IMG_1185.jpg';
+import stellaCutInImage from '../assets/IMG_1186.jpg';
 
 export const IRENA: CharacterDef = {
   id: 'irena',

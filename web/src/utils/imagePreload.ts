@@ -9,8 +9,8 @@ import victoryImage from '../assets/いれーな勝利演出.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
-import stellaImage from '../assets/IMG_1185.jpeg';
-import stellaCutInImage from '../assets/IMG_1186.jpeg';
+import stellaImage from '../assets/IMG_1185.jpg';
+import stellaCutInImage from '../assets/IMG_1186.jpg';
 
 const RECRUITMENT_IMAGES = [
   'assets/recruitment/1791110297970.jpg',
