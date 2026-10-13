@@ -719,6 +719,35 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
         }
       }
 
+      // Stellar ray: converging star trails followed by a magenta nova ring.
+      else if (effect.effectType === 'SPECIAL_STELLAR') {
+        const alpha = Math.max(0, 1 - t);
+        const beamProgress = Math.min(1, t / 0.58);
+        const beamX = actorCenter.x + (targetCenter.x - actorCenter.x) * beamProgress;
+        const beamY = actorCenter.y + (targetCenter.y - actorCenter.y) * beamProgress;
+        for (let i = -2; i <= 2; i += 1) {
+          ctx.strokeStyle = i === 0
+            ? `rgba(255, 245, 255, ${alpha})`
+            : `rgba(255, 64, 129, ${alpha * 0.65})`;
+          ctx.lineWidth = i === 0 ? 7 : 3;
+          ctx.beginPath();
+          ctx.moveTo(actorCenter.x, actorCenter.y + i * 8);
+          ctx.lineTo(beamX, beamY + i * 12);
+          ctx.stroke();
+        }
+        const radius = Math.max(1, (t < 0.58 ? t / 0.58 : (t - 0.58) / 0.42) * (t < 0.58 ? 34 : 145));
+        ctx.strokeStyle = `rgba(226, 151, 255, ${alpha * 0.9})`;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.arc(targetCenter.x, targetCenter.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = `rgba(255, 61, 129, ${alpha * 0.72})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(targetCenter.x, targetCenter.y, Math.max(1, radius * 0.62), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
       // 6. Kaiser Seismic Smash (重撃)
       else if (effect.effectType === 'SPECIAL_SMASH') {
         const radius = Math.max(1, t * 140);
@@ -859,8 +888,8 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
   const yOffset = -30 - t * 45;
 
   const cutInCharacter = CHARACTERS.find(c => c.name === effect.actorName);
-  const cutInSrc = effect.effectType === 'SPECIAL_FEATHER'
-    ? effect.skillName === '穿羽' && cutInCharacter?.id === 'irena'
+  const cutInSrc = effect.effectType === 'SPECIAL_FEATHER' || effect.effectType === 'SPECIAL_STELLAR'
+    ? effect.effectType === 'SPECIAL_FEATHER' && effect.skillName === '穿羽' && cutInCharacter?.id === 'irena'
       ? irenaPierceCutInImg
       : cutInCharacter?.specialCutInSrc
     : undefined;

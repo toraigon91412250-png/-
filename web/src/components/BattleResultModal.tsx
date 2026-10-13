@@ -26,6 +26,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
   const loser = playerWon ? state.enemy : state.player;
+  const victoryImageSrc = state.player.character.id === 'irena' ? irenaVictoryImage : state.player.character.imageSrc;
 
   // 評価は報酬・勝敗には影響せず、今回の戦闘内容だけを可視化する。
   const playerHpRatio = state.player.character.maxHp > 0
@@ -53,7 +54,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           : 'D';
   const [victoryAssetsReady, setVictoryAssetsReady] = React.useState(!playerWon);
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
-  const skillUpgradeOverlay = upgradeOpen ? (
+  const skillUpgradeOverlay = state.player.character.id === 'irena' && upgradeOpen ? (
     <SkillUpgradeModal
       progress={skillProgress}
       onUpgrade={onUpgradeSkill}
@@ -69,7 +70,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     let revealTimer: ReturnType<typeof setTimeout> | undefined;
     const startedAt = Date.now();
     const minimumDarkScreenMs = 300;
-    const sources = [battleBackground, irenaVictoryImage];
+    const sources = [battleBackground, victoryImageSrc];
 
     const preloadImages = async () => {
       await Promise.all(
@@ -314,8 +315,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               }}
             >
               <img
-                src={irenaVictoryImage}
-                alt="いれーな"
+                src={victoryImageSrc}
+                alt={state.player.character.name}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -345,11 +346,15 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             >
               {state.enemy.character.name} を撃破！
             <div style={{ marginTop: '7px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '999px', background: 'rgba(126, 87, 194, 0.18)', border: '1px solid rgba(206, 147, 216, 0.42)', color: '#E1BEE7', fontSize: '12px', fontWeight: 950 }}>
-              ✦ 黒羽の欠片 +{state.lastBattleReward}
-              {state.lastBattleMasteryReward > 0 && (
-                <span style={{ marginLeft: '2px', color: '#B39DDB', fontSize: '10px' }}>
-                  （戦術達成 +{state.lastBattleMasteryReward}）
-                </span>
+              {state.player.character.id === 'irena' && (
+                <>
+                  ✦ 黒羽の欠片 +{state.lastBattleReward}
+                  {state.lastBattleMasteryReward > 0 && (
+                    <span style={{ marginLeft: '2px', color: '#B39DDB', fontSize: '10px' }}>
+                      （戦術達成 +{state.lastBattleMasteryReward}）
+                    </span>
+                  )}
+                </>
               )}
               {playerWon && (
                 <span style={{ marginLeft: '7px', color: '#FFE082', fontSize: '10px' }}>
@@ -371,6 +376,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               animationDelay: '180ms',
             }}
           >
+            {state.player.character.id === 'irena' && (
+
             <button
               onClick={() => setUpgradeOpen(true)}
               style={{
@@ -388,6 +395,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             >
               ✨ 技を強化する
             </button>
+
+            )}
 
             <button
               onClick={onRematch}
@@ -604,6 +613,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
         </div>
 
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {state.player.character.id === 'irena' && (
+
           <button
             onClick={() => setUpgradeOpen(true)}
             style={{
@@ -625,6 +636,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           >
             ✨ 技を強化する
           </button>
+
+          )}
 
           <button
             onClick={onRematch}

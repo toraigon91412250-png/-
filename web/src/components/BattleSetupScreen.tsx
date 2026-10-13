@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintProgress, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
 import { BuildSavePanel } from './BuildSavePanel';
@@ -65,7 +65,17 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     setStatAllocation(createStatPreset(preset, availableStatPoints));
   };
 
+  const isAbilityAvailableForSelectedCharacter = (id: AbilityId) =>
+    selectedPlayerCharacterId !== 'stella' || id === 'ABYSS' || id === 'JUDGMENT';
+  const availableSelectedAbilities = selectedAbilities.filter(isAbilityAvailableForSelectedCharacter);
+  const STELLA_INCOMPATIBLE_IMPRINTS: readonly ImprintId[] = ['BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'FEATHER_SPLIT'];
+  const getCompatibleImprints = (ids: readonly ImprintId[]) =>
+    selectedPlayerCharacterId === 'stella'
+      ? ids.filter(id => !STELLA_INCOMPATIBLE_IMPRINTS.includes(id))
+      : [...ids];
+
   const toggleAbility = (id: AbilityId) => {
+    if (!isAbilityAvailableForSelectedCharacter(id)) return;
     setSelectedAbilities(current => {
       if (current.includes(id)) return current.filter(value => value !== id);
       if (current.length >= 2) return current;
@@ -89,19 +99,19 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     const config: BattleSetupConfig = {
       kaiserLevel: selectedLevel,
       playerCharacterId: selectedPlayerCharacterId,
-      abilities: validation.snapshot.abilityIds.map(id => ({
+      abilities: validation.snapshot.abilityIds.filter(isAbilityAvailableForSelectedCharacter).map(id => ({
         id,
         level: abilityProgress.levels[id],
       })),
       statAllocation: validation.snapshot.statAllocation,
       statPointTotal: availableStatPoints,
-      imprints: [...validation.snapshot.imprintIds],
+      imprints: getCompatibleImprints(validation.snapshot.imprintIds),
     };
     const result = onApplySavedBuild(config);
     if (!result.success) return result.message ?? 'ビルドを反映できませんでした。';
 
     setStatAllocation({ ...validation.snapshot.statAllocation });
-    setSelectedAbilities([...validation.snapshot.abilityIds]);
+    setSelectedAbilities(validation.snapshot.abilityIds.filter(isAbilityAvailableForSelectedCharacter));
     return null;
   };
 
@@ -109,13 +119,13 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     onStartBattle({
       kaiserLevel: selectedLevel,
       playerCharacterId: selectedPlayerCharacterId,
-      abilities: selectedAbilities.map(id => ({
+      abilities: availableSelectedAbilities.map(id => ({
         id,
         level: abilityProgress.levels[id],
       })),
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
       statPointTotal: availableStatPoints,
-      imprints: [...imprintProgress.equippedIds],
+      imprints: getCompatibleImprints(imprintProgress.equippedIds),
     });
   };
 
@@ -603,12 +613,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
               fontWeight: 900,
               color: selectedAbilities.length === 2 ? '#64FFDA' : '#90A4AE',
             }}>
-              {selectedAbilities.length} / 2
+              {availableSelectedAbilities.length} / 2
             </div>
           </div>
 
           <div style={{ display: 'grid', gap: '9px', marginTop: '12px' }}>
-            {ABILITY_DEFINITIONS.map(ability => {
+            {ABILITY_DEFINITIONS.filter(ability => isAbilityAvailableForSelectedCharacter(ability.id)).map(ability => {
               const level = abilityProgress.levels[ability.id];
               const selected = selectedAbilities.includes(ability.id);
               const locked = level <= 0;
@@ -725,9 +735,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             カイザー Lv.{selectedLevel}
           </div>
           <div style={{ marginTop: '4px', fontSize: '11px', color: '#B0BEC5' }}>
-            {selectedAbilities.length === 0
+            {availableSelectedAbilities.length === 0
               ? '権能なしで開始します。'
-              : selectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
+              : availableSelectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
           </div>
         </div>
 

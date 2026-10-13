@@ -50,6 +50,7 @@ import {
 } from '../utils/imprintSystem';
 import {
   applyDynamicAbilityModifiers,
+  applyPassiveDamageReduction,
   createBattleCharacters,
   getAbilityLevel,
   getJudgmentDamageMultiplier,
@@ -366,6 +367,16 @@ export function useBattleGame(
     source: string,
     isDirectHit = source !== '出血ダメージ',
   ): { damage: number; targetHp: number; phaseChanged: boolean } => {
+    const damageBeforePassive = Math.max(0, Math.floor(damage));
+    damage = applyPassiveDamageReduction(target, damage, isDirectHit);
+    if (damage < damageBeforePassive) {
+      addLog(
+        `✨【${target.character.passiveName}】直接ダメージを${damageBeforePassive - damage}軽減！`,
+        'PASSIVE_TRIGGER',
+        turn,
+      );
+    }
+
     if (!target.isPlayer && target.character.id === 'kaiser') {
       // Use authoritative enemy state; the action-local target may be a dynamic-stat snapshot.
       const outcome = resolveKaiserHit(
@@ -432,6 +443,7 @@ export function useBattleGame(
     );
     const nextConfig: BattleSetupConfig = {
       kaiserLevel: battleConfigOverride?.kaiserLevel ?? stateRef.current.battleConfig.kaiserLevel,
+      playerCharacterId: battleConfigOverride?.playerCharacterId ?? baseP.id,
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
       ),
@@ -597,18 +609,23 @@ export function useBattleGame(
     defenderIsPlayer: boolean,
     turn: number,
   ): { bloodTearBurstDamage: number; appliedAilmentDuration: number | null } => {
-    const ailmentType: StatusAilmentType = attacker.character.id === 'irena' ? 'BLEED' : 'PRESSURE';
-    const bleedDamage = attacker.character.id === 'irena' && (attacker.character.featherSkillLevel || 1) >= 3
+    const ailmentType: StatusAilmentType = attacker.character.id === 'irena'
+      ? 'BLEED'
+      : attacker.character.id === 'stella'
+        ? 'STAR_ECLIPSE'
+        : 'PRESSURE';
+    const ailmentDef = STATUS_AILMENTS[ailmentType];
+    const dotDamage = ailmentType === 'BLEED' && (attacker.character.featherSkillLevel || 1) >= 3
       ? 40
-      : STATUS_AILMENTS.BLEED.dotDamage;
-    const def = ailmentType === 'BLEED'
-      ? { type: 'BLEED' as const, defaultDuration: 3, dotDamage: bleedDamage, description: '各ターン開始時' + bleedDamage + 'ダメージ、速度-20、防御-20' }
-      : { type: 'PRESSURE' as const, defaultDuration: 2, description: '速度-25、攻撃力-25' };
+      : ailmentDef.dotDamage;
+    const statusDescription = ailmentType === 'BLEED' && dotDamage !== ailmentDef.dotDamage
+      ? `各ターン開始時に${dotDamage}ダメージ、速度-20、防御-20`
+      : ailmentDef.description;
     const playerAppliedBleed = attacker.isPlayer && !defenderIsPlayer && ailmentType === 'BLEED';
     const equippedImprints = stateRef.current.battleConfig.imprints ?? [];
 
     if (playerAppliedBleed && equippedImprints.includes('BLOOD_TEAR')) {
-      const burstDamage = getBloodTearBurstDamage(bleedDamage, def.defaultDuration);
+      const burstDamage = getBloodTearBurstDamage(dotDamage, ailmentDef.defaultDuration);
       // Consume any previous Bleed first: Blood Tear must never leave a stale
       // status behind when it converts the newly applied Bleed into burst damage.
       updateState(prev => {
@@ -619,14 +636,14 @@ export function useBattleGame(
           : { ...prev, enemy: { ...prev.enemy, activeAilments: remainingAilments } };
       });
       addLog(
-        `🩸【刻印発動：血裂】出血を付与した瞬間に凝縮！ ${bleedDamage}×${def.defaultDuration}×1.5＝${burstDamage}ダメージ。出血状態は残らない。`,
+        `🩸【刻印発動：血裂】出血を付与した瞬間に凝縮！ ${dotDamage}×${ailmentDef.defaultDuration}×1.5＝${burstDamage}ダメージ。出血状態は残らない。`,
         'PASSIVE_TRIGGER',
         turn,
       );
       return { bloodTearBurstDamage: burstDamage, appliedAilmentDuration: null };
     }
 
-    const duration = def.defaultDuration + (
+    const duration = ailmentDef.defaultDuration + (
       playerAppliedBleed && equippedImprints.includes('BLOOD_MEDIA')
         ? BLOOD_MEDIA_EXTRA_BLEED_TURNS
         : 0
@@ -637,9 +654,7 @@ export function useBattleGame(
       const filtered = target.activeAilments.filter(a => a.type !== ailmentType);
       const updated = [
         ...filtered,
-        ailmentType === 'BLEED'
-          ? { type: ailmentType, remainingTurns: duration, dotDamage: bleedDamage }
-          : { type: ailmentType, remainingTurns: duration },
+        { type: ailmentType, remainingTurns: duration, ...(dotDamage > 0 ? { dotDamage } : {}) },
       ];
       return defenderIsPlayer
         ? { ...prev, player: { ...prev.player, activeAilments: updated } }
@@ -647,8 +662,8 @@ export function useBattleGame(
     });
 
     const defenderName = defenderIsPlayer ? stateRef.current.player.character.name : stateRef.current.enemy.character.name;
-    const displayName = ailmentType === 'BLEED' ? '出血' : '重圧';
-    addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${duration}ターン: ${def.description}）`, 'AILMENT_APPLIED', turn);
+    const displayName = ailmentDef.displayName;
+    addLog(`⚠️【状態異常付与】${defenderName}に「${displayName}」が付与された！（${duration}ターン: ${statusDescription}）`, 'AILMENT_APPLIED', turn);
     return { bloodTearBurstDamage: 0, appliedAilmentDuration: duration };
   };
 
@@ -709,21 +724,23 @@ export function useBattleGame(
       addLog('🩸【堕天・完全解放】いれーなの堕天使の力が完全に解放された！', 'PASSIVE_TRIGGER', turn);
     }
 
-    // 1. Process Start-of-Turn DoT (Bleed: 30 damage)
-    const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
-    if (bleedAilment) {
+    // 1. Process a damaging status at turn start (Bleed or Star Eclipse).
+    const dotAilment = actor.activeAilments.find(ailment => ailment.type === 'BLEED' || ailment.type === 'STAR_ECLIPSE');
+    if (dotAilment) {
+      const ailmentDef = STATUS_AILMENTS[dotAilment.type];
+      const dotDamage = dotAilment.dotDamage ?? ailmentDef.dotDamage;
+      const dotSource = dotAilment.type === 'BLEED' ? '出血ダメージ' : '星蝕ダメージ';
+      const dotMark = dotAilment.type === 'BLEED' ? '🩸' : '🌑';
       soundManager.playHeavyStrike();
-      const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
-      addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
+      addLog(`${dotMark}【${ailmentDef.displayName}ダメージ】${actor.character.name}は${ailmentDef.displayName}により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const bleedOutcome = resolveKaiserDamage(actor, dotDamage, turn, '出血ダメージ', false);
-      const newHp = bleedOutcome.targetHp;
-      // Heal only damage that actually landed. For example, Fallen King's survival
-      // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
-      const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
-      const bloodMediaHealAmount = !isActorPlayer &&
+      const dotOutcome = resolveKaiserDamage(actor, dotDamage, turn, dotSource, false);
+      const newHp = dotOutcome.targetHp;
+      // Blood Media remains specific to damage caused by Bleed, never Star Eclipse.
+      const actualDotDamage = Math.max(0, actor.currentHp - newHp);
+      const bloodMediaHealAmount = dotAilment.type === 'BLEED' && !isActorPlayer &&
         Boolean(stateRef.current.battleConfig.imprints?.includes('BLOOD_MEDIA'))
-        ? Math.min(actualBleedDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
+        ? Math.min(actualDotDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
         : 0;
       if (bloodMediaHealAmount > 0) {
         updateState(prev => ({
@@ -753,10 +770,10 @@ export function useBattleGame(
               isEvade: false,
               isBuff: false,
               isUltimate: false,
-              actorName: '出血',
-              skillName: '出血ダメージ',
-              statusAilmentName: '出血',
-              bannerText: `🩸 出血 -${dotDamage} DMG`,
+              actorName: ailmentDef.displayName,
+              skillName: dotSource,
+              statusAilmentName: ailmentDef.displayName,
+              bannerText: `${dotMark} ${ailmentDef.displayName} -${dotDamage} DMG`,
               effectId: nextVisualEffectId.current++,
             },
           }
@@ -771,10 +788,10 @@ export function useBattleGame(
               isEvade: false,
               isBuff: false,
               isUltimate: false,
-              actorName: '出血',
-              skillName: '出血ダメージ',
-              statusAilmentName: '出血',
-              bannerText: `🩸 出血 -${dotDamage} DMG`,
+              actorName: ailmentDef.displayName,
+              skillName: dotSource,
+              statusAilmentName: ailmentDef.displayName,
+              bannerText: `${dotMark} ${ailmentDef.displayName} -${dotDamage} DMG`,
               effectId: nextVisualEffectId.current++,
             },
           }
@@ -784,7 +801,7 @@ export function useBattleGame(
       updateState(prev => ({ ...prev, visualEffect: null }));
 
       if (newHp <= 0) {
-        addLog(`💀 ${actor.character.name}は出血により力尽きた！`, isActorPlayer ? 'DEFEAT' : 'VICTORY', turn);
+        addLog(`💀 ${actor.character.name}は${ailmentDef.displayName}により力尽きた！`, isActorPlayer ? 'DEFEAT' : 'VICTORY', turn);
         return false;
       }
     }
@@ -797,7 +814,7 @@ export function useBattleGame(
         if (nextTurns > 0) {
           remaining.push({ ...a, remainingTurns: nextTurns });
         } else {
-          const name = a.type === 'BLEED' ? '出血' : '重圧';
+          const name = STATUS_AILMENTS[a.type].displayName;
           addLog(`✨ ${actor.character.name}の「${name}」状態が解除された！`, 'AILMENT_EXPIRED', turn);
         }
       }
@@ -1595,8 +1612,12 @@ export function useBattleGame(
         }
 
         const newTargetHp = hitOutcome.targetHp;
-        const appliedAilmentName = actor.character.id === 'irena' ? '出血' : '重圧';
-        const effType: EffectType = actor.character.id === 'irena' ? 'SPECIAL_FEATHER' : 'SPECIAL_SMASH';
+        const appliedAilmentName = STATUS_AILMENTS[actor.character.id === 'irena' ? 'BLEED' : actor.character.id === 'stella' ? 'STAR_ECLIPSE' : 'PRESSURE'].displayName;
+        const effType: EffectType = actor.character.id === 'irena'
+          ? 'SPECIAL_FEATHER'
+          : actor.character.id === 'stella'
+            ? 'SPECIAL_STELLAR'
+            : 'SPECIAL_SMASH';
 
         updateState(prev => ({
           ...prev,
@@ -1906,8 +1927,9 @@ export function useBattleGame(
   const finalizeBattle = (winnerIsPlayer: boolean) => {
     yinYangDefensePendingRef.current = false;
     const masteryBonus = battleMasteryRewardRef.current;
-    const reward = getBattleReward(winnerIsPlayer, masteryBonus);
-    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus);
+    const playerCharacterId = stateRef.current.player.character.id;
+    const reward = playerCharacterId === 'irena' ? getBattleReward(winnerIsPlayer, masteryBonus) : 0;
+    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus, playerCharacterId);
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);

@@ -130,7 +130,7 @@ const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = 
                 }}
               >
                 <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#FFE082' : '#D5DEEB' }}>
-                  {index === 0 ? '①' : '②'} {playerFirst ? 'いれーな' : 'カイザー'}
+                  {index === 0 ? '①' : '②'} {playerFirst ? state.player.character.name : state.enemy.character.name}
                 </span>
               </div>
             </React.Fragment>
@@ -345,14 +345,14 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
         }
       } else if (e.key === '5') {
         if (isEnabled && state.player.ultimateGauge >= 3) {
-          {
-            if (irenaUltimateUses.allGods === 0) {
-              handleIrenaUltimateAction('ALL_GODS');
-            } else if (irenaUltimateUses.ruin === 0) {
-              handleIrenaUltimateAction('RUIN');
-            } else {
-              onAction('ULTIMATE', 'OMNIPOTENCE');
-            }
+          if (state.player.character.id !== 'irena') {
+            onAction('ULTIMATE');
+          } else if (irenaUltimateUses.allGods === 0) {
+            handleIrenaUltimateAction('ALL_GODS');
+          } else if (irenaUltimateUses.ruin === 0) {
+            handleIrenaUltimateAction('RUIN');
+          } else {
+            onAction('ULTIMATE', 'OMNIPOTENCE');
           }
         }
       } else if (e.key === 'r' || e.key === 'R') {
