@@ -2,6 +2,13 @@ import { AbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, Char
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
 
+export function applyPassiveDamageReduction(target: BattleFighter, incomingDamage: number, isDirectHit = true): number {
+  const safeDamage = Math.max(0, Math.floor(incomingDamage));
+  const multiplier = target.character.damageTakenMultiplier ?? 1;
+  if (!isDirectHit || safeDamage <= 0 || multiplier >= 1) return safeDamage;
+  return Math.max(1, Math.floor(safeDamage * Math.max(0, multiplier)));
+}
+
 export function getAbilityLevel(config: BattleSetupConfig, id: AbilityId): number {
   return Math.min(
     MAX_ABILITY_LEVEL,

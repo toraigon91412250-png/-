@@ -26,6 +26,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
   const playerWon = state.winnerIsPlayer === true;
   const winner = playerWon ? state.player : state.enemy;
   const loser = playerWon ? state.enemy : state.player;
+  const victoryImageSrc = state.player.character.id === 'irena' ? irenaVictoryImage : state.player.character.imageSrc;
 
   // 評価は報酬・勝敗には影響せず、今回の戦闘内容だけを可視化する。
   const playerHpRatio = state.player.character.maxHp > 0
@@ -53,7 +54,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           : 'D';
   const [victoryAssetsReady, setVictoryAssetsReady] = React.useState(!playerWon);
   const [upgradeOpen, setUpgradeOpen] = React.useState(false);
-  const skillUpgradeOverlay = upgradeOpen ? (
+  const skillUpgradeOverlay = state.player.character.id === 'irena' && upgradeOpen ? (
     <SkillUpgradeModal
       progress={skillProgress}
       onUpgrade={onUpgradeSkill}
@@ -69,7 +70,7 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
     let revealTimer: ReturnType<typeof setTimeout> | undefined;
     const startedAt = Date.now();
     const minimumDarkScreenMs = 300;
-    const sources = [battleBackground, irenaVictoryImage];
+    const sources = [battleBackground, victoryImageSrc];
 
     const preloadImages = async () => {
       await Promise.all(
@@ -314,8 +315,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               }}
             >
               <img
-                src={irenaVictoryImage}
-                alt="いれーな"
+                src={victoryImageSrc}
+                alt={state.player.character.name}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -371,6 +372,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
               animationDelay: '180ms',
             }}
           >
+            {state.player.character.id === 'irena' && (
+
             <button
               onClick={() => setUpgradeOpen(true)}
               style={{
@@ -388,6 +391,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             >
               ✨ 技を強化する
             </button>
+
+            )}
 
             <button
               onClick={onRematch}
@@ -604,6 +609,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
         </div>
 
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {state.player.character.id === 'irena' && (
+
           <button
             onClick={() => setUpgradeOpen(true)}
             style={{
@@ -625,6 +632,8 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
           >
             ✨ 技を強化する
           </button>
+
+          )}
 
           <button
             onClick={onRematch}

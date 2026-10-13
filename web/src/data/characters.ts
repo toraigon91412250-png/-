@@ -4,6 +4,7 @@ import irenaSelectImg from '../assets/img_irena_select.jpg';
 import irenaIconImg from '../assets/img_irena_icon.jpg';
 import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 import kaiserImg from '../assets/img_kaiser.jpg';
+import stellaPlaceholder from '../assets/stella_placeholder.svg';
 
 export const IRENA: CharacterDef = {
   id: 'irena',
@@ -81,7 +82,35 @@ export const KAISER: CharacterDef = {
  * Characters selectable by the human player.
  * Add new playable characters here, not to CPU_CHARACTERS.
  */
-export const PLAYER_CHARACTERS: readonly CharacterDef[] = [IRENA];
+// Temporary data for the incoming playable character. Replace provisional values/art when the final assets are ready.
+export const STELLA: CharacterDef = {
+  id: 'stella',
+  name: 'ステラ（仮）',
+  title: '天星の翼',
+  maxHp: 3800,
+  attack: 340,
+  defense: 195,
+  speed: 220,
+  evasionRate: 0.18,
+  damageTakenMultiplier: 0.85,
+  passiveName: '天星の加護',
+  passiveDescription: '星の結界が直接攻撃のダメージを15%軽減する。状態異常によるダメージは軽減しない。',
+  specialSkillName: 'ステラレイ',
+  specialSkillDamage: 360,
+  specialSkillCooldown: 3,
+  specialSkillDescription: '星の魔力を収束した光線で攻撃し、3ターンの「星蝕」を付与（各ターン開始時25ダメージ、速度-20、攻撃力-20）。',
+  ultimateSkillName: 'グランノヴァ',
+  ultimateSkillDamage: 950,
+  ultimateSlogan: '天星の魔法陣から超新星の輝きを解き放つ。',
+  imageSrc: stellaPlaceholder,
+  selectImageSrc: stellaPlaceholder,
+  iconImageSrc: stellaPlaceholder,
+  specialCutInSrc: stellaPlaceholder,
+  primaryColor: '#D84B6B',
+  secondaryColor: '#8E59D9',
+};
+
+export const PLAYER_CHARACTERS: readonly CharacterDef[] = [IRENA, STELLA];
 
 /** CPU-only opponent roster; keep this list explicit so player additions never leak into the CPU. */
 export const CPU_CHARACTERS: CharacterDef[] = [KAISER].map(character => ({
