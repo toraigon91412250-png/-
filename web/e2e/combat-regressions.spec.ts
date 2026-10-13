@@ -29,6 +29,36 @@ async function startFreshBattle(page: Page) {
   return attackButton;
 }
 
+test('preloads shared combat VFX artwork on the initial load without visiting Gacha', async ({ page }) => {
+  const requiredBattleAssets = [
+    'black-cloud.png',
+    'black-feather.png',
+    'irena-summon-1.jpg',
+    'irena-summon-2.jpg',
+    'space-crack.png',
+  ] as const;
+  const assetStatuses = new Map<string, number>();
+
+  page.on('response', response => {
+    const pathname = new URL(response.url()).pathname;
+    const assetName = requiredBattleAssets.find(name =>
+      pathname.endsWith(`/assets/recruitment/${name}`),
+    );
+    if (assetName) assetStatuses.set(assetName, response.status());
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await expect.poll(
+    () => requiredBattleAssets.every(assetName => assetStatuses.has(assetName)),
+    { timeout: 15_000 },
+  ).toBe(true);
+
+  for (const assetName of requiredBattleAssets) {
+    expect(assetStatuses.get(assetName), `${assetName} should load successfully from the shared battle preload.`).toBe(200);
+  }
+});
+
 async function startBattleWithImprints(page: Page, equippedIds: string[]) {
   await page.addInitScript((ids: string[]) => {
     window.localStorage.clear();

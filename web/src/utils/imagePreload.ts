@@ -12,18 +12,26 @@ import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 import stellaImage from '../assets/IMG_1185.jpg';
 import stellaCutInImage from '../assets/IMG_1186.jpg';
 
-const RECRUITMENT_IMAGES = [
-  'assets/recruitment/1791110297970.jpg',
-  'assets/recruitment/1791110298323.jpg',
-  'assets/recruitment/1791110298431.jpg',
-  'assets/recruitment/1791110298566.jpg',
+// Public assets shared by combat VFX and recruitment animations. Keep these in
+// the common battle preload so entering combat never depends on visiting Gacha first.
+const BATTLE_EFFECT_IMAGE_PATHS = [
   'assets/recruitment/black-cloud.png',
   'assets/recruitment/black-feather.png',
   'assets/recruitment/irena-summon-1.jpg',
   'assets/recruitment/irena-summon-2.jpg',
   'assets/recruitment/space-crack.png',
+] as const;
+
+const RECRUITMENT_IMAGES = [
+  'assets/recruitment/1791110297970.jpg',
+  'assets/recruitment/1791110298323.jpg',
+  'assets/recruitment/1791110298431.jpg',
+  'assets/recruitment/1791110298566.jpg',
+  ...BATTLE_EFFECT_IMAGE_PATHS,
   'assets/recruitment/開く直前の門.jpg',
 ] as const;
+
+const publicAssetUrl = (path: string): string => import.meta.env.BASE_URL + path;
 
 // Preload battle, character, outcome, and combat VFX imagery before the field is playable.
 const BATTLE_IMAGES = [
@@ -40,6 +48,7 @@ const BATTLE_IMAGES = [
   raidIrenaCutin,
   stellaImage,
   stellaCutInImage,
+  ...BATTLE_EFFECT_IMAGE_PATHS.map(publicAssetUrl),
 ] as const;
 
 const imagePreloadCache = new Map<string, Promise<void>>();
@@ -82,6 +91,6 @@ export const preloadBattleImages = (): Promise<void[]> => {
 /** Load large summon-only artwork when the player enters the recruitment screen. */
 export const preloadRecruitmentImages = (): Promise<void[]> => {
   if (typeof window === 'undefined') return Promise.resolve([]);
-  const recruitmentImages = RECRUITMENT_IMAGES.map(path => import.meta.env.BASE_URL + path);
+  const recruitmentImages = RECRUITMENT_IMAGES.map(publicAssetUrl);
   return Promise.all(recruitmentImages.map(preloadImage));
 };
