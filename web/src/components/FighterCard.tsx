@@ -1,42 +1,20 @@
 import React, { useState } from 'react';
-import { BattleFighter, BattleSetupConfig, getEffectiveAttack, getEffectiveDefense, getEffectiveSpeed, VisualEffect, STATUS_AILMENTS } from '../types/game';
-import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
+import { BattleFighter, VisualEffect, STATUS_AILMENTS } from '../types/game';
 import { HpBar } from './HpBar';
-import { Zap, Sparkles, Activity, Flame, Hourglass } from 'lucide-react';
+import { Sparkles, Activity, Shield } from 'lucide-react';
 
 interface FighterCardProps {
   fighter: BattleFighter;
-  battleConfig: BattleSetupConfig;
-  turnNumber: number;
   isTargetOfEffect: boolean;
   visualEffect: VisualEffect | null;
 }
 
 export const FighterCard: React.FC<FighterCardProps> = ({
   fighter,
-  battleConfig,
-  turnNumber,
   isTargetOfEffect,
   visualEffect,
 }) => {
-  const displayFighter = applyDynamicAbilityModifiers(fighter, battleConfig, turnNumber);
   const isHit = isTargetOfEffect && visualEffect !== null && visualEffect.damage > 0;
-  const baseAttack = fighter.character.attack;
-  const effectiveAttack = getEffectiveAttack(displayFighter);
-  const baseDefense = fighter.character.defense;
-  const effectiveDefense = getEffectiveDefense(displayFighter);
-  const baseSpeed = fighter.character.speed;
-  const effectiveSpeed = getEffectiveSpeed(displayFighter);
-  const attackDelta = effectiveAttack - baseAttack;
-  const defenseDelta = effectiveDefense - baseDefense;
-  const speedDelta = effectiveSpeed - baseSpeed;
-  const speedAilmentText = fighter.activeAilments
-    .filter(ailment => STATUS_AILMENTS[ailment.type].speedMod !== 0)
-    .map(ailment => {
-      const mod = STATUS_AILMENTS[ailment.type].speedMod;
-      return `${STATUS_AILMENTS[ailment.type].displayName}${mod > 0 ? '+' : ''}${mod}`;
-    })
-    .join(' / ');
 
   const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
 
@@ -68,11 +46,6 @@ export const FighterCard: React.FC<FighterCardProps> = ({
     });
   });
 
-  detailEntries.set('passive', {
-    title: '固有: ' + fighter.character.passiveName,
-    description: fighter.character.passiveDescription,
-  });
-
   const selectedDetail = selectedDetailId ? detailEntries.get(selectedDetailId) ?? null : null;
   const toggleDetail = (detailId: string) => {
     setSelectedDetailId(current => current === detailId ? null : detailId);
@@ -86,11 +59,12 @@ export const FighterCard: React.FC<FighterCardProps> = ({
 
   return (
     <div
+      className="battle-fighter-card"
       style={{
         backgroundColor: '#131724',
         borderRadius: '14px',
         border: borderStyle,
-        padding: '10px',
+        padding: '8px',
         position: 'relative',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
         animation: isHit ? 'cardHitShake 0.3s ease-in-out' : undefined,
@@ -100,9 +74,10 @@ export const FighterCard: React.FC<FighterCardProps> = ({
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* Avatar with Status Overlay */}
         <div
+          className="battle-fighter-avatar"
           style={{
-            width: '68px',
-            height: '68px',
+            width: '60px',
+            height: '60px',
             borderRadius: '12px',
             border: `2px solid ${fighter.character.primaryColor}`,
             overflow: 'hidden',
@@ -197,47 +172,7 @@ export const FighterCard: React.FC<FighterCardProps> = ({
               </span>
             </div>
 
-            {/* Speed & Evade Badges */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-              <div
-                title={speedDelta === 0 ? '基礎速度と同じ' : `速度変化: ${speedAilmentText || '状態変化'}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '3px',
-                  backgroundColor: '#1E2836',
-                  border: `1px solid ${speedDelta < 0 ? '#EF5350' : speedDelta > 0 ? '#4FC3F7' : '#334568'}`,
-                  borderRadius: '6px',
-                  padding: '2px 6px',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: speedDelta < 0 ? '#FF8A80' : '#E0F7FA',
-                }}
-              >
-                <Zap size={12} color="#4FC3F7" />
-                <span>速度 {effectiveSpeed}</span>
-                {speedDelta !== 0 && (
-                  <span style={{ fontSize: '9px', color: speedDelta < 0 ? '#FFABAB' : '#81D4FA' }}>
-                    （{baseSpeed}→{effectiveSpeed}）
-                  </span>
-                )}
-              </div>
 
-              <div
-                title="回避構え時、この確率で攻撃を回避"
-                style={{
-                  backgroundColor: '#103630',
-                  border: '1px solid #00BFA5',
-                  borderRadius: '6px',
-                  padding: '2px 6px',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#64FFDA',
-                }}
-              >
-                回避 {Math.round(fighter.character.evasionRate * 100)}%
-              </div>
-            </div>
           </div>
 
           <div style={{ marginTop: '5px' }}>
@@ -259,7 +194,7 @@ export const FighterCard: React.FC<FighterCardProps> = ({
                 fontWeight: 900,
               }}
             >
-              最終試練・第2フェーズ：攻撃系×1.25／速度強化
+              第2フェーズ
             </div>
           )}
           {fighter.character.id === 'kaiser' && (fighter.kaiserArmorMax ?? 0) > 0 && (
@@ -267,77 +202,41 @@ export const FighterCard: React.FC<FighterCardProps> = ({
               role="status"
               aria-label="カイザー装甲"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
                 marginTop: '5px',
-                padding: '5px 7px',
-                borderRadius: '6px',
+                padding: '4px 8px',
+                borderRadius: '7px',
                 border: '1px solid ' + (
                   (fighter.kaiserArmorCurrent ?? 0) > 0
-                    ? 'rgba(144,202,249,0.65)'
+                    ? 'rgba(144,202,249,0.55)'
                     : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
-                      ? 'rgba(255,112,67,0.75)'
-                      : 'rgba(120,144,156,0.35)'
+                      ? 'rgba(255,112,67,0.55)'
+                      : 'rgba(120,144,156,0.32)'
                 ),
                 backgroundColor: (fighter.kaiserArmorCurrent ?? 0) > 0
-                  ? 'rgba(21,101,192,0.18)'
+                  ? 'rgba(21,101,192,0.14)'
                   : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
-                    ? 'rgba(191,54,12,0.16)'
-                    : 'rgba(120,144,156,0.07)',
-                color: (fighter.kaiserArmorCurrent ?? 0) > 0 ? '#B3E5FC' : '#FFCCBC',
+                    ? 'rgba(191,54,12,0.12)'
+                    : 'rgba(120,144,156,0.06)',
+                color: (fighter.kaiserArmorCurrent ?? 0) > 0 ? '#B3E5FC' : '#FFB4A2',
                 fontSize: '10px',
-                lineHeight: 1.4,
+                lineHeight: 1.25,
                 fontWeight: 850,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '6px' }}>
-                <span>{(fighter.kaiserArmorCurrent ?? 0) > 0 ? '鉄壁装甲' : (fighter.kaiserArmorBrokenTurns ?? 0) > 0 ? '装甲破壊中' : '装甲破壊済み'}</span>
-                <span>
-                  {(fighter.kaiserArmorCurrent ?? 0) > 0
-                    ? `${fighter.kaiserArmorCurrent} / ${fighter.kaiserArmorMax}`
-                    : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
-                      ? `被ダメージ×1.3 · 残り${fighter.kaiserArmorBrokenTurns}ターン`
-                      : '再生成なし'}
-                </span>
-              </div>
-              <div style={{ marginTop: '4px', height: '5px', background: 'rgba(255,255,255,0.10)', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${Math.max(0, Math.min(100, (fighter.kaiserArmorCurrent ?? 0) / Math.max(1, fighter.kaiserArmorMax ?? 1) * 100))}%`,
-                  background: (fighter.kaiserArmorCurrent ?? 0) > 0 ? 'linear-gradient(90deg, #42A5F5, #B3E5FC)' : 'transparent',
-                  transition: 'width 0.2s ease',
-                }} />
-              </div>
-            </div>
-          )}
-          {fighter.activeAilments.length > 0 && (
-            <div
-              aria-label="状態異常反映後の実効ステータス"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '4px 8px',
-                marginTop: '5px',
-                padding: '3px 6px',
-                borderRadius: '6px',
-                backgroundColor: 'rgba(10, 16, 28, 0.78)',
-                border: '1px solid rgba(120, 144, 156, 0.28)',
-                fontSize: '9px',
-                fontWeight: 800,
-                color: '#B0BEC5',
-              }}
-            >
-              <span style={{ color: '#90CAF9', letterSpacing: '0.05em' }}>実効</span>
-              <span style={{ color: attackDelta !== 0 ? (attackDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
-                ATK {effectiveAttack}{attackDelta !== 0 ? ` (${attackDelta > 0 ? '+' : ''}${attackDelta})` : ''}
-              </span>
-              <span style={{ color: defenseDelta !== 0 ? (defenseDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
-                DEF {effectiveDefense}{defenseDelta !== 0 ? ` (${defenseDelta > 0 ? '+' : ''}${defenseDelta})` : ''}
-              </span>
-              <span style={{ color: speedDelta !== 0 ? (speedDelta < 0 ? '#FFABAB' : '#81D4FA') : '#CFD8DC' }}>
-                SPD {effectiveSpeed}{speedDelta !== 0 ? ` (${speedDelta > 0 ? '+' : ''}${speedDelta})` : ''}
+              <Shield size={13} aria-hidden="true" />
+              <span>
+                {(fighter.kaiserArmorCurrent ?? 0) > 0
+                  ? '装甲あり'
+                  : (fighter.kaiserArmorBrokenTurns ?? 0) > 0
+                    ? '装甲破壊中'
+                    : '装甲破壊済み'}
               </span>
             </div>
           )}
+
         </div>
       </div>
 
@@ -445,82 +344,7 @@ export const FighterCard: React.FC<FighterCardProps> = ({
           </div>
         </div>
       )}
-      {/* Bottom info row: Passive + Skill CD + Ultimate Gauge */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '6px',
-          gap: '4px',
-        }}
-      >
-        {/* Passive badge */}
-        <button
-          type="button"
-          onClick={() => toggleDetail('passive')}
-          aria-expanded={selectedDetailId === 'passive'}
-          aria-label={'固有スキル ' + fighter.character.passiveName + ' の詳細を表示'}
-          title="タップで詳細"
-          style={{
-            backgroundColor: selectedDetailId === 'passive' ? '#302240' : '#261D33',
-            border: '1px solid rgba(126, 87, 194, 0.6)',
-            borderRadius: '5px',
-            padding: '2px 6px',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: '#D1C4E9',
-            whiteSpace: 'nowrap',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            minWidth: 0,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          固有: {fighter.character.passiveName}
-        </button>
 
-        {/* Special Cooldown */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '3px',
-            backgroundColor: fighter.specialCooldownRemaining <= 0 ? 'rgba(171, 71, 188, 0.3)' : '#232936',
-            border: `1px solid ${fighter.specialCooldownRemaining <= 0 ? '#AB47BC' : '#475569'}`,
-            borderRadius: '5px',
-            padding: '2px 6px',
-            fontSize: '10px',
-            fontWeight: 700,
-            color: fighter.specialCooldownRemaining <= 0 ? '#EA80FC' : '#CBD5E1',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {fighter.specialCooldownRemaining <= 0 ? <Zap size={11} color="#E040FB" /> : <Hourglass size={11} color="#94A3B8" />}
-          <span>{fighter.specialCooldownRemaining <= 0 ? '技:READY' : `技:CD${fighter.specialCooldownRemaining}T`}</span>
-        </div>
-
-        {/* Ultimate Gauge */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '3px',
-            backgroundColor: fighter.ultimateGauge >= 3 ? 'rgba(255, 111, 0, 0.4)' : '#1E2433',
-            border: `1px solid ${fighter.ultimateGauge >= 3 ? '#FFD54F' : '#475569'}`,
-            borderRadius: '5px',
-            padding: '2px 6px',
-            fontSize: '10px',
-            fontWeight: 800,
-            color: fighter.ultimateGauge >= 3 ? '#FFE082' : '#CBD5E1',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Flame size={12} color={fighter.ultimateGauge >= 3 ? '#FFD54F' : '#94A3B8'} />
-          <span>{fighter.ultimateGauge >= 3 ? '必殺:3/3 MAX!' : `必殺:${fighter.ultimateGauge}/3`}</span>
-        </div>
-      </div>
     </div>
   );
 };
