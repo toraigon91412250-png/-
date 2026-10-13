@@ -90,10 +90,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     const config: BattleSetupConfig = {
       kaiserLevel: selectedLevel,
       playerCharacterId: selectedPlayerCharacterId,
-      abilities: validation.snapshot.abilityIds.map(id => ({
-        id,
-        level: abilityProgress.levels[id],
-      })),
+      abilities: selectedPlayerCharacterId === IRENA.id
+        ? validation.snapshot.abilityIds.map(id => ({
+            id,
+            level: abilityProgress.levels[id],
+          }))
+        : [],
       statAllocation: validation.snapshot.statAllocation,
       statPointTotal: availableStatPoints,
       imprints: [...validation.snapshot.imprintIds],
@@ -110,10 +112,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     onStartBattle({
       kaiserLevel: selectedLevel,
       playerCharacterId: selectedPlayerCharacterId,
-      abilities: selectedAbilities.map(id => ({
-        id,
-        level: abilityProgress.levels[id],
-      })),
+      abilities: selectedPlayerCharacterId === IRENA.id
+        ? selectedAbilities.map(id => ({
+            id,
+            level: abilityProgress.levels[id],
+          }))
+        : [],
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
       statPointTotal: availableStatPoints,
       imprints: [...imprintProgress.equippedIds],
@@ -587,6 +591,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           </div>
         </section>
 
+        {selectedPlayerCharacterId === IRENA.id && (
         <section style={{
           marginTop: '14px',
           padding: '14px',
@@ -712,6 +717,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             権能は戦闘開始時に2つだけ装備されます。効果は現在のLvで適用されます。
           </div>
         </section>
+        )}
 
         <div className="battle-setup-action-footer">
         <div className="battle-setup-challenge-summary" style={{

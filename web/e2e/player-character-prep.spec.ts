@@ -23,6 +23,7 @@ test('the new player-only character can be selected and enters battle with her o
   await stella.click();
   await expect(stella).toHaveAttribute('aria-pressed', 'true');
   await expect(irena).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByText('権能選択', { exact: true })).toHaveCount(0);
 
   await page.getByRole('button', { name: '戦闘開始！' }).click();
   await expect(page.getByText('ステラ（仮）', { exact: true })).toBeVisible();
