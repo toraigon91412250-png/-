@@ -201,6 +201,7 @@ export const App: React.FC = () => {
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     const currentKaiserProgress = loadKaiserChallengeProgress();
+    const currentStellaProgress = loadStellaModeProgress();
     const selectableKaiserLevels = allowAllKaiserLevels
       ? BATTLE_CHALLENGE_LEVELS
       : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
@@ -212,13 +213,18 @@ export const App: React.FC = () => {
       : mode === 'NORMAL'
         ? IRENA.id
         : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
+    const safePlayerCharacterId = mode === 'DEVELOPER'
+      && requestedPlayerCharacterId === STELLA.id
+      && !currentStellaProgress.isUnlocked
+        ? IRENA.id
+        : requestedPlayerCharacterId;
     const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
       abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT');
 
     if (prefill) {
       setBattleSetup({
         ...prefill,
-        playerCharacterId: requestedPlayerCharacterId,
+        playerCharacterId: safePlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prefill.abilities) : prefill.abilities,
         kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
@@ -228,7 +234,7 @@ export const App: React.FC = () => {
       setBattleSetup(prev => ({
         ...prev,
         playerCharacterId: mode === 'DEVELOPER'
-          ? getPlayerCharacterById(prev.playerCharacterId).id
+          ? safePlayerCharacterId
           : requestedPlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prev.abilities) : prev.abilities,
         kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
@@ -386,8 +392,13 @@ export const App: React.FC = () => {
     ?? KAISER;
 
   const handleStartBattle = (config: BattleSetupConfig) => {
+    const safePlayerCharacterId = config.playerCharacterId === STELLA.id
+      && !loadStellaModeProgress().isUnlocked
+        ? IRENA.id
+        : config.playerCharacterId;
     const battleConfigWithImprints: BattleSetupConfig = {
       ...config,
+      playerCharacterId: safePlayerCharacterId,
       imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
     };
     setBattleSetup(battleConfigWithImprints);
@@ -630,12 +641,15 @@ export const App: React.FC = () => {
           playerCharacters={battleSetupMode === 'STELLA'
             ? [STELLA]
             : battleSetupMode === 'DEVELOPER'
-              ? PLAYER_CHARACTERS
+              ? PLAYER_CHARACTERS.filter(character => character.id !== STELLA.id || stellaModeProgress.isUnlocked)
               : [IRENA]}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
             ? STELLA.id
             : getPlayerCharacterById(battleSetup.playerCharacterId).id}
-          onSelectPlayerCharacter={playerCharacterId => setBattleSetup(prev => ({ ...prev, playerCharacterId }))}
+          onSelectPlayerCharacter={playerCharacterId => {
+            if (playerCharacterId === STELLA.id && !loadStellaModeProgress().isUnlocked) return;
+            setBattleSetup(prev => ({ ...prev, playerCharacterId }));
+          }}
           abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
           onApplySavedBuild={handleApplySavedBuild}

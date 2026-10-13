@@ -1020,7 +1020,8 @@ test('Super Fallen Shot shows charge and release cut-ins without blocking combat
   await specialAction.click();
 
   await expect(chargeCutIn).toBeVisible({ timeout: 3_000 });
-  const chargeArtwork = chargeCutIn.locator('img[src*="IMG_1154"]');
+  const chargeArtwork = chargeCutIn.locator('img[src*="IMG_1166"]');
+  await expect(chargeCutIn.locator('img')).toHaveCount(1);
   await expect(chargeArtwork).toHaveCount(1);
   await expect.poll(() => chargeArtwork.evaluate(node => {
     const image = node as HTMLImageElement;
@@ -1029,7 +1030,8 @@ test('Super Fallen Shot shows charge and release cut-ins without blocking combat
   await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toHaveCount(0);
 
   await expect(releaseCutIn).toBeVisible({ timeout: 8_000 });
-  const releaseArtwork = releaseCutIn.locator('img[src*="IMG_1155"]');
+  const releaseArtwork = releaseCutIn.locator('img[src*="IMG_1166"]');
+  await expect(releaseCutIn.locator('img')).toHaveCount(1);
   await expect(releaseArtwork).toHaveCount(1);
   await expect.poll(() => releaseArtwork.evaluate(node => {
     const image = node as HTMLImageElement;
@@ -1071,6 +1073,34 @@ test('developer battle setup can select any Kaiser level without changing normal
   await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Lv\.90/ })).toBeVisible();
 
+  await expect(page.locator('[data-player-character-id="stella"]')).toHaveCount(0);
+
   await page.getByRole('button', { name: '戻る' }).click();
   await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+});
+
+
+test('developer battle setup exposes Stella only after the saved unlock is complete', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+    }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '開発者ツール' }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+
+  const combatTestSection = page.locator('.developer-tools-screen section').first();
+  await combatTestSection.getByRole('button').filter({ hasText: '未選択' }).nth(0).click();
+  await combatTestSection.getByRole('button').filter({ hasText: '未選択' }).nth(0).click();
+  await combatTestSection.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
+
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.locator('[data-player-character-id="stella"]')).toBeVisible();
 });

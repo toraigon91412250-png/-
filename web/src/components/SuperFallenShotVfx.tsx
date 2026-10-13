@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import beamImage from '../assets/IMG_1151.jpeg';
-import backgroundImage from '../assets/IMG_1152.jpeg';
-import controlledShotImage from '../assets/IMG_1154.jpeg';
-import strongShotImage from '../assets/IMG_1155.jpeg';
+import cutInImage from '../assets/IMG_1166.jpeg';
 
 interface SuperFallenShotVfxProps {
   mode: 'CHARGE' | 'SHOT';
@@ -305,12 +302,7 @@ const ProceduralShotFx: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-const preloadSources = [
-  beamImage,
-  backgroundImage,
-  controlledShotImage,
-  strongShotImage,
-];
+const preloadSources = [cutInImage];
 
 if (typeof window !== 'undefined') {
   preloadSources.forEach((src) => {
@@ -393,33 +385,12 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           opacity: 1 - controlledA * 0.58,
         }} />
 
-        {!assetsFailed.background && (
+        {!assetsFailed.cutInImage && (
           <img
-            src={backgroundImage}
+            src={cutInImage}
             alt=""
             draggable={false}
-            onError={() => markFailed('background')}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              ...HERO_FRAME,
-              objectFit: 'cover',
-              objectPosition: 'center',
-              transform: `translate(-50%,-50%) scale(${1.03 + controlledHold * 0.04})`,
-              opacity: controlledA * 0.26,
-              filter: 'brightness(0.45) saturate(0.72) contrast(1.04)',
-              userSelect: 'none',
-            }}
-          />
-        )}
-
-        {!assetsFailed.controlled && (
-          <img
-            src={controlledShotImage}
-            alt=""
-            draggable={false}
-            onError={() => markFailed('controlled')}
+            onError={() => markFailed('cutInImage')}
             style={{
               position: 'absolute',
               left: '50%',
@@ -427,9 +398,9 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               ...HERO_FRAME,
               objectFit: 'contain',
               objectPosition: 'center',
-              transform: `translate(-50%,-50%) scale(${0.98 + controlledHold * 0.06})`,
-              opacity: assetReady ? controlledA * (0.48 + controlledHold * 0.40) : 0,
-              filter: `brightness(${0.72 + controlledHold * 0.34}) contrast(${1.02 + controlledHold * 0.12}) saturate(${0.82 + controlledHold * 0.22})`,
+              transform: `translate(-50%,-50%) scale(${0.92 + controlledHold * 0.06})`,
+              opacity: assetReady ? controlledA * (0.72 + controlledHold * 0.24) : 0,
+              filter: `brightness(${0.82 + controlledHold * 0.24}) contrast(1.04) saturate(1.08)`,
               userSelect: 'none',
               WebkitUserSelect: 'none',
             }}
@@ -534,12 +505,6 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
   const cameraY = Math.cos(t * 490) * cameraPulse * 3.4;
   const cameraScale = 1 + cameraPulse * 0.025 + launchSnap * 0.012;
 
-  const controlledOpacity = controlledA * (1 - strongA * 0.58) * 0.86;
-  const strongOpacity = strongA * 0.98;
-  const beamOpacity = assetReady && !assetsFailed.beam
-    ? (0.10 + beamFast * 0.38) * (1 - finalFade * 0.72)
-    : 0;
-
   return (
     <div
       data-testid="super-fallen-shot-release-cut-in"
@@ -571,12 +536,12 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
           willChange: 'transform',
         }}
       >
-        {!assetsFailed.controlled && (
+        {!assetsFailed.cutInImage && (
           <img
-            src={controlledShotImage}
+            src={cutInImage}
             alt=""
             draggable={false}
-            onError={() => markFailed('controlled')}
+            onError={() => markFailed('cutInImage')}
             style={{
               position: 'absolute',
               left: '50%',
@@ -584,68 +549,14 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
               ...HERO_FRAME,
               objectFit: 'contain',
               objectPosition: 'center',
-              transform: `translate(-50%,-50%) scale(${1.00 + controlledA * 0.035})`,
-              opacity: controlledOpacity,
-              filter: `brightness(${0.70 + controlledA * 0.22}) contrast(${1.04 + controlledA * 0.08}) saturate(${0.88 + controlledA * 0.16})`,
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
-            }}
-          />
-        )}
-
-        {!assetsFailed.strong && (
-          <img
-            src={strongShotImage}
-            alt=""
-            draggable={false}
-            onError={() => markFailed('strong')}
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              ...HERO_FRAME,
-              objectFit: 'contain',
-              objectPosition: 'center',
-              transform: `translate(-50%,-50%) scale(${0.98 + strongA * 0.055 + launchSnap * 0.02})`,
-              opacity: strongOpacity,
-              filter: `brightness(${0.70 + strongA * 0.46 + contactFlash * 0.24}) contrast(${1.04 + strongA * 0.12}) saturate(${0.90 + strongA * 0.30})`,
+              transform: `translate(-50%,-50%) scale(${0.94 + controlledA * 0.04 + strongA * 0.08 + launchSnap * 0.03})`,
+              opacity: assetReady ? (0.30 + controlledA * 0.42 + strongA * 0.28) * (1 - finalFade * 0.50) : 0,
+              filter: `brightness(${0.78 + contactFlash * 0.22}) contrast(${1.04 + strongA * 0.12}) saturate(${0.96 + strongA * 0.16})`,
               userSelect: 'none',
               WebkitUserSelect: 'none',
               willChange: 'transform, opacity, filter',
             }}
           />
-        )}
-
-        {!assetsFailed.beam && (
-          <div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              ...HERO_FRAME,
-              transform: 'translate(-50%,-50%)',
-              clipPath: `inset(0 ${Math.max(0, 100 - beamFast * 100)}% 0 0)`,
-              opacity: beamOpacity,
-              mixBlendMode: 'screen',
-              willChange: 'clip-path, opacity',
-            }}
-          >
-            <img
-              src={beamImage}
-              alt=""
-              draggable={false}
-              onError={() => markFailed('beam')}
-              style={{
-                display: 'block',
-                width: '100%',
-                height: '100%',
-                objectFit: 'fill',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                filter: `brightness(${0.96 + launchSnap * 0.42 + contactFlash * 0.28}) contrast(${1.08 + launchSnap * 0.22}) saturate(${1.02 + launchSnap * 0.28})`,
-              }}
-            />
-          </div>
         )}
 
         <div
