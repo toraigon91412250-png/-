@@ -724,21 +724,23 @@ export function useBattleGame(
       addLog('🩸【堕天・完全解放】いれーなの堕天使の力が完全に解放された！', 'PASSIVE_TRIGGER', turn);
     }
 
-    // 1. Process Start-of-Turn DoT (Bleed: 30 damage)
-    const bleedAilment = actor.activeAilments.find(a => a.type === 'BLEED');
-    if (bleedAilment) {
+    // 1. Process a damaging status at turn start (Bleed or Star Eclipse).
+    const dotAilment = actor.activeAilments.find(ailment => ailment.type === 'BLEED' || ailment.type === 'STAR_ECLIPSE');
+    if (dotAilment) {
+      const ailmentDef = STATUS_AILMENTS[dotAilment.type];
+      const dotDamage = dotAilment.dotDamage ?? ailmentDef.dotDamage;
+      const dotSource = dotAilment.type === 'BLEED' ? '出血ダメージ' : '星蝕ダメージ';
+      const dotMark = dotAilment.type === 'BLEED' ? '🩸' : '🌑';
       soundManager.playHeavyStrike();
-      const dotDamage = bleedAilment.dotDamage ?? STATUS_AILMENTS.BLEED.dotDamage;
-      addLog(`🩸【出血ダメージ】${actor.character.name}は出血により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
+      addLog(`${dotMark}【${ailmentDef.displayName}ダメージ】${actor.character.name}は${ailmentDef.displayName}により ${dotDamage} ダメージを受けた！`, 'AILMENT_DOT', turn);
 
-      const bleedOutcome = resolveKaiserDamage(actor, dotDamage, turn, '出血ダメージ', false);
-      const newHp = bleedOutcome.targetHp;
-      // Heal only damage that actually landed. For example, Fallen King's survival
-      // effect can leave a lethal Bleed tick at 1 HP instead of dealing the full tick.
-      const actualBleedDamage = Math.max(0, actor.currentHp - newHp);
-      const bloodMediaHealAmount = !isActorPlayer &&
+      const dotOutcome = resolveKaiserDamage(actor, dotDamage, turn, dotSource, false);
+      const newHp = dotOutcome.targetHp;
+      // Blood Media remains specific to damage caused by Bleed, never Star Eclipse.
+      const actualDotDamage = Math.max(0, actor.currentHp - newHp);
+      const bloodMediaHealAmount = dotAilment.type === 'BLEED' && !isActorPlayer &&
         Boolean(stateRef.current.battleConfig.imprints?.includes('BLOOD_MEDIA'))
-        ? Math.min(actualBleedDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
+        ? Math.min(actualDotDamage, Math.max(0, stateRef.current.player.character.maxHp - stateRef.current.player.currentHp))
         : 0;
       if (bloodMediaHealAmount > 0) {
         updateState(prev => ({
@@ -768,10 +770,10 @@ export function useBattleGame(
               isEvade: false,
               isBuff: false,
               isUltimate: false,
-              actorName: '出血',
-              skillName: '出血ダメージ',
-              statusAilmentName: '出血',
-              bannerText: `🩸 出血 -${dotDamage} DMG`,
+              actorName: ailmentDef.displayName,
+              skillName: dotSource,
+              statusAilmentName: ailmentDef.displayName,
+              bannerText: `${dotMark} ${ailmentDef.displayName} -${dotDamage} DMG`,
               effectId: nextVisualEffectId.current++,
             },
           }
@@ -786,10 +788,10 @@ export function useBattleGame(
               isEvade: false,
               isBuff: false,
               isUltimate: false,
-              actorName: '出血',
-              skillName: '出血ダメージ',
-              statusAilmentName: '出血',
-              bannerText: `🩸 出血 -${dotDamage} DMG`,
+              actorName: ailmentDef.displayName,
+              skillName: dotSource,
+              statusAilmentName: ailmentDef.displayName,
+              bannerText: `${dotMark} ${ailmentDef.displayName} -${dotDamage} DMG`,
               effectId: nextVisualEffectId.current++,
             },
           }
@@ -799,7 +801,7 @@ export function useBattleGame(
       updateState(prev => ({ ...prev, visualEffect: null }));
 
       if (newHp <= 0) {
-        addLog(`💀 ${actor.character.name}は出血により力尽きた！`, isActorPlayer ? 'DEFEAT' : 'VICTORY', turn);
+        addLog(`💀 ${actor.character.name}は${ailmentDef.displayName}により力尽きた！`, isActorPlayer ? 'DEFEAT' : 'VICTORY', turn);
         return false;
       }
     }
