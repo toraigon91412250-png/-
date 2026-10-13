@@ -453,7 +453,7 @@ export const App: React.FC = () => {
   const handleBackToSelect = () => {
     cancelBattle();
     refreshProgress();
-    setBattleSetupMode('IRENA');
+    setBattleSetupMode('NORMAL');
     setBattleSetup(prev => ({
       ...prev,
       playerCharacterId: IRENA.id,
@@ -517,7 +517,7 @@ export const App: React.FC = () => {
     setAvailableStatPoints(loadStatPoints());
     setStellaModeProgress(loadStellaModeProgress());
     setStellaRewardSaveError(false);
-    setBattleSetupMode('IRENA');
+    setBattleSetupMode('NORMAL');
     setBattleSetup({
       kaiserLevel: 10,
       playerCharacterId: IRENA.id,
@@ -642,7 +642,7 @@ export const App: React.FC = () => {
           onSelectDifficulty={setDifficulty}
           onBack={() => {
             if (battleSetupMode !== 'DEVELOPER') {
-              setBattleSetupMode('IRENA');
+              setBattleSetupMode('NORMAL');
               setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
             }
             navigateToScreen(battleSetupReturnScreen);
