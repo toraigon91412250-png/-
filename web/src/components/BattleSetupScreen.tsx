@@ -24,6 +24,7 @@ interface BattleSetupScreenProps {
   availableStatPoints: number;
   unlockedKaiserLevel: BattleChallengeLevel;
   allowAllKaiserLevels?: boolean;
+  isExKaiserChallenge?: boolean;
 }
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
@@ -41,6 +42,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   availableStatPoints,
   unlockedKaiserLevel,
   allowAllKaiserLevels = false,
+  isExKaiserChallenge = false,
 }) => {
   const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(
     initialConfig?.kaiserLevel ?? 10,
@@ -189,6 +191,16 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           <p style={{ margin: 0, fontSize: '12px', lineHeight: 1.55, color: '#9CA3AF' }}>
             ステータスを自由に配分し、そのビルドに合わせて権能を選択してください。型は固定されません。
           </p>
+          {isExKaiserChallenge && (
+            <div role="status" aria-label="EXカイザー挑戦" style={{
+              marginTop: '10px', padding: '10px 12px', borderRadius: '10px',
+              border: '1px solid rgba(255, 112, 142, .6)',
+              background: 'linear-gradient(110deg, rgba(104, 24, 47, .46), rgba(37, 20, 48, .7))',
+              color: '#FFE0E8', fontSize: '12px', fontWeight: 850, lineHeight: 1.5,
+            }}>
+              EXカイザー挑戦：Lv.100の全戦闘ステータスが2倍。いれーなの編成で挑め。
+            </div>
+          )}
         </div>
 
         <section
