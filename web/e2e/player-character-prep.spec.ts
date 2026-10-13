@@ -4,6 +4,9 @@ test('the new player-only character can be selected and enters battle with her o
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
+    // Keep combat resolution deterministic so the status-application assertion
+    // cannot randomly fail when the CPU evades the special move.
+    Math.random = () => 0.5;
   });
 
   await page.goto('/');
