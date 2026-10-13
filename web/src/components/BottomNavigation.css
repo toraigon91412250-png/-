@@ -1,5 +1,5 @@
 .bottom-navigation {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 450;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 450;
   padding: 6px 10px max(6px,env(safe-area-inset-bottom,0px));
   border-top: 1px solid rgba(149,164,194,.2);
   background: linear-gradient(180deg,rgba(12,19,31,.97),rgba(6,10,18,.995));

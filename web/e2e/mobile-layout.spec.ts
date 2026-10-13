@@ -159,6 +159,15 @@ test('mobile home keeps bottom navigation visible with reserved tab space', asyn
   const navigation = page.locator('.bottom-navigation');
   await expect(home).toBeVisible();
   await expect(navigation).toBeVisible();
+  expect(await navigation.evaluate(element => getComputedStyle(element).position)).toBe('fixed');
+
+  const viewport = page.viewportSize();
+  const navigationBox = await navigation.boundingBox();
+  expect(viewport).not.toBeNull();
+  expect(navigationBox).not.toBeNull();
+  expect(navigationBox!.y + navigationBox!.height).toBeGreaterThanOrEqual(viewport!.height - 1);
+  expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
+
   for (const label of ['ホーム', '強化', 'ガチャ', '戦闘', 'レイド']) {
     await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
   }
