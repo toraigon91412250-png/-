@@ -37,7 +37,9 @@ export function calculateHitDamagePreview(
   turn: number,
   source = '',
 ): DamagePreviewResolution {
-  const safeDamage = Math.max(0, Math.floor(Number.isFinite(rawDamage) ? rawDamage : 0));
+  const finiteDamage = Math.max(0, Math.floor(Number.isFinite(rawDamage) ? rawDamage : 0));
+  const passiveReduction = Math.min(1, Math.max(0, target.character.passiveDamageReduction ?? 0));
+  const safeDamage = Math.max(0, Math.floor(finiteDamage * (1 - passiveReduction)));
   if (target.character.id !== 'kaiser' || target.isPlayer) {
     return {
       hpDamage: Math.min(Math.max(0, target.currentHp), safeDamage),

@@ -859,8 +859,9 @@ const SingleVisualEffectOverlay: React.FC<SingleVisualEffectOverlayProps> = ({ e
   const yOffset = -30 - t * 45;
 
   const cutInCharacter = CHARACTERS.find(c => c.name === effect.actorName);
-  const cutInSrc = effect.effectType === 'SPECIAL_FEATHER'
-    ? effect.skillName === '穿羽' && cutInCharacter?.id === 'irena'
+  const usesSpecialCutIn = effect.effectType === 'SPECIAL_FEATHER' || effect.effectType === 'SPECIAL_SMASH';
+  const cutInSrc = usesSpecialCutIn
+    ? effect.effectType === 'SPECIAL_FEATHER' && effect.skillName === '穿羽' && cutInCharacter?.id === 'irena'
       ? irenaPierceCutInImg
       : cutInCharacter?.specialCutInSrc
     : undefined;

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Stella temporary character placeholder</title>
+  <desc id="desc">A starry night, circular magic sigil, abstract red wings and a white dress silhouette, awaiting final character art.</desc>
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="38%" r="72%">
+      <stop offset="0" stop-color="#29335c"/><stop offset=".5" stop-color="#11192f"/><stop offset="1" stop-color="#070a15"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#c7a7ff" stop-opacity=".3"/><stop offset=".7" stop-color="#a88cff" stop-opacity=".06"/><stop offset="1" stop-color="#a88cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8497"/><stop offset=".52" stop-color="#a8173d"/><stop offset="1" stop-color="#490d2d"/>
+    </linearGradient>
+    <linearGradient id="dress" x1="0" y1="0" x2=".15" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset=".58" stop-color="#e9e5f4"/><stop offset="1" stop-color="#aca9c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#sky)"/>
+  <circle cx="400" cy="410" r="300" fill="url(#halo)"/>
+  <g fill="#f6edff">
+    <circle cx="114" cy="116" r="3"/><circle cx="222" cy="86" r="2"/><circle cx="650" cy="128" r="3"/>
+    <circle cx="718" cy="268" r="2"/><circle cx="96" cy="345" r="2"/><circle cx="690" cy="480" r="2"/>
+    <circle cx="183" cy="533" r="3"/><circle cx="600" cy="610" r="2"/><circle cx="94" cy="680" r="2"/>
+    <circle cx="731" cy="760" r="3"/><circle cx="230" cy="824" r="2"/><circle cx="555" cy="898" r="3"/>
+  </g>
+  <g fill="none" stroke="#b9a3ff" stroke-opacity=".75">
+    <circle cx="400" cy="390" r="230" stroke-width="2"/><circle cx="400" cy="390" r="205" stroke-width="1" stroke-dasharray="7 11"/>
+    <circle cx="400" cy="390" r="168" stroke-width="1.5"/>
+    <path d="M400 130 465 352 650 390 465 428 400 650 335 428 150 390 335 352Z" stroke-width="1.6"/>
+    <path d="M235 260 565 520M565 260 235 520" stroke-width="1" stroke-opacity=".4"/>
+  </g>
+  <g fill="url(#wing)" stroke="#f46e8d" stroke-width="2">
+    <path d="M390 366 C302 258 187 224 71 191 C141 288 134 359 212 426 C160 421 116 443 72 493 C204 494 296 455 390 400Z"/>
+    <path d="M410 366 C498 258 613 224 729 191 C659 288 666 359 588 426 C640 421 684 443 728 493 C596 494 504 455 410 400Z"/>
+    <path d="M378 375 C303 323 222 307 160 295 C218 354 255 388 326 409Z" fill="#e84668" stroke="none"/>
+    <path d="M422 375 C497 323 578 307 640 295 C582 354 545 388 474 409Z" fill="#e84668" stroke="none"/>
+  </g>
+  <g fill="url(#dress)" stroke="#fff7ff" stroke-width="2">
+    <path d="M365 386 C372 358 385 346 400 346 C415 346 428 358 435 386 L466 465 C480 546 500 653 537 774 C485 805 442 820 400 820 C358 820 315 805 263 774 C300 653 320 546 334 465Z"/>
+    <path d="M367 385 333 444 284 507 324 521 374 451Z"/><path d="M433 385 467 444 516 507 476 521 426 451Z"/>
+  </g>
+  <circle cx="400" cy="304" r="47" fill="#f1e8f8" stroke="#ffffff" stroke-width="3"/>
+  <path d="M374 295 Q400 270 426 295 Q421 326 400 337 Q379 326 374 295Z" fill="#d4c7ea"/>
+  <path d="M362 350 Q400 332 438 350 L456 402 Q400 425 344 402Z" fill="#fffaff"/>
+  <g fill="#e5c978">
+    <path d="M400 243 407 261 427 262 411 274 417 294 400 282 383 294 389 274 373 262 393 261Z"/><circle cx="400" cy="390" r="7" fill="#fff7c2"/>
+  </g>
+  <text x="400" y="906" text-anchor="middle" fill="#f4e9ff" font-family="Georgia, serif" font-size="60" letter-spacing="12">STELLA</text>
+  <text x="400" y="948" text-anchor="middle" fill="#c0b3e8" font-family="sans-serif" font-size="18" letter-spacing="5">PLACEHOLDER ART</text>
+</svg>

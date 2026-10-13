@@ -18,7 +18,7 @@ import { applyStatAllocation, createStatPreset, getAbilityBuildMatchPercent, get
 register(
   'data:text/javascript,' + encodeURIComponent(`
     export async function load(url, context, nextLoad) {
-      if (url.endsWith('.jpg')) {
+      if (url.endsWith('.jpg') || url.endsWith('.svg')) {
         return { format: 'module', source: 'export default "";', shortCircuit: true };
       }
       return nextLoad(url, context);
@@ -27,7 +27,7 @@ register(
   { parentURL: import.meta.url }
 );
 
-const { IRENA, KAISER, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
+const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
@@ -190,11 +190,29 @@ const cpuKaiserBase = CPU_CHARACTERS.find(character => character.id === KAISER.i
 assert.ok(cpuKaiserBase, 'The runtime CPU roster must contain Kaiser.');
 assert.strictEqual(cpuKaiserBase.maxHp, KAISER.maxHp * 2);
 assert.strictEqual(cpuKaiserBase.attack, KAISER.attack * 1.5);
-assert.deepStrictEqual(PLAYER_CHARACTERS.map(character => character.id), ['irena']);
+assert.deepStrictEqual(PLAYER_CHARACTERS.map(character => character.id), ['irena', 'stella']);
 assert.deepStrictEqual(CPU_CHARACTERS.map(character => character.id), ['kaiser']);
 assert.strictEqual(getPlayerCharacterById('irena').id, 'irena');
+assert.strictEqual(getPlayerCharacterById('stella').id, 'stella');
 assert.strictEqual(getPlayerCharacterById('unknown-character').id, 'irena');
-console.log('✓ Player and CPU rosters are explicitly isolated; invalid player selections safely fall back.');
+assert.strictEqual(STELLA.passiveName, '天星の加護');
+assert.strictEqual(STELLA.passiveDamageReduction, 0.10);
+assert.strictEqual(STELLA.specialSkillName, 'ステラレイ');
+assert.strictEqual(STELLA.ultimateSkillName, 'グランノヴァ');
+assert.strictEqual(STATUS_AILMENTS.STELLAR_ECLIPSE.displayName, '星蝕');
+assert.strictEqual(STATUS_AILMENTS.STELLAR_ECLIPSE.defaultDuration, 3);
+assert.strictEqual(STATUS_AILMENTS.STELLAR_ECLIPSE.dotDamage, 30);
+const stellaFighter = createInitialFighter(STELLA, true, 10);
+assert.strictEqual(calculateHitDamagePreview(100, stellaFighter, 10, 1).hpDamage, 90,
+  'Stella’s 10% passive mitigation must match incoming damage previews.');
+const eclipsedStella = {
+  ...stellaFighter,
+  activeAilments: [{ type: 'STELLAR_ECLIPSE', remainingTurns: 3 }],
+};
+assert.strictEqual(getEffectiveSpeed(eclipsedStella), STELLA.speed - 20);
+assert.strictEqual(getEffectiveAttack(eclipsedStella), STELLA.attack - 20);
+assert.strictEqual(getEffectiveDefense(eclipsedStella), STELLA.defense - 10);
+console.log('✓ Player/CPU rosters, Stella’s skill names, Star Eclipse penalties, and passive damage reduction are verified.');
 
 const runtimeKaiserLv10 = createKaiserForLevel(cpuKaiserBase, 10);
 const runtimeKaiserLv50 = createKaiserForLevel(cpuKaiserBase, 50);

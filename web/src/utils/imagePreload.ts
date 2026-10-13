@@ -9,6 +9,7 @@ import victoryImage from '../assets/いれーな勝利演出.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
 import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
+import stellaPlaceholderImg from '../assets/stella_placeholder.svg';
 
 const RECRUITMENT_IMAGES = [
   'assets/recruitment/1791110297970.jpg',
@@ -36,6 +37,7 @@ const BATTLE_IMAGES = [
   battleBackground,
   raidBossArt,
   raidIrenaCutin,
+  stellaPlaceholderImg,
 ] as const;
 
 const imagePreloadCache = new Map<string, Promise<void>>();

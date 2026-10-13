@@ -29,7 +29,7 @@ export function getIrenaFeatherMaxChargeCount(skillLevel = 1): number {
   return 7;
 }
 
-export type StatusAilmentType = 'BLEED' | 'PRESSURE';
+export type StatusAilmentType = 'BLEED' | 'PRESSURE' | 'STELLAR_ECLIPSE';
 
 export interface StatusAilmentDef {
   type: StatusAilmentType;
@@ -63,6 +63,16 @@ export const STATUS_AILMENTS: Record<StatusAilmentType, StatusAilmentDef> = {
     attackMod: -25,
     description: '速度-25、攻撃力-25',
   },
+  STELLAR_ECLIPSE: {
+    type: 'STELLAR_ECLIPSE',
+    displayName: '星蝕',
+    defaultDuration: 3,
+    dotDamage: 30,
+    speedMod: -20,
+    defenseMod: -10,
+    attackMod: -20,
+    description: '各ターン開始時に30ダメージ、速度-20、攻撃力-20、防御力-10',
+  },
 };
 
 export interface ActiveStatusAilment {
@@ -89,6 +99,8 @@ export interface CharacterDef {
   talentBaseEvasionRate?: number;
   passiveName: string;
   passiveDescription: string;
+  /** Passive damage reduction, e.g. 0.1 for 10%. */
+  passiveDamageReduction?: number;
   specialSkillName: string;
   specialSkillDamage: number;
   /** Base skill description and value retained before talent modifiers. */

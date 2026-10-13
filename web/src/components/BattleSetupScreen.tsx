@@ -75,6 +75,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   };
 
   const selectableKaiserLevels = getSelectableKaiserLevels(unlockedKaiserLevel);
+  const selectedPlayerCharacter = playerCharacters.find(character => character.id === selectedPlayerCharacterId) ?? IRENA;
 
   const buildValidationContext: BuildValidationContext = {
     availableStatPoints,
@@ -468,10 +469,10 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                 speed: '素早さ',
               };
               const displayBase: Record<StatAllocationKey, number> = {
-                maxHp: IRENA.maxHp,
-                attack: IRENA.attack,
-                defense: IRENA.defense,
-                speed: IRENA.speed,
+                maxHp: selectedPlayerCharacter.maxHp,
+                attack: selectedPlayerCharacter.attack,
+                defense: selectedPlayerCharacter.defense,
+                speed: selectedPlayerCharacter.speed,
               };
               const points = statAllocation[key];
               const bonus = points * STAT_BUILD_POINT_VALUES[key];

@@ -4,6 +4,7 @@ import irenaSelectImg from '../assets/img_irena_select.jpg';
 import irenaIconImg from '../assets/img_irena_icon.jpg';
 import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 import kaiserImg from '../assets/img_kaiser.jpg';
+import stellaPlaceholderImg from '../assets/stella_placeholder.svg';
 
 export const IRENA: CharacterDef = {
   id: 'irena',
@@ -78,10 +79,41 @@ export const KAISER: CharacterDef = {
 };
 
 /**
+ * Provisional playable character. Replace the name, stats, and placeholder artwork
+ * once the final character design and balance values are supplied.
+ */
+export const STELLA: CharacterDef = {
+  id: 'stella',
+  name: 'ステラ（仮）',
+  title: '星詠の翼姫',
+  maxHp: 3700,
+  attack: 330,
+  defense: 210,
+  speed: 220,
+  evasionRate: 0.18,
+  passiveName: '天星の加護',
+  passiveDescription: '星の力が常に身を守り、受けるダメージを10%軽減する。',
+  passiveDamageReduction: 0.10,
+  specialSkillName: 'ステラレイ',
+  specialSkillDamage: 420,
+  specialSkillCooldown: 2,
+  specialSkillDescription: '必殺ゲージ+1。星光の光線で攻撃し、3ターン「星蝕」を付与（毎ターン30ダメージ、速度-20、攻撃力-20、防御力-10）',
+  ultimateSkillName: 'グランノヴァ',
+  ultimateSkillDamage: 1150,
+  ultimateSlogan: '星の魔力を解き放ち、超新星の輝きで敵を包む！',
+  imageSrc: stellaPlaceholderImg,
+  selectImageSrc: stellaPlaceholderImg,
+  iconImageSrc: stellaPlaceholderImg,
+  specialCutInSrc: stellaPlaceholderImg,
+  primaryColor: '#B39DDB',
+  secondaryColor: '#E85D75',
+};
+
+/**
  * Characters selectable by the human player.
  * Add new playable characters here, not to CPU_CHARACTERS.
  */
-export const PLAYER_CHARACTERS: readonly CharacterDef[] = [IRENA];
+export const PLAYER_CHARACTERS: readonly CharacterDef[] = [IRENA, STELLA];
 
 /** CPU-only opponent roster; keep this list explicit so player additions never leak into the CPU. */
 export const CPU_CHARACTERS: CharacterDef[] = [KAISER].map(character => ({

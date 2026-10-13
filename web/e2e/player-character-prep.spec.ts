@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('battle setup exposes a separate player character roster and a disabled upcoming slot', async ({ page }) => {
+test('the new player-only character can be selected and enters battle with her own skills', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -12,14 +12,21 @@ test('battle setup exposes a separate player character roster and a disabled upc
 
   const roster = page.getByRole('region', { name: '操作キャラクター' });
   await expect(roster).toBeVisible();
+
   const irena = roster.getByRole('button', { name: 'いれーな、風詠の射手' });
-  await expect(irena).toBeVisible();
+  const stella = roster.getByRole('button', { name: 'ステラ（仮）、星詠の翼姫' });
   await expect(irena).toHaveAttribute('aria-pressed', 'true');
+  await expect(stella).toBeVisible();
+  await expect(stella).toHaveAttribute('aria-pressed', 'false');
+  await expect(roster.getByRole('button', { name: '新キャラ準備中' })).toHaveCount(0);
 
-  const upcomingCharacter = roster.getByRole('button', { name: '新キャラ準備中' });
-  await expect(upcomingCharacter).toBeVisible();
-  await expect(upcomingCharacter).toBeDisabled();
+  await stella.click();
+  await expect(stella).toHaveAttribute('aria-pressed', 'true');
+  await expect(irena).toHaveAttribute('aria-pressed', 'false');
 
-  await irena.click();
-  await expect(irena).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '戦闘開始！' }).click();
+  await expect(page.getByText('ステラ（仮）', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'グランノヴァを発動' })).toBeVisible();
+  await expect(page.getByText(/ステラレイ/)).toBeVisible();
+  await expect(page.getByText('固有: 天星の加護')).toBeVisible();
 });
