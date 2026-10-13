@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, loadStellaModeProgress, unlockStellaMode } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -19,6 +19,7 @@ import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import { ScreenTransitionLoader } from './components/ScreenTransitionLoader';
 import { StellaWarpTransition } from './components/StellaWarpTransition';
+import { StellaFinalBattleScreen } from './components/StellaFinalBattleScreen';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
@@ -27,8 +28,8 @@ import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRan
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 import type { StellaModeProgress } from './utils/storage';
 
-type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
-type BattleSetupMode = 'NORMAL' | 'STELLA' | 'DEVELOPER';
+type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
+type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER';
 
 // These screens already have their own transition or combat presentation.
 const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
@@ -129,9 +130,11 @@ export const App: React.FC = () => {
     const playerWon = battleState.winnerIsPlayer === true;
 
     if (completedLevel === 100 && playerWon) {
-      const reward = claimKaiser100VictoryReward();
-      if (reward.persisted) {
-        setStellaModeProgress(reward.progress);
+      const result = battleState.battleConfig.kaiserChallengeMode === 'EX'
+        ? recordExKaiserVictory()
+        : claimKaiser100VictoryReward();
+      if (result.persisted) {
+        setStellaModeProgress(result.progress);
         setStellaRewardSaveError(false);
       } else {
         setStellaRewardSaveError(true);
@@ -210,7 +213,7 @@ export const App: React.FC = () => {
     setAvailableStatPoints(currentStatPoints);
     const requestedPlayerCharacterId = mode === 'STELLA'
       ? STELLA.id
-      : mode === 'NORMAL'
+      : mode === 'NORMAL' || mode === 'EX_KAISER'
         ? IRENA.id
         : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
     const safePlayerCharacterId = mode === 'DEVELOPER'
@@ -371,19 +374,26 @@ export const App: React.FC = () => {
   const handleOpenStellaMode = () => {
     const progress = loadStellaModeProgress();
     setStellaModeProgress(progress);
-    if (!progress.isUnlocked) return;
+    if (!progress.isUnlocked || !progress.exKaiserDefeated) return;
+    cancelBattle();
+    setBattleSetupMode('NORMAL');
+    setScreen('STELLA_FINAL');
+  };
 
+  const handleStartExKaiser = () => {
+    const progress = loadStellaModeProgress();
+    if (!progress.kaiser100RewardClaimed || progress.exKaiserDefeated || progress.isUnlocked) return;
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     handleOpenBattleSetup({
       ...battleSetup,
-      playerCharacterId: STELLA.id,
-      abilities: battleSetup.abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT'),
-      kaiserLevel: loadKaiserChallengeProgress().unlockedLevel,
+      playerCharacterId: IRENA.id,
+      kaiserLevel: 100,
+      kaiserChallengeMode: 'EX',
       statAllocation: normalizeStatAllocation(battleSetup.statAllocation, currentStatPoints),
       statPointTotal: currentStatPoints,
       imprints: currentImprintProgress.equippedIds,
-    }, 'SELECT', false, 'STELLA');
+    }, 'SELECT', false, 'EX_KAISER');
   };
 
   const getBattleCpuOpponent = () =>
@@ -399,6 +409,7 @@ export const App: React.FC = () => {
     const battleConfigWithImprints: BattleSetupConfig = {
       ...config,
       playerCharacterId: safePlayerCharacterId,
+      kaiserChallengeMode: battleSetupMode === 'EX_KAISER' ? 'EX' : 'NORMAL',
       imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
     };
     setBattleSetup(battleConfigWithImprints);
@@ -465,11 +476,16 @@ export const App: React.FC = () => {
 
   const handleBackToSelect = () => {
     const wasStellaMode = battleSetupMode === 'STELLA';
+    const wasExKaiser = battleSetupMode === 'EX_KAISER';
     cancelBattle();
     refreshProgress();
     setBattleSetupMode('NORMAL');
-    if (wasStellaMode) {
-      setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+    if (wasStellaMode || wasExKaiser) {
+      setBattleSetup(prev => ({
+        ...prev,
+        playerCharacterId: IRENA.id,
+        kaiserChallengeMode: 'NORMAL',
+      }));
     }
     setScreen('SELECT');
   };
@@ -568,8 +584,10 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
           stellaModeUnlocked={stellaModeProgress.isUnlocked}
+          exKaiserChallengeAvailable={stellaModeProgress.kaiser100RewardClaimed && !stellaModeProgress.exKaiserDefeated && !stellaModeProgress.isUnlocked}
           stellaRewardSaveError={stellaRewardSaveError}
           onRevealStella={handleRevealStella}
+          onStartExKaiser={handleStartExKaiser}
           onOpenStellaMode={handleOpenStellaMode}
         />
       ) : screen === 'GROWTH_HUB' ? (
@@ -656,13 +674,18 @@ export const App: React.FC = () => {
           availableStatPoints={availableStatPoints}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           allowAllKaiserLevels={allowAllKaiserLevelsInBattleSetup}
+          isExKaiserChallenge={battleSetupMode === 'EX_KAISER'}
           initialConfig={battleSetup}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
           onBack={() => {
-            if (battleSetupMode === 'STELLA') {
+            if (battleSetupMode === 'STELLA' || battleSetupMode === 'EX_KAISER') {
               setBattleSetupMode('NORMAL');
-              setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+              setBattleSetup(prev => ({
+                ...prev,
+                playerCharacterId: IRENA.id,
+                kaiserChallengeMode: 'NORMAL',
+              }));
             }
             navigateToScreen(battleSetupReturnScreen);
           }}
@@ -679,6 +702,15 @@ export const App: React.FC = () => {
           onChooseSkillPath={handleChooseSkillPath}
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
+        />
+      ) : screen === 'STELLA_FINAL' ? (
+        <StellaFinalBattleScreen
+          onBackHome={() => {
+            cancelBattle();
+            refreshProgress();
+            setBattleSetupMode('NORMAL');
+            setScreen('SELECT');
+          }}
         />
       ) : screen === 'RAID_PROTOTYPE' ? (
         <RaidGame
