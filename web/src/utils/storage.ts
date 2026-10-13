@@ -718,12 +718,12 @@ export function resetProgressForDeveloper(): {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
-    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
     localStorage.setItem(IRENA_TALENT_PROGRESS_KEY, JSON.stringify({
       ...INITIAL_IRENA_TALENT_PROGRESS,
       ranks: { ...INITIAL_IRENA_TALENT_PROGRESS.ranks },
     }));
     persistRaidRewardProgress({ ...INITIAL_RAID_REWARD_PROGRESS, claimedVictoryRunIds: [] });
+    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
   } catch {
     // ignore
   }
