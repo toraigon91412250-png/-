@@ -44,7 +44,6 @@ interface GrowthHubScreenProps {
   onOpenRecruitment: () => void;
   onOpenImprints: () => void;
   onUseRaidCoreFragment: () => void;
-  onBackHome: () => void;
 }
 
 export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
@@ -63,7 +62,6 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
   onOpenRecruitment,
   onOpenImprints,
   onUseRaidCoreFragment,
-  onBackHome,
 }) => {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const playerChar = getIrenaWithSkillProgress(skillProgress);
@@ -87,7 +85,6 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
               <span><Crown size={14} aria-hidden="true" /> 権能 {unlockedAbilities}/5</span>
             </div>
           </div>
-          <button className="growth-hub__home-link" type="button" onClick={onBackHome} aria-label="ホームへ戻る">← ホーム</button>
           <div className="growth-hub__hero-art" aria-hidden="true">
             <span className="growth-hub__hero-rune" />
             <span className="growth-hub__hero-glow" />

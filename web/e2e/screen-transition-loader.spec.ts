@@ -33,7 +33,7 @@ test('regular screen changes show loading artwork, while developer tools, battle
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1178.jpeg');
   await expect(loader).toBeHidden({ timeout: 5_000 });
 
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await page.locator('.bottom-navigation').getByRole('button', { name: 'ホーム', exact: true }).click();
   await expect(loader).toBeVisible();
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1179.jpeg');
   await expect(loader).toBeHidden({ timeout: 5_000 });

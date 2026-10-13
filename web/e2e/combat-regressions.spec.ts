@@ -53,22 +53,34 @@ async function startBattleWithImprints(page: Page, equippedIds: string[]) {
 }
 
 
-test('home dashboard links open growth, gacha, and battle preparation', async ({ page }) => {
+test('bottom navigation switches between home, growth, gacha, and battle preparation', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
+  const navigation = page.locator('.bottom-navigation');
+  await expect(navigation).toBeVisible();
+  for (const label of ['ホーム', '強化', 'ガチャ', '戦闘', 'レイド']) {
+    await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
+  }
 
+  // Keep the Home dashboard's own shortcuts working alongside the persistent navigation.
   await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await navigation.getByRole('button', { name: 'ホーム', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 
   await page.getByRole('button', { name: '強化を開く' }).click();
   await expect(page.getByRole('heading', { name: '強化', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await navigation.getByRole('button', { name: 'ホーム', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
 
-  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await navigation.getByRole('button', { name: '強化', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '強化', exact: true })).toBeVisible();
+  await navigation.getByRole('button', { name: 'ホーム', exact: true }).click();
+  await navigation.getByRole('button', { name: 'ガチャ', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
+  await navigation.getByRole('button', { name: 'ホーム', exact: true }).click();
+
+  await navigation.getByRole('button', { name: '戦闘', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByRole('button', { name: '戻る' })).toBeVisible();
 });
@@ -305,7 +317,7 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
 
   await page.getByLabel('見切りを装備').click();
   await page.getByRole('button', { name: '本編に戻る' }).click();
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await page.locator('.bottom-navigation').getByRole('button', { name: 'ホーム', exact: true }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
