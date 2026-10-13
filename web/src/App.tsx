@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { AbilityId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
-import { IRENA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
+import { IRENA, STELLA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
 import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, loadStellaModeProgress, unlockStellaMode } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -18,14 +18,17 @@ import { DeveloperToolsScreen } from './components/DeveloperToolsScreen';
 import { GachaHubScreen } from './components/GachaHubScreen';
 import { BottomNavigation } from './components/BottomNavigation';
 import { ScreenTransitionLoader } from './components/ScreenTransitionLoader';
+import { StellaWarpTransition } from './components/StellaWarpTransition';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
 import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
+import type { StellaModeProgress } from './utils/storage';
 
 type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
+type BattleSetupMode = 'NORMAL' | 'STELLA' | 'DEVELOPER';
 
 // These screens already have their own transition or combat presentation.
 const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
@@ -68,6 +71,10 @@ export const App: React.FC = () => {
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
   const [allowAllKaiserLevelsInBattleSetup, setAllowAllKaiserLevelsInBattleSetup] = useState(false);
+  const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
+  const [isStellaWarping, setIsStellaWarping] = useState(false);
+  const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
+  const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
 
   const handleScreenTransitionComplete = React.useCallback(() => {
     setIsScreenTransitioning(false);
@@ -118,6 +125,19 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (battleState.phase !== 'BATTLE_FINISHED') return;
 
+    const completedLevel = battleState.battleConfig.kaiserLevel;
+    const playerWon = battleState.winnerIsPlayer === true;
+
+    if (completedLevel === 100 && playerWon) {
+      const reward = claimKaiser100VictoryReward();
+      if (reward.persisted) {
+        setStellaModeProgress(reward.progress);
+        setStellaRewardSaveError(false);
+      } else {
+        setStellaRewardSaveError(true);
+      }
+    }
+
     setOverallStats(loadOverallStats());
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
@@ -125,8 +145,6 @@ export const App: React.FC = () => {
     setAvailableStatPoints(loadStatPoints());
     setIrenaTalentProgress(loadIrenaTalentProgress());
 
-    const completedLevel = battleState.battleConfig.kaiserLevel;
-    const playerWon = battleState.winnerIsPlayer === true;
     const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
     setKaiserChallengeProgress(nextChallengeProgress);
     setBattleSetup(prev => ({
@@ -137,6 +155,7 @@ export const App: React.FC = () => {
 
   const refreshProgress = () => {
     setRaidRewardProgress(loadRaidRewardProgress());
+    setStellaModeProgress(loadStellaModeProgress());
     setKaiserChallengeProgress(loadKaiserChallengeProgress());
     setIrenaTalentProgress(loadIrenaTalentProgress());
     const currentImprintProgress = loadImprintProgress();
@@ -173,9 +192,11 @@ export const App: React.FC = () => {
     prefill?: BattleSetupConfig,
     returnTo: 'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS' = 'SELECT',
     allowAllKaiserLevels = false,
+    mode: BattleSetupMode = returnTo === 'DEV_TOOLS' ? 'DEVELOPER' : 'NORMAL',
   ) => {
     setBattleSetupReturnScreen(returnTo);
     setAllowAllKaiserLevelsInBattleSetup(allowAllKaiserLevels);
+    setBattleSetupMode(mode);
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
@@ -186,10 +207,17 @@ export const App: React.FC = () => {
     setKaiserChallengeProgress(currentKaiserProgress);
     setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
+    const requestedPlayerCharacterId = mode === 'STELLA'
+      ? STELLA.id
+      : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
+    const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
+      abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT');
+
     if (prefill) {
       setBattleSetup({
         ...prefill,
-        playerCharacterId: getPlayerCharacterById(prefill.playerCharacterId ?? battleSetup.playerCharacterId).id,
+        playerCharacterId: requestedPlayerCharacterId,
+        abilities: mode === 'STELLA' ? keepStellaAbilities(prefill.abilities) : prefill.abilities,
         kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
@@ -197,7 +225,10 @@ export const App: React.FC = () => {
     } else {
       setBattleSetup(prev => ({
         ...prev,
-        playerCharacterId: getPlayerCharacterById(prev.playerCharacterId).id,
+        playerCharacterId: mode === 'DEVELOPER'
+          ? getPlayerCharacterById(prev.playerCharacterId).id
+          : requestedPlayerCharacterId,
+        abilities: mode === 'STELLA' ? keepStellaAbilities(prev.abilities) : prev.abilities,
         kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
@@ -313,6 +344,40 @@ export const App: React.FC = () => {
     setScreen('DEV_TOOLS');
   };
 
+  const handleRevealStella = () => {
+    const progress = loadStellaModeProgress();
+    setStellaModeProgress(progress);
+    if (progress.revealAvailable && !progress.isUnlocked) setIsStellaWarping(true);
+  };
+
+  const handleCompleteStellaReveal = (): boolean => {
+    const result = unlockStellaMode();
+    if (!result.persisted) return false;
+    setStellaModeProgress(result.progress);
+    setStellaRewardSaveError(false);
+    setIsStellaWarping(false);
+    setBattleSetupMode('NORMAL');
+    return true;
+  };
+
+  const handleOpenStellaMode = () => {
+    const progress = loadStellaModeProgress();
+    setStellaModeProgress(progress);
+    if (!progress.isUnlocked) return;
+
+    const currentStatPoints = loadStatPoints();
+    const currentImprintProgress = loadImprintProgress();
+    handleOpenBattleSetup({
+      ...battleSetup,
+      playerCharacterId: STELLA.id,
+      abilities: battleSetup.abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT'),
+      kaiserLevel: loadKaiserChallengeProgress().unlockedLevel,
+      statAllocation: normalizeStatAllocation(battleSetup.statAllocation, currentStatPoints),
+      statPointTotal: currentStatPoints,
+      imprints: currentImprintProgress.equippedIds,
+    }, 'SELECT', false, 'STELLA');
+  };
+
   const getBattleCpuOpponent = () =>
     CPU_CHARACTERS.find(character => character.id === KAISER.id)
     ?? CPU_CHARACTERS[0]
@@ -386,8 +451,13 @@ export const App: React.FC = () => {
   };
 
   const handleBackToSelect = () => {
+    const wasStellaMode = battleSetupMode === 'STELLA';
     cancelBattle();
     refreshProgress();
+    setBattleSetupMode('NORMAL');
+    if (wasStellaMode) {
+      setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+    }
     setScreen('SELECT');
   };
 
@@ -444,6 +514,9 @@ export const App: React.FC = () => {
     setRaidRewardProgress(loadRaidRewardProgress());
     setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
+    setStellaModeProgress(loadStellaModeProgress());
+    setStellaRewardSaveError(false);
+    setBattleSetupMode('NORMAL');
     setBattleSetup({
       kaiserLevel: 10,
       playerCharacterId: getPlayerCharacterById(battleSetup.playerCharacterId).id,
@@ -459,7 +532,7 @@ export const App: React.FC = () => {
       {screen === 'SELECT' ? (
         <HomeDashboard
           overallStats={overallStats}
-          onStartBattle={() => handleOpenBattleSetup()}
+          onStartBattle={() => handleOpenBattleSetup(undefined, 'SELECT', false, 'NORMAL')}
           onOpenGrowth={() => {
             refreshProgress();
             navigateToScreen('GROWTH_HUB');
@@ -480,6 +553,11 @@ export const App: React.FC = () => {
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           availableStatPoints={availableStatPoints}
           abilityProgress={abilityProgress}
+          stellaUnlockAvailable={stellaModeProgress.revealAvailable}
+          stellaModeUnlocked={stellaModeProgress.isUnlocked}
+          stellaRewardSaveError={stellaRewardSaveError}
+          onRevealStella={handleRevealStella}
+          onOpenStellaMode={handleOpenStellaMode}
         />
       ) : screen === 'GROWTH_HUB' ? (
         <GrowthHubScreen
@@ -547,8 +625,10 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
-          playerCharacters={PLAYER_CHARACTERS}
-          selectedPlayerCharacterId={getPlayerCharacterById(battleSetup.playerCharacterId).id}
+          playerCharacters={battleSetupMode === 'STELLA' ? [STELLA] : PLAYER_CHARACTERS}
+          selectedPlayerCharacterId={battleSetupMode === 'STELLA'
+            ? STELLA.id
+            : getPlayerCharacterById(battleSetup.playerCharacterId).id}
           onSelectPlayerCharacter={playerCharacterId => setBattleSetup(prev => ({ ...prev, playerCharacterId }))}
           abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
@@ -559,7 +639,13 @@ export const App: React.FC = () => {
           initialConfig={battleSetup}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
-          onBack={() => navigateToScreen(battleSetupReturnScreen)}
+          onBack={() => {
+            if (battleSetupMode === 'STELLA') {
+              setBattleSetupMode('NORMAL');
+              setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+            }
+            navigateToScreen(battleSetupReturnScreen);
+          }}
           onStartBattle={handleStartBattle}
         />
       ) : screen === 'BATTLE' ? (
@@ -608,7 +694,7 @@ export const App: React.FC = () => {
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
-          onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true)}
+          onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
           onReset={handleDeveloperReset}
         />
       )}
@@ -642,6 +728,7 @@ export const App: React.FC = () => {
           onComplete={handleScreenTransitionComplete}
         />
       )}
+      {isStellaWarping && <StellaWarpTransition onComplete={handleCompleteStellaReveal} />}
     </div>
   );
 };

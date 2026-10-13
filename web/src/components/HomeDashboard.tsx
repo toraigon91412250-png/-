@@ -11,6 +11,7 @@ import {
   Ticket,
   Trophy,
   Zap,
+  Sparkles,
   Wrench,
 } from 'lucide-react';
 import type {
@@ -37,6 +38,11 @@ interface HomeDashboardProps {
   recruitmentProgress: RecruitmentProgress;
   abilityProgress: AbilityProgress;
   onOpenDeveloperTools: () => void;
+  stellaUnlockAvailable: boolean;
+  stellaModeUnlocked: boolean;
+  stellaRewardSaveError: boolean;
+  onRevealStella: () => void;
+  onOpenStellaMode: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -52,6 +58,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   recruitmentProgress,
   abilityProgress,
   onOpenDeveloperTools,
+  stellaUnlockAvailable,
+  stellaModeUnlocked,
+  stellaRewardSaveError,
+  onRevealStella,
+  onOpenStellaMode,
 }) => {
   const playerChar = getIrenaWithSkillProgress(skillProgress);
   const winRate = overallStats.totalBattles > 0
@@ -101,24 +112,38 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <span style={{ width: challengeProgress + '%' }} />
             </div>
             <p className="home-dashboard__hero-description">
-              {unlockedKaiserLevel >= 100
-                ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
-                : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
+              {stellaUnlockAvailable
+                ? '最終試練の先に、まだ知られていない領域が現れた。'
+                : unlockedKaiserLevel >= 100
+                  ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
+                  : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
             </p>
             <div className="home-dashboard__hero-actions">
               <button
-                className="home-dashboard__primary-action"
+                className={'home-dashboard__primary-action' + (stellaUnlockAvailable ? ' home-dashboard__primary-action--mystery' : '')}
                 type="button"
-                aria-label={'挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
-                onClick={onStartBattle}
+                aria-label={stellaUnlockAvailable ? '？？？？？、隠された領域へ進む' : '挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
+                onClick={stellaUnlockAvailable ? onRevealStella : onStartBattle}
               >
-                <Swords size={19} aria-hidden="true" />
+                {stellaUnlockAvailable
+                  ? <Sparkles size={19} aria-hidden="true" />
+                  : <Swords size={19} aria-hidden="true" />}
                 <span className="home-dashboard__primary-copy">
-                  <strong>挑戦の準備</strong>
-                  <small>カイザー Lv.{unlockedKaiserLevel} に挑戦</small>
+                  <strong>{stellaUnlockAvailable ? '？？？？？' : '挑戦の準備'}</strong>
+                  <small>{stellaUnlockAvailable ? 'その先へ進む' : `カイザー Lv.${unlockedKaiserLevel} に挑戦`}</small>
                 </span>
                 <ArrowUpRight size={18} aria-hidden="true" />
               </button>
+              {stellaUnlockAvailable && (
+                <span className="home-dashboard__stella-reward" role="status">
+                  Lv.100撃破報酬：ステータスポイント +50P 獲得
+                </span>
+              )}
+              {stellaRewardSaveError && (
+                <span className="home-dashboard__stella-save-error" role="alert">
+                  Lv.100報酬を保存できませんでした。保存領域を確認して、もう一度Lv.100に勝利してください。
+                </span>
+              )}
             </div>
           </div>
           <div className="home-dashboard__hero-foot">
@@ -166,6 +191,22 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               </span>
               <span className="home-dashboard__mode-meta"><span><Gem size={14} /> 核片 {raidRewardProgress.coreFragments} 個</span><ChevronRight size={18} /></span>
             </button>
+            {stellaModeUnlocked && (
+              <button
+                className="home-dashboard__mode-card home-dashboard__mode-card--stella"
+                type="button"
+                onClick={onOpenStellaMode}
+                aria-label="ステラモードを開く"
+              >
+                <span className="home-dashboard__mode-art" aria-hidden="true"><Sparkles size={28} /></span>
+                <span className="home-dashboard__mode-copy">
+                  <small>HIDDEN CHARACTER UNLOCKED</small>
+                  <strong>ステラモード</strong>
+                  <span>星の力を操る、もうひとつの戦いへ。</span>
+                </span>
+                <span className="home-dashboard__mode-meta"><span>解放済み</span><ChevronRight size={18} /></span>
+              </button>
+            )}
           </div>
         </section>
 
