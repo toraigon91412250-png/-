@@ -159,3 +159,86 @@
     line-height: 1.35 !important;
   }
 }
+
+
+/* Mobile return actions: keep page-level Back controls within thumb reach. */
+.battle-setup-footer-actions { display: contents; }
+.battle-setup-mobile-back { display: none; }
+.mobile-bottom-return-label { margin-left: 7px; }
+
+@media (max-width: 679px), (max-height: 600px) and (orientation: landscape) {
+  .mobile-bottom-return,
+  .raid-v1-shell:not(.raid-v1-shell--battle) .raid-v1-header > .raid-v1-back {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 1200 !important;
+    width: calc(100% - 24px) !important;
+    max-width: 720px !important;
+    min-height: 48px !important;
+    margin: 0 auto !important;
+    padding: 10px 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    border: 1px solid rgba(166, 183, 215, .34) !important;
+    border-radius: 12px !important;
+    background: linear-gradient(180deg, rgba(24, 33, 51, .98), rgba(10, 15, 26, .99)) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, .24), 0 5px 18px rgba(0, 0, 0, .25) !important;
+    color: #F1D9A2 !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+  }
+
+  .talent-board-screen,
+  .imprint-screen,
+  .imprint-gacha-screen,
+  .recruitment-screen,
+  .developer-tools-screen,
+  .raid-v1-shell:not(.raid-v1-shell--battle) {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .battle-setup-top-back { display: none !important; }
+  .battle-setup-footer-actions {
+    display: flex !important;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .battle-setup-mobile-back {
+    display: inline-flex !important;
+    flex: 0 0 31%;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    min-height: 52px;
+    padding: 6px 5px;
+    border: 1px solid #4A5368;
+    border-radius: 12px;
+    background: #171D2A;
+    color: #E0E6F2;
+    font-size: 12px;
+    font-weight: 850;
+    cursor: pointer;
+  }
+  .battle-setup-start-button {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+    margin-top: 0 !important;
+    min-height: 52px !important;
+    padding-right: 6px !important;
+    padding-left: 6px !important;
+    font-size: 16px !important;
+  }
+  .battle-setup-start-note { margin-top: 4px !important; }
+
+  .raid-v1-shell:not(.raid-v1-shell--battle) .raid-v1-back {
+    justify-content: center !important;
+  }
+}

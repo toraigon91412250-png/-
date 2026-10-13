@@ -101,7 +101,7 @@ export const IrenaTalentBoard: React.FC<IrenaTalentBoardProps> = ({
       color: '#F5F3FF',
     }}>
       <div style={{ width: '100%', maxWidth: '720px', margin: '0 auto' }}>
-        <button type="button" onClick={onBack} style={{
+        <button type="button" className="mobile-bottom-return" onClick={onBack} style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '7px',

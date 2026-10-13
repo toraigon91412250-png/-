@@ -152,6 +152,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
 
   return (
     <div
+      className="recruitment-screen"
       style={{
         position: 'relative',
         width: '100%',
@@ -234,6 +235,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
         <header style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
           <button
             type="button"
+            className="mobile-bottom-return"
             onClick={onBack}
             aria-label="戻る"
             style={{
@@ -241,7 +243,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
               background:'rgba(3,5,9,.88)', color:'#FFF', display:'grid', placeItems:'center', cursor:'pointer',
             }}
           >
-            <ArrowLeft size={19} />
+            <ArrowLeft size={19} /> <span className="mobile-bottom-return-label">戻る</span>
           </button>
 
           <div style={{ flex:1 }}>

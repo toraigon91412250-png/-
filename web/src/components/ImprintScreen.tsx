@@ -20,7 +20,7 @@ export const ImprintScreen: React.FC<ImprintScreenProps> = ({ progress, message,
       background: 'radial-gradient(ellipse at top, #172D42 0%, #0A0D16 62%)',
     }}>
       <div style={{ maxWidth: '720px', width: '100%', margin: '0 auto' }}>
-        <button type="button" onClick={onBack} aria-label="本編に戻る" style={{
+        <button type="button" className="mobile-bottom-return" onClick={onBack} aria-label="本編に戻る" style={{
           minHeight: '40px', padding: '8px 12px', marginBottom: '12px',
           display: 'inline-flex', alignItems: 'center', gap: '6px', borderRadius: '10px',
           border: '1px solid #374151', background: 'rgba(17, 24, 39, 0.92)',

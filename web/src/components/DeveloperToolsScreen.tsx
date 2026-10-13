@@ -79,7 +79,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   };
 
   return (
-    <div style={{
+    <div className="developer-tools-screen" style={{
       width:'100%', height:'100%', overflowY:'auto', boxSizing:'border-box',
       padding:'18px 14px 40px', background:'linear-gradient(180deg,#080A10 0%,#11121A 100%)',
       color:'#FFF',
@@ -91,7 +91,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             <h1 style={{ margin:'4px 0 0', fontSize:28, fontWeight:950 }}>開発者ツール</h1>
             <div style={{ marginTop:4, color:'#8B93A5', fontSize:10 }}>試作テスト用。設定を即時反映できます。</div>
           </div>
-          <button type="button" onClick={onBack} style={{
+          <button type="button" className="mobile-bottom-return" onClick={onBack} style={{
             minHeight:40, padding:'0 13px', borderRadius:10, border:'1px solid #384154',
             background:'#171C27', color:'#FFF', fontWeight:850, cursor:'pointer',
           }}>閉じる</button>

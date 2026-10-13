@@ -155,7 +155,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       />
 
       <div className="battle-setup-content" style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '720px', margin: '0 auto' }}>
-        <button type="button" onClick={onBack} style={{
+        <button type="button" className="battle-setup-top-back" onClick={onBack} style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '6px',
@@ -741,6 +741,10 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           </div>
         </div>
 
+        <div className="battle-setup-footer-actions">
+        <button type="button" className="battle-setup-mobile-back" onClick={onBack}>
+          <ArrowLeft size={17} /> 戻る
+        </button>
         <button
           className="battle-setup-start-button"
           type="button"
@@ -764,6 +768,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         >
           <Play size={21} fill="currentColor" /> 戦闘開始！
         </button>
+        </div>
 
         <div className="battle-setup-start-note" style={{ marginTop: '9px', textAlign: 'center', fontSize: '9px', color: '#566176' }}>
           権能は任意で0〜2個まで選択可能。権能なしでも戦闘を開始できます。
