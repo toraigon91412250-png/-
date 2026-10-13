@@ -38,7 +38,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, loadStellaModeProgress, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -812,10 +812,11 @@ try {
 
   assert.deepStrictEqual(
     loadStellaModeProgress(),
-    { isUnlocked: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false },
     'A save created before Stella existed must default to locked without throwing.',
   );
   assert.strictEqual(unlockStellaMode().persisted, false, 'Stella cannot unlock before the reveal is claimed.');
+  assert.strictEqual(recordExKaiserVictory().persisted, false, 'EX Kaiser cannot be recorded before the Lv.100 reward is claimed.');
 
   let failPointWriteOnce = true;
   globalThis.localStorage.setItem = (key, value) => {
@@ -830,7 +831,7 @@ try {
   assert.strictEqual(loadStatPoints(), 12, 'A failed Lv.100 claim must not grant the 50 points.');
   assert.deepStrictEqual(
     loadStellaModeProgress(),
-    { isUnlocked: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false },
     'A failed reward transaction must roll back the reveal and claim marker.',
   );
 
@@ -841,8 +842,8 @@ try {
   assert.strictEqual(loadStatPoints(), 62, 'A successful first claim grants exactly 50 base points.');
   assert.deepStrictEqual(
     firstStellaClaim.progress,
-    { isUnlocked: false, revealAvailable: true, kaiser100RewardClaimed: true },
-    'Claiming the reward reveals the entrance but does not skip the warp unlock.',
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true },
+    'Claiming the Lv.100 reward grants points and unlocks the EX Kaiser challenge, not the hidden entrance.',
   );
 
   const repeatedStellaClaim = claimKaiser100VictoryReward();
@@ -850,11 +851,20 @@ try {
   assert.strictEqual(repeatedStellaClaim.rewardGranted, false, 'Repeating the claim must not grant another reward.');
   assert.strictEqual(loadStatPoints(), 62, 'Repeated Lv.100 wins must not duplicate the +50 points.');
 
+  assert.strictEqual(unlockStellaMode().persisted, false, 'The hidden mode stays locked until EX Kaiser is defeated.');
+  const firstExVictory = recordExKaiserVictory();
+  assert.strictEqual(firstExVictory.persisted, true);
+  assert.deepStrictEqual(
+    firstExVictory.progress,
+    { isUnlocked: false, exKaiserDefeated: true, revealAvailable: true, kaiser100RewardClaimed: true },
+    'EX Kaiser victory reveals the hidden entrance.',
+  );
+  assert.strictEqual(recordExKaiserVictory().persisted, true, 'Repeating an EX victory must be idempotent.');
   const firstStellaUnlock = unlockStellaMode();
   assert.strictEqual(firstStellaUnlock.persisted, true);
   assert.deepStrictEqual(
     firstStellaUnlock.progress,
-    { isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true },
+    { isUnlocked: true, exKaiserDefeated: true, revealAvailable: false, kaiser100RewardClaimed: true },
     'The hidden mode unlock should happen only after the reveal is confirmed.',
   );
   assert.strictEqual(unlockStellaMode().persisted, true, 'Unlock confirmation should be idempotent.');
