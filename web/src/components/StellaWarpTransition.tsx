@@ -28,8 +28,9 @@ export const StellaWarpTransition: React.FC<StellaWarpTransitionProps> = ({ onCo
       className={`stella-warp stella-warp--${phase}`}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="stella-warp-title"
-      aria-describedby="stella-warp-description"
+      aria-label={phase === 'warp' ? '隠された領域へのワープ演出' : undefined}
+      aria-labelledby={phase === 'reveal' ? 'stella-warp-title' : undefined}
+      aria-describedby={phase === 'reveal' ? 'stella-warp-description' : undefined}
     >
       <div className="stella-warp__space" aria-hidden="true">
         <div className="stella-warp__stars stella-warp__stars--far" />
