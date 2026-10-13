@@ -209,7 +209,9 @@ export const App: React.FC = () => {
     setAvailableStatPoints(currentStatPoints);
     const requestedPlayerCharacterId = mode === 'STELLA'
       ? STELLA.id
-      : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
+      : mode === 'NORMAL'
+        ? IRENA.id
+        : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
     const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
       abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT');
 
@@ -625,7 +627,11 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
-          playerCharacters={battleSetupMode === 'STELLA' ? [STELLA] : PLAYER_CHARACTERS}
+          playerCharacters={battleSetupMode === 'STELLA'
+            ? [STELLA]
+            : battleSetupMode === 'DEVELOPER'
+              ? PLAYER_CHARACTERS
+              : [IRENA]}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
             ? STELLA.id
             : getPlayerCharacterById(battleSetup.playerCharacterId).id}
