@@ -451,14 +451,13 @@ export const App: React.FC = () => {
   };
 
   const handleBackToSelect = () => {
+    const wasStellaMode = battleSetupMode === 'STELLA';
     cancelBattle();
     refreshProgress();
     setBattleSetupMode('NORMAL');
-    setBattleSetup(prev => ({
-      ...prev,
-      playerCharacterId: IRENA.id,
-      kaiserLevel: loadKaiserChallengeProgress().unlockedLevel,
-    }));
+    if (wasStellaMode) {
+      setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+    }
     setScreen('SELECT');
   };
 
@@ -520,7 +519,7 @@ export const App: React.FC = () => {
     setBattleSetupMode('NORMAL');
     setBattleSetup({
       kaiserLevel: 10,
-      playerCharacterId: IRENA.id,
+      playerCharacterId: getPlayerCharacterById(battleSetup.playerCharacterId).id,
       abilities: [],
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
@@ -641,7 +640,7 @@ export const App: React.FC = () => {
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
           onBack={() => {
-            if (battleSetupMode !== 'DEVELOPER') {
+            if (battleSetupMode === 'STELLA') {
               setBattleSetupMode('NORMAL');
               setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
             }
