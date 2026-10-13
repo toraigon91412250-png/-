@@ -346,11 +346,15 @@ export const BattleResultModal: React.FC<BattleResultModalProps> = ({
             >
               {state.enemy.character.name} を撃破！
             <div style={{ marginTop: '7px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '999px', background: 'rgba(126, 87, 194, 0.18)', border: '1px solid rgba(206, 147, 216, 0.42)', color: '#E1BEE7', fontSize: '12px', fontWeight: 950 }}>
-              ✦ 黒羽の欠片 +{state.lastBattleReward}
-              {state.lastBattleMasteryReward > 0 && (
-                <span style={{ marginLeft: '2px', color: '#B39DDB', fontSize: '10px' }}>
-                  （戦術達成 +{state.lastBattleMasteryReward}）
-                </span>
+              {state.player.character.id === 'irena' && (
+                <>
+                  ✦ 黒羽の欠片 +{state.lastBattleReward}
+                  {state.lastBattleMasteryReward > 0 && (
+                    <span style={{ marginLeft: '2px', color: '#B39DDB', fontSize: '10px' }}>
+                      （戦術達成 +{state.lastBattleMasteryReward}）
+                    </span>
+                  )}
+                </>
               )}
               {playerWon && (
                 <span style={{ marginLeft: '7px', color: '#FFE082', fontSize: '10px' }}>
