@@ -206,7 +206,7 @@ test('Kaiser challenge selector shows only the current level and one previous le
   await expect(page.getByText('Lv.30 解放中')).toBeVisible();
 });
 
-test('Kaiser armor is visible in live combat from challenge level 40 onward', async ({ page }) => {
+test('Kaiser armor state is clear without numeric armor or damage forecasts', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.addInitScript(() => {
@@ -238,12 +238,15 @@ test('Kaiser armor is visible in live combat from challenge level 40 onward', as
 
   const armorStatus = page.getByRole('status', { name: 'カイザー装甲' });
   await expect(armorStatus).toBeVisible();
-  await expect(armorStatus).toContainText('鉄壁装甲');
-  await expect(armorStatus).toContainText(/\d+ \/ \d+/);
-  const attackForecast = page.locator('button:visible').filter({ hasText: /^攻撃/ }).first();
-  await expect(attackForecast).toContainText(/HP\s*\d+〜\d+/);
-  await expect(attackForecast).toContainText('装甲耐久');
-  expect(pageErrors, 'Kaiser armor and its HP/armor damage forecast should render without uncaught browser errors.').toEqual([]);
+  await expect(armorStatus).toContainText('装甲あり');
+  await expect(armorStatus).not.toContainText(/\d/);
+  const attackButton = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  await expect(attackButton).toHaveCount(1);
+  await expect(attackButton).toHaveText('攻撃');
+  await expect(attackButton).not.toContainText(/HP\s*\d+〜\d+|装甲耐久/);
+  await expect(page.locator('[aria-label="戦況予測"]')).toHaveCount(0);
+  await expect(page.getByText('行動順', { exact: true })).toHaveCount(0);
+  expect(pageErrors, 'Battle UI should expose armor state without numeric forecasts or turn order.').toEqual([]);
 });
 
 test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page }) => {
@@ -303,7 +306,7 @@ test('Kaiser Lv100 transitions to phase two during a live battle', async ({ page
   await expect(phaseTwo).toContainText('第2フェーズ');
   const armorStatus = page.getByRole('status', { name: 'カイザー装甲' });
   await expect(armorStatus).toBeVisible();
-  await expect(armorStatus).toContainText('825');
+  await expect(armorStatus).toContainText('装甲あり');
   expect(pageErrors, 'Kaiser Lv100 phase transition should not raise uncaught browser errors.').toEqual([]);
 });
 
@@ -313,8 +316,7 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    // Lock CPU action choice to its highest-scoring action so this live-combat
-    // assertion is deterministic: the initial forecast is SPECIAL, not random variation.
+    // Lock CPU action choice so the battle-limited imprint behavior remains deterministic.
     Math.random = () => 0.99;
   });
 
@@ -355,13 +357,11 @@ test('imprint loadout can be equipped, unequipped, persisted, and carried into b
   await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
   await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('未使用', { timeout: 20_000 });
 
-  // With deterministic CPU choice, the initial telegraph must be SPECIAL.
-  // Evading it exercises the real battle hook and the once-per-battle state update.
-  const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
-  expect(intentLabel).toBe('特殊技');
+  // Avoiding the deterministic CPU special still exercises the real battle hook
+  // and the once-per-battle imprint state, without displaying a move forecast.
+  await expect(page.locator('[aria-label="戦況予測"]')).toHaveCount(0);
+  await expect(page.getByText('行動順', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: /^回避/ }).first().click();
-  // The forecast status is the visible UI contract for a battle-limited trigger.
-  // This assertion verifies the real combat hook changed its once-per-battle state.
   await expect(page.getByRole('status', { name: '見切りの状態' })).toContainText('発動済み', { timeout: 15_000 });
 
   expect(pageErrors, 'Imprint navigation, storage, and battle integration should not raise uncaught errors.').toEqual([]);
@@ -1011,7 +1011,7 @@ test('Super Fallen Shot shows charge and release cut-ins without blocking combat
   await page.getByRole('button', { name: '超堕天撃を選択' }).click();
   const dock = page.locator('.battle-action-dock');
   const specialAction = dock.locator('button').filter({ hasText: /^超堕天撃/ });
-  await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
+  await expect(specialAction).toContainText('充填・次ターン発射');
   await expect(specialAction).not.toContainText(/HP\d+ダメ/);
 
   const chargeCutIn = page.getByTestId('super-fallen-shot-charge-cut-in');
@@ -1042,7 +1042,7 @@ test('Super Fallen Shot shows charge and release cut-ins without blocking combat
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 10_000 });
   expect(Date.now() - resolutionStartedAt).toBeLessThan(10_000);
   // HpBar renders the current/max number in its own span, separate from the "HP" label.
-  const kaiserHp = page.getByText(/\b\d+\s*\/\s*5500\s*\(\d+%\)/);
+  const kaiserHp = page.getByText(/\b\d+\s*\/\s*5500/);
   await expect(kaiserHp).toBeVisible();
   await expect.poll(async () => {
     const hpText = await kaiserHp.textContent();

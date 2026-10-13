@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BattleAction, BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, PlayerBattleAction, getEffectiveSpeed } from '../types/game';
+import { BattleUiState, IrenaSkillId, IrenaSkillProgress, FeatherSkillPath, RuinSkillPath, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
 import { FighterCard } from './FighterCard';
 import { ActionDock } from './ActionDock';
 import { VisualEffectOverlay } from './VisualEffectOverlay';
 import { BattleResultModal } from './BattleResultModal';
-import { applyDynamicAbilityModifiers } from '../utils/abilitySystem';
 import battleBackground from '../assets/戦闘中背景.png';
 import { ArrowLeft, Volume2, VolumeX, FastForward } from 'lucide-react';
-import { getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE } from '../utils/imprintSystem';
 
 interface BattleScreenProps {
   state: BattleUiState;
@@ -24,250 +22,6 @@ interface BattleScreenProps {
   onToggleSound: () => void;
   onToggleSpeed: () => void;
 }
-
-const CPU_INTENT_META: Record<BattleAction, {
-  label: string;
-  hint: string;
-  accent: string;
-}> = {
-  ATTACK: {
-    label: '通常攻撃',
-    hint: '攻撃を仕掛けている',
-    accent: '#64B5F6',
-  },
-  EVADE: {
-    label: '回避',
-    hint: '攻撃系は回避判定を受ける',
-    accent: '#4DD0E1',
-  },
-  BUFF: {
-    label: '強化',
-    hint: '次の攻撃が強化される',
-    accent: '#FFD54F',
-  },
-  SPECIAL: {
-    label: '特殊技',
-    hint: '命中すると状態異常が付く',
-    accent: '#CE93D8',
-  },
-  ULTIMATE: {
-    label: '必殺技',
-    hint: '大ダメージ。回避で対処可能',
-    accent: '#FF8A65',
-  },
-};
-
-const TacticalForecast: React.FC<{ state: BattleUiState; compact?: boolean }> = ({ state, compact = false }) => {
-  if (state.phase !== 'SELECT_ACTION') return null;
-
-  const forecastPlayer = applyDynamicAbilityModifiers(state.player, state.battleConfig, state.turnNumber);
-  const forecastEnemy = applyDynamicAbilityModifiers(state.enemy, state.battleConfig, state.turnNumber);
-  const playerGoesFirst = getEffectiveSpeed(forecastPlayer) >= getEffectiveSpeed(forecastEnemy);
-  const intentMeta = state.enemy.character.id === 'kaiser' &&
-    state.enemy.kaiserPhase === 2 &&
-    state.cpuIntent === 'ULTIMATE'
-    ? {
-        ...CPU_INTENT_META.ULTIMATE,
-        label: '終局・超重撃',
-        hint: '第2フェーズ専用の大技。予告を確認し、回避や先手を取る判断を。',
-        accent: '#FF5252',
-      }
-    : CPU_INTENT_META[state.cpuIntent];
-
-  const evasionInfo =
-    state.cpuIntent === 'EVADE'
-      ? { target: '相手', rate: Math.round(state.enemy.character.evasionRate * 100) }
-      : state.cpuIntent === 'BUFF'
-        ? null
-        : { target: '自分', rate: Math.round(state.player.character.evasionRate * 100) };
-
-  const cellPadding = compact ? '5px 7px' : '6px 9px';
-  const labelSize = compact ? '7px' : '8px';
-  const valueSize = compact ? '12px' : '14px';
-
-  return (
-    <div
-      aria-label="戦況予測"
-      aria-live="polite"
-      style={{
-        marginTop: compact ? '4px' : '6px',
-        padding: compact ? '6px 8px' : '7px 10px',
-        borderRadius: '9px',
-        border: '1px solid ' + intentMeta.accent + '55',
-        background: 'linear-gradient(180deg, rgba(10, 16, 28, 0.92), rgba(8, 12, 20, 0.82))',
-        boxShadow: 'inset 0 0 18px ' + intentMeta.accent + '0A',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-        <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: labelSize, fontWeight: 900, letterSpacing: '0.12em', color: '#9FB0C8' }}>
-            戦況予測
-          </span>
-          <span style={{ fontSize: valueSize, fontWeight: 950, color: intentMeta.accent }}>
-            {intentMeta.label}
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6', whiteSpace: 'nowrap' }}>
-            行動順
-          </span>
-
-          {[playerGoesFirst, !playerGoesFirst].map((playerFirst, index) => (
-            <React.Fragment key={playerFirst ? 'player' : 'enemy'}>
-              {index > 0 && (
-                <span aria-hidden="true" style={{ fontSize: labelSize, fontWeight: 900, color: '#6F7E95' }}>
-                  →
-                </span>
-              )}
-              <div
-                style={{
-                  padding: cellPadding,
-                  borderRadius: '7px',
-                  background: playerFirst ? 'rgba(255, 213, 79, 0.13)' : 'rgba(255,255,255,0.045)',
-                  border: playerFirst ? '1px solid rgba(255, 213, 79, 0.48)' : '1px solid rgba(255,255,255,0.08)',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <span style={{ fontSize: labelSize, fontWeight: 950, color: playerFirst ? '#FFE082' : '#D5DEEB' }}>
-                  {index === 0 ? '①' : '②'} {playerFirst ? state.player.character.name : state.enemy.character.name}
-                </span>
-              </div>
-            </React.Fragment>
-          ))}
-
-          {evasionInfo && (
-            <div
-              style={{
-                padding: cellPadding,
-                borderRadius: '7px',
-                background: 'rgba(255,255,255,0.045)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span style={{ fontSize: labelSize, fontWeight: 800, color: '#7F8EA6' }}>回避 </span>
-              <span style={{ fontSize: labelSize, fontWeight: 950, color: '#D5DEEB' }}>
-                {evasionInfo.target} {evasionInfo.rate}%
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {state.battleConfig.imprints?.includes('FORESIGHT') && (
-        <div
-          role="status"
-          aria-label="見切りの状態"
-          style={{
-            marginTop: '5px',
-            padding: compact ? '4px 6px' : '5px 7px',
-            borderRadius: '6px',
-            border: '1px solid ' + (state.usedImprints.includes('FORESIGHT') ? 'rgba(120,144,156,0.35)' : 'rgba(129,230,223,0.38)'),
-            background: state.usedImprints.includes('FORESIGHT') ? 'rgba(120,144,156,0.08)' : 'rgba(38,166,154,0.10)',
-            color: state.usedImprints.includes('FORESIGHT') ? '#8291A3' : '#9FE9DF',
-            fontSize: labelSize,
-            lineHeight: 1.4,
-            fontWeight: 850,
-          }}
-        >
-          👁️ 見切り：{state.usedImprints.includes('FORESIGHT') ? '発動済み' : '未使用'} · 特殊技／必殺技の予告中に回避すると確定成功
-        </div>
-      )}
-      {state.battleConfig.imprints?.includes('YIN_YANG') && (
-        <div
-          role="status"
-          aria-label="陰陽転化の状態"
-          style={{
-            marginTop: '5px',
-            padding: compact ? '4px 6px' : '5px 7px',
-            borderRadius: '6px',
-            border: '1px solid rgba(212,176,91,0.42)',
-            background: 'rgba(80,64,25,0.13)',
-            color: '#F3DDA0',
-            fontSize: labelSize,
-            lineHeight: 1.4,
-            fontWeight: 850,
-          }}
-        >
-          ☯️ 陰陽転化：
-          {state.yinYangDefenseResult
-            ? `防御成功（第${state.yinYangDefenseResult.turn}ターン、軽減${state.yinYangDefenseResult.reducedBy}）`
-            : state.yinYangActivatedTurn === state.turnNumber && state.player.isBuffed
-              ? `発動中：次の攻撃+${state.player.buffDamageBonus || 125}`
-              : state.yinYangActivatedTurn != null
-                ? `最終発動：第${state.yinYangActivatedTurn}ターン`
-                : '未使用'}
-        </div>
-      )}
-      {state.battleConfig.imprints?.includes('WIND_GUARD') && (
-        <div
-          role="status"
-          aria-label="風守りの状態"
-          style={{
-            marginTop: '5px',
-            padding: compact ? '4px 6px' : '5px 7px',
-            borderRadius: '6px',
-            border: '1px solid rgba(129,230,223,0.38)',
-            background: 'rgba(38,166,154,0.10)',
-            color: '#9FE9DF',
-            fontSize: labelSize,
-            lineHeight: 1.4,
-            fontWeight: 850,
-          }}
-        >
-          🪶 風守り：
-          {state.windGuardResult
-            ? `第${state.windGuardResult.turn}ターン発動 · 被ダメージ-${state.windGuardResult.reducedBy} · 自動反撃${state.windGuardResult.counterDamage}`
-            : `羽弾蓄積+${state.player.featherChargeBonus} · 被ダメージ${Math.round(Math.min(WIND_GUARD_MAX_REDUCTION, state.player.featherChargeBonus * WIND_GUARD_REDUCTION_PER_FEATHER_DAMAGE) * 100)}%軽減 · 反撃${getWindGuardCounterDamage(state.player.featherChargeBonus)}`}
-        </div>
-      )}
-      {state.battleConfig.imprints?.includes('BLOOD_MEDIA') && (
-        <div
-          role="status"
-          aria-label="血媒の状態"
-          style={{
-            marginTop: '5px',
-            padding: compact ? '4px 6px' : '5px 7px',
-            borderRadius: '6px',
-            border: '1px solid rgba(239,83,80,0.35)',
-            background: 'rgba(183,28,28,0.10)',
-            color: '#FFB4B4',
-            fontSize: labelSize,
-            lineHeight: 1.4,
-            fontWeight: 850,
-          }}
-        >
-          🩸 血媒：
-          {state.bloodMediaHealResult
-            ? `第${state.bloodMediaHealResult.turn}ターン吸収 · HP+${state.bloodMediaHealResult.amount}`
-            : '出血による実ダメージ分を回復 · 出血+1ターン'}
-        </div>
-      )}
-      {state.battleConfig.imprints?.includes('COSTLY_SHOT') && state.costlyShotResult && (
-        <div
-          role="status"
-          aria-label="代償撃ちの状態"
-          style={{
-            marginTop: '5px',
-            padding: compact ? '4px 6px' : '5px 7px',
-            borderRadius: '6px',
-            border: '1px solid rgba(215,164,215,0.4)',
-            background: 'rgba(72,34,76,0.14)',
-            color: '#F0C8F5',
-            fontSize: labelSize,
-            lineHeight: 1.4,
-            fontWeight: 850,
-          }}
-        >
-          ♻️ 代償撃ち：第{state.costlyShotResult.turn}ターン発動 · HP-{state.costlyShotResult.hpSpent} · 特殊CTリセット
-        </div>
-      )}
-      <div style={{ marginTop: '4px', fontSize: labelSize, lineHeight: 1.35, fontWeight: 750, color: '#AEB9CB' }}>
-        {intentMeta.hint}
-      </div>
-    </div>
-  );
-};
 
 export const BattleScreen: React.FC<BattleScreenProps> = ({
   state,
@@ -470,29 +224,9 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           >
             第 {state.turnNumber} ターン
           </div>
-          <div style={{
-            display:'flex',
-            flexDirection:'column',
-            gap:'2px',
-            minWidth:0,
-          }}>
-            <div style={{ fontSize:'9px', color:'#FFCC80', fontWeight:900, letterSpacing:'.08em' }}>
-              KAISER Lv.{state.battleConfig.kaiserLevel}
-            </div>
-            <div style={{
-              maxWidth:'42vw',
-              overflow:'hidden',
-              textOverflow:'ellipsis',
-              whiteSpace:'nowrap',
-              fontSize:'8px',
-              color:'#B39DDB',
-              fontWeight:800,
-            }}>
-              {state.battleConfig.abilities.length > 0
-                ? state.battleConfig.abilities.map(ability => ability.id === 'ABYSS' ? '深淵' : ability.id === 'FALLEN' ? '堕天' : ability.id === 'BLACK_WING' ? '黒翼' : ability.id === 'FALLEN_KING' ? '堕天王' : '断罪').join(' + ')
-                : '権能なし'}
-            </div>
-          </div>
+          <span style={{ fontSize: '11px', color: '#B39DDB', fontWeight: 850, whiteSpace: 'nowrap' }}>
+            Lv.{state.battleConfig.kaiserLevel}
+          </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -598,8 +332,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             {/* 1. Enemy Card */}
             <FighterCard
               fighter={state.enemy}
-              battleConfig={state.battleConfig}
-              turnNumber={state.turnNumber}
               isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
               visualEffect={state.visualEffect}
             />
@@ -644,24 +376,19 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <div style={{ marginBottom: '8px' }}>
               <FighterCard
                 fighter={state.player}
-                battleConfig={state.battleConfig}
-                turnNumber={state.turnNumber}
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === true}
                 visualEffect={state.visualEffect}
               />
             </div>
 
-            <TacticalForecast state={state} compact />
             </div>
 
             {/* 5. Action Command Dock */}
             <div className="battle-mobile-action-area">
             <ActionDock
               player={state.player}
-              enemy={state.enemy}
               battleConfig={state.battleConfig}
               turnNumber={state.turnNumber}
-              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled && !isUltimateCinematicActive}
               onCinematicActiveChange={setIsUltimateCinematicActive}
               selectedSpecialSkill={selectedSpecialSkill}
@@ -691,12 +418,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
               <div>
                 <div style={{ fontSize: '12px', fontWeight: 800, color: '#90CAF9', marginBottom: '6px' }}>
-                  👤 プレイヤー陣営
+                  プレイヤー
                 </div>
                 <FighterCard
                   fighter={state.player}
-                battleConfig={state.battleConfig}
-                turnNumber={state.turnNumber}
                   isTargetOfEffect={state.visualEffect?.targetIsPlayer === true}
                   visualEffect={state.visualEffect}
                 />
@@ -708,12 +433,10 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             {/* Right Pane: Enemy Card + Clash Banner + Battle Background */}
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
               <div style={{ fontSize: '12px', fontWeight: 800, color: '#FFCC80', marginBottom: '6px' }}>
-                🤖 CPU 対戦相手 ({state.cpuDifficulty === 'EXPERT' ? 'エキスパート' : 'ノーマル'})
+                対戦相手
               </div>
               <FighterCard
                 fighter={state.enemy}
-              battleConfig={state.battleConfig}
-              turnNumber={state.turnNumber}
                 isTargetOfEffect={state.visualEffect?.targetIsPlayer === false}
                 visualEffect={state.visualEffect}
               />
@@ -753,7 +476,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
                 )}
               </div>
 
-              <TacticalForecast state={state} />
 
             </div>
           </div>
@@ -767,10 +489,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
           >
             <ActionDock
               player={state.player}
-              enemy={state.enemy}
               battleConfig={state.battleConfig}
               turnNumber={state.turnNumber}
-              judgmentReady={state.judgmentReady}
               isEnabled={isActionEnabled && !isUltimateCinematicActive}
               onCinematicActiveChange={setIsUltimateCinematicActive}
               selectedSpecialSkill={selectedSpecialSkill}

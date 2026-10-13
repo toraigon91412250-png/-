@@ -27,7 +27,7 @@ export const HpBar: React.FC<HpBarProps> = ({ currentHp, maxHp }) => {
         marginBottom: '4px'
       }}>
         <span style={{ color: barColor, fontWeight: 900 }}>HP</span>
-        <span style={{ color: '#FFFFFF' }}>{currentHp} / {maxHp} ({percent}%)</span>
+        <span style={{ color: '#FFFFFF' }}>{currentHp} / {maxHp}</span>
       </div>
       <div style={{
         width: '100%',

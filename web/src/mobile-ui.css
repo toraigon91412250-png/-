@@ -242,3 +242,40 @@
     justify-content: center !important;
   }
 }
+
+
+/* Combat UI: clearer cards, quiet containers, and visible keyboard focus. */
+.battle-fighter-card {
+  background: linear-gradient(145deg, rgba(21, 29, 44, .98), rgba(10, 14, 24, .98)) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .23), inset 0 1px 0 rgba(255, 255, 255, .035) !important;
+}
+.battle-fighter-avatar {
+  border-radius: 10px !important;
+}
+.battle-action-dock {
+  background: linear-gradient(155deg, rgba(17, 22, 35, .99), rgba(9, 12, 20, .99)) !important;
+  border-color: rgba(137, 153, 188, .28) !important;
+  box-shadow: 0 -7px 22px rgba(0, 0, 0, .32) !important;
+}
+.battle-action-header {
+  border-bottom: 1px solid rgba(137, 153, 188, .16);
+  padding: 0 2px 7px;
+}
+.battle-action-dock button:focus-visible {
+  outline: 2px solid #F1D08A;
+  outline-offset: 2px;
+}
+@media (max-width: 679px), (max-height: 600px) and (orientation: landscape) {
+  .battle-fighter-card {
+    padding: 7px !important;
+    margin-bottom: 5px;
+  }
+  .battle-fighter-avatar {
+    width: 54px !important;
+    height: 54px !important;
+  }
+  .battle-action-header {
+    padding-bottom: 6px;
+    margin-bottom: 6px !important;
+  }
+}

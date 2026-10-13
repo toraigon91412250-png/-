@@ -1,24 +1,17 @@
 import React from 'react';
-import { BattleFighter, BattleSetupConfig, getEffectiveSpeed, getIrenaFeatherChargeRange, getIrenaFeatherMaxChargeCount, getIrenaSuperFallenShotMultiplier, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
+import { BattleFighter, BattleSetupConfig, getIrenaFeatherMaxChargeCount, IrenaSpecialSkillId, PlayerBattleAction } from '../types/game';
 import { Flame } from 'lucide-react';
-import { calculateHitDamagePreview, calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
-import { GAME_BALANCE } from '../data/gameBalance';
-import { applyDynamicAbilityModifiers, hasAbility } from '../utils/abilitySystem';
 import {
   COSTLY_SHOT_HP_COST,
   FEATHER_SPLIT_ALTERNATION_BONUS,
-  FEATHER_SPLIT_PIERCE_MULTIPLIER,
-  FEATHER_SPLIT_RAPID_MULTIPLIER,
   getFeatherSplitModeForSkill,
   getSpecialCooldownRemaining,
 } from '../utils/imprintSystem';
 
 interface ActionDockProps {
   player: BattleFighter;
-  enemy: BattleFighter;
   battleConfig: BattleSetupConfig;
   turnNumber: number;
-  judgmentReady?: boolean;
   isEnabled: boolean;
   onCinematicActiveChange: (active: boolean) => void;
   selectedSpecialSkill: IrenaSpecialSkillId;
@@ -37,10 +30,8 @@ interface ActionDockProps {
 
 export const ActionDock: React.FC<ActionDockProps> = ({
   player,
-  enemy,
   battleConfig,
   turnNumber,
-  judgmentReady = false,
   isEnabled,
   onCinematicActiveChange,
   selectedSpecialSkill,
@@ -49,41 +40,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   irenaUltimateUses = { allGods: 0, ruin: 0 },
   onIrenaUltimateAction,
 }) => {
-  const effectivePlayer = applyDynamicAbilityModifiers(player, battleConfig, turnNumber);
-  const effectiveEnemy = applyDynamicAbilityModifiers(enemy, battleConfig, turnNumber);
-  const playerActsFirst = getEffectiveSpeed(effectivePlayer) >= getEffectiveSpeed(effectiveEnemy);
-  const damageContext = {
-    attacker: player,
-    target: enemy,
-    config: battleConfig,
-    turn: turnNumber,
-    isActingFirst: playerActsFirst,
-    judgmentReady,
-  };
-  const buffDamageBonus = player.isBuffed ? (player.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS) : 0;
-  const isFallenExecutionPreview = hasAbility(battleConfig, 'FALLEN') &&
-    player.currentHp > 1 && player.currentHp <= player.character.maxHp * 0.05;
-  const previewDamageSource = isFallenExecutionPreview ? '堕天・終局' : '';
-  const estimatedAttackDamage = calculateNormalAttackDamage(damageContext);
-  const criticalAttackDamage = calculateNormalAttackDamage(damageContext, true);
-  const normalAttackPreview = calculateHitDamagePreview(
-    estimatedAttackDamage, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
-  );
-  const criticalAttackPreview = calculateHitDamagePreview(
-    criticalAttackDamage, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
-  );
-  const hasActiveKaiserArmor = enemy.character.id === 'kaiser' &&
-    battleConfig.kaiserLevel >= 40 && (enemy.kaiserArmorCurrent ?? 0) > 0;
-  const isKaiserArmorBroken = enemy.character.id === 'kaiser' &&
-    !hasActiveKaiserArmor && (enemy.kaiserArmorBrokenTurns ?? 0) > 0;
-  const formatHitPreview = (preview: ReturnType<typeof calculateHitDamagePreview>) =>
-    `HP ${preview.hpDamage}${preview.phaseChanged ? '・第2形態へ' : ''}`;
-  const specialPreviewDetails = (preview: ReturnType<typeof calculateHitDamagePreview>) =>
-    hasActiveKaiserArmor && preview.armorWasActive
-      ? `HP${preview.hpDamage} 装甲-${preview.armorDamage}${preview.armorWillBreak ? '→破壊' : ''}${preview.phaseChanged ? '・第2形態' : ''}`
-      : isKaiserArmorBroken && preview.armorWasBroken
-        ? `HP${preview.hpDamage} 破壊×1.3${preview.phaseChanged ? '・第2形態' : ''}`
-        : `HP${preview.hpDamage}ダメ${preview.phaseChanged ? '・第2形態へ' : ''}`;
   const isIrena = player.character.id === 'irena';
   const hasSuperFallenShot = isIrena && Boolean(player.character.hasSuperFallenShot);
   const hasFeatherSplitImprint = player.character.id === 'irena' && (battleConfig.imprints?.includes('FEATHER_SPLIT') ?? false);
@@ -99,18 +55,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
     selectedFeatherSplitMode !== player.lastFeatherSplitMode
   );
   const isUltimateReady = player.ultimateGauge >= 3;
-  const featherSkillLevel = player.character.featherSkillLevel || 1;
-  const featherChargeMaxCount = getIrenaFeatherMaxChargeCount(featherSkillLevel);
-  const featherChargeAtMax = player.featherChargeCount >= featherChargeMaxCount;
-  const nextFeatherChargeRange = getIrenaFeatherChargeRange(player.featherChargeCount);
-  const superFallenMultiplier = getIrenaSuperFallenShotMultiplier(featherSkillLevel);
-  const specialDamageRaw = calculateSpecialDamage({
-    ...damageContext,
-    specialSkillId: selectedSpecialSkill,
-  });
-  const specialDamagePreview = calculateHitDamagePreview(
-    specialDamageRaw, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
-  );
+  const featherChargeMaxCount = getIrenaFeatherMaxChargeCount(player.character.featherSkillLevel || 1);
   React.useEffect(() => {
     if (!hasSuperFallenShot && selectedSpecialSkill === 'SUPER_FALLEN_SHOT') {
       onSelectedSpecialSkillChange('FEATHER');
@@ -129,21 +74,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
   }, [hasSuperFallenShot, hasFeatherSplitImprint, selectedSpecialSkill, onSelectedSpecialSkillChange]);
 
 
-  const evadeRateText = `${Math.round(player.character.evasionRate * 100)}%`;
-  const featherPathName =
-    player.character.featherSkillPath === 'ABYSS'
-      ? '深淵'
-      : player.character.featherSkillPath === 'JUDGMENT'
-        ? '断罪'
-        : player.character.featherSkillPath === 'CHARGE'
-          ? '蓄積'
-          : null;
-  const ruinPathName =
-    player.character.ruinSkillPath === 'EXECUTION'
-      ? '処刑'
-      : player.character.ruinSkillPath === 'ANNIHILATION'
-        ? '殲滅'
-        : null;
   const isIrenaUltimate = isIrena;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
   const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
@@ -186,13 +116,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       onCinematicActiveChange(false);
     }, 1300);
   };
-  const ultimateDamageRaw = calculateUltimateDamage({
-    ...damageContext,
-    ultimateVariant: hasUnlockedOmnipotence ? 'OMNIPOTENCE' : undefined,
-  });
-  const ultimateDamagePreview = calculateHitDamagePreview(
-    ultimateDamageRaw, enemy, battleConfig.kaiserLevel, turnNumber, previewDamageSource,
-  );
 
   return (
     <div
@@ -250,77 +173,53 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         }
       `}</style>
 
-      {/* Header: Command title + Buff indicator + Ultimate gauge preview */}
       <div
+        className="battle-action-header"
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '6px',
+          justifyContent: 'space-between',
+          gap: '8px',
+          flexWrap: 'wrap',
+          marginBottom: '8px',
+          minHeight: '28px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-              🎯 コマンド選択
-            </span>
-            {featherPathName && (
-              <span style={{ fontSize: '9px', fontWeight: 900, color: '#E1BEE7', background: 'rgba(126,87,194,0.2)', border: '1px solid rgba(179,157,219,0.35)', padding: '2px 6px', borderRadius: '999px' }}>
-                羽弾・{featherPathName}
-              </span>
-            )}
-            {ruinPathName && (
-              <span style={{ fontSize: '9px', fontWeight: 900, color: '#FFB3B3', background: 'rgba(198,40,40,0.16)', border: '1px solid rgba(239,83,80,0.3)', padding: '2px 6px', borderRadius: '999px' }}>
-                破壊・{ruinPathName}
-              </span>
-            )}
-          </div>
+        <strong style={{ fontSize: '14px', fontWeight: 900, color: '#FFFFFF' }}>行動</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
           {player.isBuffed && (
             <span
+              aria-label="強化中"
               style={{
                 fontSize: '10px',
-                fontWeight: 700,
-                color: '#FFD54F',
-                backgroundColor: 'rgba(255, 143, 0, 0.3)',
-                border: '1px solid #FFB300',
-                padding: '1px 5px',
-                borderRadius: '4px',
+                fontWeight: 850,
+                color: '#FFE082',
+                background: 'rgba(255,143,0,0.16)',
+                border: '1px solid rgba(255,179,0,0.38)',
+                borderRadius: '999px',
+                padding: '3px 7px',
               }}
             >
-              ⚡【強化中】攻撃+{buffDamageBonus}
+              強化中
             </span>
           )}
-          {hasFeatherSplitImprint && selectedSpecialSkill !== 'SUPER_FALLEN_SHOT' ? (
+          {isIrena && selectedSpecialSkill !== 'SUPER_FALLEN_SHOT' && (
             <span
-              aria-label={`羽弾蓄積 +${player.featherChargeBonus}、回数 ${Math.min(player.featherChargeCount, featherChargeMaxCount)} / ${featherChargeMaxCount}`}
+              aria-label={`羽弾蓄積 ${Math.min(player.featherChargeCount, featherChargeMaxCount)} / ${featherChargeMaxCount}`}
               style={{
                 fontSize: '10px',
-                fontWeight: 800,
+                fontWeight: 850,
                 color: '#B2DFDB',
-                backgroundColor: 'rgba(38, 166, 154, 0.16)',
-                border: '1px solid rgba(128, 203, 196, 0.45)',
-                padding: '2px 6px',
+                background: 'rgba(38,166,154,0.12)',
+                border: '1px solid rgba(128,203,196,0.32)',
                 borderRadius: '999px',
+                padding: '3px 7px',
                 whiteSpace: 'nowrap',
               }}
             >
-              🪶 +{player.featherChargeBonus} · {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount} · {featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
+              🪶 {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount}
             </span>
-          ) : isIrena && !hasFeatherSplitImprint && selectedSpecialSkill === 'FEATHER' ? (
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: 700,
-                color: '#B2DFDB',
-                backgroundColor: 'rgba(38, 166, 154, 0.16)',
-                border: '1px solid rgba(128, 203, 196, 0.45)',
-                padding: '1px 5px',
-                borderRadius: '4px',
-              }}
-            >
-              🪶【羽弾蓄積】+{player.featherChargeBonus}　回数 {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount}　{featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
-            </span>
-          ) : null}
+          )}
           {hasSelectedModeAlternationBonus && (
             <span
               aria-label={`交互ボーナス準備中：与ダメージ+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%`}
@@ -331,35 +230,33 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 background: 'rgba(255,193,7,0.13)',
                 border: '1px solid rgba(255,224,130,0.45)',
                 borderRadius: '999px',
-                padding: '2px 6px',
+                padding: '3px 7px',
                 whiteSpace: 'nowrap',
               }}
             >
-              ↔ 交互 +{Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%
+              交互 +{Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%
             </span>
           )}
         </div>
-
         <div
+          aria-label={`必殺技ゲージ ${player.ultimateGauge}/3`}
+          title="必殺技ゲージ"
           style={{
             display: 'flex',
             alignItems: 'center',
+            gap: '4px',
             fontSize: '11px',
-            backgroundColor: isUltimateReady ? 'rgba(255, 111, 0, 0.4)' : '#1E2332',
+            fontWeight: 900,
+            backgroundColor: isUltimateReady ? 'rgba(255,111,0,0.24)' : '#1E2332',
             border: `1px solid ${isUltimateReady ? '#FFD54F' : '#3E4C66'}`,
-            borderRadius: '6px',
-            padding: '2px 6px',
+            color: isUltimateReady ? '#FFE082' : '#D1D9E8',
+            borderRadius: '8px',
+            padding: '4px 8px',
+            whiteSpace: 'nowrap',
           }}
         >
-          <span style={{ color: '#B0BEC5' }}>必殺技ゲージ:&nbsp;</span>
-          <span style={{ fontWeight: 800, color: isUltimateReady ? '#FFD54F' : '#FFFFFF' }}>
-            {player.ultimateGauge}/3
-          </span>
-          {isUltimateReady && (
-            <span style={{ marginLeft: '4px', fontSize: '10px', fontWeight: 800, color: '#FFE082' }}>
-              [発動可!]
-            </span>
-          )}
+          <Flame size={13} aria-hidden="true" />
+          {player.ultimateGauge}/3
         </div>
       </div>
 
@@ -382,7 +279,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 {
                   id: 'FEATHER_PIERCE' as const,
                   label: '🪽 穿羽',
-                  detail: `${FEATHER_SPLIT_PIERCE_MULTIPLIER.toFixed(2)}× · ${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true)}T` : '使用可'}`,
+                  detail: getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_PIERCE', true)}T` : '使用可能',
                   accent: '#EA80FC',
                   background: 'rgba(123,31,162,.34)',
                   text: '#F3E5F5',
@@ -390,7 +287,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 {
                   id: 'FEATHER_RAPID' as const,
                   label: '🪶 連羽',
-                  detail: `${FEATHER_SPLIT_RAPID_MULTIPLIER.toFixed(2)}× · ${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true)}T` : '使用可'}`,
+                  detail: getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true) > 0 ? `CT ${getSpecialCooldownRemaining(player, 'FEATHER_RAPID', true)}T` : '使用可能',
                   accent: '#80CBC4',
                   background: 'rgba(0,121,107,.28)',
                   text: '#D7FFF8',
@@ -403,14 +300,11 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                     type="button"
                     aria-label={`${choice.id === 'FEATHER_PIERCE' ? '穿羽' : '連羽'}を選択`}
                     aria-pressed={selected}
-                    title={choice.id === 'FEATHER_PIERCE'
-                      ? '穿羽：高火力、出血付与あり、CT3。交互に使うと与ダメージ+15%。'
-                      : '連羽：低火力、CT2。交互に使うと与ダメージ+15%。'}
                     onClick={() => onSelectedSpecialSkillChange(choice.id)}
                     disabled={!isEnabled || isChargingSuperFallenShot}
                     style={{
                       minWidth: 0,
-                      minHeight: '38px',
+                      minHeight: '44px',
                       borderRadius: '8px',
                       border: selected ? `1px solid ${choice.accent}` : '1px solid #39445C',
                       background: selected ? choice.background : 'rgba(16,21,32,.9)',
@@ -445,7 +339,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               disabled={!isEnabled || isChargingSuperFallenShot}
               style={{
                 minWidth: 0,
-                minHeight: '38px',
+                minHeight: '44px',
                 borderRadius: '8px',
                 border: selectedSpecialSkill === 'FEATHER' ? '1px solid #EA80FC' : '1px solid #39445C',
                 background: selectedSpecialSkill === 'FEATHER' ? 'rgba(123,31,162,.34)' : 'rgba(16,21,32,.9)',
@@ -465,7 +359,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
               disabled={!isEnabled || isChargingSuperFallenShot}
               style={{
                 minWidth: 0,
-                minHeight: '38px',
+                minHeight: '44px',
                 borderRadius: '8px',
                 border: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? '1px solid #FFE082' : '1px solid #39445C',
                 background: selectedSpecialSkill === 'SUPER_FALLEN_SHOT' ? 'rgba(117,56,12,.34)' : 'rgba(16,21,32,.9)',
@@ -490,8 +384,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         {/* 1. 攻撃 */}
         <button
           onClick={() => onAction('ATTACK')}
-          title="HPダメージ予測（通常攻撃〜会心）。カイザーの装甲中はHPへのダメージと装甲耐久の減少を分けて表示します。"
-          aria-label={`攻撃。HPダメージ ${normalAttackPreview.hpDamage}〜${criticalAttackPreview.hpDamage}${hasActiveKaiserArmor ? `、装甲耐久-${normalAttackPreview.armorDamage}〜-${criticalAttackPreview.armorDamage}` : ''}`}
+          aria-label="攻撃"
           disabled={!isEnabled}
           style={{
             height: '56px',
@@ -510,26 +403,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           onMouseDown={e => isEnabled && (e.currentTarget.style.transform = 'scale(0.96)')}
           onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
         >
-          <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>攻撃</span>
-          <span style={{ fontSize: '10px', fontWeight: 800, color: isEnabled ? '#90CAF9' : '#5A6678', whiteSpace: 'nowrap' }}>
-            HP {normalAttackPreview.hpDamage}〜{criticalAttackPreview.hpDamage}
-          </span>
-          {hasActiveKaiserArmor && (
-            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>
-              装甲耐久 −{normalAttackPreview.armorDamage}〜−{criticalAttackPreview.armorDamage}
-              {(normalAttackPreview.armorWillBreak || criticalAttackPreview.armorWillBreak) ? '（破壊可能）' : ''}
-              {(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) ? '・第2形態' : ''}
-            </span>
-          )}
-          {isKaiserArmorBroken && (
-            <span style={{ fontSize: '9px', fontWeight: 750, color: '#FFD180', whiteSpace: 'nowrap' }}>
-              装甲破壊中 ×1.3{(normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) ? '・第2形態' : ''}
-            </span>
-          )}
-          {!hasActiveKaiserArmor && !isKaiserArmorBroken && (normalAttackPreview.phaseChanged || criticalAttackPreview.phaseChanged) && (
-            <span style={{ fontSize: '9px', fontWeight: 850, color: '#FFE082', whiteSpace: 'nowrap' }}>第2形態への移行あり</span>
-          )}
-        </button>
+          <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>攻撃</span>        </button>
 
         {/* 2. 回避 */}
         <button
@@ -553,9 +427,6 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
         >
           <span style={{ fontSize: '14px', fontWeight: 800, whiteSpace: 'nowrap' }}>回避</span>
-          <span style={{ fontSize: '10px', fontWeight: 700, color: isEnabled ? '#80D8FF' : '#5A6678', whiteSpace: 'nowrap' }}>
-            率:{evadeRateText}
-          </span>
         </button>
 
         {/* 3. 特殊 */}
@@ -597,15 +468,13 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             }}
           >
             {isChargingSuperFallenShot
-              ? '次ターン自動発射'
+              ? '次ターン発射'
               : isSpecialReady
                 ? selectedSpecialSkill === 'SUPER_FALLEN_SHOT'
-                  ? `今T充填（0ダメ） · ×${superFallenMultiplier.toFixed(1)} · 次T発射`
-                  : selectedFeatherSplitMode
-                    ? `${specialPreviewDetails(specialDamagePreview)}${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
-                    : isIrena
-                    ? `${specialPreviewDetails(specialDamagePreview)}（蓄積+${player.featherChargeBonus}）`
-                    : specialPreviewDetails(specialDamagePreview)
+                  ? '充填・次ターン発射'
+                  : selectedFeatherSplitMode && hasSelectedModeAlternationBonus
+                    ? `交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%`
+                    : '使用可能'
                 : `CT:${selectedSpecialCooldownRemaining}T`}
           </span>
         </button>
@@ -639,7 +508,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>☯️ 陰陽転化</span>
             <span style={{ fontSize: '10px', fontWeight: 700, color: 'inherit' }}>
-              今ターン被ダメージ50%軽減 · 次の攻撃+{GAME_BALANCE.BUFF_DAMAGE_BONUS}
+              防御＋攻撃強化
             </span>
           </button>
         </div>
@@ -684,7 +553,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
           >
             <span style={{ fontSize: '13px', fontWeight: 900, whiteSpace: 'nowrap' }}>♻️ 代償撃ち</span>
             <span style={{ fontSize: '10px', fontWeight: 700 }}>
-              HP-{COSTLY_SHOT_HP_COST} · 特殊CT {selectedSpecialCooldownRemaining > 0 ? `${selectedSpecialCooldownRemaining} → 0` : 'リセット不要'}
+              HP-{COSTLY_SHOT_HP_COST} · CTリセット
             </span>
           </button>
         </div>
@@ -814,7 +683,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  全神の権能 1/1　×　破壊の権能 1/1　—　融合完了
+                  融合必殺
                 </div>
               </div>
             </div>
@@ -833,7 +702,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 boxShadow: 'inset 0 0 14px rgba(0,0,0,0.35)',
               }}
             >
-              {isUltimateReady ? `${formatHitPreview(ultimateDamagePreview)} [発動可能!]` : `ゲージ ${player.ultimateGauge}/3`}
+              {isUltimateReady ? '発動可能' : `ゲージ ${player.ultimateGauge}/3`}
             </div>
           </button>
         </div>
@@ -963,7 +832,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 whiteSpace: 'nowrap',
               }}
             >
-              <span style={{ fontSize: '14px' }}>◆</span> 使用回数 {irenaUltimateUses.allGods}/1
+              <span style={{ fontSize: '14px' }}>◆</span> {hasUsedAllGods ? '使用済み' : '使用可能'}
             </span>
           </button>
 
@@ -1018,7 +887,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 whiteSpace: 'nowrap',
               }}
             >
-              使用回数 {irenaUltimateUses.ruin}/1 <span style={{ fontSize: '14px' }}>◆</span>
+              {hasUsedRuin ? '使用済み' : '使用可能'} <span style={{ fontSize: '14px' }}>◆</span>
             </span>
           </button>
 
@@ -1089,10 +958,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         >
           <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <strong style={{ fontSize: '16px', fontWeight: 950 }}>{player.character.ultimateSkillName}</strong>
-            <span style={{ fontSize: '10px', color: '#AEBBD0' }}>{player.character.ultimateSlogan}</span>
           </span>
           <span style={{ flexShrink: 0, fontSize: '11px', fontWeight: 900, color: isEnabled && isUltimateReady ? '#FFE082' : '#758198' }}>
-            {isUltimateReady ? formatHitPreview(ultimateDamagePreview) : 'ゲージ ' + player.ultimateGauge + '/3'}
+            {isUltimateReady ? '発動可能' : 'ゲージ ' + player.ultimateGauge + '/3'}
           </span>
         </button>
       )}
