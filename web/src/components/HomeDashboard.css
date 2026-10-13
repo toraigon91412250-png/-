@@ -288,6 +288,13 @@
   font-weight: 900;
   line-height: 1.55;
 }
+.home-dashboard__stella-save-error {
+  flex: 1 0 100%;
+  color: #FFB9C1;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.55;
+}
 .home-dashboard__mode-card--stella {
   grid-column: 1 / -1;
   min-height: 128px;
