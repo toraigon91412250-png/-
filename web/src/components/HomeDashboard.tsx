@@ -118,7 +118,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </p>
             <div className="home-dashboard__hero-actions">
               <button
-                className="home-dashboard__primary-action"
+                className={'home-dashboard__primary-action' + (stellaUnlockAvailable ? ' home-dashboard__primary-action--mystery' : '')}
                 type="button"
                 aria-label={stellaUnlockAvailable ? '？？？？？、隠された領域へ進む' : '挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
                 onClick={stellaUnlockAvailable ? onRevealStella : onStartBattle}
