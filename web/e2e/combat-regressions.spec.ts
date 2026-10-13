@@ -1001,3 +1001,30 @@ test('Super Fallen Shot resolves without its cinematic overlay or animation dela
   }).toBeLessThan(5000);
   await expect(specialAction).toContainText('CT:4T');
 });
+
+
+test('developer battle setup can select any Kaiser level without changing normal progression restrictions', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '開発者ツール' }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+
+  const combatTestSection = page.locator('.developer-tools-screen section').first();
+  await combatTestSection.getByRole('button', { name: 'Lv.100' }).click();
+  await combatTestSection.getByRole('button').filter({ hasText: '未選択' }).nth(0).click();
+  await combatTestSection.getByRole('button').filter({ hasText: '未選択' }).nth(0).click();
+  await combatTestSection.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
+
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.90/ })).toBeVisible();
+
+  await page.getByRole('button', { name: '戻る' }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+});

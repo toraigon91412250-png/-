@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
 import { BuildSavePanel } from './BuildSavePanel';
@@ -23,6 +23,7 @@ interface BattleSetupScreenProps {
   onStartBattle: (config: BattleSetupConfig) => void;
   availableStatPoints: number;
   unlockedKaiserLevel: BattleChallengeLevel;
+  allowAllKaiserLevels?: boolean;
 }
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
@@ -39,6 +40,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   onStartBattle,
   availableStatPoints,
   unlockedKaiserLevel,
+  allowAllKaiserLevels = false,
 }) => {
   const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(
     initialConfig?.kaiserLevel ?? 10,
@@ -84,7 +86,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     });
   };
 
-  const selectableKaiserLevels = getSelectableKaiserLevels(unlockedKaiserLevel);
+  const selectableKaiserLevels = allowAllKaiserLevels
+    ? BATTLE_CHALLENGE_LEVELS
+    : getSelectableKaiserLevels(unlockedKaiserLevel);
 
   const buildValidationContext: BuildValidationContext = {
     availableStatPoints,
@@ -333,11 +337,17 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             </div>
             <div style={{ textAlign: 'right', fontSize: '11px', color: '#FFCC80', fontWeight: 900 }}>
               <div>挑戦状況</div>
-              <div style={{ marginTop: '3px', fontSize: '13px' }}>Lv.{unlockedKaiserLevel} 解放中</div>
+              {allowAllKaiserLevels ? (
+                <div style={{ marginTop: '3px', fontSize: '13px' }}>開発者テスト：全Lv選択可能</div>
+              ) : (
+                <div style={{ marginTop: '3px', fontSize: '13px' }}>Lv.{unlockedKaiserLevel} 解放中</div>
+              )}
             </div>
           </div>
           <p style={{ margin: '8px 0 0', fontSize: '11px', lineHeight: 1.55, color: '#9AA8BF' }}>
-            勝利すると次の10レベルが解放されます。選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです。
+            {allowAllKaiserLevels
+              ? '開発者テストでは、進行状況に関係なく任意のレベルで戦闘を開始できます。'
+              : '勝利すると次の10レベルが解放されます。選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです。'}
           </p>
 
           <div style={{
@@ -368,7 +378,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                 >
                   <div style={{ fontSize: '15px', fontWeight: 950 }}>Lv.{level}</div>
                   <div className="battle-challenge-level-caption" style={{ marginTop: '2px', fontSize: '9px', color: level === unlockedKaiserLevel ? '#FFE082' : level === 100 ? '#FFB74D' : '#7C879C' }}>
-                    {level === 100 ? '最終試練' : level === unlockedKaiserLevel ? '次の挑戦' : '直前にクリア'}
+                    {level === 100 ? '最終試練' : allowAllKaiserLevels && level !== unlockedKaiserLevel && level !== unlockedKaiserLevel - 10 ? '開発者テスト' : level === unlockedKaiserLevel ? '次の挑戦' : '直前にクリア'}
                   </div>
                 </button>
               );
