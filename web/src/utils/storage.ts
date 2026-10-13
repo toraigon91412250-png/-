@@ -100,6 +100,8 @@ export const KAISER_100_VICTORY_STAT_POINT_REWARD = 50;
 
 export interface StellaModeProgress {
   isUnlocked: boolean;
+  /** True only after defeating EX Kaiser in the post-Lv.100 challenge. */
+  exKaiserDefeated: boolean;
   revealAvailable: boolean;
   kaiser100RewardClaimed: boolean;
 }
@@ -113,6 +115,7 @@ export interface Kaiser100VictoryRewardResult {
 
 const INITIAL_STELLA_MODE_PROGRESS: StellaModeProgress = {
   isUnlocked: false,
+  exKaiserDefeated: false,
   revealAvailable: false,
   kaiser100RewardClaimed: false,
 };
@@ -121,9 +124,12 @@ function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
   if (!value || typeof value !== 'object') return { ...INITIAL_STELLA_MODE_PROGRESS };
   const parsed = value as Partial<StellaModeProgress>;
   const isUnlocked = parsed.isUnlocked === true;
+  // Keep existing unlocks valid, but route an old Lv.100-only reveal through EX Kaiser.
+  const exKaiserDefeated = parsed.exKaiserDefeated === true || isUnlocked;
   return {
     isUnlocked,
-    revealAvailable: !isUnlocked && parsed.revealAvailable === true,
+    exKaiserDefeated,
+    revealAvailable: !isUnlocked && exKaiserDefeated && parsed.revealAvailable === true,
     kaiser100RewardClaimed: parsed.kaiser100RewardClaimed === true,
   };
 }
@@ -146,14 +152,15 @@ export function loadStellaModeProgress(): StellaModeProgress {
  */
 export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   const current = loadStellaModeProgress();
-  if (current.kaiser100RewardClaimed && (current.isUnlocked || current.revealAvailable)) {
+  if (current.kaiser100RewardClaimed && (current.isUnlocked || current.exKaiserDefeated)) {
     return { progress: current, rewardGranted: false, persisted: true };
   }
 
   const rewardGranted = !current.kaiser100RewardClaimed;
   const next: StellaModeProgress = {
     isUnlocked: current.isUnlocked,
-    revealAvailable: current.isUnlocked ? false : true,
+    exKaiserDefeated: current.exKaiserDefeated,
+    revealAvailable: !current.isUnlocked && current.exKaiserDefeated,
     kaiser100RewardClaimed: true,
   };
   const writes: StorageWrite[] = [
@@ -175,6 +182,26 @@ export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   };
 }
 
+/**
+ * Records the EX Kaiser challenge victory and reveals the hidden entrance.
+ * A Lv.100 reward claim is required first; retries are idempotent.
+ */
+export function recordExKaiserVictory(): { progress: StellaModeProgress; persisted: boolean } {
+  const current = loadStellaModeProgress();
+  if (current.exKaiserDefeated) return { progress: current, persisted: true };
+  if (!current.kaiser100RewardClaimed) return { progress: current, persisted: false };
+
+  const next: StellaModeProgress = {
+    ...current,
+    exKaiserDefeated: true,
+    revealAvailable: !current.isUnlocked,
+  };
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+  ]);
+  return { progress: persisted ? next : current, persisted };
+}
+
 /** Persist the unlock only after the player has viewed the warp/reveal event. */
 export function unlockStellaMode(): { progress: StellaModeProgress; persisted: boolean } {
   const current = loadStellaModeProgress();
@@ -183,6 +210,7 @@ export function unlockStellaMode(): { progress: StellaModeProgress; persisted: b
 
   const next: StellaModeProgress = {
     isUnlocked: true,
+    exKaiserDefeated: current.exKaiserDefeated,
     revealAvailable: false,
     kaiser100RewardClaimed: current.kaiser100RewardClaimed,
   };
