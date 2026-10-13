@@ -42,7 +42,9 @@ test('unlocked Stella mode opens the dedicated EX Kaiser final battle and all th
   await expect(page.getByRole('button', { name: '天象支配を発動' })).toBeEnabled();
 
   await page.getByRole('button', { name: '不滅を発動' }).click();
-  await expect(page.getByText(/不滅.*完全無敵/)).toBeVisible();
+  const battleLog = page.locator('.stella-final__log-lines');
+  await expect(battleLog.getByText(/権能「不滅」を発動/)).toBeVisible();
+  await expect(page.getByText(/次回使用：第 4 ターン/)).toBeVisible();
 });
 
 test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance', async ({ page }) => {
