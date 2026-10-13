@@ -76,6 +76,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
 
   const selectableKaiserLevels = getSelectableKaiserLevels(unlockedKaiserLevel);
   const selectedPlayerCharacter = playerCharacters.find(character => character.id === selectedPlayerCharacterId) ?? IRENA;
+  const effectiveSelectedAbilities = selectedPlayerCharacterId === IRENA.id ? selectedAbilities : [];
 
   const buildValidationContext: BuildValidationContext = {
     availableStatPoints,
@@ -104,7 +105,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     if (!result.success) return result.message ?? 'ビルドを反映できませんでした。';
 
     setStatAllocation({ ...validation.snapshot.statAllocation });
-    setSelectedAbilities([...validation.snapshot.abilityIds]);
+    setSelectedAbilities(selectedPlayerCharacterId === IRENA.id ? [...validation.snapshot.abilityIds] : []);
     return null;
   };
 
@@ -276,7 +277,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         <BuildSavePanel
           snapshot={{
             statAllocation,
-            abilityIds: [...selectedAbilities],
+            abilityIds: [...effectiveSelectedAbilities],
             imprintIds: [...imprintProgress.equippedIds],
           }}
           context={buildValidationContext}
@@ -732,9 +733,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             カイザー Lv.{selectedLevel}
           </div>
           <div style={{ marginTop: '4px', fontSize: '11px', color: '#B0BEC5' }}>
-            {selectedAbilities.length === 0
+            {effectiveSelectedAbilities.length === 0
               ? '権能なしで開始します。'
-              : selectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
+              : effectiveSelectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
           </div>
         </div>
 

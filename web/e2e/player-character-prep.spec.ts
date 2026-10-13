@@ -30,4 +30,7 @@ test('the new player-only character can be selected and enters battle with her o
   await expect(page.getByRole('button', { name: 'グランノヴァを発動' })).toBeVisible();
   await expect(page.getByText(/ステラレイ/)).toBeVisible();
   await expect(page.getByText('固有: 天星の加護')).toBeVisible();
+
+  await page.getByRole('button', { name: /ステラレイ/ }).click();
+  await expect(page.getByRole('button', { name: /星蝕 3ターンの詳細を表示/ })).toBeVisible();
 });
