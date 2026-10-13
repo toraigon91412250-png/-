@@ -11,7 +11,6 @@ import {
 interface ActionDockProps {
   player: BattleFighter;
   battleConfig: BattleSetupConfig;
-  turnNumber: number;
   isEnabled: boolean;
   onCinematicActiveChange: (active: boolean) => void;
   selectedSpecialSkill: IrenaSpecialSkillId;
@@ -31,7 +30,6 @@ interface ActionDockProps {
 export const ActionDock: React.FC<ActionDockProps> = ({
   player,
   battleConfig,
-  turnNumber,
   isEnabled,
   onCinematicActiveChange,
   selectedSpecialSkill,

@@ -388,7 +388,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               battleConfig={state.battleConfig}
-              turnNumber={state.turnNumber}
               isEnabled={isActionEnabled && !isUltimateCinematicActive}
               onCinematicActiveChange={setIsUltimateCinematicActive}
               selectedSpecialSkill={selectedSpecialSkill}
@@ -490,7 +489,6 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
             <ActionDock
               player={state.player}
               battleConfig={state.battleConfig}
-              turnNumber={state.turnNumber}
               isEnabled={isActionEnabled && !isUltimateCinematicActive}
               onCinematicActiveChange={setIsUltimateCinematicActive}
               selectedSpecialSkill={selectedSpecialSkill}
