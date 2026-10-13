@@ -27,7 +27,7 @@ register(
   { parentURL: import.meta.url }
 );
 
-const { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } = await import('./src/data/characters.ts');
+const { IRENA, KAISER, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
@@ -190,7 +190,11 @@ const cpuKaiserBase = CPU_CHARACTERS.find(character => character.id === KAISER.i
 assert.ok(cpuKaiserBase, 'The runtime CPU roster must contain Kaiser.');
 assert.strictEqual(cpuKaiserBase.maxHp, KAISER.maxHp * 2);
 assert.strictEqual(cpuKaiserBase.attack, KAISER.attack * 1.5);
-console.log('✓ Current character stats and the runtime CPU roster are verified.');
+assert.deepStrictEqual(PLAYER_CHARACTERS.map(character => character.id), ['irena']);
+assert.deepStrictEqual(CPU_CHARACTERS.map(character => character.id), ['kaiser']);
+assert.strictEqual(getPlayerCharacterById('irena').id, 'irena');
+assert.strictEqual(getPlayerCharacterById('unknown-character').id, 'irena');
+console.log('✓ Player and CPU rosters are explicitly isolated; invalid player selections safely fall back.');
 
 const runtimeKaiserLv10 = createKaiserForLevel(cpuKaiserBase, 10);
 const runtimeKaiserLv50 = createKaiserForLevel(cpuKaiserBase, 50);

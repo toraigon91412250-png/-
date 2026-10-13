@@ -258,6 +258,8 @@ export interface StatAllocation {
 
 export interface BattleSetupConfig {
   kaiserLevel: BattleChallengeLevel;
+  /** Player-controlled character. Older configs omit this and default to Irena. */
+  playerCharacterId?: string;
   abilities: EquippedAbility[];
   /** Imprints are persisted separately and snapshotted into each battle config. */
   imprints?: ImprintId[];

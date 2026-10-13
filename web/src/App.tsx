@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
-import { IRENA, KAISER, CPU_CHARACTERS, getIrenaWithSkillProgress } from './data/characters';
+import { IRENA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
 import { GrowthHubScreen } from './components/GrowthHubScreen';
@@ -61,6 +61,7 @@ export const App: React.FC = () => {
   const [raidReturnScreen, setRaidReturnScreen] = useState<'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB'>('SELECT');
   const [battleSetup, setBattleSetup] = useState<BattleSetupConfig>({
     kaiserLevel: kaiserChallengeProgress.unlockedLevel,
+    playerCharacterId: IRENA.id,
     abilities: [],
     statAllocation: normalizeStatAllocation(),
     statPointTotal: loadStatPoints(),
@@ -92,6 +93,10 @@ export const App: React.FC = () => {
   };
 
   const upgradedIrena = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
+  const getPlayerCharacterForBattle = (characterId?: string) => {
+    const selectedCharacter = getPlayerCharacterById(characterId);
+    return selectedCharacter.id === IRENA.id ? upgradedIrena : selectedCharacter;
+  };
 
   const {
     state: battleState,
@@ -176,6 +181,7 @@ export const App: React.FC = () => {
     if (prefill) {
       setBattleSetup({
         ...prefill,
+        playerCharacterId: getPlayerCharacterById(prefill.playerCharacterId ?? battleSetup.playerCharacterId).id,
         kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
@@ -183,6 +189,7 @@ export const App: React.FC = () => {
     } else {
       setBattleSetup(prev => ({
         ...prev,
+        playerCharacterId: getPlayerCharacterById(prev.playerCharacterId).id,
         kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
@@ -299,9 +306,9 @@ export const App: React.FC = () => {
   };
 
   const getBattleCpuOpponent = () =>
-    CPU_CHARACTERS.find(c => c.id !== upgradedIrena.id)
-    || CPU_CHARACTERS.find(c => c.id === KAISER.id)
-    || KAISER;
+    CPU_CHARACTERS.find(character => character.id === KAISER.id)
+    ?? CPU_CHARACTERS[0]
+    ?? KAISER;
 
   const handleStartBattle = (config: BattleSetupConfig) => {
     const battleConfigWithImprints: BattleSetupConfig = {
@@ -311,7 +318,12 @@ export const App: React.FC = () => {
     setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
     const cpuOpponent = getBattleCpuOpponent();
-    restartBattle(upgradedIrena, cpuOpponent, difficulty, battleConfigWithImprints);
+    restartBattle(
+      getPlayerCharacterForBattle(battleConfigWithImprints.playerCharacterId),
+      cpuOpponent,
+      difficulty,
+      battleConfigWithImprints,
+    );
     setIsBattleDeploying(true);
     setScreen('BATTLE');
 
@@ -426,6 +438,7 @@ export const App: React.FC = () => {
     setAvailableStatPoints(loadStatPoints());
     setBattleSetup({
       kaiserLevel: 10,
+      playerCharacterId: getPlayerCharacterById(battleSetup.playerCharacterId).id,
       abilities: [],
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
@@ -526,6 +539,9 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
+          playerCharacters={PLAYER_CHARACTERS}
+          selectedPlayerCharacterId={getPlayerCharacterById(battleSetup.playerCharacterId).id}
+          onSelectPlayerCharacter={playerCharacterId => setBattleSetup(prev => ({ ...prev, playerCharacterId }))}
           abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
           onApplySavedBuild={handleApplySavedBuild}
@@ -542,7 +558,7 @@ export const App: React.FC = () => {
           state={battleState}
           onAction={onActionSelected}
           onBackToSelect={handleBackToSelect}
-          onRestart={() => restartBattle(upgradedIrena, getBattleCpuOpponent(), difficulty, battleSetup)}
+          onRestart={() => restartBattle(getPlayerCharacterForBattle(battleSetup.playerCharacterId), getBattleCpuOpponent(), difficulty, battleSetup)}
           skillProgress={skillProgress}
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
