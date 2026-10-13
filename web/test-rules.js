@@ -38,7 +38,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, loadStellaModeProgress, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -789,6 +789,85 @@ assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');
 assert.strictEqual(loadStatPoints(), 14);
 
+// Stella's one-time Lv.100 reward must be compatible with old saves, atomic on
+// storage failure, idempotent on retries, and separate from the reveal/unlock.
+const stellaModeTestKeys = [
+  'duel_arena_stat_points',
+  'duel_arena_raid_reward_progress',
+  STELLA_MODE_PROGRESS_KEY,
+];
+const stellaModeStateBeforeTest = new Map(
+  stellaModeTestKeys.map(key => [key, storageValues.get(key)]),
+);
+const originalSetItemForStellaModeTest = globalThis.localStorage.setItem;
+try {
+  storageValues.set('duel_arena_stat_points', '12');
+  storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+    coreFragments: 0,
+    imprintTickets: 0,
+    bonusStatPoints: 0,
+    claimedVictoryRunIds: [],
+  }));
+  storageValues.delete(STELLA_MODE_PROGRESS_KEY);
+
+  assert.deepStrictEqual(
+    loadStellaModeProgress(),
+    { isUnlocked: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    'A save created before Stella existed must default to locked without throwing.',
+  );
+  assert.strictEqual(unlockStellaMode().persisted, false, 'Stella cannot unlock before the reveal is claimed.');
+
+  let failPointWriteOnce = true;
+  globalThis.localStorage.setItem = (key, value) => {
+    if (key === 'duel_arena_stat_points' && failPointWriteOnce) {
+      failPointWriteOnce = false;
+      throw new Error('simulated stat-point save failure');
+    }
+    originalSetItemForStellaModeTest(key, value);
+  };
+  const failedStellaClaim = claimKaiser100VictoryReward();
+  assert.strictEqual(failedStellaClaim.persisted, false, 'A partial reward write must be reported as failure.');
+  assert.strictEqual(loadStatPoints(), 12, 'A failed Lv.100 claim must not grant the 50 points.');
+  assert.deepStrictEqual(
+    loadStellaModeProgress(),
+    { isUnlocked: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    'A failed reward transaction must roll back the reveal and claim marker.',
+  );
+
+  globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
+  const firstStellaClaim = claimKaiser100VictoryReward();
+  assert.strictEqual(firstStellaClaim.persisted, true);
+  assert.strictEqual(firstStellaClaim.rewardGranted, true);
+  assert.strictEqual(loadStatPoints(), 62, 'A successful first claim grants exactly 50 base points.');
+  assert.deepStrictEqual(
+    firstStellaClaim.progress,
+    { isUnlocked: false, revealAvailable: true, kaiser100RewardClaimed: true },
+    'Claiming the reward reveals the entrance but does not skip the warp unlock.',
+  );
+
+  const repeatedStellaClaim = claimKaiser100VictoryReward();
+  assert.strictEqual(repeatedStellaClaim.persisted, true);
+  assert.strictEqual(repeatedStellaClaim.rewardGranted, false, 'Repeating the claim must not grant another reward.');
+  assert.strictEqual(loadStatPoints(), 62, 'Repeated Lv.100 wins must not duplicate the +50 points.');
+
+  const firstStellaUnlock = unlockStellaMode();
+  assert.strictEqual(firstStellaUnlock.persisted, true);
+  assert.deepStrictEqual(
+    firstStellaUnlock.progress,
+    { isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true },
+    'The hidden mode unlock should happen only after the reveal is confirmed.',
+  );
+  assert.strictEqual(unlockStellaMode().persisted, true, 'Unlock confirmation should be idempotent.');
+  assert.strictEqual(loadStatPoints(), 62, 'Unlocking Stella must not change the reward total.');
+} finally {
+  globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
+  for (const [key, value] of stellaModeStateBeforeTest) {
+    if (value === undefined) storageValues.delete(key);
+    else storageValues.set(key, value);
+  }
+}
+console.log('✓ Stella unlock migration, one-time reward, storage rollback, and unlock sequencing are covered.');
+
 // A single battle-result save is the sole source of battle talent EXP.
 const talentProgressKeyForRewardTest = 'duel_arena_irena_talent_progress';
 const battleRewardTestKeys = [
@@ -815,6 +894,14 @@ try {
     JSON.parse(storageValues.get(talentProgressKeyForRewardTest)).experience,
     100,
     'One victory save must grant exactly 100 talent EXP.',
+  );
+
+  const stellaBattleReward = saveBattleResult(true, 0, 'stella');
+  assert.strictEqual(stellaBattleReward.persisted, true, 'A Stella battle result should still save the shared rewards.');
+  assert.strictEqual(
+    JSON.parse(storageValues.get(talentProgressKeyForRewardTest)).experience,
+    100,
+    'A Stella victory must not grant Irena talent EXP.',
   );
 } finally {
   for (const [key, value] of battleRewardStateBeforeTest) {
