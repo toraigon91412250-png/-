@@ -154,10 +154,12 @@ export function useBattleGame(
       const previousEffects = prev.visualEffects ?? [];
       let visualEffects = previousEffects;
 
-      if (next.visualEffect) {
-        if (!previousEffects.some(effect => effect.effectId === next.visualEffect?.effectId)) {
-          visualEffects = [...previousEffects, next.visualEffect];
-        }
+      const nextVisualEffect = next.visualEffect;
+      if (nextVisualEffect) {
+        const alreadyTracked = previousEffects.some(effect => effect.effectId === nextVisualEffect.effectId);
+        visualEffects = alreadyTracked
+          ? previousEffects.map(effect => effect.effectId === nextVisualEffect.effectId ? nextVisualEffect : effect)
+          : [...previousEffects, nextVisualEffect];
       } else if (prev.visualEffect) {
         visualEffects = previousEffects.filter(effect => effect.effectId !== prev.visualEffect?.effectId);
       }
@@ -1263,6 +1265,7 @@ export function useBattleGame(
         if (isSuperFallenShot && !actor.isSuperFallenShotCharging) {
           const skillLevel = actor.character.featherSkillLevel || 1;
           const multiplier = getIrenaSuperFallenShotMultiplier(skillLevel);
+          const effectId = nextVisualEffectId.current++;
 
           updateState(prev => ({
             ...prev,
@@ -1274,6 +1277,20 @@ export function useBattleGame(
                   isEvading: false,
                 }
               : prev.player,
+            visualEffect: {
+              targetIsPlayer: true,
+              damage: 0,
+              effectType: 'SUPER_FALLEN_CHARGE',
+              isCritical: false,
+              isEvade: false,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '超堕天撃',
+              statusAilmentName: '',
+              bannerText: '⚡🪶『超堕天撃』CHARGE',
+              effectId,
+            },
           }));
 
           gainUltimateGauge(isActorPlayer, actor.character.name, '特殊技『超堕天撃』充填開始', turn);
@@ -1344,7 +1361,27 @@ export function useBattleGame(
             }
           }
 
-          // Resolve the shot immediately; its former cinematic wait is removed.
+          // Show the cut-in without waiting for it to finish before resolving the hit.
+          const effectId = nextVisualEffectId.current++;
+          updateState(prev => ({
+            ...prev,
+            visualEffect: {
+              targetIsPlayer: !isActorPlayer,
+              damage: 0,
+              effectType: 'SUPER_FALLEN_SHOT',
+              isCritical: false,
+              isEvade: isEvaded,
+              isBuff: false,
+              isUltimate: false,
+              actorName: actor.character.name,
+              skillName: '超堕天撃',
+              statusAilmentName: '',
+              bannerText: isEvaded
+                ? '💨『超堕天撃』MISS!'
+                : '⚡🪶『超堕天撃』発射！',
+              effectId,
+            },
+          }));
           if (isEvaded) return true;
 
           const executionForHit =
@@ -1368,6 +1405,13 @@ export function useBattleGame(
             ...prev,
             player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
             enemy: isActorPlayer ? { ...prev.enemy, currentHp: newTargetHp } : prev.enemy,
+            visualEffect: prev.visualEffect?.effectId === effectId
+              ? {
+                  ...prev.visualEffect,
+                  damage: finalDamage,
+                  bannerText: `⚡🪶『超堕天撃』-${finalDamage}!`,
+                }
+              : prev.visualEffect,
           }));
 
           if (newTargetHp <= 0) return false;
