@@ -271,6 +271,8 @@ export interface StatAllocation {
 
 export interface BattleSetupConfig {
   kaiserLevel: BattleChallengeLevel;
+  /** Set to EX only for the post-Lv.100 challenge; absent legacy configs default to normal. */
+  kaiserChallengeMode?: 'NORMAL' | 'EX';
   /** Player-controlled character. Older configs omit this and default to Irena. */
   playerCharacterId?: string;
   abilities: EquippedAbility[];
