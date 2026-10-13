@@ -40,6 +40,7 @@ interface HomeDashboardProps {
   onOpenDeveloperTools: () => void;
   stellaUnlockAvailable: boolean;
   stellaModeUnlocked: boolean;
+  stellaRewardSaveError: boolean;
   onRevealStella: () => void;
   onOpenStellaMode: () => void;
 }
@@ -59,6 +60,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenDeveloperTools,
   stellaUnlockAvailable,
   stellaModeUnlocked,
+  stellaRewardSaveError,
   onRevealStella,
   onOpenStellaMode,
 }) => {
@@ -137,6 +139,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   Lv.100撃破報酬：ステータスポイント +50P 獲得
                 </span>
               )}
+              {stellaRewardSaveError && (
+                <span className="home-dashboard__stella-save-error" role="alert">
+                  Lv.100報酬を保存できませんでした。保存領域を確認して、もう一度Lv.100に勝利してください。
+                </span>
+              )}
             </div>
           </div>
           <div className="home-dashboard__hero-foot">
@@ -195,7 +202,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <span className="home-dashboard__mode-copy">
                   <small>HIDDEN CHARACTER UNLOCKED</small>
                   <strong>ステラモード</strong>
-                  <span>星律・星蝕・天象支配。もうひとつの戦いへ。</span>
+                  <span>星の力を操る、もうひとつの戦いへ。</span>
                 </span>
                 <span className="home-dashboard__mode-meta"><span>解放済み</span><ChevronRight size={18} /></span>
               </button>
