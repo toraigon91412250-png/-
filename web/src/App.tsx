@@ -625,7 +625,11 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
-          playerCharacters={battleSetupMode === 'STELLA' ? [STELLA] : PLAYER_CHARACTERS}
+          playerCharacters={battleSetupMode === 'STELLA'
+            ? [STELLA]
+            : battleSetupMode === 'DEVELOPER'
+              ? PLAYER_CHARACTERS
+              : [IRENA]}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
             ? STELLA.id
             : getPlayerCharacterById(battleSetup.playerCharacterId).id}
