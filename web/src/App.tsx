@@ -28,7 +28,7 @@ import type { IrenaTalentId } from './utils/irenaTalentSystem';
 import type { StellaModeProgress } from './utils/storage';
 
 type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
-type BattleSetupMode = 'IRENA' | 'STELLA' | 'DEVELOPER';
+type BattleSetupMode = 'NORMAL' | 'STELLA' | 'DEVELOPER';
 
 // These screens already have their own transition or combat presentation.
 const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
   const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
   const [isStellaWarping, setIsStellaWarping] = useState(false);
   const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
-  const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('IRENA');
+  const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
 
   const handleScreenTransitionComplete = React.useCallback(() => {
     setIsScreenTransitioning(false);
@@ -192,7 +192,7 @@ export const App: React.FC = () => {
     prefill?: BattleSetupConfig,
     returnTo: 'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS' = 'SELECT',
     allowAllKaiserLevels = false,
-    mode: BattleSetupMode = returnTo === 'DEV_TOOLS' ? 'DEVELOPER' : 'IRENA',
+    mode: BattleSetupMode = returnTo === 'DEV_TOOLS' ? 'DEVELOPER' : 'NORMAL',
   ) => {
     setBattleSetupReturnScreen(returnTo);
     setAllowAllKaiserLevelsInBattleSetup(allowAllKaiserLevels);
@@ -209,9 +209,7 @@ export const App: React.FC = () => {
     setAvailableStatPoints(currentStatPoints);
     const requestedPlayerCharacterId = mode === 'STELLA'
       ? STELLA.id
-      : mode === 'IRENA'
-        ? IRENA.id
-        : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
+      : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
     const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
       abilities.filter(ability => ability.id === 'ABYSS' || ability.id === 'JUDGMENT');
 
@@ -358,7 +356,7 @@ export const App: React.FC = () => {
     setStellaModeProgress(result.progress);
     setStellaRewardSaveError(false);
     setIsStellaWarping(false);
-    setBattleSetupMode('IRENA');
+    setBattleSetupMode('NORMAL');
     return true;
   };
 
@@ -535,7 +533,7 @@ export const App: React.FC = () => {
       {screen === 'SELECT' ? (
         <HomeDashboard
           overallStats={overallStats}
-          onStartBattle={() => handleOpenBattleSetup(undefined, 'SELECT', false, 'IRENA')}
+          onStartBattle={() => handleOpenBattleSetup(undefined, 'SELECT', false, 'NORMAL')}
           onOpenGrowth={() => {
             refreshProgress();
             navigateToScreen('GROWTH_HUB');
@@ -628,16 +626,10 @@ export const App: React.FC = () => {
         />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
-          playerCharacters={battleSetupMode === 'STELLA'
-            ? [STELLA]
-            : battleSetupMode === 'DEVELOPER' && stellaModeProgress.isUnlocked
-              ? PLAYER_CHARACTERS
-              : [IRENA]}
+          playerCharacters={battleSetupMode === 'STELLA' ? [STELLA] : PLAYER_CHARACTERS}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
             ? STELLA.id
-            : battleSetupMode === 'IRENA'
-              ? IRENA.id
-              : getPlayerCharacterById(battleSetup.playerCharacterId).id}
+            : getPlayerCharacterById(battleSetup.playerCharacterId).id}
           onSelectPlayerCharacter={playerCharacterId => setBattleSetup(prev => ({ ...prev, playerCharacterId }))}
           abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
