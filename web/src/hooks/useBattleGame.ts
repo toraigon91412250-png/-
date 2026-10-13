@@ -1927,7 +1927,6 @@ export function useBattleGame(
   const finalizeBattle = (winnerIsPlayer: boolean) => {
     yinYangDefensePendingRef.current = false;
     const masteryBonus = battleMasteryRewardRef.current;
-    const reward = getBattleReward(winnerIsPlayer, masteryBonus);
     const playerCharacterId = stateRef.current.player.character.id;
     const reward = playerCharacterId === 'irena' ? getBattleReward(winnerIsPlayer, masteryBonus) : 0;
     const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus, playerCharacterId);
