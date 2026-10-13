@@ -4,7 +4,8 @@ import irenaSelectImg from '../assets/img_irena_select.jpg';
 import irenaIconImg from '../assets/img_irena_icon.jpg';
 import irenaCutInImg from '../assets/img_irena_cutin.jpg';
 import kaiserImg from '../assets/img_kaiser.jpg';
-import stellaPlaceholder from '../assets/stella_placeholder.svg';
+import stellaImage from '../assets/IMG_1185.jpeg';
+import stellaCutInImage from '../assets/IMG_1186.jpeg';
 
 export const IRENA: CharacterDef = {
   id: 'irena',
@@ -82,7 +83,7 @@ export const KAISER: CharacterDef = {
  * Characters selectable by the human player.
  * Add new playable characters here, not to CPU_CHARACTERS.
  */
-// Temporary data for the incoming playable character. Replace provisional values/art when the final assets are ready.
+// Current data for the playable Stella character.
 export const STELLA: CharacterDef = {
   id: 'stella',
   name: 'ステラ（仮）',
@@ -102,10 +103,10 @@ export const STELLA: CharacterDef = {
   ultimateSkillName: 'グランノヴァ',
   ultimateSkillDamage: 950,
   ultimateSlogan: '天星の魔法陣から超新星の輝きを解き放つ。',
-  imageSrc: stellaPlaceholder,
-  selectImageSrc: stellaPlaceholder,
-  iconImageSrc: stellaPlaceholder,
-  specialCutInSrc: stellaPlaceholder,
+  imageSrc: stellaImage,
+  selectImageSrc: stellaImage,
+  iconImageSrc: stellaImage,
+  specialCutInSrc: stellaCutInImage,
   primaryColor: '#D84B6B',
   secondaryColor: '#8E59D9',
 };
