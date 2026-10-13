@@ -374,6 +374,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
     return (
       <div
+        data-testid="super-fallen-shot-charge-cut-in"
         aria-hidden="true"
         style={{
           position: 'absolute',
@@ -541,6 +542,7 @@ const SuperFallenShotVfx: React.FC<SuperFallenShotVfxProps> = ({
 
   return (
     <div
+      data-testid="super-fallen-shot-release-cut-in"
       aria-hidden="true"
       style={{
         position: 'absolute',

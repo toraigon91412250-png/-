@@ -982,7 +982,7 @@ test('Feather Split keeps its selector compact and independently cools down each
   expect(pageErrors, 'Feather Split should preserve the battle UI without uncaught JavaScript errors.').toEqual([]);
 });
 
-test('Super Fallen Shot resolves without its cinematic overlay or animation delays', async ({ page }) => {
+test('Super Fallen Shot shows charge and release cut-ins without blocking combat resolution', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -1014,11 +1014,29 @@ test('Super Fallen Shot resolves without its cinematic overlay or animation dela
   await expect(specialAction).toContainText(/今T充填（0ダメ）.*次T発射/);
   await expect(specialAction).not.toContainText(/HP\d+ダメ/);
 
+  const chargeCutIn = page.getByTestId('super-fallen-shot-charge-cut-in');
+  const releaseCutIn = page.getByTestId('super-fallen-shot-release-cut-in');
   const resolutionStartedAt = Date.now();
   await specialAction.click();
+
+  await expect(chargeCutIn).toBeVisible({ timeout: 3_000 });
+  const chargeArtwork = chargeCutIn.locator('img[src*="IMG_1154"]');
+  await expect(chargeArtwork).toHaveCount(1);
+  await expect.poll(() => chargeArtwork.evaluate(node => {
+    const image = node as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0;
+  })).toBe(true);
   await expect(page.getByText(/超堕天撃 充填中 — 次のターン自動発射/)).toHaveCount(0);
 
-  // The automatic second-turn release and damage must continue without the removed cinematic wait.
+  await expect(releaseCutIn).toBeVisible({ timeout: 8_000 });
+  const releaseArtwork = releaseCutIn.locator('img[src*="IMG_1155"]');
+  await expect(releaseArtwork).toHaveCount(1);
+  await expect.poll(() => releaseArtwork.evaluate(node => {
+    const image = node as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0;
+  })).toBe(true);
+
+  // The visual runs independently: the automatic release still resolves promptly.
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 10_000 });
   expect(Date.now() - resolutionStartedAt).toBeLessThan(10_000);
   // HpBar renders the current/max number in its own span, separate from the "HP" label.
@@ -1031,8 +1049,6 @@ test('Super Fallen Shot resolves without its cinematic overlay or animation dela
   }).toBeLessThan(5000);
   await expect(specialAction).toContainText('CT:4T');
 });
-
-
 test('developer battle setup can select any Kaiser level without changing normal progression restrictions', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
