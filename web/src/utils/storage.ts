@@ -10,6 +10,7 @@ const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
 const STAT_POINTS_KEY = 'duel_arena_stat_points';
 const RAID_REWARD_PROGRESS_KEY = 'duel_arena_raid_reward_progress';
+export const STELLA_MODE_PROGRESS_KEY = 'duel_arena_stella_mode_progress';
 
 interface StorageWrite {
   key: string;
@@ -93,6 +94,98 @@ export function addStatPoints(amount: number): number {
     // ignore
   }
   return nextBase + loadRaidRewardProgress().bonusStatPoints;
+}
+
+export const KAISER_100_VICTORY_STAT_POINT_REWARD = 50;
+
+export interface StellaModeProgress {
+  isUnlocked: boolean;
+  revealAvailable: boolean;
+  kaiser100RewardClaimed: boolean;
+}
+
+export interface Kaiser100VictoryRewardResult {
+  progress: StellaModeProgress;
+  rewardGranted: boolean;
+  /** False if either the reward or its claim marker could not be saved. */
+  persisted: boolean;
+}
+
+const INITIAL_STELLA_MODE_PROGRESS: StellaModeProgress = {
+  isUnlocked: false,
+  revealAvailable: false,
+  kaiser100RewardClaimed: false,
+};
+
+function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
+  if (!value || typeof value !== 'object') return { ...INITIAL_STELLA_MODE_PROGRESS };
+  const parsed = value as Partial<StellaModeProgress>;
+  const isUnlocked = parsed.isUnlocked === true;
+  return {
+    isUnlocked,
+    revealAvailable: !isUnlocked && parsed.revealAvailable === true,
+    kaiser100RewardClaimed: parsed.kaiser100RewardClaimed === true,
+  };
+}
+
+/** Missing keys in older saves are treated as an untouched, locked Stella mode. */
+export function loadStellaModeProgress(): StellaModeProgress {
+  try {
+    const raw = localStorage.getItem(STELLA_MODE_PROGRESS_KEY);
+    if (raw === null) return { ...INITIAL_STELLA_MODE_PROGRESS };
+    return normalizeStellaModeProgress(JSON.parse(raw) as unknown);
+  } catch {
+    return { ...INITIAL_STELLA_MODE_PROGRESS };
+  }
+}
+
+/**
+ * Grants the one-time Lv.100 victory bonus and marks Stella's hidden entrance
+ * as available in the same storage transaction, so a failed write can't grant
+ * points without recording the claim (or vice versa).
+ */
+export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
+  const current = loadStellaModeProgress();
+  const rewardGranted = !current.kaiser100RewardClaimed;
+  const next: StellaModeProgress = {
+    isUnlocked: current.isUnlocked,
+    revealAvailable: current.isUnlocked ? false : true,
+    kaiser100RewardClaimed: true,
+  };
+  const writes: StorageWrite[] = [
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+  ];
+
+  if (rewardGranted) {
+    writes.push({
+      key: STAT_POINTS_KEY,
+      value: String(loadBaseStatPoints() + KAISER_100_VICTORY_STAT_POINT_REWARD),
+    });
+  }
+
+  const persisted = persistStorageTransaction(writes);
+  return {
+    progress: persisted ? next : current,
+    rewardGranted: persisted && rewardGranted,
+    persisted,
+  };
+}
+
+/** Persist the unlock only after the player has viewed the warp/reveal event. */
+export function unlockStellaMode(): { progress: StellaModeProgress; persisted: boolean } {
+  const current = loadStellaModeProgress();
+  if (current.isUnlocked) return { progress: current, persisted: true };
+  if (!current.revealAvailable) return { progress: current, persisted: false };
+
+  const next: StellaModeProgress = {
+    isUnlocked: true,
+    revealAvailable: false,
+    kaiser100RewardClaimed: current.kaiser100RewardClaimed,
+  };
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+  ]);
+  return { progress: persisted ? next : current, persisted };
 }
 
 const INITIAL_RAID_REWARD_PROGRESS: RaidRewardProgress = {
@@ -625,6 +718,7 @@ export function resetProgressForDeveloper(): {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
+    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
     localStorage.setItem(IRENA_TALENT_PROGRESS_KEY, JSON.stringify({
       ...INITIAL_IRENA_TALENT_PROGRESS,
       ranks: { ...INITIAL_IRENA_TALENT_PROGRESS.ranks },
