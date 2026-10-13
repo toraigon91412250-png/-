@@ -73,6 +73,7 @@ export const App: React.FC = () => {
   const [allowAllKaiserLevelsInBattleSetup, setAllowAllKaiserLevelsInBattleSetup] = useState(false);
   const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
   const [isStellaWarping, setIsStellaWarping] = useState(false);
+  const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('IRENA');
 
   const handleScreenTransitionComplete = React.useCallback(() => {
@@ -129,7 +130,12 @@ export const App: React.FC = () => {
 
     if (completedLevel === 100 && playerWon) {
       const reward = claimKaiser100VictoryReward();
-      if (reward.persisted) setStellaModeProgress(reward.progress);
+      if (reward.persisted) {
+        setStellaModeProgress(reward.progress);
+        setStellaRewardSaveError(false);
+      } else {
+        setStellaRewardSaveError(true);
+      }
     }
 
     setOverallStats(loadOverallStats());
@@ -350,6 +356,7 @@ export const App: React.FC = () => {
     const result = unlockStellaMode();
     if (!result.persisted) return false;
     setStellaModeProgress(result.progress);
+    setStellaRewardSaveError(false);
     setIsStellaWarping(false);
     setBattleSetupMode('IRENA');
     return true;
@@ -511,10 +518,11 @@ export const App: React.FC = () => {
     setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
     setStellaModeProgress(loadStellaModeProgress());
+    setStellaRewardSaveError(false);
     setBattleSetupMode('IRENA');
     setBattleSetup({
       kaiserLevel: 10,
-      playerCharacterId: getPlayerCharacterById(battleSetup.playerCharacterId).id,
+      playerCharacterId: IRENA.id,
       abilities: [],
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
@@ -550,6 +558,7 @@ export const App: React.FC = () => {
           abilityProgress={abilityProgress}
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
           stellaModeUnlocked={stellaModeProgress.isUnlocked}
+          stellaRewardSaveError={stellaRewardSaveError}
           onRevealStella={handleRevealStella}
           onOpenStellaMode={handleOpenStellaMode}
         />
@@ -640,7 +649,10 @@ export const App: React.FC = () => {
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
           onBack={() => {
-            if (battleSetupMode !== 'DEVELOPER') setBattleSetupMode('IRENA');
+            if (battleSetupMode !== 'DEVELOPER') {
+              setBattleSetupMode('IRENA');
+              setBattleSetup(prev => ({ ...prev, playerCharacterId: IRENA.id }));
+            }
             navigateToScreen(battleSetupReturnScreen);
           }}
           onStartBattle={handleStartBattle}
