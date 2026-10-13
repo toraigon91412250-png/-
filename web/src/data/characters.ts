@@ -77,10 +77,29 @@ export const KAISER: CharacterDef = {
   secondaryColor: '#D84315',
 };
 
-export const CHARACTERS = [IRENA, KAISER];
+/**
+ * Characters selectable by the human player.
+ * Add new playable characters here, not to CPU_CHARACTERS.
+ */
+export const PLAYER_CHARACTERS: readonly CharacterDef[] = [IRENA];
 
-export const CPU_CHARACTERS = CHARACTERS.map(character => ({
+/** CPU-only opponent roster; keep this list explicit so player additions never leak into the CPU. */
+export const CPU_CHARACTERS: CharacterDef[] = [KAISER].map(character => ({
   ...character,
   maxHp: character.maxHp * 2,
   attack: character.attack * 1.5,
 }));
+
+/** Complete visual catalog used by combat effects. This is not a playable or CPU roster. */
+export const CHARACTERS: CharacterDef[] = Array.from(
+  new Map(
+    [IRENA, KAISER, ...PLAYER_CHARACTERS].map(character => [character.id, character] as const),
+  ).values(),
+);
+
+/** Safely resolves older or invalid selections to the first available playable character. */
+export function getPlayerCharacterById(id?: string): CharacterDef {
+  return PLAYER_CHARACTERS.find(character => character.id === id)
+    ?? PLAYER_CHARACTERS[0]
+    ?? IRENA;
+}

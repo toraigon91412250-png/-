@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CpuDifficulty, ImprintProgress, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
 import { BuildSavePanel } from './BuildSavePanel';
@@ -10,6 +10,9 @@ import { validateBuildSnapshot, type BuildValidationContext, type SavedBuildSnap
 import { createStatPreset, getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey, StatPresetId } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
+  playerCharacters: readonly CharacterDef[];
+  selectedPlayerCharacterId: string;
+  onSelectPlayerCharacter: (characterId: string) => void;
   abilityProgress: AbilityProgress;
   imprintProgress: ImprintProgress;
   onApplySavedBuild: (config: BattleSetupConfig) => { success: boolean; message?: string };
@@ -23,6 +26,9 @@ interface BattleSetupScreenProps {
 }
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
+  playerCharacters,
+  selectedPlayerCharacterId,
+  onSelectPlayerCharacter,
   abilityProgress,
   imprintProgress,
   onApplySavedBuild,
@@ -82,6 +88,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
 
     const config: BattleSetupConfig = {
       kaiserLevel: selectedLevel,
+      playerCharacterId: selectedPlayerCharacterId,
       abilities: validation.snapshot.abilityIds.map(id => ({
         id,
         level: abilityProgress.levels[id],
@@ -101,6 +108,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   const startBattle = () => {
     onStartBattle({
       kaiserLevel: selectedLevel,
+      playerCharacterId: selectedPlayerCharacterId,
       abilities: selectedAbilities.map(id => ({
         id,
         level: abilityProgress.levels[id],
@@ -168,6 +176,97 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             ステータスを自由に配分し、そのビルドに合わせて権能を選択してください。型は固定されません。
           </p>
         </div>
+
+        <section
+          aria-labelledby="player-character-heading"
+          style={{
+            marginTop: '14px',
+            padding: '14px',
+            borderRadius: '16px',
+            border: '1px solid #333B52',
+            backgroundColor: 'rgba(16, 21, 34, 0.94)',
+          }}
+        >
+          <div style={{ fontSize: '10px', color: '#90CAF9', fontWeight: 900, letterSpacing: '0.16em' }}>
+            PLAYER CHARACTER
+          </div>
+          <h2 id="player-character-heading" style={{ margin: '4px 0 5px', fontSize: '18px', fontWeight: 950 }}>
+            操作キャラクター
+          </h2>
+          <p style={{ margin: 0, fontSize: '11px', lineHeight: 1.55, color: '#9CA3AF' }}>
+            ここで選んだキャラクターをあなたが操作する。CPUのキャラクター一覧とは別管理。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(132px, 1fr))', gap: '8px', marginTop: '10px' }}>
+            {playerCharacters.map(character => {
+              const selected = selectedPlayerCharacterId === character.id;
+              return (
+                <button
+                  key={character.id}
+                  type="button"
+                  data-player-character-id={character.id}
+                  aria-label={character.name + '、' + character.title}
+                  aria-pressed={selected}
+                  onClick={() => onSelectPlayerCharacter(character.id)}
+                  style={{
+                    position: 'relative',
+                    minWidth: 0,
+                    minHeight: '142px',
+                    overflow: 'hidden',
+                    padding: '0',
+                    borderRadius: '12px',
+                    border: selected ? '1.5px solid #F6D58B' : '1px solid #34415A',
+                    background: selected ? 'linear-gradient(155deg, rgba(100,76,39,.5), rgba(16,22,35,.98))' : 'rgba(9,14,24,.96)',
+                    color: '#FFFFFF',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <img
+                    src={character.selectImageSrc ?? character.imageSrc}
+                    alt=""
+                    style={{ display: 'block', width: '100%', height: '76px', objectFit: 'cover', objectPosition: 'center 30%', opacity: selected ? 1 : 0.78 }}
+                  />
+                  <div style={{ padding: '8px 9px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 950, overflowWrap: 'anywhere' }}>{character.name}</div>
+                    <div style={{ marginTop: '2px', fontSize: '10px', color: '#AEBBD0' }}>{character.title}</div>
+                    <div style={{ marginTop: '7px', fontSize: '10px', fontWeight: 900, color: selected ? '#F6D58B' : '#91A1B8' }}>
+                      {selected ? '✓ 選択中' : '選択する'}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+            {playerCharacters.length < 2 && (
+              <button
+                type="button"
+                disabled
+                aria-label="新キャラ準備中"
+                style={{
+                  minWidth: 0,
+                  minHeight: '142px',
+                  padding: '12px 9px',
+                  borderRadius: '12px',
+                  border: '1px dashed #47536B',
+                  background: 'linear-gradient(155deg, rgba(25,34,51,.86), rgba(9,14,24,.96))',
+                  color: '#B7C4D8',
+                  opacity: 0.84,
+                  cursor: 'not-allowed',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  textAlign: 'center',
+                }}
+              >
+                <span aria-hidden="true" style={{ fontSize: '26px', lineHeight: 1, color: '#E3C989' }}>＋</span>
+                <strong style={{ fontSize: '12px' }}>新キャラ</strong>
+                <span style={{ fontSize: '10px', fontWeight: 900, color: '#E3C989' }}>近日追加予定</span>
+                <span style={{ fontSize: '9px', lineHeight: 1.4, color: '#8F9CB2' }}>画像・性能登録後に選択可能</span>
+              </button>
+            )}
+          </div>
+        </section>
 
         <BuildSavePanel
           snapshot={{

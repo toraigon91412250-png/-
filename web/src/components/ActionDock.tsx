@@ -84,7 +84,8 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       : isKaiserArmorBroken && preview.armorWasBroken
         ? `HP${preview.hpDamage} 破壊×1.3${preview.phaseChanged ? '・第2形態' : ''}`
         : `HP${preview.hpDamage}ダメ${preview.phaseChanged ? '・第2形態へ' : ''}`;
-  const hasSuperFallenShot = player.character.id === 'irena' && Boolean(player.character.hasSuperFallenShot);
+  const isIrena = player.character.id === 'irena';
+  const hasSuperFallenShot = isIrena && Boolean(player.character.hasSuperFallenShot);
   const hasFeatherSplitImprint = player.character.id === 'irena' && (battleConfig.imprints?.includes('FEATHER_SPLIT') ?? false);
   const hasYinYangImprint = battleConfig.imprints?.includes('YIN_YANG') ?? false;
   const hasCostlyShotImprint = battleConfig.imprints?.includes('COSTLY_SHOT') ?? false;
@@ -143,7 +144,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
       : player.character.ruinSkillPath === 'ANNIHILATION'
         ? '殲滅'
         : null;
-  const isIrenaUltimate = true;
+  const isIrenaUltimate = isIrena;
   const hasUsedAllGods = isIrenaUltimate && irenaUltimateUses.allGods >= 1;
   const hasUsedRuin = isIrenaUltimate && irenaUltimateUses.ruin >= 1;
   const hasUnlockedOmnipotence = hasUsedAllGods && hasUsedRuin;
@@ -305,7 +306,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             >
               🪶 +{player.featherChargeBonus} · {Math.min(player.featherChargeCount, featherChargeMaxCount)}/{featherChargeMaxCount} · {featherChargeAtMax ? 'MAX' : `次+${nextFeatherChargeRange[0]}〜${nextFeatherChargeRange[1]}`}
             </span>
-          ) : !hasFeatherSplitImprint && selectedSpecialSkill === 'FEATHER' ? (
+          ) : isIrena && !hasFeatherSplitImprint && selectedSpecialSkill === 'FEATHER' ? (
             <span
               style={{
                 fontSize: '10px',
@@ -585,7 +586,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                 ? '穿羽'
                 : selectedSpecialSkill === 'FEATHER_RAPID'
                   ? '連羽'
-                  : '羽弾'}
+                  : isIrena ? '羽弾' : player.character.specialSkillName}
           </span>
           <span
             style={{
@@ -602,7 +603,9 @@ export const ActionDock: React.FC<ActionDockProps> = ({
                   ? `今T充填（0ダメ） · ×${superFallenMultiplier.toFixed(1)} · 次T発射`
                   : selectedFeatherSplitMode
                     ? `${specialPreviewDetails(specialDamagePreview)}${hasSelectedModeAlternationBonus ? ` · 交互+${Math.round(FEATHER_SPLIT_ALTERNATION_BONUS * 100)}%` : ''}`
-                    : `${specialPreviewDetails(specialDamagePreview)}（蓄積+${player.featherChargeBonus}）`
+                    : isIrena
+                    ? `${specialPreviewDetails(specialDamagePreview)}（蓄積+${player.featherChargeBonus}）`
+                    : specialPreviewDetails(specialDamagePreview)
                 : `CT:${selectedSpecialCooldownRemaining}T`}
           </span>
         </button>
@@ -1057,6 +1060,42 @@ export const ActionDock: React.FC<ActionDockProps> = ({
         </div>
       )}
 
+
+      {!isIrenaUltimate && (
+        <button
+          type="button"
+          aria-label={player.character.ultimateSkillName + 'を発動'}
+          onClick={() => onAction('ULTIMATE')}
+          disabled={!isEnabled || !isUltimateReady}
+          style={{
+            width: '100%',
+            minHeight: '72px',
+            marginTop: '2px',
+            padding: '10px 12px',
+            borderRadius: '12px',
+            border: isEnabled && isUltimateReady ? '1.5px solid ' + player.character.primaryColor : '1px solid #3E2D30',
+            background: isEnabled && isUltimateReady
+              ? 'linear-gradient(115deg, ' + player.character.primaryColor + '44, rgba(8,12,20,.98))'
+              : 'rgba(18,22,31,.96)',
+            color: isEnabled && isUltimateReady ? '#FFFFFF' : '#758198',
+            cursor: isEnabled && isUltimateReady ? 'pointer' : 'not-allowed',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px',
+            fontFamily: 'inherit',
+            textAlign: 'left',
+          }}
+        >
+          <span style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <strong style={{ fontSize: '16px', fontWeight: 950 }}>{player.character.ultimateSkillName}</strong>
+            <span style={{ fontSize: '10px', color: '#AEBBD0' }}>{player.character.ultimateSlogan}</span>
+          </span>
+          <span style={{ flexShrink: 0, fontSize: '11px', fontWeight: 900, color: isEnabled && isUltimateReady ? '#FFE082' : '#758198' }}>
+            {isUltimateReady ? formatHitPreview(ultimateDamagePreview) : 'ゲージ ' + player.ultimateGauge + '/3'}
+          </span>
+        </button>
+      )}
 
     </div>
   );

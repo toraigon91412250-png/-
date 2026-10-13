@@ -91,6 +91,7 @@ export function useBattleGame(
 ) {
   const normalizedInitialConfig: BattleSetupConfig = {
     kaiserLevel: initialBattleConfig.kaiserLevel,
+    playerCharacterId: initialBattleConfig.playerCharacterId ?? initialPlayerChar.id,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
     imprints: normalizeEquippedImprints(initialBattleConfig.imprints),
     statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
