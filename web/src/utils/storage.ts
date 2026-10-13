@@ -146,6 +146,10 @@ export function loadStellaModeProgress(): StellaModeProgress {
  */
 export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   const current = loadStellaModeProgress();
+  if (current.kaiser100RewardClaimed && (current.isUnlocked || current.revealAvailable)) {
+    return { progress: current, rewardGranted: false, persisted: true };
+  }
+
   const rewardGranted = !current.kaiser100RewardClaimed;
   const next: StellaModeProgress = {
     isUnlocked: current.isUnlocked,
