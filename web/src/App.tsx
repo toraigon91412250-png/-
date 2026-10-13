@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AbilityId, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
+import { AbilityId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
 import { IRENA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
   const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
   const [imprintMessage, setImprintMessage] = useState<string | null>(null);
   const [imprintGachaMessage, setImprintGachaMessage] = useState<string | null>(null);
-  const [battleSetupReturnScreen, setBattleSetupReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
+  const [battleSetupReturnScreen, setBattleSetupReturnScreen] = useState<'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS'>('SELECT');
   const [talentReturnScreen, setTalentReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
   const [imprintReturnScreen, setImprintReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
   const [recruitmentReturnScreen, setRecruitmentReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
@@ -67,6 +67,7 @@ export const App: React.FC = () => {
     statPointTotal: loadStatPoints(),
   });
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
+  const [allowAllKaiserLevelsInBattleSetup, setAllowAllKaiserLevelsInBattleSetup] = useState(false);
 
   const handleScreenTransitionComplete = React.useCallback(() => {
     setIsScreenTransitioning(false);
@@ -168,13 +169,20 @@ export const App: React.FC = () => {
     setRaidItemMessage(`深淵核片を使用！ ステータス配分上限 +2P（永続）。現在 ${nextStatPoints}P。`);
   };
 
-  const handleOpenBattleSetup = (prefill?: BattleSetupConfig, returnTo: 'SELECT' | 'GROWTH_HUB' = 'SELECT') => {
+  const handleOpenBattleSetup = (
+    prefill?: BattleSetupConfig,
+    returnTo: 'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS' = 'SELECT',
+    allowAllKaiserLevels = false,
+  ) => {
     setBattleSetupReturnScreen(returnTo);
+    setAllowAllKaiserLevelsInBattleSetup(allowAllKaiserLevels);
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     const currentKaiserProgress = loadKaiserChallengeProgress();
-    const selectableKaiserLevels = getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
+    const selectableKaiserLevels = allowAllKaiserLevels
+      ? BATTLE_CHALLENGE_LEVELS
+      : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
     setKaiserChallengeProgress(currentKaiserProgress);
     setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
@@ -547,6 +555,7 @@ export const App: React.FC = () => {
           onApplySavedBuild={handleApplySavedBuild}
           availableStatPoints={availableStatPoints}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
+          allowAllKaiserLevels={allowAllKaiserLevelsInBattleSetup}
           initialConfig={battleSetup}
           selectedDifficulty={difficulty}
           onSelectDifficulty={setDifficulty}
@@ -599,7 +608,7 @@ export const App: React.FC = () => {
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
-          onOpenBattleSetup={handleOpenBattleSetup}
+          onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true)}
           onReset={handleDeveloperReset}
         />
       )}
