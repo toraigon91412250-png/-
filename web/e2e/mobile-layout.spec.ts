@@ -151,17 +151,21 @@ test('mobile setup layout fits narrow portrait and short landscape viewports', a
   }
 });
 
-test('mobile home has no removed bottom navigation or reserved tab space', async ({ page }) => {
+test('mobile home keeps bottom navigation visible with reserved tab space', async ({ page }) => {
   test.skip(test.info().project.name !== 'mobile-chromium', 'Mobile home layout contract');
 
   await page.goto('/');
   const home = page.locator('.home-dashboard');
+  const navigation = page.locator('.bottom-navigation');
   await expect(home).toBeVisible();
-  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
+  await expect(navigation).toBeVisible();
+  for (const label of ['ホーム', '強化', 'ガチャ', '戦闘', 'レイド']) {
+    await expect(navigation.getByRole('button', { name: label, exact: true })).toBeVisible();
+  }
   await expect(page.getByRole('button', { name: '強化を開く' })).toBeVisible();
 
   const paddingBottom = await home.evaluate(element => Number.parseFloat(getComputedStyle(element).paddingBottom));
-  expect(paddingBottom).toBeLessThanOrEqual(32);
+  expect(paddingBottom).toBeGreaterThanOrEqual(80);
 });
 
 test('home dashboard exposes its main routes and remains usable on narrow screens', async ({ page }) => {
@@ -214,11 +218,11 @@ test('home dashboard exposes its main routes and remains usable on narrow screen
   });
   expect(hasHorizontalOverflow).toBe(false);
 
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await page.locator('.bottom-navigation').getByRole('button', { name: 'ホーム', exact: true }).click();
   await expect(home).toBeVisible();
   await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
-  await page.getByRole('button', { name: 'ホームへ戻る' }).click();
+  await page.locator('.bottom-navigation').getByRole('button', { name: 'ホーム', exact: true }).click();
   await expect(home).toBeVisible();
-  await expect(page.locator('.bottom-navigation')).toHaveCount(0);
+  await expect(page.locator('.bottom-navigation')).toBeVisible();
 });

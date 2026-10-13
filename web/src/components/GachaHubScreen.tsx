@@ -20,7 +20,6 @@ interface GachaHubScreenProps {
   onOpenRecruitment: () => void;
   onOpenImprintGacha: () => void;
   onOpenImprints: () => void;
-  onBackHome: () => void;
 }
 
 export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
@@ -31,7 +30,6 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
   onOpenRecruitment,
   onOpenImprintGacha,
   onOpenImprints,
-  onBackHome,
 }) => {
   const imprintCompletion = Math.round((unlockedImprints / IMPRINT_DEFINITIONS.length) * 100);
 
@@ -45,7 +43,6 @@ export const GachaHubScreen: React.FC<GachaHubScreenProps> = ({
             <h1>ガチャ</h1>
             <p className="gacha-hub__lead">戦い方を増やす力を集めて、自分のビルドに組み込もう。</p>
           </div>
-          <button className="gacha-hub__home-link" type="button" onClick={onBackHome} aria-label="ホームへ戻る">← ホーム</button>
         </header>
 
         <section className="gacha-hub__inventory" aria-label="召喚リソース">

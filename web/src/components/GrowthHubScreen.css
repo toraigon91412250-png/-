@@ -1,7 +1,7 @@
 /* Growth hub: an illustrated build header and a consistent control hierarchy. */
 .growth-hub {
   position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto;
-  padding: max(17px, env(safe-area-inset-top, 0px)) 17px calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: max(17px, env(safe-area-inset-top, 0px)) 17px calc(112px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box; color: #F4F7FC;
   background:
     radial-gradient(ellipse at 90% 0%, rgba(99,85,173,.18), transparent 32rem),
@@ -95,7 +95,7 @@
 .growth-hub__tip-resource { display: none; }
 .growth-hub button:focus-visible { outline: 2px solid #FFE0A0; outline-offset: 3px; }
 @media (max-width: 760px) {
-  .growth-hub { padding: max(11px,env(safe-area-inset-top,0px)) 11px calc(16px + env(safe-area-inset-bottom, 0px)); }
+  .growth-hub { padding: max(11px,env(safe-area-inset-top,0px)) 11px calc(104px + env(safe-area-inset-bottom,0px)); }
   .growth-hub__header { min-height: 214px; padding: 21px 17px; border-radius: 18px; }
   .growth-hub__header-copy { width: 79%; }
   .growth-hub__eyebrow { font-size: 8px; letter-spacing: .1em; }
@@ -149,12 +149,3 @@
 @media (prefers-reduced-motion: reduce) {
   .growth-hub * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
-
-/* Compact route back-link replaces the removed persistent bottom navigation. */
-.growth-hub__home-link {
-  position: absolute; z-index: 4; top: max(12px,env(safe-area-inset-top,0px)); right: 12px;
-  display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 10px;
-  border: 1px solid rgba(205,183,255,.25); border-radius: 9px; background: rgba(9,13,23,.78);
-  color: #D7C0FF; font: inherit; font-size: 11px; font-weight: 900; white-space: nowrap; cursor: pointer;
-}
-.growth-hub__home-link:focus-visible { outline: 2px solid #FFE0A0; outline-offset: 2px; }
