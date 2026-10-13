@@ -268,3 +268,59 @@
 @media (prefers-reduced-motion: reduce) {
   .home-dashboard * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* The Lv.100 victory reveals a one-time hidden entrance to Stella. */
+.home-dashboard__primary-action--mystery {
+  border-color: rgba(211, 196, 255, .9);
+  background: linear-gradient(112deg, #D0C0FF 0%, #9E9EEB 48%, #7169B9 100%);
+  color: #100F26;
+  box-shadow: 0 9px 30px rgba(143, 118, 255, .31), inset 0 1px 0 rgba(255,255,255,.45);
+  animation: stella-mystery-pulse 2.7s ease-in-out infinite;
+}
+.home-dashboard__primary-action--mystery:hover {
+  box-shadow: 0 12px 34px rgba(143, 118, 255, .4), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.home-dashboard__stella-reward {
+  flex: 1 0 100%;
+  color: #DCD4FF;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.55;
+}
+.home-dashboard__mode-card--stella {
+  grid-column: 1 / -1;
+  min-height: 128px;
+  border-color: rgba(179, 168, 255, .4);
+  background:
+    radial-gradient(ellipse at 82% 5%, rgba(135, 115, 255, .2), transparent 52%),
+    linear-gradient(122deg, rgba(27, 25, 62, .98), rgba(13, 17, 39, .99));
+}
+.home-dashboard__mode-card--stella::before {
+  width: 190px;
+  height: 190px;
+  top: -115px;
+  right: 8%;
+  background: rgba(139, 125, 255, .23);
+}
+.home-dashboard__mode-card--stella .home-dashboard__mode-art {
+  border-color: rgba(200, 187, 255, .45);
+  background: rgba(142, 123, 255, .16);
+  color: #E1D8FF;
+}
+.home-dashboard__mode-card--stella .home-dashboard__mode-copy small { color: #C2B4FF; }
+.home-dashboard__mode-card--stella .home-dashboard__mode-meta {
+  color: #D1C7FF;
+  border-color: rgba(177, 165, 255, .22);
+}
+.home-dashboard__primary-action--mystery .home-dashboard__primary-copy strong {
+  font-size: 16px;
+  letter-spacing: .12em;
+}
+@keyframes stella-mystery-pulse {
+  0%, 100% { box-shadow: 0 9px 30px rgba(143, 118, 255, .24), inset 0 1px 0 rgba(255,255,255,.45); }
+  50% { box-shadow: 0 10px 36px rgba(143, 118, 255, .48), inset 0 1px 0 rgba(255,255,255,.55); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-dashboard__primary-action--mystery { animation: none; }
+}
