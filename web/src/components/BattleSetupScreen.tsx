@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CpuDifficulty, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, BattleChallengeLevel, BattleSetupConfig, CpuDifficulty, ImprintProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
+import { BuildSavePanel } from './BuildSavePanel';
+import { validateBuildSnapshot, type BuildValidationContext, type SavedBuildSnapshot } from '../utils/buildSaveSystem';
 import { createStatPreset, getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey, StatPresetId } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
   abilityProgress: AbilityProgress;
+  imprintProgress: ImprintProgress;
+  onApplySavedBuild: (config: BattleSetupConfig) => { success: boolean; message?: string };
   selectedDifficulty: CpuDifficulty;
   onSelectDifficulty: (difficulty: CpuDifficulty) => void;
   initialConfig?: BattleSetupConfig;
@@ -20,6 +24,8 @@ interface BattleSetupScreenProps {
 
 export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   abilityProgress,
+  imprintProgress,
+  onApplySavedBuild,
   selectedDifficulty,
   onSelectDifficulty,
   initialConfig,
@@ -64,6 +70,34 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
 
   const selectableKaiserLevels = getSelectableKaiserLevels(unlockedKaiserLevel);
 
+  const buildValidationContext: BuildValidationContext = {
+    availableStatPoints,
+    abilityLevels: abilityProgress.levels,
+    unlockedImprintIds: imprintProgress.unlockedIds,
+  };
+
+  const applySavedBuild = (snapshot: SavedBuildSnapshot): string | null => {
+    const validation = validateBuildSnapshot(snapshot, buildValidationContext);
+    if (!validation.valid) return validation.message;
+
+    const config: BattleSetupConfig = {
+      kaiserLevel: selectedLevel,
+      abilities: validation.snapshot.abilityIds.map(id => ({
+        id,
+        level: abilityProgress.levels[id],
+      })),
+      statAllocation: validation.snapshot.statAllocation,
+      statPointTotal: availableStatPoints,
+      imprints: [...validation.snapshot.imprintIds],
+    };
+    const result = onApplySavedBuild(config);
+    if (!result.success) return result.message ?? 'ビルドを反映できませんでした。';
+
+    setStatAllocation({ ...validation.snapshot.statAllocation });
+    setSelectedAbilities([...validation.snapshot.abilityIds]);
+    return null;
+  };
+
   const startBattle = () => {
     onStartBattle({
       kaiserLevel: selectedLevel,
@@ -73,6 +107,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       })),
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
       statPointTotal: availableStatPoints,
+      imprints: [...imprintProgress.equippedIds],
     });
   };
 
@@ -133,6 +168,16 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             ステータスを自由に配分し、そのビルドに合わせて権能を選択してください。型は固定されません。
           </p>
         </div>
+
+        <BuildSavePanel
+          snapshot={{
+            statAllocation,
+            abilityIds: [...selectedAbilities],
+            imprintIds: [...imprintProgress.equippedIds],
+          }}
+          context={buildValidationContext}
+          onLoad={applySavedBuild}
+        />
 
         <section style={{
           marginTop: '14px',

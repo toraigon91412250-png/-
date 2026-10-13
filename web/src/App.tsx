@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -20,7 +20,7 @@ import { ScreenTransitionLoader } from './components/ScreenTransitionLoader';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
-import { addIrenaBattleExperience, applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, saveIrenaTalentProgress, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
+import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
 
 type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
@@ -89,8 +89,6 @@ export const App: React.FC = () => {
     setIsScreenTransitioning(true);
   };
 
-  const hasAwardedTalentExperienceRef = React.useRef(false);
-
   const upgradedIrena = applyIrenaTalentModifiers(getIrenaWithSkillProgress(skillProgress), irenaTalentProgress);
 
   const {
@@ -107,38 +105,20 @@ export const App: React.FC = () => {
     void preloadBattleImages();
   }, []);
 
-  // Reload progression when a battle ends and award Irena EXP exactly once per completed battle.
+  // Battle rewards, including Irena talent EXP, are persisted atomically by saveBattleResult.
+// Refresh the displayed progression here without granting the same battle EXP again.
   useEffect(() => {
-    if (battleState.phase !== 'BATTLE_FINISHED') {
-      hasAwardedTalentExperienceRef.current = false;
-      return;
-    }
+    if (battleState.phase !== 'BATTLE_FINISHED') return;
 
     setOverallStats(loadOverallStats());
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
     setAvailableStatPoints(loadStatPoints());
+    setIrenaTalentProgress(loadIrenaTalentProgress());
 
     const completedLevel = battleState.battleConfig.kaiserLevel;
     const playerWon = battleState.winnerIsPlayer === true;
-
-    if (!hasAwardedTalentExperienceRef.current) {
-      hasAwardedTalentExperienceRef.current = true;
-      const savedProgress = loadIrenaTalentProgress();
-      if (battleState.player.character.id === 'irena') {
-        const nextTalentProgress = addIrenaBattleExperience(savedProgress, playerWon);
-        if (saveIrenaTalentProgress(nextTalentProgress)) {
-          setIrenaTalentProgress(nextTalentProgress);
-        } else {
-          setIrenaTalentProgress(savedProgress);
-          setIrenaTalentMessage('才能EXPを保存できませんでした。ブラウザの保存設定を確認してください。');
-        }
-      } else {
-        setIrenaTalentProgress(savedProgress);
-      }
-    }
-
     const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
     setKaiserChallengeProgress(nextChallengeProgress);
     setBattleSetup(prev => ({
@@ -267,6 +247,20 @@ export const App: React.FC = () => {
     setImprintMessage('刻印の解除を保存しました。');
   };
 
+  const handleApplySavedBuild = (config: BattleSetupConfig): { success: boolean; message?: string } => {
+    const nextImprints = replaceEquippedImprints(config.imprints ?? []);
+    if (!nextImprints) {
+      return {
+        success: false,
+        message: '刻印の解放状況が変わったか、保存に失敗したためビルドを読み込めませんでした。',
+      };
+    }
+    setImprintProgress(nextImprints);
+    setBattleSetup({ ...config, imprints: [...nextImprints.equippedIds] });
+    setImprintMessage(null);
+    return { success: true };
+  };
+
   const handleOpenImprintGacha = () => {
     refreshProgress();
     setImprintGachaMessage(null);
@@ -310,7 +304,7 @@ export const App: React.FC = () => {
   const handleStartBattle = (config: BattleSetupConfig) => {
     const battleConfigWithImprints: BattleSetupConfig = {
       ...config,
-      imprints: [...imprintProgress.equippedIds],
+      imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
     };
     setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
@@ -539,6 +533,8 @@ export const App: React.FC = () => {
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
           abilityProgress={abilityProgress}
+          imprintProgress={imprintProgress}
+          onApplySavedBuild={handleApplySavedBuild}
           availableStatPoints={availableStatPoints}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           initialConfig={battleSetup}

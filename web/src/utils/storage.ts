@@ -387,6 +387,17 @@ export function unequipImprint(id: ImprintId): ImprintProgress | null {
   });
 }
 
+/** Replace only the equipped loadout; ownership and every other saved progression field stay intact. */
+export function replaceEquippedImprints(ids: readonly ImprintId[]): ImprintProgress | null {
+  if (!Array.isArray(ids) || ids.length > MAX_EQUIPPED_IMPRINTS) return null;
+  if (new Set(ids).size !== ids.length || !ids.every(isImprintId)) return null;
+  if (ids.includes('BLOOD_TEAR') && ids.includes('BLOOD_MEDIA')) return null;
+
+  const current = loadImprintProgress();
+  if (!ids.every(id => current.unlockedIds.includes(id))) return null;
+  return persistImprintProgress({ ...current, equippedIds: [...ids] });
+}
+
 const ABILITY_PROGRESS_KEY = 'duel_arena_ability_progress';
 
 const INITIAL_ABILITY_PROGRESS: AbilityProgress = {
