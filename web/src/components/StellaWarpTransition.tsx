@@ -59,7 +59,7 @@ export const StellaWarpTransition: React.FC<StellaWarpTransitionProps> = ({ onCo
           <p id="stella-warp-description" className="stella-warp__description">
             星の法則を操る、もうひとつの戦いが目を覚ました。
           </p>
-          <button className="stella-warp__continue" type="button" onClick={completeReveal}>
+          <button className="stella-warp__continue" type="button" onClick={completeReveal} autoFocus>
             解放を確認
           </button>
           {saveError && (
