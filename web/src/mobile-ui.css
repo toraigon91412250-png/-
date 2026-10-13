@@ -279,3 +279,54 @@
     margin-bottom: 6px !important;
   }
 }
+
+
+/* Compact status-only chips replace the removed combat forecast explanations. */
+.battle-imprint-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto 8px;
+}
+.battle-imprint-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(142, 160, 190, .22);
+  background: rgba(12, 18, 30, .86);
+  color: #BFCBE0;
+  font-size: 10px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.battle-imprint-status-chip strong {
+  color: #E5EDF8;
+  font-weight: 850;
+}
+.battle-imprint-status-chip[data-state="発動済み"],
+.battle-imprint-status-chip[data-state="防御成功"] {
+  border-color: rgba(110, 210, 183, .35);
+  background: rgba(25, 90, 73, .2);
+}
+.battle-imprint-status-chip[data-state="未使用"],
+.battle-imprint-status-chip[data-state="待機中"],
+.battle-imprint-status-chip[data-state="準備中"] {
+  border-color: rgba(142, 160, 190, .18);
+}
+@media (max-width: 679px), (max-height: 600px) and (orientation: landscape) {
+  .battle-imprint-status-strip {
+    justify-content: flex-start;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .battle-imprint-status-chip {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+}

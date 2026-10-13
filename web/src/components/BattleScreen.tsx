@@ -23,6 +23,72 @@ interface BattleScreenProps {
   onToggleSpeed: () => void;
 }
 
+const BattleImprintStatusStrip: React.FC<{ state: BattleUiState }> = ({ state }) => {
+  const equipped = state.battleConfig.imprints ?? [];
+  const items: Array<{ id: string; label: string; value: string }> = [];
+
+  if (equipped.includes('FORESIGHT')) {
+    items.push({
+      id: 'FORESIGHT',
+      label: '見切り',
+      value: state.usedImprints.includes('FORESIGHT') ? '発動済み' : '未使用',
+    });
+  }
+  if (equipped.includes('YIN_YANG')) {
+    items.push({
+      id: 'YIN_YANG',
+      label: '陰陽転化',
+      value: state.yinYangDefenseResult
+        ? '防御成功'
+        : state.yinYangActivatedTurn === state.turnNumber && state.player.isBuffed
+          ? '発動中'
+          : state.yinYangActivatedTurn != null
+            ? '使用済み'
+            : '未使用',
+    });
+  }
+  if (equipped.includes('WIND_GUARD')) {
+    items.push({
+      id: 'WIND_GUARD',
+      label: '風守り',
+      value: state.windGuardResult ? '発動済み' : '準備中',
+    });
+  }
+  if (equipped.includes('BLOOD_MEDIA')) {
+    items.push({
+      id: 'BLOOD_MEDIA',
+      label: '血媒',
+      value: state.bloodMediaHealResult ? '発動済み' : '待機中',
+    });
+  }
+  if (equipped.includes('COSTLY_SHOT')) {
+    items.push({
+      id: 'COSTLY_SHOT',
+      label: '代償撃ち',
+      value: state.costlyShotResult ? '発動済み' : '未使用',
+    });
+  }
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="battle-imprint-status-strip" aria-label="刻印の状態">
+      {items.map(item => (
+        <div
+          key={item.id}
+          role="status"
+          aria-label={item.label + 'の状態'}
+          className="battle-imprint-status-chip"
+          data-state={item.value}
+        >
+          <span>{item.label}</span>
+          <strong>{item.value}</strong>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const BattleScreen: React.FC<BattleScreenProps> = ({
   state,
   onAction,
@@ -381,6 +447,7 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
               />
             </div>
 
+            <BattleImprintStatusStrip state={state} />
             </div>
 
             {/* 5. Action Command Dock */}
@@ -478,6 +545,8 @@ export const BattleScreen: React.FC<BattleScreenProps> = ({
 
             </div>
           </div>
+
+          <BattleImprintStatusStrip state={state} />
 
           {/* Full-width Command Dock */}
           <div

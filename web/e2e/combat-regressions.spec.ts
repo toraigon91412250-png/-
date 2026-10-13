@@ -469,8 +469,8 @@ test('Yin-Yang Conversion protects the current turn, preserves pressure, and adv
   await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
   await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 
-  const intentLabel = await page.locator('[aria-label="戦況予測"] > div').first().locator('span').nth(1).innerText();
-  expect(intentLabel).toBe('特殊技');
+  await expect(page.locator('[aria-label="戦況予測"]')).toHaveCount(0);
+  await expect(page.getByText('行動順', { exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '陰陽転化' })).toBeEnabled();
   await page.getByRole('button', { name: '陰陽転化' }).click();
 
@@ -831,7 +831,7 @@ test('Blood Media extends Bleed and heals for the actual tick damage', async ({ 
   await page.getByRole('button', { name: /^羽弾/ }).first().click();
   await expect(page.getByText(/出血付与！ \(4T/)).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByRole('status', { name: '血媒の状態' })).toContainText('HP+30');
+  await expect(page.getByRole('status', { name: '血媒の状態' })).toContainText('発動済み');
   await expect(page.getByRole('button', { name: /出血 3ターンの詳細を表示/ })).toBeVisible();
   expect(pageErrors, 'Blood Media healing and Bleed duration should not raise uncaught errors.').toEqual([]);
 });
@@ -844,8 +844,7 @@ test('Wind Guard reduces a direct CPU hit and counterattacks using stored feathe
   await page.getByRole('button', { name: /^攻撃/ }).first().click();
   await expect(page.getByText(/^第\s*2\s*ターン$/)).toBeVisible({ timeout: 20_000 });
 
-  await expect(page.getByRole('status', { name: '風守りの状態' })).toContainText('第1ターン発動');
-  await expect(page.getByRole('status', { name: '風守りの状態' })).toContainText('自動反撃20');
+  await expect(page.getByRole('status', { name: '風守りの状態' })).toContainText('発動済み');
   expect(pageErrors, 'Wind Guard mitigation and retaliation should not raise uncaught errors.').toEqual([]);
 });
 
@@ -860,7 +859,7 @@ test('Costly Shot spends HP to reset special cooldown and allows the next Feathe
   await expect(costlyShot).toBeEnabled();
   await costlyShot.click();
 
-  await expect(page.getByRole('status', { name: '代償撃ちの状態' })).toContainText('HP-200');
+  await expect(page.getByRole('status', { name: '代償撃ちの状態' })).toContainText('発動済み');
   await expect(page.getByText(/^第\s*3\s*ターン$/)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('button', { name: /^羽弾/ }).first()).toBeEnabled();
   expect(pageErrors, 'Costly Shot cooldown reset should not raise uncaught errors.').toEqual([]);
