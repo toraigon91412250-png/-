@@ -820,6 +820,14 @@ try {
     100,
     'One victory save must grant exactly 100 talent EXP.',
   );
+  const talentExperienceBeforeStella = JSON.parse(storageValues.get(talentProgressKeyForRewardTest)).experience;
+  const stellaBattleReward = saveBattleResult(true, 0, 'stella');
+  assert.strictEqual(stellaBattleReward.persisted, true, 'Stella battle rewards should still persist.');
+  assert.strictEqual(
+    JSON.parse(storageValues.get(talentProgressKeyForRewardTest)).experience,
+    talentExperienceBeforeStella,
+    'Using Stella must not grant character-specific talent EXP to Irena.',
+  );
 } finally {
   for (const [key, value] of battleRewardStateBeforeTest) {
     if (value === undefined) storageValues.delete(key);

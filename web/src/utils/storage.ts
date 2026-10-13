@@ -777,7 +777,7 @@ export interface BattleResultSave {
   persisted: boolean;
 }
 
-export function saveBattleResult(playerWon: boolean, masteryBonus = 0): BattleResultSave {
+export function saveBattleResult(playerWon: boolean, masteryBonus = 0, playerCharacterId = 'irena'): BattleResultSave {
   const current = loadOverallStats();
   const updated: OverallStats = {
     totalBattles: current.totalBattles + 1,
@@ -791,7 +791,9 @@ export function saveBattleResult(playerWon: boolean, masteryBonus = 0): BattleRe
     shards: currentSkills.shards + getBattleReward(playerWon, masteryBonus),
   });
   const currentTalentProgress = loadIrenaTalentProgress();
-  const nextTalentProgress = addIrenaBattleExperience(currentTalentProgress, playerWon);
+  const nextTalentProgress = playerCharacterId === 'irena'
+    ? addIrenaBattleExperience(currentTalentProgress, playerWon)
+    : currentTalentProgress;
   const currentRecruitment = loadRecruitmentProgress();
   const nextRecruitment = normalizeRecruitmentProgress({
     ...currentRecruitment,

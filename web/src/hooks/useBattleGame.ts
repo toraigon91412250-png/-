@@ -1927,7 +1927,7 @@ export function useBattleGame(
     yinYangDefensePendingRef.current = false;
     const masteryBonus = battleMasteryRewardRef.current;
     const reward = getBattleReward(winnerIsPlayer, masteryBonus);
-    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus);
+    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus, stateRef.current.player.character.id);
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);
