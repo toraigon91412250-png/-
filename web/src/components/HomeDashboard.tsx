@@ -40,8 +40,10 @@ interface HomeDashboardProps {
   onOpenDeveloperTools: () => void;
   stellaUnlockAvailable: boolean;
   stellaModeUnlocked: boolean;
+  exKaiserChallengeAvailable: boolean;
   stellaRewardSaveError: boolean;
   onRevealStella: () => void;
+  onStartExKaiser: () => void;
   onOpenStellaMode: () => void;
 }
 
@@ -60,8 +62,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenDeveloperTools,
   stellaUnlockAvailable,
   stellaModeUnlocked,
+  exKaiserChallengeAvailable,
   stellaRewardSaveError,
   onRevealStella,
+  onStartExKaiser,
   onOpenStellaMode,
 }) => {
   const playerChar = getIrenaWithSkillProgress(skillProgress);
@@ -113,35 +117,43 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
             <p className="home-dashboard__hero-description">
               {stellaUnlockAvailable
-                ? '最終試練の先に、まだ知られていない領域が現れた。'
-                : unlockedKaiserLevel >= 100
-                  ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
-                  : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
+                ? 'EXカイザーの先に、まだ知られていない領域が現れた。'
+                : exKaiserChallengeAvailable
+                  ? 'Lv.100の先に現れたEXカイザーを撃破し、隠された領域へ進め。'
+                  : unlockedKaiserLevel >= 100
+                    ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
+                    : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
             </p>
             <div className="home-dashboard__hero-actions">
               <button
-                className={'home-dashboard__primary-action' + (stellaUnlockAvailable ? ' home-dashboard__primary-action--mystery' : '')}
+                className={'home-dashboard__primary-action'
+                  + (stellaUnlockAvailable ? ' home-dashboard__primary-action--mystery' : '')
+                  + (exKaiserChallengeAvailable ? ' home-dashboard__primary-action--ex' : '')}
                 type="button"
-                aria-label={stellaUnlockAvailable ? '？？？？？、隠された領域へ進む' : '挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
-                onClick={stellaUnlockAvailable ? onRevealStella : onStartBattle}
+                aria-label={stellaUnlockAvailable
+                  ? '？？？？？、隠された領域へ進む'
+                  : exKaiserChallengeAvailable
+                    ? 'EXカイザーに挑む'
+                    : '挑戦の準備、カイザー Lv.' + unlockedKaiserLevel + ' に挑戦'}
+                onClick={stellaUnlockAvailable ? onRevealStella : exKaiserChallengeAvailable ? onStartExKaiser : onStartBattle}
               >
-                {stellaUnlockAvailable
+                {stellaUnlockAvailable || exKaiserChallengeAvailable
                   ? <Sparkles size={19} aria-hidden="true" />
                   : <Swords size={19} aria-hidden="true" />}
                 <span className="home-dashboard__primary-copy">
-                  <strong>{stellaUnlockAvailable ? '？？？？？' : '挑戦の準備'}</strong>
-                  <small>{stellaUnlockAvailable ? 'その先へ進む' : `カイザー Lv.${unlockedKaiserLevel} に挑戦`}</small>
+                  <strong>{stellaUnlockAvailable ? '？？？？？' : exKaiserChallengeAvailable ? 'EXカイザーに挑む' : '挑戦の準備'}</strong>
+                  <small>{stellaUnlockAvailable ? 'その先へ進む' : exKaiserChallengeAvailable ? 'Lv.100を超える試練' : `カイザー Lv.${unlockedKaiserLevel} に挑戦`}</small>
                 </span>
                 <ArrowUpRight size={18} aria-hidden="true" />
               </button>
-              {stellaUnlockAvailable && (
+              {(stellaUnlockAvailable || exKaiserChallengeAvailable) && (
                 <span className="home-dashboard__stella-reward" role="status">
-                  Lv.100撃破報酬：ステータスポイント +50P 獲得
+                  Lv.100撃破報酬：ステータスポイント +50P 獲得済み
                 </span>
               )}
               {stellaRewardSaveError && (
                 <span className="home-dashboard__stella-save-error" role="alert">
-                  Lv.100報酬を保存できませんでした。保存領域を確認して、もう一度Lv.100に勝利してください。
+                  進行状況を保存できませんでした。保存領域を確認して、もう一度お試しください。
                 </span>
               )}
             </div>
