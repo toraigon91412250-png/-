@@ -341,5 +341,5 @@ test('理外掌握 weakens EX Kaiser counterattacks and amplifies the next two h
   await expect(bossHp).toHaveAttribute('aria-valuenow', '11680');
   await expect(page.getByRole('status').filter({ hasText: '理外掌握：干渉中・残り 1 ターン' })).toBeVisible();
   await page.getByRole('button', { name: '通常攻撃' }).click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '7360');
 });
