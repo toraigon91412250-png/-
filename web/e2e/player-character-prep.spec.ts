@@ -110,10 +110,10 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
     const currentBossHp = Number(await bossHp.getAttribute('aria-valuenow'));
     const currentPlayerHp = Number(await playerHp.getAttribute('aria-valuenow'));
     const rebirthLabel = await page.locator('.stella-final__power-card--rebirth small').innerText();
-    const rebirthUses = Number((rebirthLabel.split('/')[0].match(/\d+/) || [])[0] || 0);
+    const rebirthUses = Number(rebirthLabel.replace('使用回数：', '').split('/')[0].trim());
     const inFinalPhase = await page.locator('.stella-final__phase').innerText().then(text => text.includes('03'));
     const timerLabel = await page.locator('.stella-final__timer').getAttribute('aria-label').catch(() => null);
-    const turnsLeft = timerLabel ? Number((timerLabel.match(/\d+/) || [])[0] || 0) : 0;
+    const turnsLeft = timerLabel ? Number(timerLabel.replace('最終形態 残り', '').replace('ターン', '').trim()) : 0;
     const requiredAttacks = Math.ceil(currentBossHp / 480);
 
     if (inFinalPhase) {
