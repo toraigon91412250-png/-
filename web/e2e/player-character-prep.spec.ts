@@ -176,7 +176,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await finalIrenaChoice.click();
   await expect(finalIrenaChoice).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('.stella-final__fighter--stella .stella-final__fighter-name')).toHaveText('短期決戦モード・いれーな');
-  await expect(page.getByText(/150P専用育成/).first()).toBeVisible();
+  await expect(page.getByRole('region', { name: '短期決戦モード・いれーなの150P育成' })).toBeVisible();
 
   const pickerBox = await unlockedPicker.boundingBox();
   const viewport = page.viewportSize();
