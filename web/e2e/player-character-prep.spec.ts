@@ -418,13 +418,13 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await page.getByRole('button', { name: '通常攻撃' }).click();
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
   const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '3880');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
   await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 50));
-  await expect(page.getByRole('status').filter({ hasText: '全能 0.6倍' })).toBeVisible();
-  await expect(page.getByText(/元攻撃力×0\.60（永続）/)).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '全能 0.9倍' })).toBeVisible();
+  await expect(page.getByText(/元攻撃力×0\.65（永続）/)).toBeVisible();
   await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
@@ -461,31 +461,27 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Keep the route unlocked until the countdown expires.
-  // Ascension moves -48 to +12; boosted actions reach +60 without locking the route.
+  // Let the deadline expire without reaching either endpoint.
   await ascension.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '12');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-45');
   await attack.click();
   await attack.click();
   await attack.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '60');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-81');
   await expect(pass).toBeVisible();
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り4ターン');
 
-  // Consume Ascension recoil, then use Terminus from +60. Its opposite-gauge
-  // penalty is limited to -15, leaving the route at +45 rather than locking it.
+  // Consume the recoil and use Ascension again to return toward the centre.
   await pass.click();
-  await terminus.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
-  await expect(pass).toBeVisible();
-  await pass.click();
-
-  // All Might can skip the current Kaiser action, but cannot stop the final deadline.
-  // The gauge lands at -5, so the loss is specifically caused by an unlocked route.
-  await controlDemon.click();
+  await ascension.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-66');
+  await attack.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-78');
+  await attack.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-5');
-  await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
-  await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-90');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。ルートが終点に届かず敗北');
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
 });
 
 test('理外掌握 resets active authority cooldowns and skips exactly the current Kaiser action', async ({ page }) => {
@@ -531,7 +527,7 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
 
   await terminus.click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
-  await expect(page.locator('.stella-final__log-lines')).toContainText('第4ターン：権能「終極殲滅」');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('第5ターン：権能「終極殲滅」');
 });
 
 test('絶界昇華 triples effective stats and blocks all authorities for its full active duration', async ({ page }) => {
@@ -580,7 +576,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1360');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
