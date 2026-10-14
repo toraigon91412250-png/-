@@ -472,7 +472,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
   await ascension.click();
-  await expect(page.getByText(/実効ステータス：ATK 1080／DEF 600／SPD 720/)).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
