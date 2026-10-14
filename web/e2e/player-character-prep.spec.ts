@@ -68,3 +68,106 @@ test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance'
   await expect(page.locator('.battle-challenge-level-caption')).toHaveCount(1);
   await expect(page.getByRole('button', { name: /戦闘開始/ })).toBeEnabled();
 });
+
+
+test('actual Stella final-battle victory saves +100P once and unlocks only final-battle Irena', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      exKaiserDefeated: true,
+    }));
+    window.localStorage.setItem('duel_arena_stat_points', '62');
+    window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
+      coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
+    }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+
+  const characterPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
+  await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：ステラ' })).toBeVisible();
+  await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  const playerHp = page.locator('[role="progressbar"][aria-label="ステラのHP"]');
+  const bossHp = page.locator('[role="progressbar"][aria-label="EXカイザーのHP"]');
+  const immortal = page.getByRole('button', { name: '不滅を発動' });
+  const rebirth = page.getByRole('button', { name: '再誕を発動' });
+  const meteor = page.getByRole('button', { name: '天象支配を発動' });
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  const victoryHeading = page.getByRole('heading', { name: '最終決戦 勝利' });
+
+  // Drive the actual battle controls. No test-only victory path or state mutation is used.
+  for (let step = 0; step < 100; step += 1) {
+    if (await victoryHeading.isVisible().catch(() => false)) break;
+
+    const currentBossHp = Number(await bossHp.getAttribute('aria-valuenow'));
+    const currentPlayerHp = Number(await playerHp.getAttribute('aria-valuenow'));
+    const rebirthLabel = await page.locator('.stella-final__power-card--rebirth small').innerText();
+    const rebirthUses = Number((rebirthLabel.split('/')[0].match(/\d+/) || [])[0] || 0);
+    const inFinalPhase = await page.locator('.stella-final__phase').innerText().then(text => text.includes('03'));
+    const timerLabel = await page.locator('.stella-final__timer').getAttribute('aria-label').catch(() => null);
+    const turnsLeft = timerLabel ? Number((timerLabel.match(/\d+/) || [])[0] || 0) : 0;
+    const requiredAttacks = Math.ceil(currentBossHp / 480);
+
+    if (inFinalPhase) {
+      if (currentPlayerHp < 3800 && turnsLeft > requiredAttacks && await rebirth.isEnabled()) {
+        await rebirth.click();
+      } else if (turnsLeft > requiredAttacks && await immortal.isEnabled()) {
+        await immortal.click();
+      } else {
+        await attack.click();
+      }
+    } else if (currentBossHp <= 6960 && currentPlayerHp <= 700 && await rebirth.isEnabled() && rebirthUses < 2) {
+      await rebirth.click();
+    } else if (currentBossHp <= 6960 && currentPlayerHp <= 350 && await rebirth.isEnabled()) {
+      await rebirth.click();
+    } else if (currentBossHp <= 6960 && await immortal.isEnabled()) {
+      await immortal.click();
+    } else if (currentBossHp <= 6960) {
+      await meteor.click();
+    } else if (currentPlayerHp <= 700 && rebirthUses < 2 && await rebirth.isEnabled()) {
+      await rebirth.click();
+    } else if (currentPlayerHp <= 350 && await rebirth.isEnabled()) {
+      await rebirth.click();
+    } else if (await immortal.isEnabled()) {
+      await immortal.click();
+    } else {
+      await attack.click();
+    }
+  }
+
+  await expect(victoryHeading).toBeVisible();
+  const rewardNotice = page.getByRole('status', { name: '最終決戦クリア報酬' });
+  await expect(rewardNotice).toContainText('+100P');
+  await expect(rewardNotice).toContainText('最終決戦用いれーなが解放');
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('162');
+  await expect.poll(() => page.evaluate(() => {
+    const value = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return value ? JSON.parse(value).finalBattleRewardClaimed : false;
+  })).toBe(true);
+
+  // The persisted marker survives a reload and exposes only the dedicated version in this mode.
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  const unlockedPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
+  const finalIrenaChoice = unlockedPicker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' });
+  await expect(finalIrenaChoice).toBeVisible();
+  await finalIrenaChoice.click();
+  await expect(finalIrenaChoice).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.stella-final__fighter--stella .stella-final__fighter-name')).toHaveText('最終決戦用いれーな');
+  await expect(page.getByText(/仮設定/).first()).toBeVisible();
+
+  // The dedicated version does not enter the normal battle roster.
+  await page.getByRole('button', { name: 'ホームに戻る' }).click();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /最終決戦用いれーな/ })).toHaveCount(0);
+});
