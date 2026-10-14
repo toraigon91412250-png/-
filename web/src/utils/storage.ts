@@ -104,6 +104,10 @@ export interface StellaModeProgress {
   exKaiserDefeated: boolean;
   revealAvailable: boolean;
   kaiser100RewardClaimed: boolean;
+  /** Set together with the first-clear reward in one atomic storage transaction. */
+  finalBattleCleared: boolean;
+  /** Authoritative one-time marker for the +100P reward and final-battle Irena unlock. */
+  finalBattleRewardClaimed: boolean;
 }
 
 export interface Kaiser100VictoryRewardResult {
@@ -113,11 +117,22 @@ export interface Kaiser100VictoryRewardResult {
   persisted: boolean;
 }
 
+export const STELLA_FINAL_BATTLE_STAT_POINT_REWARD = 100;
+
+export interface StellaFinalBattleRewardResult {
+  progress: StellaModeProgress;
+  rewardGranted: boolean;
+  /** False if the points or first-clear marker could not be saved atomically. */
+  persisted: boolean;
+}
+
 const INITIAL_STELLA_MODE_PROGRESS: StellaModeProgress = {
   isUnlocked: false,
   exKaiserDefeated: false,
   revealAvailable: false,
   kaiser100RewardClaimed: false,
+  finalBattleCleared: false,
+  finalBattleRewardClaimed: false,
 };
 
 function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
@@ -126,11 +141,16 @@ function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
   const isUnlocked = parsed.isUnlocked === true;
   // Keep existing unlocks valid, but route an old Lv.100-only reveal through EX Kaiser.
   const exKaiserDefeated = parsed.exKaiserDefeated === true || isUnlocked;
+  const finalBattleRewardClaimed = parsed.finalBattleRewardClaimed === true;
   return {
     isUnlocked,
     exKaiserDefeated,
     revealAvailable: !isUnlocked && exKaiserDefeated && parsed.revealAvailable === true,
     kaiser100RewardClaimed: parsed.kaiser100RewardClaimed === true,
+    // Old saves lack these fields and remain uncleared. A persisted reward marker
+    // also repairs a missing clear marker without allowing the reward to repeat.
+    finalBattleCleared: parsed.finalBattleCleared === true || finalBattleRewardClaimed,
+    finalBattleRewardClaimed,
   };
 }
 
@@ -159,6 +179,7 @@ export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
 
   const rewardGranted = !current.kaiser100RewardClaimed;
   const next: StellaModeProgress = {
+    ...current,
     isUnlocked: current.isUnlocked,
     exKaiserDefeated: current.exKaiserDefeated,
     revealAvailable: !current.isUnlocked && current.exKaiserDefeated,
@@ -179,6 +200,36 @@ export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   return {
     progress: persisted ? next : current,
     rewardGranted: persisted && rewardGranted,
+    persisted,
+  };
+}
+
+/**
+ * Persist the first Stella final-battle victory, its +100 base points, and the
+ * final-battle Irena unlock marker together. Never include raid bonus points
+ * in the stored base total, because loadStatPoints adds those separately.
+ * The caller must pass the actual victory state; losses cannot claim rewards.
+ */
+export function claimStellaFinalBattleReward(playerWon: boolean): StellaFinalBattleRewardResult {
+  const current = loadStellaModeProgress();
+  if (!playerWon) return { progress: current, rewardGranted: false, persisted: false };
+  if (current.finalBattleRewardClaimed) {
+    return { progress: current, rewardGranted: false, persisted: true };
+  }
+
+  const next: StellaModeProgress = {
+    ...current,
+    finalBattleCleared: true,
+    finalBattleRewardClaimed: true,
+  };
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+    { key: STAT_POINTS_KEY, value: String(loadBaseStatPoints() + STELLA_FINAL_BATTLE_STAT_POINT_REWARD) },
+  ]);
+
+  return {
+    progress: persisted ? next : current,
+    rewardGranted: persisted,
     persisted,
   };
 }
@@ -210,6 +261,7 @@ export function unlockStellaMode(): { progress: StellaModeProgress; persisted: b
   if (!current.revealAvailable) return { progress: current, persisted: false };
 
   const next: StellaModeProgress = {
+    ...current,
     isUnlocked: true,
     exKaiserDefeated: current.exKaiserDefeated,
     revealAvailable: false,
