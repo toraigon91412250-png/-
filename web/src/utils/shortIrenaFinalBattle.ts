@@ -97,6 +97,20 @@ export function getShortIrenaNormalAttackGaugeDelta(route: ShortIrenaRoute, _spe
   return route === 'GOD' ? SHORT_IRENA_GAUGE_STEP : -SHORT_IRENA_GAUGE_STEP;
 }
 
+export function calculateShortIrenaAttackDamage(
+  rawAttackDamage: number,
+  targetDefense: number,
+  defenseNullTurns: number,
+): { damage: number; targetDefense: number } {
+  const effectiveDefense = defenseNullTurns > 0
+    ? 0
+    : Math.max(0, Math.floor(targetDefense));
+  return {
+    targetDefense: effectiveDefense,
+    damage: Math.max(1, Math.ceil(rawAttackDamage) - effectiveDefense),
+  };
+}
+
 export function getShortIrenaCounterDamage(baseCounterDamage: number, defense: number): number {
   return Math.max(50, Math.floor(baseCounterDamage) - Math.floor(Math.max(0, defense) / 2));
 }
