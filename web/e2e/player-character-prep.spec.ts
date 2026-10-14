@@ -229,7 +229,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
   const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
-  const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
 
   await normalAttack.click();
   const demonCutIn = page.getByTestId('short-irena-normal-cutin');
@@ -388,23 +388,29 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Keep the route between its endpoints, then let the last countdown action resolve.
-  // All Might moves -48 to +2 and skips the Kaiser action; Terminus moves it to -58.
-  await controlGod.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '2');
-  await terminus.click();
+  // Keep the route unlocked until the countdown expires.
+  // Ascension moves -48 to +12; boosted actions reach +60 without locking the route.
+  await ascension.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '12');
+  await attack.click();
+  await attack.click();
+  await attack.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '60');
   await expect(pass).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-58');
+
+  // Consume Ascension recoil, then use Terminus from +60. Its opposite-gauge
+  // penalty is limited to -15, leaving the route at +45 rather than locking it.
+  await pass.click();
+  await terminus.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect(pass).toBeVisible();
   await pass.click();
 
-  await attack.click();
-  await attack.click();
-  await attack.click();
-  await ascension.click();
-  await attack.click();
-
+  // All Might can skip the current Kaiser action, but cannot stop the final deadline.
+  // The gauge lands at -5, so the loss is specifically caused by an unlocked route.
+  await controlDemon.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-97');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-5');
   await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
