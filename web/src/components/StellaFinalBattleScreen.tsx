@@ -434,7 +434,7 @@ export const StellaFinalBattleScreen: React.FC<{
       let status: BattleStatus = 'FIGHTING';
       if (playerHp <= 0) {
         status = 'DEFEAT';
-        log('短期決戦モード・いれーなは戦闘不能になった。');
+        log('最終決戦用いれーなは戦闘不能になった。');
       } else if (current.phase === 3 && finalTurnsLeft !== null) {
         finalTurnsLeft = Math.max(0, finalTurnsLeft - 1);
         if (finalTurnsLeft === 0 && (!alignment || skipKaiserAction || action === 'PASS' || actionLockTurns > 0)) {
@@ -770,21 +770,21 @@ export const StellaFinalBattleScreen: React.FC<{
                 <button
                   type="button"
                   className="stella-final__character-choice"
-                  aria-label="最終決戦キャラクター：短期決戦モード・いれーな"
+                  aria-label="最終決戦キャラクター：最終決戦用いれーな"
                   aria-pressed={selectedFighterId === 'short-irena'}
                   onClick={() => setSelectedFighterId('short-irena')}
                 >
                   <img src={STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].imageSrc} alt="" />
-                  <span><strong>短期決戦モード・いれーな</strong><small>神魔分岐・150P専用育成</small></span>
+                  <span><strong>最終決戦用いれーな</strong><small>神魔分岐・150P専用育成</small></span>
                   <span className="stella-final__choice-state">{selectedFighterId === 'short-irena' ? '選択中' : '選択'}</span>
                 </button>
               ) : (
-                <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに短期決戦モード・いれーなが解放される。</p>
+                <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに最終決戦用いれーなが解放される。</p>
               )}
             </div>
             <p className="stella-final__prototype-note">短期決戦モードは最終決戦限定。通常版いれーなの基礎データ・育成データは変更しない。</p>
             {selectedFighterId === 'short-irena' && (
-              <section className="stella-final__short-build" aria-label="短期決戦モード・いれーなの150P育成">
+              <section className="stella-final__short-build" aria-label="最終決戦用いれーなの150P育成">
                 <div className="stella-final__short-build-heading">
                   <strong>専用ステータス育成</strong>
                   <span>{shortStats.spentPoints} / {SHORT_IRENA_STAT_POINT_TOTAL}P 使用・残り {shortStats.remainingPoints}P</span>
@@ -996,9 +996,9 @@ export const StellaFinalBattleScreen: React.FC<{
                     ) : (
                       <div className="stella-final__reward-notice" role="status" aria-label="最終決戦クリア報酬">
                         {battle.fighterId === 'stella' && rewardResult?.rewardGranted
-                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。短期決戦モード・いれーなが解放された。'
+                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。最終決戦用いれーなが解放された。'
                           : progress.finalBattleRewardClaimed
-                            ? '初回クリア報酬 +100P は獲得済み。短期決戦モード・いれーなは解放済み。再戦報酬の重複付与はない。'
+                            ? '初回クリア報酬 +100P は獲得済み。最終決戦用いれーなは解放済み。再戦報酬の重複付与はない。'
                             : '初回クリア報酬はステラでの初勝利時に付与される。'}
                       </div>
                     )}
