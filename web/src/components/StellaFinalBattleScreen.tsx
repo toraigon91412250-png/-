@@ -644,7 +644,7 @@ export const StellaFinalBattleScreen: React.FC<{
                   </div>
                   <div className="stella-final__short-finish-row">
                     <div><strong>終局必殺技</strong><small>{battle.alignment ? (battle.alignment === 'GOD' ? '天理終極・最低16,000ダメージ。神域の浄化連鎖で決着' : '深淵終葬・最低24,000ダメージ。貫通力を極限まで集中') : 'ゲージが神側／悪魔側の端に到達すると解放'}</small></div>
-                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の最終必殺技' : '悪魔側の最終必殺技'} disabled={!isFighting || !battle.alignment || Boolean(battle.finisherPending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '最終必殺技を放つ' : '未解放'}</button>
+                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の最終必殺技' : battle.alignment === 'DEMON' ? '悪魔側の最終必殺技' : '最終必殺技（未解放）'} disabled={!isFighting || !battle.alignment || Boolean(battle.finisherPending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '最終必殺技を放つ' : '未解放'}</button>
                   </div>
                 </>
               ) : (

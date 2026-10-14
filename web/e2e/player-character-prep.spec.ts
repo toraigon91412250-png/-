@@ -381,5 +381,5 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '62');
   await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージがどちらにも振り切れていないため敗北');
-  await expect(page.getByRole('button', { name: '神側の最終必殺技' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
