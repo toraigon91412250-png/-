@@ -605,12 +605,18 @@ test('mobile battle top controls are shifted below the iPhone status area', asyn
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
-  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeVisible();
 
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeVisible();
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByText(/^第\s*1\s*ターン$/)).toBeVisible({ timeout: 20_000 });
+
+  const attackButton = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  await expect(attackButton).toBeEnabled({ timeout: 20_000 });
   const backButton = page.locator('.battle-screen-root button[title="戻る"]');
   await expect(backButton).toBeVisible();
   const backBox = await backButton.boundingBox();
-  const attackBox = await page.getByRole('button', { name: '通常攻撃' }).boundingBox();
+  const attackBox = await attackButton.boundingBox();
   expect(backBox).not.toBeNull();
   expect(attackBox).not.toBeNull();
   expect(backBox!.y).toBeGreaterThanOrEqual(20);
