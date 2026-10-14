@@ -152,6 +152,10 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
     const value = window.localStorage.getItem('duel_arena_stella_mode_progress');
     return value ? JSON.parse(value).finalBattleRewardClaimed : false;
   })).toBe(true);
+  await expect.poll(() => page.evaluate(() => {
+    const value = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return value ? JSON.parse(value).finalBattleCleared : false;
+  })).toBe(true);
 
   // The persisted marker survives a reload and exposes only the dedicated version in this mode.
   await page.reload();
