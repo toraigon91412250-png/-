@@ -74,6 +74,9 @@ const {
   getShortIrenaCombatStats,
   shiftDatenGauge,
   getDatenAlignment,
+  getDatenAuthorityStage,
+  getShortIrenaNormalAttackGaugeDelta,
+  getShortIrenaOriginalAttackMultiplier,
   getShortIrenaCounterDamage,
 } = await import('./src/utils/shortIrenaFinalBattle.ts');
 assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
@@ -83,13 +86,31 @@ assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack *
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
 assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
-assert.strictEqual(shiftDatenGauge(0, -60), -60);
-assert.strictEqual(shiftDatenGauge(-60, -50), -100);
-assert.strictEqual(shiftDatenGauge(60, 50), 100);
-assert.strictEqual(shiftDatenGauge(80, -40), 70, 'A strong lean must resist opposite movement.');
+assert.strictEqual(shiftDatenGauge(0, -60), -15, 'Every direction input advances exactly 15 points.');
+assert.strictEqual(shiftDatenGauge(-60, -50), -75);
+assert.strictEqual(shiftDatenGauge(60, 50), 75);
+assert.strictEqual(shiftDatenGauge(80, -40), 65, 'Reverse movement must remain exactly 15 points.');
+assert.strictEqual(shiftDatenGauge(90, 15), 100, 'The God endpoint must clamp to +100.');
+assert.strictEqual(shiftDatenGauge(-90, -15), -100, 'The Demon endpoint must clamp to -100.');
+assert.strictEqual(shiftDatenGauge(-15, 15), 0, 'The gauge may return to its center.');
 assert.strictEqual(getDatenAlignment(100), 'GOD');
 assert.strictEqual(getDatenAlignment(-100), 'DEMON');
 assert.strictEqual(getDatenAlignment(99), null);
+assert.strictEqual(getDatenAuthorityStage(29), 0);
+assert.strictEqual(getDatenAuthorityStage(-29), 0);
+assert.strictEqual(getDatenAuthorityStage(30), 1);
+assert.strictEqual(getDatenAuthorityStage(-59), 1);
+assert.strictEqual(getDatenAuthorityStage(60), 2);
+assert.strictEqual(getDatenAuthorityStage(-99), 2);
+assert.strictEqual(getDatenAuthorityStage(100), 3);
+assert.strictEqual(getDatenAuthorityStage(-100), 3);
+assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('GOD', 1000), 15);
+assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('DEMON', 1), -15);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(1), 0.55);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(2), 0.6);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(5), 0.75);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(10), 1);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(20), 1);
 assert.strictEqual(getShortIrenaCounterDamage(230, 200), 130);
 assert.strictEqual(getShortIrenaCounterDamage(230, 1100), 50);
 
