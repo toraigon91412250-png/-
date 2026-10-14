@@ -65,5 +65,6 @@ test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance'
   await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.locator('.battle-challenge-level-caption')).toHaveCount(1);
   await expect(page.getByRole('button', { name: /戦闘開始/ })).toBeEnabled();
 });
