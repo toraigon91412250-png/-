@@ -336,7 +336,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (action === 'DIVINIZE' || action === 'FALLEN') {
         initialChoiceMade = true;
         alignmentFlash = action === 'DIVINIZE' ? 'GOD' : 'DEMON';
-        gaugeDelta = action === 'DIVINIZE' ? 50 : -50;
+        gaugeDelta = getShortIrenaNormalAttackGaugeDelta(action === 'DIVINIZE' ? 'GOD' : 'DEMON', effectiveSpeed);
         log(action === 'DIVINIZE'
           ? '初手「神化」。攻撃は行わず、ゲージのみ神側へ移動する。'
           : '初手「堕天」。攻撃は行わず、ゲージのみ堕天側へ移動する。');
