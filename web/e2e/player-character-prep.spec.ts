@@ -72,25 +72,30 @@ test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance'
 
 test('actual Stella final-battle victory saves +100P once and unlocks only final-battle Irena', async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
-      isUnlocked: true,
-      revealAvailable: false,
-      kaiser100RewardClaimed: true,
-      exKaiserDefeated: true,
-    }));
-    window.localStorage.setItem('duel_arena_stat_points', '62');
-    window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
-      coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
-    }));
+    const initializedKey = '__e2e_stella_final_reward_initialized';
+    if (window.localStorage.getItem(initializedKey) !== 'true') {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+        isUnlocked: true,
+        revealAvailable: false,
+        kaiser100RewardClaimed: true,
+        exKaiserDefeated: true,
+      }));
+      window.localStorage.setItem('duel_arena_stat_points', '62');
+      window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
+        coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
+      }));
+      window.localStorage.setItem(initializedKey, 'true');
+    }
 
     // Fail exactly the first +100P write to verify the in-screen retry path after real combat.
     const originalSetItem = Storage.prototype.setItem;
-    let failFinalRewardWrite = true;
+    let failFinalRewardWrite = window.localStorage.getItem('__e2e_stella_final_reward_failure_used') !== 'true';
     Storage.prototype.setItem = function (key, value) {
       if (key === 'duel_arena_stat_points' && value === '162' && failFinalRewardWrite) {
         failFinalRewardWrite = false;
+        originalSetItem.call(window.localStorage, '__e2e_stella_final_reward_failure_used', 'true');
         throw new DOMException('Simulated quota failure', 'QuotaExceededError');
       }
       return originalSetItem.call(this, key, value);
