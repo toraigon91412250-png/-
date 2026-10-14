@@ -144,7 +144,7 @@ export const StellaFinalBattleScreen: React.FC<{
       setBattle(current => current.normalAttackCutIn ? { ...current, normalAttackCutIn: false } : current);
     }, duration);
     return () => window.clearTimeout(timer);
-  }, [battle.normalAttackCutIn, battle.fighterId, battle.alignment]);
+  }, [battle.normalAttackCutIn, battle.fighterId, battle.alignment, battle.turn]);
 
   useEffect(() => {
     const alignment = battle.finisherPending;
@@ -576,9 +576,9 @@ export const StellaFinalBattleScreen: React.FC<{
           </div>
         )}
         {battle.normalAttackCutIn && battle.fighterId === 'short-irena' && (
-          battle.alignment === 'DEMON'
-            ? <div className="stella-final__short-attack-cutin" data-testid="short-irena-normal-cutin" aria-hidden="true"><img src={STELLA_FINAL_BATTLE_IMAGES.irenaDemonAttackCutIn} alt="" /><span>終極穿撃</span></div>
-            : <div className="stella-final__short-attack-flash" aria-hidden="true"><span>神速の一閃</span></div>
+          (battle.alignment === 'DEMON' || battle.datenGauge < 0)
+            ? <div key={battle.turn} className="stella-final__short-attack-cutin" data-testid="short-irena-normal-cutin" aria-hidden="true"><img src={STELLA_FINAL_BATTLE_IMAGES.irenaDemonAttackCutIn} alt="" /><span>終極穿撃</span></div>
+            : <div key={battle.turn} className="stella-final__short-attack-flash" aria-hidden="true"><span>神速の一閃</span></div>
         )}
         {battle.finisherPending && (
           <div className={'stella-final__short-finisher stella-final__short-finisher--' + battle.finisherPending.toLowerCase()} data-testid="short-irena-finisher" role="status" aria-label={battle.finisherPending === 'GOD' ? '神側最終必殺技演出' : '悪魔側最終必殺技演出'}>
