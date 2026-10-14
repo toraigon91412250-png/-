@@ -225,7 +225,7 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
           </div>
         </section>
 
-        {battle.meteorFlash && isFighting && (
+        {battle.meteorFlash && (
           <div className="stella-final__meteor-cut-in" aria-hidden="true">
             <img src={stellaCutInImage} alt="" />
             <span>天象支配</span>
