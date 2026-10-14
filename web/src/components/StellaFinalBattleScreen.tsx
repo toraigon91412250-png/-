@@ -150,12 +150,12 @@ export const StellaFinalBattleScreen: React.FC<{
           log('「不滅」がEXカイザーの反撃を完全無効化。ダメージは発生しない。');
         } else {
           playerHp = Math.max(0, playerHp - enemyDamage);
-          log('EXカイザーの反撃。ステラは ' + enemyDamage.toLocaleString('ja-JP') + ' ダメージを受けた。');
+          log('EXカイザーの反撃。' + fighterConfig.name + 'は ' + enemyDamage.toLocaleString('ja-JP') + ' ダメージを受けた。');
         }
 
         if (playerHp <= 0) {
           status = 'DEFEAT';
-          log('ステラは戦闘不能になった。');
+          log(fighterConfig.name + 'は戦闘不能になった。');
         } else if (current.phase === 3 && finalTurnsLeft !== null) {
           finalTurnsLeft = Math.max(0, finalTurnsLeft - 1);
           if (finalTurnsLeft === 0) {
@@ -301,7 +301,7 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__briefing-heading"><Shield size={18} /> 最終決戦のルール</div>
             <p>EXカイザーは三形態。形態が変わってもHPは回復せず、与えたダメージを引き継ぐ。</p>
             <p>第三形態に入ると、制限ターンが8～10ターンからランダムに決まり、期限を過ぎると終局の必殺技で敗北する。</p>
-            <p className="stella-final__prototype-note">試作バランス：最大HP 18,000、天象支配 4,500ダメージ。数値は調整用の仮設定。</p>
+            <p className="stella-final__prototype-note">試作バランス：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}、天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ。数値は調整用の仮設定。</p>
             <button type="button" className="stella-final__start" onClick={startBattle}>最終決戦を開始</button>
           </section>
         ) : (
