@@ -309,7 +309,7 @@ test('failed final-battle image preload blocks battle start and can be retried',
     }));
   });
   // Abort the actual image payload, not Vite's ?import JavaScript module.
-  const blockedGodImage = (url: URL) => url.pathname === '/src/assets/IMG_1194.jpeg';
+  const blockedGodImage = (url: URL) => url.pathname === '/src/assets/IMG_1194.jpeg' && url.search === '';
   await page.route(blockedGodImage, route => route.abort());
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
