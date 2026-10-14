@@ -348,7 +348,7 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
   await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 50));
   await expect(page.getByRole('status').filter({ hasText: '全能 0.6倍' })).toBeVisible();
-  await expect(page.getByRole('status').filter({ hasText: '元攻撃力補正×0.60' })).toBeVisible();
+  await expect(page.getByText(/元攻撃力×0\.60（永続）/)).toBeVisible();
   await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
