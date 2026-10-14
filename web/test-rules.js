@@ -29,6 +29,26 @@ register(
 );
 
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
+const { STELLA_FINAL_BATTLE_TUNING } = await import('./src/data/stellaFinalBattleConfig.ts');
+const regularIrenaSnapshot = {
+  maxHp: IRENA.maxHp,
+  attack: IRENA.attack,
+  defense: IRENA.defense,
+  speed: IRENA.speed,
+  specialSkillDamage: IRENA.specialSkillDamage,
+  ultimateSkillDamage: IRENA.ultimateSkillDamage,
+};
+assert.notStrictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'], IRENA);
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'].id, 'final-irena');
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'].isPrototype, true);
+assert.deepStrictEqual({
+  maxHp: IRENA.maxHp,
+  attack: IRENA.attack,
+  defense: IRENA.defense,
+  speed: IRENA.speed,
+  specialSkillDamage: IRENA.specialSkillDamage,
+  ultimateSkillDamage: IRENA.ultimateSkillDamage,
+}, regularIrenaSnapshot, 'Final-battle Irena data must not mutate the normal IRENA definition.');
 const { CpuAi } = await import('./src/utils/ai.ts');
 
 const { getIrenaSuperFallenShotMultiplier } = await import('./src/types/game.ts');
@@ -38,7 +58,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -828,7 +848,7 @@ try {
 
   assert.deepStrictEqual(
     loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'A save created before Stella existed must default to locked without throwing.',
   );
   assert.strictEqual(unlockStellaMode().persisted, false, 'Stella cannot unlock before the reveal is claimed.');
@@ -841,7 +861,7 @@ try {
   }));
   assert.deepStrictEqual(
     loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'Legacy saves with a Lv.100-only reveal must be sent through EX Kaiser first.',
   );
   storageValues.delete(STELLA_MODE_PROGRESS_KEY);
@@ -860,7 +880,7 @@ try {
   assert.strictEqual(loadStatPoints(), 12, 'A failed Lv.100 claim must not grant the 50 points.');
   assert.deepStrictEqual(
     loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'A failed reward transaction must roll back the reveal and claim marker.',
   );
 
@@ -871,7 +891,7 @@ try {
   assert.strictEqual(loadStatPoints(), 62, 'A successful first claim grants exactly 50 base points.');
   assert.deepStrictEqual(
     firstStellaClaim.progress,
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true },
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'Claiming the Lv.100 reward grants points and unlocks the EX Kaiser challenge, not the hidden entrance.',
   );
 
@@ -885,7 +905,7 @@ try {
   assert.strictEqual(firstExVictory.persisted, true);
   assert.deepStrictEqual(
     firstExVictory.progress,
-    { isUnlocked: false, exKaiserDefeated: true, revealAvailable: true, kaiser100RewardClaimed: true },
+    { isUnlocked: false, exKaiserDefeated: true, revealAvailable: true, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'EX Kaiser victory reveals the hidden entrance.',
   );
   assert.strictEqual(recordExKaiserVictory().persisted, true, 'Repeating an EX victory must be idempotent.');
@@ -893,11 +913,61 @@ try {
   assert.strictEqual(firstStellaUnlock.persisted, true);
   assert.deepStrictEqual(
     firstStellaUnlock.progress,
-    { isUnlocked: true, exKaiserDefeated: true, revealAvailable: false, kaiser100RewardClaimed: true },
+    { isUnlocked: true, exKaiserDefeated: true, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
     'The hidden mode unlock should happen only after the reveal is confirmed.',
   );
   assert.strictEqual(unlockStellaMode().persisted, true, 'Unlock confirmation should be idempotent.');
   assert.strictEqual(loadStatPoints(), 62, 'Unlocking Stella must not change the reward total.');
+
+  // The final-battle reward is separate from the normal Lv.100 +50P reward.
+  // Raid bonus points are included by loadStatPoints but must not be folded into the base save.
+  storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+    coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
+  }));
+  assert.strictEqual(loadStatPoints(), 79, 'Existing raid bonus points remain included.');
+  assert.strictEqual(claimStellaFinalBattleReward(false).persisted, false,
+    'A non-victory cannot claim the final-battle reward.');
+  assert.strictEqual(loadStatPoints(), 79, 'Rejected claims cannot change stat points.');
+  assert.strictEqual(loadStellaModeProgress().finalBattleCleared, false);
+
+  let failFinalBattlePointWriteOnce = true;
+  globalThis.localStorage.setItem = (key, value) => {
+    if (key === 'duel_arena_stat_points' && failFinalBattlePointWriteOnce) {
+      failFinalBattlePointWriteOnce = false;
+      throw new Error('simulated final-battle stat-point save failure');
+    }
+    originalSetItemForStellaModeTest(key, value);
+  };
+  const failedFinalBattleClaim = claimStellaFinalBattleReward(true);
+  assert.strictEqual(failedFinalBattleClaim.persisted, false,
+    'A failed final-battle reward transaction must report failure.');
+  assert.strictEqual(storageValues.get('duel_arena_stat_points'), '62',
+    'Failed final-battle reward must roll base points back.');
+  assert.strictEqual(loadStatPoints(), 79,
+    'Failed final-battle reward must preserve the existing raid bonus without double counting.');
+  assert.strictEqual(loadStellaModeProgress().finalBattleCleared, false,
+    'Failed final-battle reward must roll the clear marker back.');
+  assert.strictEqual(loadStellaModeProgress().finalBattleRewardClaimed, false,
+    'Failed final-battle reward must roll the reward marker back.');
+
+  globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
+  const firstFinalBattleClaim = claimStellaFinalBattleReward(true);
+  assert.strictEqual(firstFinalBattleClaim.persisted, true);
+  assert.strictEqual(firstFinalBattleClaim.rewardGranted, true);
+  assert.strictEqual(storageValues.get('duel_arena_stat_points'), '162',
+    'The +100P reward must add to the stored base points, not the raid-inclusive total.');
+  assert.strictEqual(loadStatPoints(), 179,
+    'The +100P reward must preserve the 17 raid bonus points without double counting.');
+  assert.strictEqual(firstFinalBattleClaim.progress.finalBattleCleared, true);
+  assert.strictEqual(firstFinalBattleClaim.progress.finalBattleRewardClaimed, true);
+  assert.strictEqual(loadStellaModeProgress().finalBattleRewardClaimed, true,
+    'The final-Irena unlock marker persists across reloads.');
+  const repeatedFinalBattleClaim = claimStellaFinalBattleReward(true);
+  assert.strictEqual(repeatedFinalBattleClaim.persisted, true);
+  assert.strictEqual(repeatedFinalBattleClaim.rewardGranted, false,
+    'Repeated final-battle victories must not grant another reward.');
+  assert.strictEqual(loadStatPoints(), 179,
+    'Repeated final-battle victories must not alter the reward total.');
 } finally {
   globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
   for (const [key, value] of stellaModeStateBeforeTest) {
