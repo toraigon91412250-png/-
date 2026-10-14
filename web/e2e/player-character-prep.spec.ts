@@ -47,6 +47,45 @@ test('unlocked Stella mode opens the dedicated EX Kaiser final battle and all th
   await expect(page.getByText(/次回使用：第 4 ターン/)).toBeVisible();
 });
 
+test('Stella final duel uses the player-favored balance tuning in actual combat', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      exKaiserDefeated: true,
+      finalBattleCleared: true,
+      finalBattleRewardClaimed: true,
+    }));
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+
+  const playerHp = page.getByRole('progressbar', { name: 'ステラのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
+  await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
+  await expect(page.locator('.stella-final__normal-attack')).toContainText('2,000');
+  await expect(page.getByText(/試作値：5,000ダメージ・1回/)).toBeVisible();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4780');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '9000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4240');
+  await expect(page.locator('.stella-final__phase')).toContainText('02');
+});
+
 test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -228,8 +267,8 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   const normalAttack = page.getByRole('button', { name: '通常攻撃' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
   const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
 
   await normalAttack.click();
   const demonCutIn = page.getByTestId('short-irena-normal-cutin');
@@ -309,16 +348,17 @@ test('failed final-battle image preload blocks battle start and can be retried',
     }));
   });
   // Abort the actual image payload, not Vite's ?import JavaScript module.
-  const blockedGodImage = (url: URL) => url.pathname === '/src/assets/IMG_1194.jpeg' && url.search === '';
-  await page.route(blockedGodImage, route => route.abort());
+  // Stella's meteor cut-in is required before the final battle can begin.
+  const blockedStellaCutIn = (url: URL) => url.pathname === '/src/assets/IMG_1186.jpg' && url.search === '';
+  await page.route(blockedStellaCutIn, route => route.abort());
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   const preloadError = page.getByRole('alert', { name: '最終決戦画像のプリロード失敗' });
   await expect(preloadError).toBeVisible({ timeout: 15000 });
-  await expect(preloadError).toContainText('IMG_1194.jpeg');
+  await expect(preloadError).toContainText('IMG_1186.jpg');
   await expect(page.getByRole('button', { name: '画像読み込み後に開始' })).toBeDisabled();
 
-  await page.unroute(blockedGodImage);
+  await page.unroute(blockedStellaCutIn);
   await preloadError.getByRole('button', { name: '画像を再読み込み' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: '最終決戦を開始' })).toBeEnabled();
@@ -346,7 +386,7 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await page.getByRole('button', { name: '通常攻撃' }).click();
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
   const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '3870');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3880');
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
@@ -378,23 +418,39 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
+  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+  const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
+  const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+
   for (let turn = 0; turn < 4; turn += 1) await attack.click();
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Stay between route endpoints while the third-form countdown expires.
-  await page.getByRole('button', { name: '絶界昇華を発動' }).click();
+  // Keep the route unlocked until the countdown expires.
+  // Ascension moves -48 to +12; boosted actions reach +60 without locking the route.
+  await ascension.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '12');
   await attack.click();
   await attack.click();
-  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
-  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
-  await page.getByRole('button', { name: '終極殲滅を発動' }).click();
-  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
-  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
   await attack.click();
-  await attack.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '60');
+  await expect(pass).toBeVisible();
+
+  // Consume Ascension recoil, then use Terminus from +60. Its opposite-gauge
+  // penalty is limited to -15, leaving the route at +45 rather than locking it.
+  await pass.click();
+  await terminus.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect(pass).toBeVisible();
+  await pass.click();
+
+  // All Might can skip the current Kaiser action, but cannot stop the final deadline.
+  // The gauge lands at -5, so the loss is specifically caused by an unlocked route.
+  await controlDemon.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-40');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-5');
   await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
@@ -468,11 +524,28 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
   const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
   const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+  const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
 
   await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+
+  // Put the gauge at -60 without locking the route. The recoil turn must be consumed first.
+  await terminus.click();
+  await expect(pass).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await pass.click();
+
   await ascension.click();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1360');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -480,7 +553,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '7360');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -489,10 +562,13 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
-  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
+  await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-93');
 
-  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
+  await pass.click();
   await expect(ascension).toBeEnabled();
+  await expect(terminus).toBeEnabled();
+  await expect(controlGod).toBeEnabled();
+  await expect(controlDemon).toBeEnabled();
 });
-

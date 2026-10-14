@@ -30,6 +30,12 @@ register(
 
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
+
+// Keep the final duel player-favored: strengthen Stella while modestly easing EX Kaiser.
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 15000);
+assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 220, 2: 320, 3: 440 });
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
 const regularIrenaSnapshot = {
   maxHp: IRENA.maxHp,
   attack: IRENA.attack,
