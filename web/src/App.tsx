@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -371,6 +371,20 @@ export const App: React.FC = () => {
     return true;
   };
 
+  const handleClaimStellaFinalBattleReward = React.useCallback(() => {
+    const result = claimStellaFinalBattleReward(true);
+    if (result.persisted) {
+      setStellaModeProgress(result.progress);
+      setStellaRewardSaveError(false);
+      const currentStatPoints = loadStatPoints();
+      setAvailableStatPoints(currentStatPoints);
+      setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+    } else {
+      setStellaRewardSaveError(true);
+    }
+    return result;
+  }, []);
+
   const handleOpenStellaMode = () => {
     const progress = loadStellaModeProgress();
     setStellaModeProgress(progress);
@@ -705,6 +719,8 @@ export const App: React.FC = () => {
         />
       ) : screen === 'STELLA_FINAL' ? (
         <StellaFinalBattleScreen
+          progress={stellaModeProgress}
+          onClaimVictoryReward={handleClaimStellaFinalBattleReward}
           onBackHome={() => {
             cancelBattle();
             refreshProgress();
