@@ -102,6 +102,7 @@ export const preloadRecruitmentImages = (): Promise<void[]> => {
 const finalBattleImagePreloadCache = new Map<string, Promise<void>>();
 const FINAL_BATTLE_REQUIRED_IMAGES: ReadonlyArray<readonly [string, string]> = [
   ['ステラ立ち絵', STELLA_FINAL_BATTLE_IMAGES.stellaPortrait],
+  ['ステラ天象支配カットイン IMG_1186.jpg', STELLA_FINAL_BATTLE_IMAGES.stellaCutIn],
   ['通常版いれーな立ち絵', STELLA_FINAL_BATTLE_IMAGES.irenaBasePortrait],
   ['神側立ち絵 IMG_1194.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaGodPortrait],
   ['悪魔側立ち絵 IMG_1193.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaDemonPortrait],
