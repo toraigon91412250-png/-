@@ -9,10 +9,21 @@ import {
 
 export const SHORT_IRENA_STAT_POINT_TOTAL = 150;
 export const SHORT_IRENA_NORMAL_ATTACK_MULTIPLIER = 8;
-export const SHORT_IRENA_ASCENSION_MULTIPLIER = 1.8;
+
+export const SHORT_IRENA_TERMINUS_COOLDOWN_TURNS = 5;
+export const SHORT_IRENA_TERMINUS_MIN_DAMAGE = 5000;
+export const SHORT_IRENA_TERMINUS_RECOIL_ACTION_LOCK_TURNS = 1;
+export const SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER = 0.5;
+export const SHORT_IRENA_TERMINUS_SPEED_DOWN_TURNS = 2;
+
+export const SHORT_IRENA_ASCENSION_MULTIPLIER = 3;
 export const SHORT_IRENA_ASCENSION_TURNS = 3;
-export const SHORT_IRENA_OUTSIDE_CONTROL_TURNS = 2;
-export const SHORT_IRENA_END_KAI_DAMAGE = 6200;
+export const SHORT_IRENA_ASCENSION_RECOVERY_TURNS = 1;
+export const SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER = 0.5;
+export const SHORT_IRENA_ASCENSION_DEFENSE_DOWN_TURNS = 3;
+
+export const SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER = 0.3;
+export const SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER = 1000;
 export const SHORT_IRENA_STAT_ALLOCATION_KEY = 'duel_arena_short_irena_stat_allocation';
 
 export type ShortIrenaRoute = 'GOD' | 'DEMON';
@@ -29,7 +40,7 @@ export function normalizeShortIrenaAllocation(input?: Partial<StatAllocation> | 
   return normalizeStatAllocation(input, SHORT_IRENA_STAT_POINT_TOTAL);
 }
 
-/** Uses exactly the existing stat-point conversion values on the unchanged IRENA base. */
+/** Uses the unchanged normal IRENA base and the existing stat allocation conversion. */
 export function getShortIrenaCombatStats(allocation?: Partial<StatAllocation> | null) {
   const normalized = normalizeShortIrenaAllocation(allocation);
   const character = applyStatAllocation(IRENA, normalized, SHORT_IRENA_STAT_POINT_TOTAL);
@@ -39,7 +50,7 @@ export function getShortIrenaCombatStats(allocation?: Partial<StatAllocation> | 
     defense: character.defense,
     speed: character.speed,
     evasionRate: character.evasionRate,
-    normalAttackDamage: Math.max(1, Math.round(character.attack * SHORT_IRENA_NORMAL_ATTACK_MULTIPLIER)),
+    normalAttackDamage: Math.max(1, Math.ceil(character.attack * SHORT_IRENA_NORMAL_ATTACK_MULTIPLIER)),
     spentPoints: getSpentStatPoints(normalized, SHORT_IRENA_STAT_POINT_TOTAL),
     remainingPoints: getRemainingStatPoints(normalized, SHORT_IRENA_STAT_POINT_TOTAL),
     allocation: normalized,
@@ -48,7 +59,7 @@ export function getShortIrenaCombatStats(allocation?: Partial<StatAllocation> | 
 
 /**
  * At a strong lean, opposite movement is reduced to one quarter. Once an end
- * is reached the screen locks the alignment, so small reversals cannot flip art.
+ * is reached the screen locks the route, so small reversals cannot flip art.
  */
 export function shiftDatenGauge(currentValue: number, requestedDelta: number): number {
   const current = Math.max(-100, Math.min(100, Math.round(currentValue)));
