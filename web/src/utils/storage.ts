@@ -146,9 +146,10 @@ export function loadStellaModeProgress(): StellaModeProgress {
 }
 
 /**
- * Grants the one-time Lv.100 victory bonus and marks Stella's hidden entrance
- * as available in the same storage transaction, so a failed write can't grant
- * points without recording the claim (or vice versa).
+ * Grants the one-time Lv.100 victory bonus and unlocks the EX Kaiser challenge
+ * in the same storage transaction, so a failed write can't grant points
+ * without recording the claim (or vice versa). Stella's hidden entrance still
+ * requires a separate EX Kaiser victory.
  */
 export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   const current = loadStellaModeProgress();
