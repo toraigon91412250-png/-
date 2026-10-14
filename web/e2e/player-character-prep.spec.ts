@@ -319,12 +319,14 @@ test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, a
   await expect(gauge).toHaveAttribute('aria-valuenow', '0');
   await expect(bossHp).toHaveAttribute('aria-valuenow', '15000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '絶界昇華を発動' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '神化を選択' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '堕天を選択' })).toBeVisible();
 
   // Opening choice changes only the gauge, and the cut-in always returns to normal.
   await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '絶界昇華を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
   await expect(gauge).toHaveAttribute('aria-valuenow', '-15');
   await moveFinalIrenaGaugeTo(page, -100);
   await expect(gauge).toHaveAttribute('aria-valuenow', '-100');
@@ -590,7 +592,7 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
 
   await terminus.click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
-  await expect(page.locator('.stella-final__log-lines')).toContainText('第5ターン：権能「終極殲滅」');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('第8ターン：権能「終極殲滅」');
 });
 
 test('絶界昇華 triples effective stats and blocks all authorities for its full active duration', async ({ page }) => {
