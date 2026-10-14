@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, HeartPulse, Shield, Sparkles, Swords, TimerReset, Zap } from 'lucide-react';
-import stellaImage from '../assets/IMG_1185.jpg';
-import stellaCutInImage from '../assets/IMG_1186.jpg';
 import kaiserImage from '../assets/img_kaiser.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
+import { STELLA_FINAL_BATTLE_TUNING, type StellaFinalBattleFighterId } from '../data/stellaFinalBattleConfig';
+import type { StellaFinalBattleRewardResult, StellaModeProgress } from '../utils/storage';
 import './StellaFinalBattleScreen.css';
 
-const STELLA_MAX_HP = 3800;
-const EX_KAISER_TOTAL_HP = 18000;
-const METEOR_DAMAGE_PROTOTYPE = 4500;
+const { bossMaxHp: EX_KAISER_TOTAL_HP, meteorDamage: METEOR_DAMAGE_PROTOTYPE } = STELLA_FINAL_BATTLE_TUNING;
 
 type BattleStatus = 'READY' | 'FIGHTING' | 'VICTORY' | 'DEFEAT';
 type FinalAction = 'ATTACK' | 'IMMORTAL' | 'REBIRTH' | 'METEOR';
@@ -18,7 +16,8 @@ interface StellaFinalBattleState {
   status: BattleStatus;
   turn: number;
   phase: BattlePhase;
-  stellaHp: number;
+  fighterId: StellaFinalBattleFighterId;
+  playerHp: number;
   kaiserHp: number;
   rebirthUses: number;
   meteorUsed: boolean;
@@ -29,12 +28,17 @@ interface StellaFinalBattleState {
   logs: string[];
 }
 
-function createInitialBattle(status: BattleStatus = 'READY'): StellaFinalBattleState {
+function createInitialBattle(
+  status: BattleStatus = 'READY',
+  fighterId: StellaFinalBattleFighterId = 'stella',
+): StellaFinalBattleState {
+  const fighter = STELLA_FINAL_BATTLE_TUNING.fighters[fighterId];
   return {
     status,
     turn: 1,
     phase: 1,
-    stellaHp: STELLA_MAX_HP,
+    fighterId,
+    playerHp: fighter.maxHp,
     kaiserHp: EX_KAISER_TOTAL_HP,
     rebirthUses: 0,
     meteorUsed: false,
@@ -42,7 +46,7 @@ function createInitialBattle(status: BattleStatus = 'READY'): StellaFinalBattleS
     finalTurnLimit: null,
     finalTurnsLeft: null,
     meteorFlash: false,
-    logs: ['三つの権能を駆使し、EXカイザーとの最終決戦に挑め。'],
+    logs: ['最終決戦の行動を使い分け、EXカイザーを撃破せよ。'],
   };
 }
 
@@ -60,17 +64,36 @@ const PHASE_NAMES: Record<BattlePhase, string> = {
 
 const REBIRTH_RATIOS = [1, 0.5, 0.25] as const;
 
-export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ onBackHome }) => {
+export const StellaFinalBattleScreen: React.FC<{
+  onBackHome: () => void;
+  progress: StellaModeProgress;
+  onClaimVictoryReward: () => StellaFinalBattleRewardResult;
+}> = ({ onBackHome, progress, onClaimVictoryReward }) => {
+  const [selectedFighterId, setSelectedFighterId] = useState<StellaFinalBattleFighterId>('stella');
   const [battle, setBattle] = useState<StellaFinalBattleState>(() => createInitialBattle());
+  const rewardAttemptedForVictoryRef = useRef(false);
+  const [rewardResult, setRewardResult] = useState<StellaFinalBattleRewardResult | null>(null);
 
-  const startBattle = () => setBattle(createInitialBattle('FIGHTING'));
+  const startBattle = () => {
+    rewardAttemptedForVictoryRef.current = false;
+    setRewardResult(null);
+    setBattle(createInitialBattle('FIGHTING', selectedFighterId));
+  };
+
+  useEffect(() => {
+    if (battle.status !== 'VICTORY' || battle.fighterId !== 'stella' || rewardAttemptedForVictoryRef.current) return;
+    rewardAttemptedForVictoryRef.current = true;
+    setRewardResult(onClaimVictoryReward());
+  }, [battle.status, battle.fighterId, onClaimVictoryReward]);
 
   const takeAction = (action: FinalAction) => {
     setBattle(current => {
       if (current.status !== 'FIGHTING') return current;
 
       const turn = current.turn;
-      let stellaHp = current.stellaHp;
+      const fighterConfig = STELLA_FINAL_BATTLE_TUNING.fighters[current.fighterId];
+      const maxHp = fighterConfig.maxHp;
+      let playerHp = current.playerHp;
       let kaiserHp = current.kaiserHp;
       let phase = current.phase;
       let rebirthUses = current.rebirthUses;
@@ -84,7 +107,7 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
       const log = (message: string) => logs.push('第' + turn + 'ターン：' + message);
 
       if (action === 'ATTACK') {
-        const damage = 480;
+        const damage = fighterConfig.normalAttackDamage;
         kaiserHp = Math.max(0, kaiserHp - damage);
         log('ステラの通常攻撃。EXカイザーに ' + damage.toLocaleString('ja-JP') + ' ダメージ。');
       } else if (action === 'IMMORTAL') {
@@ -92,11 +115,11 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
         immortalReadyTurn = turn + 3;
         log('権能「不滅」を発動。次の攻撃を完全無敵で無効化する。');
       } else if (action === 'REBIRTH') {
-        if (rebirthUses >= REBIRTH_RATIOS.length || stellaHp >= STELLA_MAX_HP) return current;
-        const healing = Math.round(STELLA_MAX_HP * REBIRTH_RATIOS[rebirthUses]);
-        const actualHealing = Math.min(STELLA_MAX_HP - stellaHp, healing);
+        if (rebirthUses >= REBIRTH_RATIOS.length || playerHp >= maxHp) return current;
+        const healing = Math.round(maxHp * REBIRTH_RATIOS[rebirthUses]);
+        const actualHealing = Math.min(maxHp - playerHp, healing);
         rebirthUses += 1;
-        stellaHp += actualHealing;
+        playerHp += actualHealing;
         log('権能「再誕」。HPを ' + actualHealing.toLocaleString('ja-JP') + ' 回復。' + rebirthUses + '回目の使用。');
       } else {
         if (meteorUsed) return current;
@@ -122,21 +145,21 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
         }
 
         const negatesAttack = action === 'IMMORTAL';
-        const enemyDamage = phase === 1 ? 260 : phase === 2 ? 380 : 520;
+        const enemyDamage = STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase];
         if (negatesAttack) {
           log('「不滅」がEXカイザーの反撃を完全無効化。ダメージは発生しない。');
         } else {
-          stellaHp = Math.max(0, stellaHp - enemyDamage);
+          playerHp = Math.max(0, playerHp - enemyDamage);
           log('EXカイザーの反撃。ステラは ' + enemyDamage.toLocaleString('ja-JP') + ' ダメージを受けた。');
         }
 
-        if (stellaHp <= 0) {
+        if (playerHp <= 0) {
           status = 'DEFEAT';
           log('ステラは戦闘不能になった。');
         } else if (current.phase === 3 && finalTurnsLeft !== null) {
           finalTurnsLeft = Math.max(0, finalTurnsLeft - 1);
           if (finalTurnsLeft === 0) {
-            stellaHp = 0;
+            playerHp = 0;
             status = 'DEFEAT';
             logs.push('制限ターン終了。EXカイザーが終局の必殺技を放ち、ステラは敗北した。');
           }
@@ -148,7 +171,7 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
         status,
         turn: status === 'FIGHTING' ? turn + 1 : turn,
         phase,
-        stellaHp,
+        playerHp,
         kaiserHp,
         rebirthUses,
         meteorUsed,
@@ -162,7 +185,10 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
   };
 
   const isFighting = battle.status === 'FIGHTING';
-  const stellaHpPercent = Math.max(0, (battle.stellaHp / STELLA_MAX_HP) * 100);
+  const displayedFighterId = battle.status === 'READY' ? selectedFighterId : battle.fighterId;
+  const fighter = STELLA_FINAL_BATTLE_TUNING.fighters[displayedFighterId];
+  const displayedPlayerHp = battle.status === 'READY' ? fighter.maxHp : battle.playerHp;
+  const playerHpPercent = Math.max(0, (displayedPlayerHp / fighter.maxHp) * 100);
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
   const resultTitle = battle.status === 'VICTORY' ? '最終決戦 勝利' : '最終決戦 敗北';
 
@@ -187,14 +213,14 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
         <section className="stella-final__arena" aria-label="最終決戦の戦場">
           <div className="stella-final__fighter stella-final__fighter--stella">
             <div className="stella-final__portrait">
-              <img src={stellaImage} alt="ステラ" />
+              <img src={fighter.imageSrc} alt={fighter.name} />
               <span className="stella-final__portrait-label">PLAYER</span>
             </div>
-            <div className="stella-final__fighter-name">ステラ</div>
-            <div className="stella-final__fighter-subtitle">天星の翼</div>
-            <div className="stella-final__hp-meta"><span>HP</span><strong>{battle.stellaHp.toLocaleString('ja-JP')} / {STELLA_MAX_HP.toLocaleString('ja-JP')}</strong></div>
-            <div className="stella-final__hp-track" role="progressbar" aria-label="ステラのHP" aria-valuemin={0} aria-valuemax={STELLA_MAX_HP} aria-valuenow={battle.stellaHp}>
-              <span className="stella-final__hp-fill stella-final__hp-fill--player" style={{ width: stellaHpPercent + '%' }} />
+            <div className="stella-final__fighter-name">{fighter.name}</div>
+            <div className="stella-final__fighter-subtitle">{fighter.title}</div>
+            <div className="stella-final__hp-meta"><span>HP</span><strong>{displayedPlayerHp.toLocaleString('ja-JP')} / {fighter.maxHp.toLocaleString('ja-JP')}</strong></div>
+            <div className="stella-final__hp-track" role="progressbar" aria-label={fighter.name + 'のHP'} aria-valuemin={0} aria-valuemax={fighter.maxHp} aria-valuenow={displayedPlayerHp}>
+              <span className="stella-final__hp-fill stella-final__hp-fill--player" style={{ width: playerHpPercent + '%' }} />
             </div>
           </div>
 
@@ -225,9 +251,47 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
           </div>
         </section>
 
+        {battle.status === 'READY' && (
+          <section className="stella-final__character-select" aria-label="最終決戦の操作キャラクター">
+            <div className="stella-final__character-select-heading">
+              <strong>挑戦キャラクター</strong>
+              <span>{progress.finalBattleRewardClaimed ? '最終決戦用キャラクターを選択可能' : '初回クリア後に追加キャラクターが解放'}</span>
+            </div>
+            <div className="stella-final__character-choice-grid">
+              <button
+                type="button"
+                className="stella-final__character-choice"
+                aria-label="最終決戦キャラクター：ステラ"
+                aria-pressed={selectedFighterId === 'stella'}
+                onClick={() => setSelectedFighterId('stella')}
+              >
+                <img src={STELLA_FINAL_BATTLE_TUNING.fighters.stella.imageSrc} alt="" />
+                <span><strong>ステラ</strong><small>天星の翼</small></span>
+                <span className="stella-final__choice-state">{selectedFighterId === 'stella' ? '選択中' : '選択'}</span>
+              </button>
+              {progress.finalBattleRewardClaimed ? (
+                <button
+                  type="button"
+                  className="stella-final__character-choice"
+                  aria-label="最終決戦キャラクター：最終決戦用いれーな"
+                  aria-pressed={selectedFighterId === 'final-irena'}
+                  onClick={() => setSelectedFighterId('final-irena')}
+                >
+                  <img src={STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'].imageSrc} alt="" />
+                  <span><strong>最終決戦用いれーな</strong><small>最終決戦専用・仮設定</small></span>
+                  <span className="stella-final__choice-state">{selectedFighterId === 'final-irena' ? '選択中' : '選択'}</span>
+                </button>
+              ) : (
+                <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに最終決戦用いれーなが解放される。</p>
+              )}
+            </div>
+            <p className="stella-final__prototype-note">キャラクターHP・通常攻撃は最終決戦専用の仮設定。通常版いれーなの能力値や育成データには影響しない。</p>
+          </section>
+        )}
+
         {battle.meteorFlash && (
           <div className="stella-final__meteor-cut-in" aria-hidden="true">
-            <img src={stellaCutInImage} alt="" />
+            <img src={STELLA_FINAL_BATTLE_TUNING.meteorCutInImage} alt="" />
             <span>天象支配</span>
           </div>
         )}
@@ -244,7 +308,7 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
           <>
             <section className="stella-final__powers" aria-label="ステラの権能">
               <div className="stella-final__powers-heading">
-                <div><span>STELLA'S AUTHORITIES</span><h2>三つの権能</h2></div>
+                <div><span>{battle.fighterId === 'stella' ? "STELLA'S AUTHORITIES" : 'FINAL DUEL COMMANDS'}</span><h2>最終決戦の行動</h2></div>
                 {isFighting && <span className="stella-final__turn-chip">第 {battle.turn} ターン</span>}
               </div>
 
@@ -257,7 +321,7 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
                 <article className="stella-final__power-card stella-final__power-card--rebirth">
                   <div className="stella-final__power-icon"><HeartPulse size={21} /></div>
                   <div className="stella-final__power-copy"><h3>再誕</h3><p>最大HPを基準に100% → 50% → 25%回復。</p><small>使用回数：{battle.rebirthUses} / 3</small></div>
-                  <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.stellaHp >= STELLA_MAX_HP} onClick={() => takeAction('REBIRTH')}>回復</button>
+                  <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.playerHp >= maxHp} onClick={() => takeAction('REBIRTH')}>回復</button>
                 </article>
                 <article className="stella-final__power-card stella-final__power-card--meteor">
                   <div className="stella-final__power-icon"><Zap size={21} /></div>
@@ -283,7 +347,26 @@ export const StellaFinalBattleScreen: React.FC<{ onBackHome: () => void }> = ({ 
               <section className={'stella-final__result stella-final__result--' + battle.status.toLowerCase()} role="status">
                 <div className="stella-final__result-label">{battle.status === 'VICTORY' ? 'VICTORY' : 'DEFEAT'}</div>
                 <h2>{resultTitle}</h2>
-                <p>{battle.status === 'VICTORY' ? 'ステラは三つの権能を駆使し、EXカイザーを打ち破った。' : '権能を見直し、第三形態の制限ターン内に決着をつけよう。'}</p>
+                <p>{battle.status === 'VICTORY' ? fighter.name + 'はEXカイザーを打ち破った。' : '権能を見直し、第三形態の制限ターン内に決着をつけよう。'}</p>
+                {battle.status === 'VICTORY' && (
+                  <>
+                    {battle.fighterId === 'stella' && rewardResult && !rewardResult.persisted ? (
+                      <div className="stella-final__reward-error" role="alert" aria-label="最終決戦報酬の保存エラー">
+                        <strong>報酬を保存できなかった</strong>
+                        <p>100Pとクリア記録は保存されていない。再戦せずに保存を再試行できる。</p>
+                        <button type="button" onClick={() => setRewardResult(onClaimVictoryReward())}>報酬保存を再試行</button>
+                      </div>
+                    ) : (
+                      <div className="stella-final__reward-notice" role="status" aria-label="最終決戦クリア報酬">
+                        {battle.fighterId === 'stella' && rewardResult?.rewardGranted
+                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。最終決戦用いれーなが解放された。'
+                          : progress.finalBattleRewardClaimed
+                            ? '初回クリア報酬 +100P は獲得済み。最終決戦用いれーなは解放済み。再戦報酬の重複付与はない。'
+                            : '初回クリア報酬はステラでの初勝利時に付与される。'}
+                      </div>
+                    )}
+                  </>
+                )}
                 <div className="stella-final__result-actions">
                   <button type="button" className="stella-final__start" onClick={startBattle}>もう一度挑む</button>
                   <button type="button" className="stella-final__return" onClick={onBackHome}>ホームへ戻る</button>
