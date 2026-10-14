@@ -555,7 +555,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </div>
                   ))}
                 </div>
-                <p>配分換算は通常戦闘と同じ。基本値 HP 4000 / ATK 360 / DEF 200 / SPD 240。通常攻撃は強化後攻撃値×6。</p>
+                <p>配分換算は通常戦闘と同じ。基本値 HP 4000 / ATK 360 / DEF 200 / SPD 240。通常攻撃は強化後攻撃値×8。</p>
                 {allocationSaveError && <p className="stella-final__asset-error" role="alert">育成配分を保存できなかった。今回は変更を適用するが、再読み込みすると保存されていない可能性がある。</p>}
               </section>
             )}

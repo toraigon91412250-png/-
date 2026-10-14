@@ -77,7 +77,7 @@ export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
       defense: IRENA.defense,
       speed: IRENA.speed,
       evasionRate: IRENA.evasionRate,
-      normalAttackDamage: Math.round(IRENA.attack * 6),
+      normalAttackDamage: Math.round(IRENA.attack * 8),
       imageSrc: IRENA.imageSrc,
       isPrototype: true,
     },

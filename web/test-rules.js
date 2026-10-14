@@ -73,7 +73,7 @@ const {
 assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
-assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 6);
+assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
 assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
