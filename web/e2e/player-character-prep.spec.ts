@@ -457,36 +457,23 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await chooseOpeningIrenaAlignment(page, 'DEMON');
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
-  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
-  const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
 
   for (let turn = 0; turn < 4; turn += 1) await attack.click();
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Let the deadline expire without reaching either endpoint.
-  await ascension.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-45');
-  await attack.click();
-  await attack.click();
-  await attack.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-81');
-  await expect(pass).toBeVisible();
+  // Gauge movement remains available on either side after stage two unlocks.
+  const moveGod = page.getByRole('button', { name: '神側へ15ポイント移動' });
+  for (let move = 0; move < 4; move += 1) await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-15');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り4ターン');
 
-  // Consume the recoil and use Ascension again to return toward the centre.
-  await pass.click();
-  await ascension.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-66');
-  await attack.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-78');
-  await attack.click();
+  // Spend the last four turns moving toward the centre without reaching either endpoint.
+  for (let move = 0; move < 4; move += 1) await moveGod.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-90');
-  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。ルートが終点に届かず敗北');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
 });
 
@@ -509,6 +496,7 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await moveFinalIrenaGaugeTo(page, -60);
 
   const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
@@ -555,6 +543,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await moveFinalIrenaGaugeTo(page, -30);
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
@@ -572,6 +561,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(pass).toBeVisible();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await pass.click();
+  await moveFinalIrenaGaugeTo(page, 30);
 
   await ascension.click();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
@@ -601,11 +591,11 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-93');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '90');
 
   await pass.click();
   await expect(ascension).toBeEnabled();
-  await expect(terminus).toBeEnabled();
+  await expect(terminus).toBeDisabled();
   await expect(controlGod).toBeEnabled();
   await expect(controlDemon).toBeEnabled();
 });
