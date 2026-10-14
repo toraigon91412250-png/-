@@ -758,6 +758,22 @@ assert.strictEqual(allocatedBattleCharacters.player.attack, 408);
 assert.strictEqual(allocatedBattleCharacters.player.defense, 212);
 assert.strictEqual(allocatedBattleCharacters.player.speed, 258);
 
+const normalLv100ForEx = createBattleCharacters(IRENA, KAISER, {
+  kaiserLevel: 100,
+  abilities: [],
+}).enemy;
+const exLv100ForTest = createBattleCharacters(IRENA, KAISER, {
+  kaiserLevel: 100,
+  kaiserChallengeMode: 'EX',
+  abilities: [],
+}).enemy;
+for (const key of ['maxHp', 'attack', 'defense', 'speed', 'specialSkillDamage', 'ultimateSkillDamage', 'evasionRate']) {
+  assert.strictEqual(exLv100ForTest[key], normalLv100ForEx[key] * 2,
+    'EX Kaiser ' + key + ' must be twice the normal Lv.100 value.');
+}
+assert.strictEqual(exLv100ForTest.name, 'EXカイザー');
+
+
 assert.strictEqual(getAbilityBuildMatchPercent('JUDGMENT', { maxHp: 0, attack: 6, defense: 0, speed: 6 }), 100);
 assert.strictEqual(getAbilityBuildMatchPercent('FALLEN_KING', { maxHp: 6, attack: 0, defense: 6, speed: 0 }), 100);
 assert.strictEqual(getAbilityBuildMatchPercent('ABYSS', { maxHp: 0, attack: 0, defense: 0, speed: 12 }), 100);
@@ -817,6 +833,19 @@ try {
   );
   assert.strictEqual(unlockStellaMode().persisted, false, 'Stella cannot unlock before the reveal is claimed.');
   assert.strictEqual(recordExKaiserVictory().persisted, false, 'EX Kaiser cannot be recorded before the Lv.100 reward is claimed.');
+
+  storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({
+    isUnlocked: false,
+    revealAvailable: true,
+    kaiser100RewardClaimed: true,
+  }));
+  assert.deepStrictEqual(
+    loadStellaModeProgress(),
+    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true },
+    'Legacy saves with a Lv.100-only reveal must be sent through EX Kaiser first.',
+  );
+  storageValues.delete(STELLA_MODE_PROGRESS_KEY);
+
 
   let failPointWriteOnce = true;
   globalThis.localStorage.setItem = (key, value) => {
