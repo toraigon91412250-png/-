@@ -418,7 +418,9 @@ export const StellaFinalBattleScreen: React.FC<{
       }
 
       if (skipKaiserAction) {
-        log('理外掌握によりカイザーの通常行動を停止。第三形態の終局判定タイマーには干渉できない。');
+        log(action === 'CONTROL_GOD' || action === 'CONTROL_DEMON'
+          ? '理外掌握によりカイザーの通常行動を停止。第三形態の終局判定タイマーには干渉できない。'
+          : '静寂によりカイザーの通常反撃を停止。第三形態の終局判定タイマーには干渉できない。');
       } else {
         const baseCounter = STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase];
         const enemyDamage = getShortIrenaCounterDamage(baseCounter, effectiveDefense);
@@ -440,12 +442,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (current.kaiserBuffImmuneTurns > 0) kaiserBuffImmuneTurns = Math.max(0, kaiserBuffImmuneTurns - 1);
       if (current.playerPressureTurns > 0) playerPressureTurns = Math.max(0, playerPressureTurns - 1);
       if (current.playerPressureImmuneTurns > 0) playerPressureImmuneTurns = Math.max(0, playerPressureImmuneTurns - 1);
-      if (wasGodMight) godMightTurns = Math.max(0, godMightTurns - 1);
-      if (current.kaiserActionLockTurns > 0) kaiserActionLockTurns = Math.max(0, kaiserActionLockTurns - 1);
-      if (current.kaiserDefenseNullTurns > 0) kaiserDefenseNullTurns = Math.max(0, kaiserDefenseNullTurns - 1);
-      if (current.kaiserBuffImmuneTurns > 0) kaiserBuffImmuneTurns = Math.max(0, kaiserBuffImmuneTurns - 1);
-      if (current.playerPressureTurns > 0) playerPressureTurns = Math.max(0, playerPressureTurns - 1);
-      if (current.playerPressureImmuneTurns > 0) playerPressureImmuneTurns = Math.max(0, playerPressureImmuneTurns - 1);
+
       if (wasSpeedDown || action === 'TERMINUS') speedDownTurns = Math.max(0, speedDownTurns - 1);
       if (wasDefenseDown || (wasAscended && ascensionTurns === 0)) defenseDownTurns = Math.max(0, defenseDownTurns - 1);
 
