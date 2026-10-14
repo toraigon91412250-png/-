@@ -193,6 +193,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   await expect(page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
+  await expect(page.getByText(/専用技・権能は未確定/)).toBeVisible();
 
   // The dedicated version does not enter the normal battle roster.
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
