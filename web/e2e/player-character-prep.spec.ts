@@ -81,6 +81,8 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
         revealAvailable: false,
         kaiser100RewardClaimed: true,
         exKaiserDefeated: true,
+        finalBattleCleared: false,
+        finalBattleRewardClaimed: false,
       }));
       window.localStorage.setItem('duel_arena_stat_points', '62');
       window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
