@@ -535,7 +535,7 @@ export const StellaFinalBattleScreen: React.FC<{
                   <span className="stella-final__choice-state">{selectedFighterId === 'short-irena' ? '選択中' : '選択'}</span>
                 </button>
               ) : (
-                <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに最終決戦用いれーなが解放される。</p>
+                <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに短期決戦モード・いれーなが解放される。</p>
               )}
             </div>
             <p className="stella-final__prototype-note">短期決戦モードは最終決戦限定。通常版いれーなの基礎データ・育成データは変更しない。</p>
@@ -698,9 +698,9 @@ export const StellaFinalBattleScreen: React.FC<{
                     ) : (
                       <div className="stella-final__reward-notice" role="status" aria-label="最終決戦クリア報酬">
                         {battle.fighterId === 'stella' && rewardResult?.rewardGranted
-                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。最終決戦用いれーなが解放された。'
+                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。短期決戦モード・いれーなが解放された。'
                           : progress.finalBattleRewardClaimed
-                            ? '初回クリア報酬 +100P は獲得済み。最終決戦用いれーなは解放済み。再戦報酬の重複付与はない。'
+                            ? '初回クリア報酬 +100P は獲得済み。短期決戦モード・いれーなは解放済み。再戦報酬の重複付与はない。'
                             : '初回クリア報酬はステラでの初勝利時に付与される。'}
                       </div>
                     )}
