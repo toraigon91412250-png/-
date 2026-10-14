@@ -258,6 +258,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(demonFinisherImage).toHaveCSS('object-fit', 'contain');
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力138,240');
 
   await page.getByRole('button', { name: 'もう一度挑む' }).click();
   await expect(ascension).toBeEnabled();
@@ -280,6 +281,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   expect(godImageBox!.y).toBeGreaterThanOrEqual(0);
   expect(godImageBox!.y + godImageBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力86,400');
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
