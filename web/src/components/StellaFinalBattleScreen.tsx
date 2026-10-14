@@ -704,6 +704,18 @@ export const StellaFinalBattleScreen: React.FC<{
   const displayedEffectiveAttack = Math.ceil(shortStats.attack * displayedAllMightMultiplier * displayedAllMightBaseAttackMultiplier * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedPressureAttackMultiplier);
   const displayedEffectiveDefense = Math.ceil(shortStats.defense * displayedAscensionMultiplier * displayedGodMightMultiplier * (battle.status !== 'READY' && battle.defenseDownTurns > 0 ? SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER : 1));
   const displayedEffectiveSpeed = Math.ceil(shortStats.speed * (battle.status === 'READY' ? 1 : battle.allMightSpeedMultiplier) * displayedAscensionMultiplier * displayedGodMightMultiplier * (battle.status !== 'READY' && battle.playerPressureTurns > 0 ? Math.max(1, shortStats.speed - 25) / Math.max(1, shortStats.speed) : 1) * (battle.status !== 'READY' && battle.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1));
+  const authorityStage = getDatenAuthorityStage(battle.datenGauge);
+  const authorityStageLabel = authorityStage === 0
+    ? '0〜29ポイント：権能未解放'
+    : authorityStage === 1
+      ? '30〜59ポイント：第1段階'
+      : authorityStage === 2
+        ? '60〜99ポイント：第2段階'
+        : '100ポイント：第3段階・権能③と究極必殺技';
+  const canUseTerminus = battle.datenGauge <= -30 || authorityStage === 3;
+  const canUseAscension = battle.datenGauge >= 30 || authorityStage === 3;
+  const canUseAllMight = authorityStage >= 2;
+  const canUseUltimate = getDatenAlignment(battle.datenGauge) !== null;
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
   const resultTitle = battle.status === 'VICTORY' ? '最終決戦 勝利' : '最終決戦 敗北';
 
@@ -871,7 +883,7 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__route-select-copy">
               <span>ULTIMATE ROUTE</span>
               <h2>{battle.finisherRoutePending === 'GOD' ? '創世' : '終焉'}</h2>
-              <p>大ダメージ適用済み。追加攻撃は行わず、効果から1つだけ選択する。</p>
+              <p>基準ダメージ2,000適用済み。追加攻撃は行わず、効果から1つだけ選択する。</p>
             </div>
             {battle.finisherRoutePending === 'GOD' ? (
               <div className="stella-final__route-select-grid">
@@ -893,7 +905,7 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__briefing-heading"><Shield size={18} /> 最終決戦のルール</div>
             <p>EXカイザーは三形態。形態が変わってもHPは回復せず、与えたダメージを引き継ぐ。</p>
             <p>第三形態に入ると、制限ターンが8～10ターンからランダムに決まり、期限を過ぎると終局の必殺技で敗北する。</p>
-            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成と三大権能を備える。初手で神化／堕天を選び、ゲージ位置に応じて神側／堕天側の究極必殺技を解放する。</p>}
+            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手の神化／堕天では攻撃せずゲージを15ポイント動かす。30・60・100ポイントで権能段階が上がり、100ポイントで創世／終焉が解放される。</p>}
             <p className="stella-final__prototype-note">試作バランス：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}、天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ。数値は調整用の仮設定。</p>
             {preloadStatus === 'loading' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材をプリロード中…</p>}
             {preloadStatus === 'ready' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材 読み込み完了</p>}
@@ -912,12 +924,22 @@ export const StellaFinalBattleScreen: React.FC<{
                 <>
                   <div className="stella-final__daten-gauge" aria-label="堕天ゲージ表示">
                     <div className="stella-final__daten-gauge-labels"><strong>堕天側</strong><span>{battle.alignment ? (battle.alignment === 'GOD' ? '神側の終点' : '堕天側の終点') : '中央から移動'}</span><strong>神側</strong></div>
-                    <div className={'stella-final__daten-gauge-track' + (battle.alignment ? ' is-locked is-' + battle.alignment.toLowerCase() : '')} role="progressbar" aria-label="堕天ゲージ" aria-valuemin={-100} aria-valuemax={100} aria-valuenow={battle.datenGauge}>
+                    <div className={'stella-final__daten-gauge-track' + (battle.alignment ? ' is-' + battle.alignment.toLowerCase() : '')} role="progressbar" aria-label="堕天ゲージ" aria-valuemin={-100} aria-valuemax={100} aria-valuenow={battle.datenGauge}>
                       <span className="stella-final__daten-gauge-center" />
                       <span className="stella-final__daten-gauge-marker" style={{ left: ((battle.datenGauge + 100) / 2) + '%' }} />
                     </div>
-                    <p>{battle.alignment ? '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。' : 'ゲージは中央から神側／堕天側へ動き、反対側へ戻すこともできる。ゲージ移動だけで発動済み効果やクールダウンは解除されない。'}</p>
+                    <p>{battle.alignment ? '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。' : '神側はプラス、堕天側はマイナス。移動1回につき15ポイント。ゲージ移動だけで発動済み効果やクールダウンは解除されない。'}</p>
+                    <div className="stella-final__authority-stage" role="status" aria-label="権能解放段階">
+                      <strong>{authorityStageLabel}</strong>
+                      <span>現在値 {battle.datenGauge} / 100</span>
+                    </div>
                   </div>
+                  {battle.initialChoiceMade && (
+                    <div className="stella-final__gauge-controls" aria-label="ゲージ操作">
+                      <button type="button" aria-label="神側へ15ポイント移動" disabled={!isFighting || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.actionLockTurns > 0 || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('MOVE_GOD')}>神側へ +15</button>
+                      <button type="button" aria-label="堕天側へ15ポイント移動" disabled={!isFighting || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.actionLockTurns > 0 || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('MOVE_DEMON')}>堕天側へ −15</button>
+                    </div>
+                  )}
                   {!battle.initialChoiceMade ? (
                     <section className="stella-final__opening-choice" aria-label="最初の行動">
                       <div><strong>最初の行動を選択</strong><p>ここでは攻撃せず、ゲージの方向だけを決める。</p></div>
@@ -932,25 +954,25 @@ export const StellaFinalBattleScreen: React.FC<{
                     <article className="stella-final__power-card stella-final__power-card--terminus">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
                       <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通の一撃（最低5,000ダメージ）。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : '最低5,000・防御貫通／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
-                      <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
+                      <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--ascension">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
                       <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
-                      <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
+                      <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAscension || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--control">
                       <div className="stella-final__power-icon"><Shield size={21} /></div>
                       <div className="stella-final__power-copy"><h3>理外掌握</h3><p>敵の通常行動を1回停止し、HP全回復・全CTリセット・速度{SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER}倍（永続）。終局の即死判定は止められない。</p><small>{battle.allMightUsed ? '使用済み：全能×' + battle.allMightMultiplier.toFixed(1) + '・元攻撃力×' + battle.allMightBaseAttackMultiplier.toFixed(2) + '（永続）' : '使用ターン × ' + SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER + '倍で全能倍率を永続確定'}</small></div>
                       <div className="stella-final__control-buttons">
-                        <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || !battle.initialChoiceMade || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
+                        <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
                         <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || !battle.initialChoiceMade || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')}>堕天側へ</button>
                       </div>
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{battle.alignment ? (battle.alignment === 'GOD' ? '創世・最低16,000ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・最低24,000ダメージ。発動後に堕天側の3ルートを選ぶ') : 'ゲージが神側／堕天側の終点に到達すると解放'}</small></div>
-                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !battle.alignment || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・基準ダメージ2,000。発動後に神側の3ルートを選ぶ' : '終焉・基準ダメージ2,000。発動後に堕天側の3ルートを選ぶ') : '100ポイントの終点到達時に解放'}</small></div>
+                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
                   )}
