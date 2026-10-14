@@ -572,3 +572,47 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlGod).toBeEnabled();
   await expect(controlDemon).toBeEnabled();
 });
+
+test('legacy unlocked save can still enter the EX Kaiser challenge without resetting Stella progress', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      exKaiserDefeated: true,
+    }));
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'EXカイザー再戦' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.getByRole('button', { name: /戦闘開始/ })).toBeEnabled();
+});
+
+test('mobile battle top controls are shifted below the iPhone status area', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeVisible();
+
+  const backButton = page.locator('.battle-screen-root button[title="戻る"]');
+  await expect(backButton).toBeVisible();
+  const backBox = await backButton.boundingBox();
+  const attackBox = await page.getByRole('button', { name: '通常攻撃' }).boundingBox();
+  expect(backBox).not.toBeNull();
+  expect(attackBox).not.toBeNull();
+  expect(backBox!.y).toBeGreaterThanOrEqual(20);
+  expect(attackBox!.y + attackBox!.height).toBeLessThanOrEqual(844);
+});
