@@ -6,6 +6,8 @@
   .battle-screen-root {
     height: 100dvh !important;
     min-height: 0;
+    box-sizing: border-box;
+    padding-top: max(24px, env(safe-area-inset-top, 0px)) !important;
   }
 
   .battle-arena-container {
