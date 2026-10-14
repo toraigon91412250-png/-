@@ -106,3 +106,13 @@ export function saveShortIrenaAllocation(input: Partial<StatAllocation>): boolea
     return false;
   }
 }
+
+/**
+ * Early All Might activation weakens Irena's original attack stat.
+ * Turn 1 starts at 55%; the penalty improves by five percentage points
+ * per turn and reaches the normal attack stat at turn 10.
+ */
+export function getShortIrenaOriginalAttackMultiplier(activationTurn: number): number {
+  const turn = Math.max(1, Math.floor(activationTurn));
+  return Math.max(0.5, Math.min(1, 1 - Math.max(0, 10 - turn) * 0.05));
+}

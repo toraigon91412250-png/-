@@ -188,7 +188,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   await expect(page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: '終極穿滅を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeEnabled();
 
   // The dedicated version does not enter the normal battle roster.
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
@@ -226,9 +226,9 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   await expect(page.getByRole('heading', { name: '最終決戦の行動' })).toBeVisible();
   const normalAttack = page.getByRole('button', { name: '通常攻撃' });
-  const terminus = page.getByRole('button', { name: '終極穿滅を発動' });
+  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：悪魔側へ' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
   const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
 
   await normalAttack.click();
@@ -251,10 +251,12 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   expect(Date.now() - cutInStartedAt).toBeGreaterThanOrEqual(600);
 
   await terminus.click();
+  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
+  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
   await controlDemon.click();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-100');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1193/);
-  const demonFinisher = page.getByRole('button', { name: '悪魔側の最終必殺技' });
+  const demonFinisher = page.getByRole('button', { name: '堕天側の最終必殺技' });
   await expect(demonFinisher).toBeEnabled();
   await demonFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
@@ -263,12 +265,12 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(demonFinisherImage).toHaveCSS('object-fit', 'contain');
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力138,240');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力116,122');
 
   await page.getByRole('button', { name: 'もう一度挑む' }).click();
-  await expect(ascension).toBeEnabled();
-  await ascension.click();
+  await expect(controlGod).toBeEnabled();
   await controlGod.click();
+  await ascension.click();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '100');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1194/);
   const godFinisher = page.getByRole('button', { name: '神側の最終必殺技' });
@@ -286,7 +288,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   expect(godImageBox!.y).toBeGreaterThanOrEqual(0);
   expect(godImageBox!.y + godImageBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力86,400');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力42,768');
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
@@ -319,7 +321,7 @@ test('failed final-battle image preload blocks battle start and can be retried',
 });
 
 
-test('理外掌握 weakens EX Kaiser counterattacks and amplifies the next two hits', async ({ page }) => {
+test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser action, and permanently raises speed', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
@@ -334,22 +336,23 @@ test('理外掌握 weakens EX Kaiser counterattacks and amplifies the next two h
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
-
   const playerHp = page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
-  const hpBefore = Number(await playerHp.getAttribute('aria-valuenow'));
-  await page.getByRole('button', { name: '理外掌握：悪魔側へ' }).click();
-  const hpAfterControl = Number(await playerHp.getAttribute('aria-valuenow'));
-  expect(hpBefore - hpAfterControl).toBe(50);
-
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
   await page.getByRole('button', { name: '通常攻撃' }).click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '11680');
-  await expect(page.getByRole('status').filter({ hasText: '理外掌握：干渉中・残り 1 ターン' })).toBeVisible();
+  const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
+  const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3870');
+  await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
+  await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 50));
+  await expect(page.getByRole('status').filter({ hasText: '全能 0.6倍' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '元攻撃力補正×0.60' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
   await page.getByRole('button', { name: '通常攻撃' }).click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '7360');
+  await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
 });
-
-
 test('short-duel Irena loses when the final turn expires without a locked divine/demonic route', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -375,16 +378,19 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Use the three independent authorities in a mixed sequence that avoids either endpoint.
+  // Stay between route endpoints while the third-form countdown expires.
   await page.getByRole('button', { name: '絶界昇華を発動' }).click();
-  await page.getByRole('button', { name: '終極穿滅を発動' }).click();
-  await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
-  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '2');
-
-  // Five attacks consume the remaining eight-turn phase limit with the gauge still between the endpoints.
-  for (let turn = 0; turn < 5; turn += 1) await attack.click();
+  await attack.click();
+  await attack.click();
+  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
+  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
+  await page.getByRole('button', { name: '終極殲滅を発動' }).click();
+  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
+  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
+  await attack.click();
+  await attack.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '62');
+  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-40');
   await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージがどちらにも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
