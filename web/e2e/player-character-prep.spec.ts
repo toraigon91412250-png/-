@@ -312,3 +312,34 @@ test('failed final-battle image preload blocks battle start and can be retried',
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: '最終決戦を開始' })).toBeEnabled();
 });
+
+
+test('理外掌握 weakens EX Kaiser counterattacks and amplifies the next two hits', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 0, attack: 0, defense: 0, speed: 150,
+    }));
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+
+  const playerHp = page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const hpBefore = Number(await playerHp.getAttribute('aria-valuenow'));
+  await page.getByRole('button', { name: '理外掌握：悪魔側へ' }).click();
+  const hpAfterControl = Number(await playerHp.getAttribute('aria-valuenow'));
+  expect(hpBefore - hpAfterControl).toBe(50);
+
+  await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '11680');
+  await expect(page.getByRole('status').filter({ hasText: '理外掌握：干渉中・残り 1 ターン' })).toBeVisible();
+  await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+});

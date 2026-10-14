@@ -239,7 +239,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (action === 'ATTACK') {
         const reinforcingRoute = datenGauge > 0 ? 'GOD' : 'DEMON';
         gaugeDelta = getShortIrenaNormalAttackGaugeDelta(reinforcingRoute, stats.speed);
-        damage = Math.round(stats.normalAttackDamage * (wasBoosted ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1));
+        damage = Math.round(stats.normalAttackDamage * (wasBoosted ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1) * (current.outsideControlTurns > 0 ? 1.5 : 1));
         kaiserHp = Math.max(1, kaiserHp - Math.max(0, damage));
         normalAttackCutIn = true;
         log('通常攻撃。' + damage.toLocaleString('ja-JP') + 'ダメージ。堕天ゲージが' + (reinforcingRoute === 'GOD' ? '神側' : '悪魔側') + 'へ傾く。');
@@ -247,7 +247,7 @@ export const StellaFinalBattleScreen: React.FC<{
         if (terminusUsed) return current;
         terminusUsed = true;
         gaugeDelta = -60;
-        damage = Math.max(SHORT_IRENA_END_KAI_DAMAGE, Math.round(stats.normalAttackDamage * (wasBoosted ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1) * 2));
+        damage = Math.max(SHORT_IRENA_END_KAI_DAMAGE, Math.round(stats.normalAttackDamage * (wasBoosted ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1) * (current.outsideControlTurns > 0 ? 1.5 : 1) * 2));
         kaiserHp = Math.max(1, kaiserHp - damage);
         log('権能「終極穿滅」。終局核を穿つ' + damage.toLocaleString('ja-JP') + 'ダメージ。悪魔側へ大きく傾く。');
       } else if (action === 'ASCENSION') {
