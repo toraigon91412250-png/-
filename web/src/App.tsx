@@ -601,7 +601,7 @@ export const App: React.FC = () => {
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
           stellaModeUnlocked={stellaModeProgress.isUnlocked}
           exKaiserChallengeAvailable={stellaModeProgress.kaiser100RewardClaimed && !stellaModeProgress.exKaiserDefeated && !stellaModeProgress.isUnlocked}
-          exKaiserReplayAvailable={stellaModeProgress.kaiser100RewardClaimed && (stellaModeProgress.exKaiserDefeated || stellaModeProgress.isUnlocked)}
+          exKaiserReplayAvailable={stellaModeProgress.exKaiserDefeated || stellaModeProgress.isUnlocked}
           stellaRewardSaveError={stellaRewardSaveError}
           onRevealStella={handleRevealStella}
           onStartExKaiser={handleStartExKaiser}
