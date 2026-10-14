@@ -1,14 +1,24 @@
-import stellaImage from '../assets/IMG_1185.jpg';
+import { IRENA, STELLA } from './characters';
 import stellaCutInImage from '../assets/IMG_1186.jpg';
-import irenaImage from '../assets/img_irena.jpg';
+import irenaGodPortrait from '../assets/IMG_1194.jpeg';
+import irenaDemonPortrait from '../assets/IMG_1193.jpeg';
+import irenaDemonAttackCutIn from '../assets/IMG_1195.jpeg';
+import irenaGodFinalFinisher from '../assets/IMG_1199.jpeg';
+import irenaDemonFinalFinisher from '../assets/413F5794-8459-451B-9E19-AF5E185C9FDA.png';
+import kaiserImage from '../assets/img_kaiser.jpg';
+import battleBackground from '../assets/戦闘中背景.png';
 
-export type StellaFinalBattleFighterId = 'stella' | 'final-irena';
+export type StellaFinalBattleFighterId = 'stella' | 'short-irena';
 
 export interface StellaFinalBattleFighterConfig {
   id: StellaFinalBattleFighterId;
   name: string;
   title: string;
   maxHp: number;
+  attack: number;
+  defense: number;
+  speed: number;
+  evasionRate: number;
   normalAttackDamage: number;
   imageSrc: string;
   isPrototype: boolean;
@@ -22,10 +32,23 @@ export interface StellaFinalBattleTuning {
   meteorCutInImage: string;
 }
 
+export const STELLA_FINAL_BATTLE_IMAGES = {
+  stellaPortrait: STELLA.imageSrc,
+  stellaCutIn: stellaCutInImage,
+  kaiserPortrait: kaiserImage,
+  battleBackground,
+  irenaBasePortrait: IRENA.imageSrc,
+  irenaGodPortrait,
+  irenaDemonPortrait,
+  irenaDemonAttackCutIn,
+  irenaGodFinalFinisher,
+  irenaDemonFinalFinisher,
+} as const;
+
 /**
- * Final-battle-only tuning. All player/boss prototype numbers live here so
- * they can be adjusted independently without mutating normal IRENA or STELLA.
- * Final-Irena currently has no additional, finalized techniques or effects.
+ * Final-battle-only configuration. Short-mode Irena takes her base stats from
+ * the unchanged normal IRENA definition; the 150-point allocation is applied
+ * separately and never writes back to the normal character roster.
  */
 export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
   bossMaxHp: 16000,
@@ -37,17 +60,25 @@ export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
       name: 'ステラ',
       title: '天星の翼',
       maxHp: 5000,
+      attack: STELLA.attack,
+      defense: STELLA.defense,
+      speed: STELLA.speed,
+      evasionRate: STELLA.evasionRate,
       normalAttackDamage: 1500,
-      imageSrc: stellaImage,
+      imageSrc: STELLA.imageSrc,
       isPrototype: true,
     },
-    'final-irena': {
-      id: 'final-irena',
-      name: '最終決戦用いれーな',
-      title: '最終決戦専用・仮設定',
-      maxHp: 4000,
-      normalAttackDamage: 850,
-      imageSrc: irenaImage,
+    'short-irena': {
+      id: 'short-irena',
+      name: '短期決戦モード・いれーな',
+      title: '最終決戦専用・神魔境界',
+      maxHp: IRENA.maxHp,
+      attack: IRENA.attack,
+      defense: IRENA.defense,
+      speed: IRENA.speed,
+      evasionRate: IRENA.evasionRate,
+      normalAttackDamage: Math.round(IRENA.attack * 6),
+      imageSrc: IRENA.imageSrc,
       isPrototype: true,
     },
   },
