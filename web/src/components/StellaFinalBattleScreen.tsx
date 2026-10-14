@@ -208,9 +208,8 @@ export const StellaFinalBattleScreen: React.FC<{
           * (current.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
           * (current.godMightTurns > 0 ? 3 : 1)
           * (current.playerPressureTurns > 0 ? Math.max(0, stats.attack - 25) / Math.max(1, stats.attack) : 1);
-        const rawFinisherPower = Math.ceil(2000 * effectiveAttackMultiplier);
-        const targetDefense = current.kaiserDefenseNullTurns > 0 ? 0 : KAISER.defense;
-        const finisherPower = Math.max(1, rawFinisherPower - targetDefense);
+        // Preserve the existing final-duel damage scaling: GOD ×5, DEMON ×8.
+        const finisherPower = Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * (alignment === 'GOD' ? 5 : 8));
         const actualDamage = Math.min(current.kaiserHp, finisherPower);
         const remainingBossHp = Math.max(0, current.kaiserHp - actualDamage);
         const name = alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」';
@@ -220,7 +219,7 @@ export const StellaFinalBattleScreen: React.FC<{
           finisherPending: null,
           finisherRoutePending: alignment,
           normalAttackCutIn: false,
-          logs: [...current.logs, name + 'の基準ダメージ2,000。防御適用後の実ダメージ' + actualDamage.toLocaleString('ja-JP') + '。究極技後のルートを選択する。'].slice(-8),
+          logs: [...current.logs, name + 'の威力' + finisherPower.toLocaleString('ja-JP') + '。実ダメージ' + actualDamage.toLocaleString('ja-JP') + '。究極技後のルートを選択する。'].slice(-8),
         };
       });
     }, 1450);
@@ -258,8 +257,8 @@ export const StellaFinalBattleScreen: React.FC<{
       const stage = getDatenAuthorityStage(current.datenGauge);
       if (!current.initialChoiceMade && action !== 'DIVINIZE' && action !== 'FALLEN') return current;
       if (current.initialChoiceMade && (action === 'DIVINIZE' || action === 'FALLEN')) return current;
-      if (action === 'TERMINUS' && !(current.datenGauge <= -30 || stage === 3)) return current;
-      if (action === 'ASCENSION' && !(current.datenGauge >= 30 || stage === 3)) return current;
+      if (action === 'TERMINUS' && current.datenGauge > -30) return current;
+      if (action === 'ASCENSION' && current.datenGauge < 30) return current;
       if ((action === 'CONTROL_GOD' || action === 'CONTROL_DEMON') && stage < 2) return current;
       if (action === 'FINISH' && !getDatenAlignment(current.datenGauge)) return current;
       if (current.finalTurnsLeft === 0 && action !== 'FINISH') return current;
@@ -275,7 +274,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (action === 'FINISH') {
         const alignment = getDatenAlignment(current.datenGauge);
         if (!alignment) return current;
-        log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + 'を発動。基準ダメージ2,000の後、3ルートから選択する。');
+        log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + 'を発動。既存の陣営倍率で大ダメージを与えた後、3ルートから選択する。');
         return {
           ...current,
           turn: turn + 1,
@@ -381,7 +380,7 @@ export const StellaFinalBattleScreen: React.FC<{
         if (ascensionTurns > 0) return current;
         gaugeDelta = SHORT_IRENA_GAUGE_STEP;
         // The casting turn is included in the three-turn duration.
-        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS;
+        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS + 1;
         log('権能「絶界昇華」。攻撃・防御・速度が3倍になる（3ターン）。強化中は三大権能を使用できない。神側へ傾く。');
       } else if (action === 'CONTROL_GOD' || action === 'CONTROL_DEMON') {
         if (allMightUsed) return current;
@@ -443,8 +442,8 @@ export const StellaFinalBattleScreen: React.FC<{
       if (current.playerPressureTurns > 0) playerPressureTurns = Math.max(0, playerPressureTurns - 1);
       if (current.playerPressureImmuneTurns > 0) playerPressureImmuneTurns = Math.max(0, playerPressureImmuneTurns - 1);
 
-      if (wasSpeedDown || action === 'TERMINUS') speedDownTurns = Math.max(0, speedDownTurns - 1);
-      if (wasDefenseDown || (wasAscended && ascensionTurns === 0)) defenseDownTurns = Math.max(0, defenseDownTurns - 1);
+      if (wasSpeedDown) speedDownTurns = Math.max(0, speedDownTurns - 1);
+      if (wasDefenseDown) defenseDownTurns = Math.max(0, defenseDownTurns - 1);
 
       let status: BattleStatus = 'FIGHTING';
       if (playerHp <= 0) {
@@ -519,7 +518,7 @@ export const StellaFinalBattleScreen: React.FC<{
 
       if (alignment === 'GOD') {
         if (route === 'GOD_MIGHT') {
-          godMightTurns = 1;
+          godMightTurns = 2;
           log('創世の分岐「神威」。攻撃・防御・速度が3倍（2ターン）になる。');
         } else if (route === 'GOD_SILENCE') {
           kaiserActionLockTurns = 1;
@@ -532,15 +531,15 @@ export const StellaFinalBattleScreen: React.FC<{
         }
       } else {
         if (route === 'DEMON_COLLAPSE') {
-          kaiserDefenseNullTurns = 2;
+          kaiserDefenseNullTurns = 3;
           log('終焉の分岐「崩壊」。EXカイザーの防御を0として扱う（3ターン）。');
         } else if (route === 'DEMON_SEVER') {
           kaiserBuffs = [];
-          kaiserBuffImmuneTurns = 9;
+          kaiserBuffImmuneTurns = 10;
           log('終焉の分岐「断絶」。カイザーの適用中バフを解除し、新たなバフ付与を10ターン拒否する。');
         } else if (route === 'DEMON_EXTINGUISH') {
           playerPressureTurns = 0;
-          playerPressureImmuneTurns = 4;
+          playerPressureImmuneTurns = 5;
           log('終焉の分岐「消滅」。いれーなの重圧を解除し、重圧耐性を5ターン得る。');
         } else {
           return current;
@@ -709,8 +708,8 @@ export const StellaFinalBattleScreen: React.FC<{
       : authorityStage === 2
         ? '60〜99ポイント：第2段階'
         : '100ポイント：第3段階・権能③と究極必殺技';
-  const canUseTerminus = battle.datenGauge <= -30 || authorityStage === 3;
-  const canUseAscension = battle.datenGauge >= 30 || authorityStage === 3;
+  const canUseTerminus = battle.datenGauge <= -30;
+  const canUseAscension = battle.datenGauge >= 30;
   const canUseAllMight = authorityStage >= 2;
   const canUseUltimate = getDatenAlignment(battle.datenGauge) !== null;
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
@@ -963,7 +962,7 @@ export const StellaFinalBattleScreen: React.FC<{
                       <div className="stella-final__power-copy"><h3>理外掌握</h3><p>敵の通常行動を1回停止し、HP全回復・全CTリセット・速度{SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER}倍（永続）。終局の即死判定は止められない。</p><small>{battle.allMightUsed ? '使用済み：全能×' + battle.allMightMultiplier.toFixed(1) + '・元攻撃力×' + battle.allMightBaseAttackMultiplier.toFixed(2) + '（永続）' : !canUseAllMight ? 'ゲージ60ポイント以上で解放' : '使用ターン×' + SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER + '倍で全能倍率を永続確定'}</small></div>
                       <div className="stella-final__control-buttons">
                         <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
-                        <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || !battle.initialChoiceMade || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')}>堕天側へ</button>
+                        <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')}>堕天側へ</button>
                       </div>
                     </article>
                   </div>
