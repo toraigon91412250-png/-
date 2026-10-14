@@ -192,3 +192,119 @@
 @media (prefers-reduced-motion: reduce) {
   .stella-final__meteor-cut-in, .stella-final__meteor-cut-in img { animation-duration: .01ms !important; }
 }
+
+
+.stella-final__character-select {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(174,163,232,.24);
+  border-radius: 16px;
+  background: rgba(7,10,25,.88);
+}
+.stella-final__character-select-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #e1d9ff;
+  font-size: 13px;
+}
+.stella-final__character-select-heading span {
+  color: #aab4ca;
+  font-size: 10px;
+  text-align: right;
+}
+.stella-final__character-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.stella-final__character-choice {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 46px minmax(0,1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 9px;
+  text-align: left;
+  border: 1px solid rgba(173,164,224,.23);
+  border-radius: 11px;
+  color: #eeeaff;
+  background: rgba(19,21,41,.82);
+  font: inherit;
+  cursor: pointer;
+}
+.stella-final__character-choice[aria-pressed="true"] {
+  border-color: #b9aaff;
+  background: rgba(113,88,186,.23);
+  box-shadow: inset 0 0 0 1px rgba(185,170,255,.18);
+}
+.stella-final__character-choice img {
+  grid-row: span 2;
+  width: 46px;
+  height: 55px;
+  object-fit: cover;
+  object-position: center 28%;
+  border-radius: 7px;
+}
+.stella-final__character-choice strong,
+.stella-final__character-choice small { display: block; }
+.stella-final__character-choice strong { font-size: 11px; overflow-wrap: anywhere; }
+.stella-final__character-choice small { margin-top: 3px; color: #aab4ca; font-size: 9px; }
+.stella-final__choice-state {
+  grid-column: 2;
+  color: #d8ccff;
+  font-size: 9px;
+  font-weight: 900;
+}
+.stella-final__locked-character {
+  align-self: stretch;
+  margin: 0;
+  padding: 10px;
+  border: 1px dashed rgba(174,163,232,.24);
+  border-radius: 10px;
+  color: #aab4ca;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.stella-final__reward-notice,
+.stella-final__reward-error {
+  margin: 12px 0;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+  text-align: left;
+}
+.stella-final__reward-notice {
+  border: 1px solid rgba(184,165,255,.34);
+  color: #f0eaff;
+  background: rgba(99,74,160,.17);
+}
+.stella-final__reward-error {
+  border: 1px solid rgba(255,113,139,.5);
+  color: #ffd6de;
+  background: rgba(126,22,46,.22);
+}
+.stella-final__reward-error p { margin: 4px 0 8px; }
+.stella-final__reward-error button {
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255,194,208,.35);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(147,37,69,.55);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+@media (max-width: 650px) {
+  .stella-final__character-select { padding: 11px; }
+  .stella-final__character-select-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .stella-final__character-select-heading span { text-align: left; }
+  .stella-final__character-choice-grid { grid-template-columns: 1fr; }
+  .stella-final__character-choice { grid-template-columns: 42px minmax(0,1fr); padding: 8px; }
+  .stella-final__character-choice img { width: 42px; height: 48px; }
+}
