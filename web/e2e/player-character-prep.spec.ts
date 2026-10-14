@@ -348,16 +348,17 @@ test('failed final-battle image preload blocks battle start and can be retried',
     }));
   });
   // Abort the actual image payload, not Vite's ?import JavaScript module.
-  const blockedGodImage = (url: URL) => url.pathname === '/src/assets/IMG_1194.jpeg' && url.search === '';
-  await page.route(blockedGodImage, route => route.abort());
+  // The meteor cut-in must be part of the strict final-battle preload too.
+  const blockedStellaCutIn = (url: URL) => url.pathname === '/src/assets/IMG_1186.jpg' && url.search === '';
+  await page.route(blockedStellaCutIn, route => route.abort());
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   const preloadError = page.getByRole('alert', { name: '最終決戦画像のプリロード失敗' });
   await expect(preloadError).toBeVisible({ timeout: 15000 });
-  await expect(preloadError).toContainText('IMG_1194.jpeg');
+  await expect(preloadError).toContainText('IMG_1186.jpg');
   await expect(page.getByRole('button', { name: '画像読み込み後に開始' })).toBeDisabled();
 
-  await page.unroute(blockedGodImage);
+  await page.unroute(blockedStellaCutIn);
   await preloadError.getByRole('button', { name: '画像を再読み込み' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: '最終決戦を開始' })).toBeEnabled();
