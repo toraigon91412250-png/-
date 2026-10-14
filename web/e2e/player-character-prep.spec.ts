@@ -34,6 +34,18 @@ async function moveFinalIrenaGaugeTo(page: Page, target: number) {
   }
 }
 
+
+async function startFinalIrenaAtEndpoint(page: Page, alignment: 'GOD' | 'DEMON') {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, alignment);
+  await moveFinalIrenaGaugeTo(page, alignment === 'GOD' ? 100 : -100);
+}
+
 test('normal battle setup keeps Stella hidden from Irena mode', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -372,6 +384,63 @@ test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, a
     const value = window.localStorage.getItem('duel_arena_short_irena_stat_allocation');
     return value ? JSON.parse(value).maxHp : -1;
   })).toBe(150);
+});
+
+test('the remaining divine/demonic routes apply their distinct effects without follow-up attacks', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  // GOD / 静寂: the next actual Kaiser counter is suppressed exactly once.
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const godRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(godRoutes).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await godRoutes.getByRole('button', { name: /静寂/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '静寂：EXカイザーの通常反撃停止／残り 1 ターン' })).toBeVisible();
+  const hpBeforeSilencedCounter = await playerHp.getAttribute('aria-valuenow');
+  await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', hpBeforeSilencedCounter!);
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('静寂によりカイザーの通常反撃を停止');
+
+  // GOD / 再臨: set the existing authority cooldown state back to its ready turn.
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const rebirthRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(rebirthRoutes).toBeVisible();
+  await rebirthRoutes.getByRole('button', { name: /再臨/ }).click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('再使用可能にした');
+  
+  // DEMON / 断絶: immunity is applied for ten turns. The current engine has no Kaiser buff source.
+  await startFinalIrenaAtEndpoint(page, 'DEMON');
+  await page.getByRole('button', { name: '堕天側の究極必殺技 終焉' }).click();
+  const severRoutes = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(severRoutes).toBeVisible();
+  await severRoutes.getByRole('button', { name: /断絶/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '断絶：カイザーのバフ付与無効／残り 10 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('新たなバフ付与を10ターン拒否');
+
+  // DEMON / 消滅: pressure is cleared and resistance is set for five turns.
+  await startFinalIrenaAtEndpoint(page, 'DEMON');
+  await page.getByRole('button', { name: '堕天側の究極必殺技 終焉' }).click();
+  const extinguishRoutes = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(extinguishRoutes).toBeVisible();
+  await extinguishRoutes.getByRole('button', { name: /消滅/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '消滅：重圧耐性／残り 5 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('重圧を解除し、重圧耐性を5ターン');
 });
 
 test('failed final-battle image preload blocks battle start and can be retried', async ({ page }) => {
