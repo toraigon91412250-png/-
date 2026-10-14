@@ -128,8 +128,6 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
     const currentBossHp = Number(await bossHp.getAttribute('aria-valuenow'));
     const currentPlayerHp = Number(await playerHp.getAttribute('aria-valuenow'));
     const inFinalPhase = await page.locator('.stella-final__phase').innerText().then(text => text.includes('03'));
-    const timerLabel = await page.locator('.stella-final__timer').getAttribute('aria-label').catch(() => null);
-    const turnsLeft = timerLabel ? Number(timerLabel.replace('最終形態 残り', '').replace('ターン', '').trim()) : 0;
     if (currentBossHp > 0 && await meteor.isEnabled() && !inFinalPhase) {
       await meteor.click();
     } else if (inFinalPhase && currentPlayerHp <= 420 && await immortal.isEnabled()) {
