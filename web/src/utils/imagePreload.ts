@@ -12,6 +12,7 @@ import raidBossArt from '../assets/raid_boss_art.svg';
 import raidIrenaCutin from '../assets/raid_irena_cutin.svg';
 import stellaImage from '../assets/IMG_1185.jpg';
 import stellaCutInImage from '../assets/IMG_1186.jpg';
+import { STELLA_FINAL_BATTLE_IMAGES } from '../data/stellaFinalBattleConfig';
 
 // Public assets shared by combat VFX and recruitment animations. Keep these in
 // the common battle preload so entering combat never depends on visiting Gacha first.
@@ -50,6 +51,7 @@ const BATTLE_IMAGES = [
   raidIrenaCutin,
   stellaImage,
   stellaCutInImage,
+  ...Object.values(STELLA_FINAL_BATTLE_IMAGES),
   ...BATTLE_EFFECT_IMAGE_PATHS.map(publicAssetUrl),
 ] as const;
 
@@ -95,4 +97,74 @@ export const preloadRecruitmentImages = (): Promise<void[]> => {
   if (typeof window === 'undefined') return Promise.resolve([]);
   const recruitmentImages = RECRUITMENT_IMAGES.map(publicAssetUrl);
   return Promise.all(recruitmentImages.map(preloadImage));
+};
+
+const finalBattleImagePreloadCache = new Map<string, Promise<void>>();
+const FINAL_BATTLE_REQUIRED_IMAGES: ReadonlyArray<readonly [string, string]> = [
+  ['ステラ立ち絵', STELLA_FINAL_BATTLE_IMAGES.stellaPortrait],
+  ['通常版いれーな立ち絵', STELLA_FINAL_BATTLE_IMAGES.irenaBasePortrait],
+  ['神側立ち絵 IMG_1194.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaGodPortrait],
+  ['悪魔側立ち絵 IMG_1193.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaDemonPortrait],
+  ['悪魔側通常攻撃カットイン IMG_1195.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaDemonAttackCutIn],
+  ['神側最終必殺技 IMG_1199.jpeg', STELLA_FINAL_BATTLE_IMAGES.irenaGodFinalFinisher],
+  ['悪魔側最終必殺技 413F5794-8459-451B-9E19-AF5E185C9FDA.png', STELLA_FINAL_BATTLE_IMAGES.irenaDemonFinalFinisher],
+  ['EXカイザー立ち絵', STELLA_FINAL_BATTLE_IMAGES.kaiserPortrait],
+  ['最終決戦背景', STELLA_FINAL_BATTLE_IMAGES.battleBackground],
+];
+
+const preloadRequiredImage = (label: string, src: string): Promise<void> => {
+  const cached = finalBattleImagePreloadCache.get(src);
+  if (cached) return cached;
+
+  let promise: Promise<void>;
+  promise = new Promise<void>((resolve, reject) => {
+    const image = new Image();
+    let settled = false;
+    const fail = () => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('画像プリロード失敗: ' + label + ' (' + src + ')'));
+    };
+    const finish = async () => {
+      if (settled) return;
+      if (!image.complete || image.naturalWidth <= 0 || image.naturalHeight <= 0) {
+        fail();
+        return;
+      }
+      try {
+        if (typeof image.decode === 'function') await image.decode();
+        if (settled) return;
+        settled = true;
+        resolve();
+      } catch {
+        fail();
+      }
+    };
+
+    image.decoding = 'async';
+    image.onload = () => { void finish(); };
+    image.onerror = fail;
+    image.src = src;
+    if (image.complete) {
+      if (image.naturalWidth > 0) void finish();
+      else fail();
+    }
+  });
+
+  finalBattleImagePreloadCache.set(src, promise);
+  void promise.catch(() => {
+    if (finalBattleImagePreloadCache.get(src) === promise) {
+      finalBattleImagePreloadCache.delete(src);
+    }
+  });
+  return promise;
+};
+
+/**
+ * Required final-battle art is strict: load/decode failures reject and surface
+ * the offending logical asset plus URL. Failed entries are evicted for retries.
+ */
+export const preloadStellaFinalBattleImages = (): Promise<void[]> => {
+  if (typeof window === 'undefined') return Promise.resolve([]);
+  return Promise.all(FINAL_BATTLE_REQUIRED_IMAGES.map(([label, src]) => preloadRequiredImage(label, src)));
 };

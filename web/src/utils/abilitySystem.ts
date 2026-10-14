@@ -174,12 +174,26 @@ export function createBattleCharacters(
   config: BattleSetupConfig,
 ): { player: CharacterDef; enemy: CharacterDef } {
   const levelKaiser = createKaiserForLevel(kaiser, config.kaiserLevel);
+  const enemy = config.kaiserChallengeMode === 'EX' && config.kaiserLevel === 100
+    ? {
+        ...levelKaiser,
+        name: 'EXカイザー',
+        title: '終局の魔帝',
+        maxHp: Math.max(1, Math.round(levelKaiser.maxHp * 2)),
+        attack: Math.max(1, Math.round(levelKaiser.attack * 2)),
+        defense: Math.max(0, Math.round(levelKaiser.defense * 2)),
+        speed: Math.max(1, Math.round(levelKaiser.speed * 2)),
+        evasionRate: Math.min(0.95, levelKaiser.evasionRate * 2),
+        specialSkillDamage: Math.max(1, Math.round(levelKaiser.specialSkillDamage * 2)),
+        ultimateSkillDamage: Math.max(1, Math.round(levelKaiser.ultimateSkillDamage * 2)),
+      }
+    : levelKaiser;
   return {
     player: applyStaticAbilityModifiers(
       applyStatAllocation(player, config.statAllocation, config.statPointTotal),
       config,
     ),
-    enemy: levelKaiser,
+    enemy,
   };
 }
 

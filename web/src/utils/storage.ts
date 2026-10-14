@@ -100,8 +100,14 @@ export const KAISER_100_VICTORY_STAT_POINT_REWARD = 50;
 
 export interface StellaModeProgress {
   isUnlocked: boolean;
+  /** True only after defeating EX Kaiser in the post-Lv.100 challenge. */
+  exKaiserDefeated: boolean;
   revealAvailable: boolean;
   kaiser100RewardClaimed: boolean;
+  /** Set together with the first-clear reward in one atomic storage transaction. */
+  finalBattleCleared: boolean;
+  /** Authoritative one-time marker for the +100P reward and final-battle Irena unlock. */
+  finalBattleRewardClaimed: boolean;
 }
 
 export interface Kaiser100VictoryRewardResult {
@@ -111,20 +117,40 @@ export interface Kaiser100VictoryRewardResult {
   persisted: boolean;
 }
 
+export const STELLA_FINAL_BATTLE_STAT_POINT_REWARD = 100;
+
+export interface StellaFinalBattleRewardResult {
+  progress: StellaModeProgress;
+  rewardGranted: boolean;
+  /** False if the points or first-clear marker could not be saved atomically. */
+  persisted: boolean;
+}
+
 const INITIAL_STELLA_MODE_PROGRESS: StellaModeProgress = {
   isUnlocked: false,
+  exKaiserDefeated: false,
   revealAvailable: false,
   kaiser100RewardClaimed: false,
+  finalBattleCleared: false,
+  finalBattleRewardClaimed: false,
 };
 
 function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
   if (!value || typeof value !== 'object') return { ...INITIAL_STELLA_MODE_PROGRESS };
   const parsed = value as Partial<StellaModeProgress>;
   const isUnlocked = parsed.isUnlocked === true;
+  // Keep existing unlocks valid, but route an old Lv.100-only reveal through EX Kaiser.
+  const exKaiserDefeated = parsed.exKaiserDefeated === true || isUnlocked;
+  const finalBattleRewardClaimed = parsed.finalBattleRewardClaimed === true;
   return {
     isUnlocked,
-    revealAvailable: !isUnlocked && parsed.revealAvailable === true,
+    exKaiserDefeated,
+    revealAvailable: !isUnlocked && exKaiserDefeated && parsed.revealAvailable === true,
     kaiser100RewardClaimed: parsed.kaiser100RewardClaimed === true,
+    // Old saves lack these fields and remain uncleared. A persisted reward marker
+    // also repairs a missing clear marker without allowing the reward to repeat.
+    finalBattleCleared: parsed.finalBattleCleared === true || finalBattleRewardClaimed,
+    finalBattleRewardClaimed,
   };
 }
 
@@ -140,20 +166,23 @@ export function loadStellaModeProgress(): StellaModeProgress {
 }
 
 /**
- * Grants the one-time Lv.100 victory bonus and marks Stella's hidden entrance
- * as available in the same storage transaction, so a failed write can't grant
- * points without recording the claim (or vice versa).
+ * Grants the one-time Lv.100 victory bonus and unlocks the EX Kaiser challenge
+ * in the same storage transaction, so a failed write can't grant points
+ * without recording the claim (or vice versa). Stella's hidden entrance still
+ * requires a separate EX Kaiser victory.
  */
 export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   const current = loadStellaModeProgress();
-  if (current.kaiser100RewardClaimed && (current.isUnlocked || current.revealAvailable)) {
+  if (current.kaiser100RewardClaimed && (current.isUnlocked || current.exKaiserDefeated)) {
     return { progress: current, rewardGranted: false, persisted: true };
   }
 
   const rewardGranted = !current.kaiser100RewardClaimed;
   const next: StellaModeProgress = {
+    ...current,
     isUnlocked: current.isUnlocked,
-    revealAvailable: current.isUnlocked ? false : true,
+    exKaiserDefeated: current.exKaiserDefeated,
+    revealAvailable: !current.isUnlocked && current.exKaiserDefeated,
     kaiser100RewardClaimed: true,
   };
   const writes: StorageWrite[] = [
@@ -175,6 +204,56 @@ export function claimKaiser100VictoryReward(): Kaiser100VictoryRewardResult {
   };
 }
 
+/**
+ * Persist the first Stella final-battle victory, its +100 base points, and the
+ * final-battle Irena unlock marker together. Never include raid bonus points
+ * in the stored base total, because loadStatPoints adds those separately.
+ * The caller must pass the actual victory state; losses cannot claim rewards.
+ */
+export function claimStellaFinalBattleReward(playerWon: boolean): StellaFinalBattleRewardResult {
+  const current = loadStellaModeProgress();
+  if (!playerWon) return { progress: current, rewardGranted: false, persisted: false };
+  if (current.finalBattleRewardClaimed) {
+    return { progress: current, rewardGranted: false, persisted: true };
+  }
+
+  const next: StellaModeProgress = {
+    ...current,
+    finalBattleCleared: true,
+    finalBattleRewardClaimed: true,
+  };
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+    { key: STAT_POINTS_KEY, value: String(loadBaseStatPoints() + STELLA_FINAL_BATTLE_STAT_POINT_REWARD) },
+  ]);
+
+  return {
+    progress: persisted ? next : current,
+    rewardGranted: persisted,
+    persisted,
+  };
+}
+
+/**
+ * Records the EX Kaiser challenge victory and reveals the hidden entrance.
+ * A Lv.100 reward claim is required first; retries are idempotent.
+ */
+export function recordExKaiserVictory(): { progress: StellaModeProgress; persisted: boolean } {
+  const current = loadStellaModeProgress();
+  if (current.exKaiserDefeated) return { progress: current, persisted: true };
+  if (!current.kaiser100RewardClaimed) return { progress: current, persisted: false };
+
+  const next: StellaModeProgress = {
+    ...current,
+    exKaiserDefeated: true,
+    revealAvailable: !current.isUnlocked,
+  };
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(next) },
+  ]);
+  return { progress: persisted ? next : current, persisted };
+}
+
 /** Persist the unlock only after the player has viewed the warp/reveal event. */
 export function unlockStellaMode(): { progress: StellaModeProgress; persisted: boolean } {
   const current = loadStellaModeProgress();
@@ -182,7 +261,9 @@ export function unlockStellaMode(): { progress: StellaModeProgress; persisted: b
   if (!current.revealAvailable) return { progress: current, persisted: false };
 
   const next: StellaModeProgress = {
+    ...current,
     isUnlocked: true,
+    exKaiserDefeated: current.exKaiserDefeated,
     revealAvailable: false,
     kaiser100RewardClaimed: current.kaiser100RewardClaimed,
   };
