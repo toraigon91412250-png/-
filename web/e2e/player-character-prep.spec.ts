@@ -84,6 +84,17 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
     window.localStorage.setItem('duel_arena_raid_reward_progress', JSON.stringify({
       coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
     }));
+
+    // Fail exactly the first +100P write to verify the in-screen retry path after real combat.
+    const originalSetItem = Storage.prototype.setItem;
+    let failFinalRewardWrite = true;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === 'duel_arena_stat_points' && value === '162' && failFinalRewardWrite) {
+        failFinalRewardWrite = false;
+        throw new DOMException('Simulated quota failure', 'QuotaExceededError');
+      }
+      return originalSetItem.call(this, key, value);
+    };
   });
 
   await page.goto('/');
@@ -144,6 +155,17 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   }
 
   await expect(victoryHeading).toBeVisible();
+  const rewardSaveError = page.getByRole('alert', { name: '最終決戦報酬の保存エラー' });
+  await expect(rewardSaveError).toBeVisible();
+  await expect(rewardSaveError).toContainText('保存を再試行');
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('62');
+  await expect.poll(() => page.evaluate(() => {
+    const value = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return value ? JSON.parse(value).finalBattleRewardClaimed : true;
+  })).toBe(false);
+
+  // Retry the persistent reward without restarting or replaying the battle.
+  await rewardSaveError.getByRole('button', { name: '報酬保存を再試行' }).click();
   const rewardNotice = page.getByRole('status', { name: '最終決戦クリア報酬' });
   await expect(rewardNotice).toContainText('+100P');
   await expect(rewardNotice).toContainText('最終決戦用いれーなが解放');
