@@ -879,7 +879,7 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__route-select-copy">
               <span>ULTIMATE ROUTE</span>
               <h2>{battle.finisherRoutePending === 'GOD' ? '創世' : '終焉'}</h2>
-              <p>基準ダメージ2,000適用済み。追加攻撃は行わず、効果から1つだけ選択する。</p>
+              <p>究極技の大ダメージ適用済み。追加攻撃は行わず、効果から1つだけ選択する。</p>
             </div>
             {battle.finisherRoutePending === 'GOD' ? (
               <div className="stella-final__route-select-grid">
@@ -967,7 +967,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・基準ダメージ2,000。発動後に神側の3ルートを選ぶ' : '終焉・基準ダメージ2,000。発動後に堕天側の3ルートを選ぶ') : '100ポイントの終点到達時に解放'}</small></div>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・既存の神側倍率で大ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・既存の堕天側倍率で大ダメージ。発動後に堕天側の3ルートを選ぶ') : '100ポイントの終点到達時に解放'}</small></div>
                     <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
