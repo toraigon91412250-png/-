@@ -137,8 +137,6 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
       await immortal.click();
     } else if (currentPlayerHp <= 1500 && await rebirth.isEnabled()) {
       await rebirth.click();
-    } else if (await immortal.isEnabled()) {
-      await immortal.click();
     } else if (attackDamage > 0 && currentBossHp > 0) {
       await attack.click();
     } else if (inFinalPhase && turnsLeft > 0) {
