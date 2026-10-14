@@ -715,8 +715,8 @@ export const StellaFinalBattleScreen: React.FC<{
                       <div className="stella-final__power-icon"><Shield size={21} /></div>
                       <div className="stella-final__power-copy"><h3>理外掌握</h3><p>敵の通常行動を1回停止し、HP全回復・全CTリセット・速度{SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER}倍（永続）。終局の即死判定は止められない。</p><small>{battle.allMightUsed ? '使用済み：全能×' + battle.allMightMultiplier.toFixed(1) + '・元攻撃力×' + battle.allMightBaseAttackMultiplier.toFixed(2) + '（永続）' : '使用ターン × ' + SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER + '倍で全能倍率を永続確定'}</small></div>
                       <div className="stella-final__control-buttons">
-                        <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || Boolean(battle.alignment) || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')>>神側へ</button>
-                        <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || Boolean(battle.alignment) || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')>>堕天側へ</button>
+                        <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || Boolean(battle.alignment) || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
+                        <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || Boolean(battle.alignment) || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')}>堕天側へ</button>
                       </div>
                     </article>
                   </div>
