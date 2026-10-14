@@ -41,6 +41,7 @@ interface HomeDashboardProps {
   stellaUnlockAvailable: boolean;
   stellaModeUnlocked: boolean;
   exKaiserChallengeAvailable: boolean;
+  exKaiserReplayAvailable: boolean;
   stellaRewardSaveError: boolean;
   onRevealStella: () => void;
   onStartExKaiser: () => void;
@@ -63,6 +64,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   stellaUnlockAvailable,
   stellaModeUnlocked,
   exKaiserChallengeAvailable,
+  exKaiserReplayAvailable,
   stellaRewardSaveError,
   onRevealStella,
   onStartExKaiser,
@@ -92,7 +94,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           </div>
         </header>
 
-        <section className="home-dashboard__hero" aria-labelledby="home-dashboard-title">
+        <section className={"home-dashboard__hero" + (exKaiserReplayAvailable ? " home-dashboard__hero--ex-replay" : "")} aria-labelledby="home-dashboard-title">
           <div className="home-dashboard__hero-art" aria-hidden="true">
             <div className="home-dashboard__hero-orbit" />
             <img src={playerChar.selectImageSrc ?? playerChar.imageSrc} alt="" />
@@ -155,6 +157,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <span className="home-dashboard__stella-save-error" role="alert">
                   進行状況を保存できませんでした。保存領域を確認して、もう一度お試しください。
                 </span>
+              )}
+              {exKaiserReplayAvailable && (
+                <button className="home-dashboard__ex-replay" type="button" onClick={onStartExKaiser} aria-label="EXカイザー再戦">
+                  <Swords size={17} aria-hidden="true" />
+                  EXカイザー再戦
+                </button>
               )}
             </div>
           </div>
