@@ -228,7 +228,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   const normalAttack = page.getByRole('button', { name: '通常攻撃' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+  const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
   const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
 
   await normalAttack.click();
