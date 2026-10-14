@@ -109,7 +109,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (action === 'ATTACK') {
         const damage = fighterConfig.normalAttackDamage;
         kaiserHp = Math.max(0, kaiserHp - damage);
-        log('ステラの通常攻撃。EXカイザーに ' + damage.toLocaleString('ja-JP') + ' ダメージ。');
+        log(fighterConfig.name + 'の通常攻撃。EXカイザーに ' + damage.toLocaleString('ja-JP') + ' ダメージ。');
       } else if (action === 'IMMORTAL') {
         if (turn < immortalReadyTurn) return current;
         immortalReadyTurn = turn + 3;
@@ -131,7 +131,7 @@ export const StellaFinalBattleScreen: React.FC<{
 
       if (kaiserHp <= 0) {
         status = 'VICTORY';
-        log('EXカイザーを撃破した。ステラの勝利！');
+        log('EXカイザーを撃破した。' + fighterConfig.name + 'の勝利！');
       } else {
         const newPhase = phaseForHp(kaiserHp);
         if (newPhase > phase) {
@@ -306,7 +306,7 @@ export const StellaFinalBattleScreen: React.FC<{
           </section>
         ) : (
           <>
-            <section className="stella-final__powers" aria-label="ステラの権能">
+            <section className="stella-final__powers" aria-label={fighter.name + 'の最終決戦アクション'}>
               <div className="stella-final__powers-heading">
                 <div><span>{battle.fighterId === 'stella' ? "STELLA'S AUTHORITIES" : 'FINAL DUEL COMMANDS'}</span><h2>最終決戦の行動</h2></div>
                 {isFighting && <span className="stella-final__turn-chip">第 {battle.turn} ターン</span>}
@@ -321,7 +321,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 <article className="stella-final__power-card stella-final__power-card--rebirth">
                   <div className="stella-final__power-icon"><HeartPulse size={21} /></div>
                   <div className="stella-final__power-copy"><h3>再誕</h3><p>最大HPを基準に100% → 50% → 25%回復。</p><small>使用回数：{battle.rebirthUses} / 3</small></div>
-                  <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.playerHp >= maxHp} onClick={() => takeAction('REBIRTH')}>回復</button>
+                  <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.playerHp >= fighter.maxHp} onClick={() => takeAction('REBIRTH')}>回復</button>
                 </article>
                 <article className="stella-final__power-card stella-final__power-card--meteor">
                   <div className="stella-final__power-icon"><Zap size={21} /></div>
@@ -330,7 +330,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 </article>
               </div>
               <div className="stella-final__normal-attack">
-                <span><Swords size={17} /> 通常攻撃 <small>試作値：480ダメージ</small></span>
+                <span><Swords size={17} /> 通常攻撃 <small>仮設定：{fighter.normalAttackDamage.toLocaleString('ja-JP')}ダメージ</small></span>
                 <button type="button" aria-label="通常攻撃" disabled={!isFighting} onClick={() => takeAction('ATTACK')}>攻撃する</button>
               </div>
               <p className="stella-final__no-forecast">敵の攻撃予測は表示されない。実際の行動を見て、権能を使い分けよう。</p>
