@@ -398,3 +398,101 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
+
+test('理外掌握 resets active authority cooldowns and skips exactly the current Kaiser action', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 0, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+
+  const playerHp = page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
+  const control = page.getByRole('button', { name: '理外掌握：神側へ' });
+  const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
+
+  await terminus.click();
+  await expect(terminus).toBeDisabled();
+  await expect(pass).toBeVisible();
+  await pass.click();
+  await expect(terminus).toBeDisabled();
+  const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
+
+  // The cooldown is still active before All Might, then must be ready next turn.
+  await control.click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
+  await expect(page.locator('.stella-final__log-lines')).toContainText('理外掌握によりカイザーの通常行動を停止');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('全権能のCTをリセット');
+  await expect(terminus).toBeEnabled();
+
+  await terminus.click();
+  await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
+  await expect(page.locator('.stella-final__log-lines')).toContainText('第4ターン：権能「終極殲滅」');
+});
+
+test('絶界昇華 triples effective stats and blocks all authorities for its full active duration', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 0, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
+  const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
+  const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+  await ascension.click();
+  await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '7360');
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
+
+  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
+  await expect(ascension).toBeEnabled();
+});
+
