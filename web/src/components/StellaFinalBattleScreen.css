@@ -308,3 +308,55 @@
   .stella-final__character-choice { grid-template-columns: 42px minmax(0,1fr); padding: 8px; }
   .stella-final__character-choice img { width: 42px; height: 48px; }
 }
+
+
+/* Short Duel Irena */
+.stella-final__short-build{margin-top:12px;padding:12px;border:1px solid rgba(187,166,255,.28);border-radius:12px;background:rgba(23,18,47,.72)}
+.stella-final__short-build-heading,.stella-final__stat-stepper>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.stella-final__short-build-heading strong{color:#f0e9ff;font-size:12px}.stella-final__short-build-heading span{color:#d6c9ff;font-size:10px;font-weight:850}
+.stella-final__short-build-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.stella-final__stat-stepper{min-width:0;padding:9px;border:1px solid rgba(167,157,222,.2);border-radius:9px;background:rgba(5,8,23,.7)}
+.stella-final__stat-stepper>div:first-child strong{color:#b9c5df;font-size:10px}.stella-final__stat-stepper>div:first-child span{color:#fff;font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
+.stella-final__stat-stepper-actions{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:8px}
+.stella-final__stat-stepper-actions button{width:33px;height:33px;border:1px solid rgba(183,166,255,.32);border-radius:8px;color:#f9f6ff;background:rgba(79,59,143,.65);font:inherit;font-size:17px;font-weight:900;cursor:pointer}
+.stella-final__stat-stepper-actions button:disabled{opacity:.28;cursor:not-allowed}.stella-final__stat-stepper-actions span{color:#e3d8ff;font-size:10px;font-weight:900}
+.stella-final__short-build>p{margin:9px 0 0;color:#aeb9d0;font-size:10px;line-height:1.55}
+.stella-final__asset-status{margin:10px 0 0;color:#cbd8ff;font-size:11px;text-align:center}
+.stella-final__asset-error{margin-top:10px;padding:10px;border:1px solid rgba(255,112,139,.55);border-radius:9px;color:#ffe0e6;background:rgba(112,22,44,.28);font-size:11px;line-height:1.55;overflow-wrap:anywhere}
+.stella-final__asset-error p{margin:5px 0}.stella-final__asset-error button{min-height:36px;margin-top:5px;padding:7px 11px;border:1px solid rgba(255,188,205,.4);border-radius:8px;color:white;background:rgba(143,43,68,.7);font:inherit;font-weight:900}
+.stella-final__daten-gauge{margin:7px 0 14px;padding:12px;border:1px solid rgba(183,166,255,.28);border-radius:12px;background:linear-gradient(120deg,rgba(99,27,52,.24),rgba(19,19,46,.8) 50%,rgba(74,67,153,.26))}
+.stella-final__daten-gauge-labels{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:#ddd7f5;font-size:10px}
+.stella-final__daten-gauge-labels strong:first-child{color:#ff9daa}.stella-final__daten-gauge-labels strong:last-child{color:#d0c2ff}.stella-final__daten-gauge-labels span{font-weight:900;text-align:center}
+.stella-final__daten-gauge-track{position:relative;height:14px;overflow:visible;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:linear-gradient(90deg,#9d294c 0%,#693b59 34%,#35304e 50%,#4e469a 68%,#9584ff 100%);box-shadow:inset 0 1px 4px rgba(0,0,0,.55)}
+.stella-final__daten-gauge-center{position:absolute;top:-3px;bottom:-3px;left:50%;width:1px;background:rgba(255,255,255,.85)}
+.stella-final__daten-gauge-marker{position:absolute;top:50%;width:18px;height:22px;border:2px solid #fff;border-radius:5px;background:#16162b;box-shadow:0 0 12px rgba(255,255,255,.65);transform:translate(-50%,-50%);transition:left .24s ease}
+.stella-final__daten-gauge-track.is-GOD .stella-final__daten-gauge-marker{background:#c3b5ff;box-shadow:0 0 17px #a897ff}.stella-final__daten-gauge-track.is-DEMON .stella-final__daten-gauge-marker{background:#ff6b82;box-shadow:0 0 17px #ff4768}
+.stella-final__daten-gauge p{margin:8px 0 0;color:#adb8d0;font-size:10px;line-height:1.5}
+.stella-final__power-card--terminus{border-color:rgba(255,95,121,.35)}.stella-final__power-card--ascension{border-color:rgba(164,143,255,.42)}.stella-final__power-card--control{border-color:rgba(130,187,255,.36)}
+.stella-final__control-buttons{display:flex;flex-direction:column;gap:6px;align-self:center}
+.stella-final__control-buttons button{min-height:34px;padding:6px 8px;border:1px solid rgba(177,166,255,.3);border-radius:8px;color:#f6f2ff;background:rgba(57,51,104,.8);font:inherit;font-size:10px;font-weight:950;white-space:nowrap;cursor:pointer}
+.stella-final__control-buttons button:disabled{opacity:.3;cursor:not-allowed}
+.stella-final__short-finish-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:12px;border:1px solid rgba(226,207,255,.32);border-radius:11px;background:linear-gradient(115deg,rgba(47,31,88,.6),rgba(20,17,41,.85))}
+.stella-final__short-finish-row strong,.stella-final__short-finish-row small{display:block}.stella-final__short-finish-row strong{color:#f1e8ff;font-size:12px}.stella-final__short-finish-row small{margin-top:4px;color:#b9c4d9;font-size:10px;line-height:1.45}
+.stella-final__short-finish-row button{flex:0 0 auto;min-height:42px;padding:9px 11px;border:1px solid rgba(231,212,255,.45);border-radius:9px;color:#fff;background:linear-gradient(115deg,#543a9b,#a82d58);font:inherit;font-size:11px;font-weight:950;cursor:pointer}
+.stella-final__short-finish-row button:disabled{opacity:.45;cursor:not-allowed}.stella-final__short-effect-status{margin:8px 0 0;color:#d2c6ff;font-size:10px}
+.stella-final__short-attack-cutin,.stella-final__short-attack-flash,.stella-final__short-finisher{position:fixed;z-index:90;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(2,2,12,.9);pointer-events:none}
+.stella-final__short-attack-cutin img{display:block;width:auto;height:auto;max-width:calc(100vw - 20px);max-height:min(82vh,900px);object-fit:contain;filter:drop-shadow(0 0 22px rgba(255,33,73,.35));animation:short-irena-cutin-in .7s ease both}
+.stella-final__short-attack-cutin span,.stella-final__short-attack-flash span{position:absolute;bottom:11vh;max-width:calc(100vw - 24px);padding:9px 16px;border:1px solid rgba(255,193,211,.45);border-radius:999px;color:#fff;background:rgba(71,8,31,.84);font-size:clamp(12px,2.6vw,20px);font-weight:1000;letter-spacing:.12em;text-align:center}
+.stella-final__short-attack-flash{z-index:89;background:radial-gradient(ellipse at center,rgba(202,191,255,.76),rgba(74,60,145,.38) 28%,rgba(2,2,12,0) 75%);animation:short-irena-god-hit .26s ease-out both}
+.stella-final__short-attack-flash span{color:#fff;border-color:rgba(226,217,255,.6);background:rgba(48,39,107,.84)}
+.stella-final__short-finisher{z-index:100;flex-direction:column;gap:12px;animation:short-irena-finish-in 1.45s ease both}
+.stella-final__short-finisher--god{background:radial-gradient(circle,rgba(51,44,122,.32),rgba(2,2,12,.97) 74%)}.stella-final__short-finisher--demon{background:radial-gradient(circle,rgba(131,14,47,.42),rgba(2,2,12,.97) 74%)}
+.stella-final__short-finisher img{display:block;width:auto;height:auto;max-width:calc(100vw - 24px);max-height:76vh;object-fit:contain;filter:drop-shadow(0 0 24px rgba(255,255,255,.12))}
+.stella-final__short-finisher--god img{filter:drop-shadow(0 0 24px rgba(161,153,255,.32))}.stella-final__short-finisher--demon img{filter:drop-shadow(0 0 24px rgba(255,35,78,.34))}
+.stella-final__short-finisher strong{color:#fff;font-size:clamp(18px,4vw,28px);font-weight:1000;letter-spacing:.18em;text-shadow:0 0 20px rgba(255,255,255,.24)}
+.stella-final__short-finisher span{color:#d7d4e7;font-size:11px;letter-spacing:.12em}
+@keyframes short-irena-cutin-in{0%{opacity:.2;transform:scale(.96)}15%,78%{opacity:1;transform:scale(1)}100%{opacity:.85;transform:scale(1.01)}}
+@keyframes short-irena-god-hit{0%{opacity:.95}100%{opacity:0}}
+@keyframes short-irena-finish-in{0%{opacity:0}12%,87%{opacity:1}100%{opacity:0}}
+@media(max-width:650px){
+ .stella-final__short-build{padding:10px}.stella-final__short-build-grid{grid-template-columns:1fr 1fr;gap:6px}
+ .stella-final__stat-stepper{padding:7px}.stella-final__stat-stepper-actions button{width:30px;height:30px}
+ .stella-final__short-finish-row{align-items:stretch;flex-direction:column}.stella-final__short-finish-row button{width:100%}
+ .stella-final__short-finisher img{max-height:70vh}
+}

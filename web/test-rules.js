@@ -19,7 +19,7 @@ import { applyStatAllocation, createStatPreset, getAbilityBuildMatchPercent, get
 register(
   'data:text/javascript,' + encodeURIComponent(`
     export async function load(url, context, nextLoad) {
-      if (url.endsWith('.jpg') || url.endsWith('.svg')) {
+      if (/\.(?:jpe?g|png|svg)$/i.test(new URL(url).pathname)) {
         return { format: 'module', source: 'export default "";', shortCircuit: true };
       }
       return nextLoad(url, context);
@@ -29,7 +29,7 @@ register(
 );
 
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
-const { STELLA_FINAL_BATTLE_TUNING } = await import('./src/data/stellaFinalBattleConfig.ts');
+const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const regularIrenaSnapshot = {
   maxHp: IRENA.maxHp,
   attack: IRENA.attack,
@@ -38,9 +38,55 @@ const regularIrenaSnapshot = {
   specialSkillDamage: IRENA.specialSkillDamage,
   ultimateSkillDamage: IRENA.ultimateSkillDamage,
 };
-assert.notStrictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'], IRENA);
-assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'].id, 'final-irena');
-assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['final-irena'].isPrototype, true);
+assert.notStrictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'], IRENA);
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].id, 'short-irena');
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].isPrototype, true);
+assert.deepStrictEqual(
+  [
+    STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].maxHp,
+    STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].attack,
+    STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].defense,
+    STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].speed,
+    STELLA_FINAL_BATTLE_TUNING.fighters['short-irena'].evasionRate,
+  ],
+  [IRENA.maxHp, IRENA.attack, IRENA.defense, IRENA.speed, IRENA.evasionRate],
+  'Short Duel Irena base stats must match normal Irena before her isolated allocation.',
+);
+assert.deepStrictEqual(
+  [
+    STELLA_FINAL_BATTLE_IMAGES.irenaGodPortrait,
+    STELLA_FINAL_BATTLE_IMAGES.irenaDemonPortrait,
+    STELLA_FINAL_BATTLE_IMAGES.irenaDemonAttackCutIn,
+    STELLA_FINAL_BATTLE_IMAGES.irenaGodFinalFinisher,
+    STELLA_FINAL_BATTLE_IMAGES.irenaDemonFinalFinisher,
+  ],
+  ['', '', '', '', ''],
+  'Asset imports must resolve to bundled URL strings in the test module loader.',
+);
+const {
+  SHORT_IRENA_STAT_POINT_TOTAL,
+  getShortIrenaCombatStats,
+  shiftDatenGauge,
+  getDatenAlignment,
+  getShortIrenaCounterDamage,
+} = await import('./src/utils/shortIrenaFinalBattle.ts');
+assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
+assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
+assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
+assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 6);
+assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
+assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
+assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
+assert.strictEqual(shiftDatenGauge(0, -60), -60);
+assert.strictEqual(shiftDatenGauge(-60, -50), -100);
+assert.strictEqual(shiftDatenGauge(60, 50), 100);
+assert.strictEqual(shiftDatenGauge(80, -40), 70, 'A strong lean must resist opposite movement.');
+assert.strictEqual(getDatenAlignment(100), 'GOD');
+assert.strictEqual(getDatenAlignment(-100), 'DEMON');
+assert.strictEqual(getDatenAlignment(99), null);
+assert.strictEqual(getShortIrenaCounterDamage(230, 200), 130);
+assert.strictEqual(getShortIrenaCounterDamage(230, 1100), 50);
+
 assert.deepStrictEqual({
   maxHp: IRENA.maxHp,
   attack: IRENA.attack,
