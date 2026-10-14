@@ -707,7 +707,7 @@ export const StellaFinalBattleScreen: React.FC<{
       ? '30〜59ポイント：第1段階'
       : authorityStage === 2
         ? '60〜99ポイント：第2段階'
-        : '100ポイント：第3段階・権能③と究極必殺技';
+        : '100ポイント：終点・究極必殺技';
   const canUseTerminus = battle.datenGauge <= -30;
   const canUseAscension = battle.datenGauge >= 30;
   const canUseAllMight = authorityStage >= 2;
@@ -949,12 +949,12 @@ export const StellaFinalBattleScreen: React.FC<{
                   <div className="stella-final__power-grid stella-final__short-authorities">
                     <article className="stella-final__power-card stella-final__power-card--terminus">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通の一撃（最低5,000ダメージ）。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30以上、または第3段階で解放' : '最低5,000・防御貫通／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通の一撃（最低5,000ダメージ）。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '最低5,000・防御貫通／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--ascension">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30以上、または第3段階で解放' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
+                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30ポイント以上で解放' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
                       <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAscension || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--control">
