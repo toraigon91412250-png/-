@@ -396,7 +396,9 @@ export const App: React.FC = () => {
 
   const handleStartExKaiser = () => {
     const progress = loadStellaModeProgress();
-    if (!progress.kaiser100RewardClaimed || progress.exKaiserDefeated || progress.isUnlocked) return;
+    // Legacy saves can mark Stella as unlocked without the player ever seeing the post-Lv.100 EX route.
+    // Keep the EX challenge replayable after the one-time Lv.100 reward has been claimed.
+    if (!progress.kaiser100RewardClaimed) return;
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     handleOpenBattleSetup({
@@ -599,6 +601,7 @@ export const App: React.FC = () => {
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
           stellaModeUnlocked={stellaModeProgress.isUnlocked}
           exKaiserChallengeAvailable={stellaModeProgress.kaiser100RewardClaimed && !stellaModeProgress.exKaiserDefeated && !stellaModeProgress.isUnlocked}
+          exKaiserReplayAvailable={stellaModeProgress.kaiser100RewardClaimed && (stellaModeProgress.exKaiserDefeated || stellaModeProgress.isUnlocked)}
           stellaRewardSaveError={stellaRewardSaveError}
           onRevealStella={handleRevealStella}
           onStartExKaiser={handleStartExKaiser}
