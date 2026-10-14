@@ -115,42 +115,31 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   const victoryHeading = page.getByRole('heading', { name: '最終決戦 勝利' });
 
   // Drive the actual battle controls. No test-only victory path or state mutation is used.
-  for (let step = 0; step < 100; step += 1) {
+  for (let step = 0; step < 40; step += 1) {
     if (await victoryHeading.isVisible().catch(() => false)) break;
 
     const currentBossHp = Number(await bossHp.getAttribute('aria-valuenow'));
     const currentPlayerHp = Number(await playerHp.getAttribute('aria-valuenow'));
-    const rebirthLabel = await page.locator('.stella-final__power-card--rebirth small').innerText();
-    const rebirthUses = Number(rebirthLabel.replace('使用回数：', '').split('/')[0].trim());
     const inFinalPhase = await page.locator('.stella-final__phase').innerText().then(text => text.includes('03'));
     const timerLabel = await page.locator('.stella-final__timer').getAttribute('aria-label').catch(() => null);
     const turnsLeft = timerLabel ? Number(timerLabel.replace('最終形態 残り', '').replace('ターン', '').trim()) : 0;
-    const requiredAttacks = Math.ceil(currentBossHp / 480);
+    const attackLabel = await page.locator('.stella-final__normal-attack').innerText();
+    const attackDamage = Number((attackLabel.match(/(\\d[\\d,]*)ダメージ/) || [])[1]?.replace(/,/g, '') || 0);
 
-    if (inFinalPhase) {
-      if (currentPlayerHp < 3800 && turnsLeft > requiredAttacks && await rebirth.isEnabled()) {
-        await rebirth.click();
-      } else if (turnsLeft > requiredAttacks && await immortal.isEnabled()) {
-        await immortal.click();
-      } else {
-        await attack.click();
-      }
-    } else if (currentBossHp <= 6960 && currentPlayerHp <= 700 && await rebirth.isEnabled() && rebirthUses < 2) {
-      await rebirth.click();
-    } else if (currentBossHp <= 6960 && currentPlayerHp <= 350 && await rebirth.isEnabled()) {
-      await rebirth.click();
-    } else if (currentBossHp <= 6960 && await immortal.isEnabled()) {
-      await immortal.click();
-    } else if (currentBossHp <= 6960) {
+    if (currentBossHp > 0 && await meteor.isEnabled() && !inFinalPhase) {
       await meteor.click();
-    } else if (currentPlayerHp <= 700 && rebirthUses < 2 && await rebirth.isEnabled()) {
-      await rebirth.click();
-    } else if (currentPlayerHp <= 350 && await rebirth.isEnabled()) {
+    } else if (inFinalPhase && currentPlayerHp <= 420 && await immortal.isEnabled()) {
+      await immortal.click();
+    } else if (currentPlayerHp <= 1500 && await rebirth.isEnabled()) {
       await rebirth.click();
     } else if (await immortal.isEnabled()) {
       await immortal.click();
-    } else {
+    } else if (attackDamage > 0 && currentBossHp > 0) {
       await attack.click();
+    } else if (inFinalPhase && turnsLeft > 0) {
+      await attack.click();
+    } else {
+      break;
     }
   }
 
