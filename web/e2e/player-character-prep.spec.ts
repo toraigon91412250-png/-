@@ -180,16 +180,16 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await expect(page.locator('.stella-final__fighter--stella .stella-final__fighter-name')).toHaveText('最終決戦用いれーな');
   await expect(page.getByText(/仮設定/).first()).toBeVisible();
 
-  await page.getByRole('button', { name: '最終決戦を開始' }).click();
-  await expect(page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
-  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
-
   const pickerBox = await unlockedPicker.boundingBox();
   const viewport = page.viewportSize();
   expect(pickerBox).not.toBeNull();
   expect(viewport).not.toBeNull();
   expect(pickerBox!.x).toBeGreaterThanOrEqual(0);
   expect(pickerBox!.x + pickerBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
+
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await expect(page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
+  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
 
   // The dedicated version does not enter the normal battle roster.
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
