@@ -339,3 +339,19 @@
 @media (prefers-reduced-motion: reduce) {
   .home-dashboard__primary-action--mystery { animation: none; }
 }
+
+/* Legacy progression can keep Stella unlocked; let those saves enter/replay EX without resetting progress. */
+.home-dashboard__hero--ex-replay { min-height: 406px; }
+.home-dashboard__ex-replay {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 50px; padding: 8px 14px; border: 1px solid rgba(255, 209, 128, .48);
+  border-radius: 12px; background: linear-gradient(135deg, rgba(74, 48, 30, .96), rgba(35, 28, 43, .98));
+  color: #FFE4AD; font: inherit; font-size: 12px; font-weight: 950; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+.home-dashboard__ex-replay:hover { border-color: rgba(255, 224, 160, .8); background: linear-gradient(135deg, rgba(95, 59, 32, .98), rgba(41, 31, 51, .99)); }
+.home-dashboard__ex-replay:focus-visible { outline: 2px solid #FFE0A0; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .home-dashboard__hero.home-dashboard__hero--ex-replay { min-height: 430px; }
+  .home-dashboard__ex-replay { width: min(100%, 310px); min-height: 48px; }
+}
