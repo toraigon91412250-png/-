@@ -233,6 +233,9 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
 
   await normalAttack.click();
   const demonCutIn = page.getByTestId('short-irena-normal-cutin');
+  const cutInStartedAt = Date.now();
+  await expect(demonCutIn).toBeVisible();
+  await page.waitForTimeout(600);
   await expect(demonCutIn).toBeVisible();
   const demonCutInImage = demonCutIn.locator('img');
   await expect.poll(() => demonCutInImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -244,6 +247,8 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   expect(cutInBox!.x + cutInBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
   expect(cutInBox!.y).toBeGreaterThanOrEqual(0);
   expect(cutInBox!.y + cutInBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
+  await expect(demonCutIn).toBeHidden({ timeout: 700 });
+  expect(Date.now() - cutInStartedAt).toBeGreaterThanOrEqual(600);
 
   await terminus.click();
   await controlDemon.click();

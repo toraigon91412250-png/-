@@ -139,12 +139,12 @@ export const StellaFinalBattleScreen: React.FC<{
 
   useEffect(() => {
     if (!battle.normalAttackCutIn || battle.fighterId !== 'short-irena') return;
-    const duration = battle.alignment === 'DEMON' ? 700 : 260;
+    const duration = battle.alignment === 'DEMON' || battle.datenGauge < 0 ? 700 : 260;
     const timer = window.setTimeout(() => {
       setBattle(current => current.normalAttackCutIn ? { ...current, normalAttackCutIn: false } : current);
     }, duration);
     return () => window.clearTimeout(timer);
-  }, [battle.normalAttackCutIn, battle.fighterId, battle.alignment, battle.turn]);
+  }, [battle.normalAttackCutIn, battle.fighterId, battle.alignment, battle.datenGauge, battle.turn]);
 
   useEffect(() => {
     const alignment = battle.finisherPending;
