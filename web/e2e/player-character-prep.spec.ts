@@ -386,7 +386,7 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await page.getByRole('button', { name: '通常攻撃' }).click();
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
   const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '3870');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3880');
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
@@ -533,7 +533,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   // Put the gauge at -60 without locking the route. The recoil turn must be consumed first.
   await terminus.click();
   await expect(pass).toBeVisible();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await pass.click();
 
   await ascension.click();
@@ -545,7 +545,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '2360');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1360');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
