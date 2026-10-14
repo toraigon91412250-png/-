@@ -21,6 +21,7 @@ import {
   SHORT_IRENA_TERMINUS_RECOIL_ACTION_LOCK_TURNS,
   SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER,
   SHORT_IRENA_TERMINUS_SPEED_DOWN_TURNS,
+  calculateShortIrenaAttackDamage,
   getDatenAlignment,
   getDatenAuthorityStage,
   SHORT_IRENA_GAUGE_STEP,
@@ -359,8 +360,11 @@ export const StellaFinalBattleScreen: React.FC<{
         const reinforcingRoute = datenGauge > 0 ? 'GOD' : 'DEMON';
         gaugeDelta = getShortIrenaNormalAttackGaugeDelta(reinforcingRoute, effectiveSpeed);
         const rawDamage = Math.max(1, Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier));
-        const targetDefense = kaiserDefenseNullTurns > 0 ? 0 : KAISER.defense;
-        const damage = Math.max(1, rawDamage - targetDefense);
+        const { damage, targetDefense } = calculateShortIrenaAttackDamage(
+          rawDamage,
+          KAISER.defense,
+          kaiserDefenseNullTurns,
+        );
         kaiserHp = Math.max(1, kaiserHp - damage);
         normalAttackCutIn = true;
         log('通常攻撃。全能倍率・強化状態を反映し、EXカイザーの防御' + targetDefense.toLocaleString('ja-JP') + '適用後に' + damage.toLocaleString('ja-JP') + 'ダメージ。堕天ゲージが' + (reinforcingRoute === 'GOD' ? '神側' : '堕天側') + 'へ傾く。');
