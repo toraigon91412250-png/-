@@ -28,16 +28,16 @@ export interface StellaFinalBattleTuning {
  * Final-Irena currently has no additional, finalized techniques or effects.
  */
 export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
-  bossMaxHp: 16500,
-  meteorDamage: 4500,
-  phaseCounterDamage: { 1: 220, 2: 320, 3: 420 },
+  bossMaxHp: 14000,
+  meteorDamage: 5000,
+  phaseCounterDamage: { 1: 200, 2: 280, 3: 360 },
   fighters: {
     stella: {
       id: 'stella',
       name: 'ステラ',
       title: '天星の翼',
-      maxHp: 4200,
-      normalAttackDamage: 1050,
+      maxHp: 5000,
+      normalAttackDamage: 1500,
       imageSrc: stellaImage,
       isPrototype: true,
     },
