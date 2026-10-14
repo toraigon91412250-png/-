@@ -47,6 +47,45 @@ test('unlocked Stella mode opens the dedicated EX Kaiser final battle and all th
   await expect(page.getByText(/次回使用：第 4 ターン/)).toBeVisible();
 });
 
+test('Stella final duel uses the player-favored balance tuning in actual combat', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      exKaiserDefeated: true,
+      finalBattleCleared: true,
+      finalBattleRewardClaimed: true,
+    }));
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+
+  const playerHp = page.getByRole('progressbar', { name: 'ステラのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
+  await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
+  await expect(attack).toContainText('2,000');
+  await expect(page.getByText(/試作値：5,000ダメージ・1回/)).toBeVisible();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4780');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '9000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4240');
+  await expect(page.locator('.stella-final__phase')).toContainText('02');
+});
+
 test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
