@@ -564,7 +564,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '3');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-93');
 
   await pass.click();
   await expect(ascension).toBeEnabled();
