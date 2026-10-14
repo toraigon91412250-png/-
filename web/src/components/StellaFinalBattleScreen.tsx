@@ -312,6 +312,11 @@ export const StellaFinalBattleScreen: React.FC<{
                 {isFighting && <span className="stella-final__turn-chip">第 {battle.turn} ターン</span>}
               </div>
 
+              {battle.fighterId === 'final-irena' && (
+                <p className="stella-final__fighter-prototype-note">
+                  最終決戦用いれーなの専用技・権能は未確定。現在は既存の最終決戦コマンドを用いた試作設定。
+                </p>
+              )}
               <div className="stella-final__power-grid">
                 <article className="stella-final__power-card stella-final__power-card--immortal">
                   <div className="stella-final__power-icon"><Shield size={21} /></div>
@@ -325,7 +330,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 </article>
                 <article className="stella-final__power-card stella-final__power-card--meteor">
                   <div className="stella-final__power-icon"><Zap size={21} /></div>
-                  <div className="stella-final__power-copy"><h3>天象支配</h3><p>巨大な隕石を落とす一度きりの大技。</p><small>{battle.meteorUsed ? '使用済み' : '試作値：4,500ダメージ・1回'}</small></div>
+                  <div className="stella-final__power-copy"><h3>天象支配</h3><p>巨大な隕石を落とす一度きりの大技。</p><small>{battle.meteorUsed ? '使用済み' : '試作値：' + METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP') + 'ダメージ・1回'}</small></div>
                   <button type="button" aria-label="天象支配を発動" disabled={!isFighting || battle.meteorUsed} onClick={() => takeAction('METEOR')}>発動</button>
                 </article>
               </div>
