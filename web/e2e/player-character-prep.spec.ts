@@ -580,7 +580,7 @@ test('legacy unlocked save can still enter the EX Kaiser challenge without reset
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: true,
       revealAvailable: false,
-      kaiser100RewardClaimed: true,
+      kaiser100RewardClaimed: false,
       exKaiserDefeated: true,
     }));
     window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
