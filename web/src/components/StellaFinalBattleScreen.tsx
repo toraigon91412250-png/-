@@ -239,8 +239,8 @@ export const StellaFinalBattleScreen: React.FC<{
                 * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
               const speedExtraTurns = Math.min(5, Math.floor(Math.max(0, effectiveSpeed - 240) / 180));
               finalTurnLimit = 8 + Math.floor(Math.random() * 3) + speedExtraTurns;
-              finalTurnsLeft = finalTurnLimit;
-              logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速さ配分による猶予 +' + speedExtraTurns + 'ターン。');
+              finalTurnsLeft = Math.max(0, finalTurnLimit - 1);
+              logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速さ配分による猶予 +' + speedExtraTurns + 'ターン。究極必殺技を発動したターンを1ターン消費。');
             }
           } else if (current.phase === 3 && current.finalTurnsLeft !== null) {
             finalTurnsLeft = Math.max(0, current.finalTurnsLeft - 1);
@@ -421,7 +421,7 @@ export const StellaFinalBattleScreen: React.FC<{
         if (ascensionTurns > 0) return current;
         gaugeDelta = SHORT_IRENA_GAUGE_STEP;
         // The casting turn is included in the three-turn duration.
-        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS + 1;
+        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS;
         log('権能「絶界昇華」。攻撃・防御・速度が3倍になる（3ターン）。強化中は三大権能を使用できない。神側へ傾く。');
       } else if (action === 'CONTROL_GOD' || action === 'CONTROL_DEMON') {
         if (allMightUsed) return current;
