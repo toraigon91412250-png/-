@@ -262,7 +262,11 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await chooseOpeningIrenaAlignment(page, 'GOD');
   await expect(page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '30');
+  await expect(page.getByRole('button', { name: '絶界昇華を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
 
   // The dedicated version does not enter the normal battle roster.
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
@@ -272,7 +276,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
 });
 
 
-test('final-duel Irena uses the 15-point gauge, 2000-base ultimates, and distinct route effects', async ({ page }) => {
+test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, and distinct route effects', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -324,11 +328,11 @@ test('final-duel Irena uses the 15-point gauge, 2000-base ultimates, and distinc
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const demonRoutePicker = page.getByRole('dialog', { name: '終焉のルート選択' });
   await expect(demonRoutePicker).toBeVisible({ timeout: 5000 });
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13180');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0');
   await demonRoutePicker.getByRole('button', { name: /崩壊/ }).click();
   await expect(demonRoutePicker).toBeHidden();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13180', 'The selected route must not add a follow-up attack.');
-  await expect(page.getByRole('status').filter({ hasText: '崩壊：EXカイザーの防御0／残り 2 ターン' })).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0', 'The selected route must not add a follow-up attack.');
+  await expect(page.getByRole('status').filter({ hasText: '崩壊：EXカイザーの防御0／残り 3 ターン' })).toBeVisible();
   await expect(page.locator('.stella-final__log-lines')).toContainText('終焉の分岐「崩壊」');
 
   // Reloading starts a fresh battle with the same final-duel-only save, not a normal roster change.
@@ -354,11 +358,11 @@ test('final-duel Irena uses the 15-point gauge, 2000-base ultimates, and distinc
   await expect.poll(() => godFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const godRoutePicker = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(godRoutePicker).toBeVisible({ timeout: 5000 });
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13180');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
   await godRoutePicker.getByRole('button', { name: /神威/ }).click();
   await expect(godRoutePicker).toBeHidden();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13180', 'Route application does not trigger a follow-up attack.');
-  await expect(page.getByRole('status').filter({ hasText: '神威：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600', 'Route application does not trigger a follow-up attack.');
+  await expect(page.getByRole('status').filter({ hasText: '神威：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
@@ -417,15 +421,16 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
   await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
+  await moveFinalIrenaGaugeTo(page, 60);
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
   const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
-  await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 50));
-  await expect(page.getByRole('status').filter({ hasText: '全能 0.9倍' })).toBeVisible();
-  await expect(page.getByText(/元攻撃力×0\.65（永続）/)).toBeVisible();
+  await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 15));
+  await expect(page.getByRole('status').filter({ hasText: '全能 1.5倍' })).toBeVisible();
+  await expect(page.getByText(/元攻撃力×0\.75（永続）/)).toBeVisible();
   await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
