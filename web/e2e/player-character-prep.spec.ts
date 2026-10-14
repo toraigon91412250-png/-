@@ -316,7 +316,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await controlDemon.click();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-100');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1193/);
-  const demonFinisher = page.getByRole('button', { name: '堕天側の最終必殺技' });
+  const demonFinisher = page.getByRole('button', { name: '堕天側の究極必殺技 終焉' });
   await expect(demonFinisher).toBeEnabled();
   await demonFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
@@ -324,16 +324,22 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await expect(demonFinisherImage).toHaveAttribute('src', /413F5794/);
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(demonFinisherImage).toHaveCSS('object-fit', 'contain');
+  const demonRoutePicker = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(demonRoutePicker).toBeVisible({ timeout: 5000 });
+  await expect(demonRoutePicker).toContainText('崩壊');
+  await demonRoutePicker.getByRole('button', { name: /崩壊/ }).click();
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力116,122');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('終焉の分岐「崩壊」');
+  await expect(page.getByRole('progressbar', { name: 'EXカイザーのHP' })).toHaveAttribute('aria-valuenow', '0');
 
   await page.getByRole('button', { name: 'もう一度挑む' }).click();
+  await chooseOpeningIrenaAlignment(page, 'GOD');
   await expect(controlGod).toBeEnabled();
   await controlGod.click();
   await ascension.click();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '100');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1194/);
-  const godFinisher = page.getByRole('button', { name: '神側の最終必殺技' });
+  const godFinisher = page.getByRole('button', { name: '神側の究極必殺技 創世' });
   await expect(godFinisher).toBeEnabled();
   await godFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
@@ -347,8 +353,12 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   expect(godImageBox!.x + godImageBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
   expect(godImageBox!.y).toBeGreaterThanOrEqual(0);
   expect(godImageBox!.y + godImageBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
+  const godRoutePicker = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(godRoutePicker).toBeVisible({ timeout: 5000 });
+  await expect(godRoutePicker).toContainText('神威');
+  await godRoutePicker.getByRole('button', { name: /神威/ }).click();
   await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力42,768');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
