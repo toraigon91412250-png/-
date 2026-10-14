@@ -301,12 +301,16 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
 
 test('failed final-battle image preload blocks battle start and can be retried', async ({ page }) => {
   await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
       finalBattleCleared: true, finalBattleRewardClaimed: true,
     }));
   });
-  await page.route('**/assets/IMG_1194*', route => route.abort());
+  // Abort the actual image payload, not Vite's ?import JavaScript module.
+  const blockedGodImage = (url: URL) => url.pathname === '/src/assets/IMG_1194.jpeg';
+  await page.route(blockedGodImage, route => route.abort());
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   const preloadError = page.getByRole('alert', { name: '最終決戦画像のプリロード失敗' });
@@ -314,7 +318,7 @@ test('failed final-battle image preload blocks battle start and can be retried',
   await expect(preloadError).toContainText('IMG_1194.jpeg');
   await expect(page.getByRole('button', { name: '画像読み込み後に開始' })).toBeDisabled();
 
-  await page.unroute('**/assets/IMG_1194*');
+  await page.unroute(blockedGodImage);
   await preloadError.getByRole('button', { name: '画像を再読み込み' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: '最終決戦を開始' })).toBeEnabled();
@@ -391,6 +395,6 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await attack.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
   await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-40');
-  await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージがどちらにも振り切れていないため敗北');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
 });
