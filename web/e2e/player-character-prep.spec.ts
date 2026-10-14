@@ -419,7 +419,7 @@ test('short-duel Irena loses when the final turn expires without a locked divine
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
-  const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
   const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
   const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
@@ -564,7 +564,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-93');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '3');
 
   await pass.click();
   await expect(ascension).toBeEnabled();
