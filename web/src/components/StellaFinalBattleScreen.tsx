@@ -964,6 +964,11 @@ export const StellaFinalBattleScreen: React.FC<{
               {battle.fighterId === 'short-irena' && battle.actionLockTurns > 0 && <div className="stella-final__short-effect-status" role="status"><p>反動：行動不能。次の1ターンは行動をスキップする。</p><button type="button" aria-label="行動不能ターンを消費" disabled={!isFighting || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('PASS')}>行動不能ターンを消費</button></div>}
               {battle.fighterId === 'short-irena' && battle.speedDownTurns > 0 && <p className="stella-final__short-effect-status" role="status">終極殲滅の反動：速度50%低下／残り {battle.speedDownTurns} ターン</p>}
               {battle.fighterId === 'short-irena' && battle.defenseDownTurns > 0 && <p className="stella-final__short-effect-status" role="status">絶界昇華の反動：防御50%低下／残り {battle.defenseDownTurns} ターン</p>}
+              {battle.fighterId === 'short-irena' && battle.godMightTurns > 0 && <p className="stella-final__short-effect-status" role="status">神威：攻撃・防御・速度3倍／残り {battle.godMightTurns} ターン</p>}
+              {battle.fighterId === 'short-irena' && battle.kaiserActionLockTurns > 0 && <p className="stella-final__short-effect-status" role="status">静寂：EXカイザーの通常反撃停止／残り {battle.kaiserActionLockTurns} ターン</p>}
+              {battle.fighterId === 'short-irena' && battle.kaiserDefenseNullTurns > 0 && <p className="stella-final__short-effect-status" role="status">崩壊：EXカイザーの防御0／残り {battle.kaiserDefenseNullTurns} ターン</p>}
+              {battle.fighterId === 'short-irena' && battle.kaiserBuffImmuneTurns > 0 && <p className="stella-final__short-effect-status" role="status">断絶：カイザーのバフ付与無効／残り {battle.kaiserBuffImmuneTurns} ターン</p>}
+              {battle.fighterId === 'short-irena' && battle.playerPressureImmuneTurns > 0 && <p className="stella-final__short-effect-status" role="status">消滅：重圧耐性／残り {battle.playerPressureImmuneTurns} ターン</p>}
               {battle.fighterId === 'short-irena' && <p className="stella-final__short-effect-status" role="status">実効ステータス：ATK {displayedEffectiveAttack.toLocaleString('ja-JP')}／DEF {displayedEffectiveDefense.toLocaleString('ja-JP')}／SPD {displayedEffectiveSpeed.toLocaleString('ja-JP')}・全能 {battle.allMightMultiplier.toFixed(1)}倍（永続）</p>}
               <p className="stella-final__no-forecast">敵の攻撃予測は表示されない。実際の行動を見て、権能を使い分けよう。</p>
             </section>
