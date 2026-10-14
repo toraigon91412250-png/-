@@ -214,13 +214,48 @@ export const StellaFinalBattleScreen: React.FC<{
         const actualDamage = Math.min(current.kaiserHp, finisherPower);
         const remainingBossHp = Math.max(0, current.kaiserHp - actualDamage);
         const name = alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」';
+        const logs = [
+          ...current.logs,
+          name + 'の威力' + finisherPower.toLocaleString('ja-JP') + '。実ダメージ' + actualDamage.toLocaleString('ja-JP') + '。究極技後のルートを選択する。',
+        ];
+        let phase = current.phase;
+        let finalTurnLimit = current.finalTurnLimit;
+        let finalTurnsLeft = current.finalTurnsLeft;
+
+        // Keep the boss phase and final-turn clock consistent with a real finisher hit.
+        // Crossing into the final phase starts its deadline; a finisher used while
+        // already in that phase consumes one remaining turn.
+        if (remainingBossHp > 0) {
+          const nextPhase = phaseForHp(remainingBossHp);
+          if (nextPhase > phase) {
+            phase = nextPhase;
+            logs.push(PHASE_NAMES[phase] + 'へ移行。究極技のダメージ後もHPを引き継ぐ。');
+            if (phase === 3) {
+              const effectiveSpeed = Math.max(1, stats.speed)
+                * current.allMightSpeedMultiplier
+                * (current.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
+                * (current.godMightTurns > 0 ? 3 : 1)
+                * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
+                * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
+              const speedExtraTurns = Math.min(5, Math.floor(Math.max(0, effectiveSpeed - 240) / 180));
+              finalTurnLimit = 8 + Math.floor(Math.random() * 3) + speedExtraTurns;
+              finalTurnsLeft = finalTurnLimit;
+              logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速さ配分による猶予 +' + speedExtraTurns + 'ターン。');
+            }
+          } else if (current.phase === 3 && current.finalTurnsLeft !== null) {
+            finalTurnsLeft = Math.max(0, current.finalTurnsLeft - 1);
+          }
+        }
         return {
           ...current,
           kaiserHp: remainingBossHp,
+          phase,
+          finalTurnLimit,
+          finalTurnsLeft,
           finisherPending: null,
           finisherRoutePending: alignment,
           normalAttackCutIn: false,
-          logs: [...current.logs, name + 'の威力' + finisherPower.toLocaleString('ja-JP') + '。実ダメージ' + actualDamage.toLocaleString('ja-JP') + '。究極技後のルートを選択する。'].slice(-8),
+          logs: logs.slice(-8),
         };
       });
     }, 1450);
@@ -279,7 +314,9 @@ export const StellaFinalBattleScreen: React.FC<{
         return {
           ...current,
           turn: turn + 1,
-          finalTurnsLeft: current.finalTurnsLeft,
+          finalTurnsLeft: current.phase === 3 && current.finalTurnsLeft !== null
+            ? Math.max(0, current.finalTurnsLeft - 1)
+            : current.finalTurnsLeft,
           finisherPending: alignment,
           finisherRoutePending: null,
           normalAttackCutIn: false,
