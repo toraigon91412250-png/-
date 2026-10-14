@@ -88,9 +88,11 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     });
   };
 
-  const selectableKaiserLevels = allowAllKaiserLevels
-    ? BATTLE_CHALLENGE_LEVELS
-    : getSelectableKaiserLevels(unlockedKaiserLevel);
+  const selectableKaiserLevels = isExKaiserChallenge
+    ? [100] as const
+    : allowAllKaiserLevels
+      ? BATTLE_CHALLENGE_LEVELS
+      : getSelectableKaiserLevels(unlockedKaiserLevel);
 
   const buildValidationContext: BuildValidationContext = {
     availableStatPoints,
