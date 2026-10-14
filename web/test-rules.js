@@ -71,6 +71,7 @@ assert.deepStrictEqual(
 );
 const {
   SHORT_IRENA_STAT_POINT_TOTAL,
+  calculateShortIrenaAttackDamage,
   getShortIrenaCombatStats,
   shiftDatenGauge,
   getDatenAlignment,
@@ -113,6 +114,18 @@ assert.strictEqual(getShortIrenaOriginalAttackMultiplier(10), 1);
 assert.strictEqual(getShortIrenaOriginalAttackMultiplier(20), 1);
 assert.strictEqual(getShortIrenaCounterDamage(230, 200), 130);
 assert.strictEqual(getShortIrenaCounterDamage(230, 1100), 50);
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(2880, 180, 0), {
+  damage: 2700,
+  targetDefense: 180,
+}, 'Normal attacks must apply the current Kaiser defense.');
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(2880, 180, 3), {
+  damage: 2880,
+  targetDefense: 0,
+}, 'Collapse must change real attack damage by treating Kaiser defense as zero.');
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(0, 180, 1), {
+  damage: 1,
+  targetDefense: 0,
+}, 'Defense-null must not turn a zero attack into a negative or zero damage result.');
 
 assert.deepStrictEqual({
   maxHp: IRENA.maxHp,
