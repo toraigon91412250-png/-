@@ -21,8 +21,14 @@ async function chooseOpeningIrenaAlignment(page: Page, alignment: 'GOD' | 'DEMON
 
 async function moveFinalIrenaGaugeTo(page: Page, target: number) {
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
-  while (Number(await gauge.getAttribute('aria-valuenow')) !== target) {
+  const start = Number(await gauge.getAttribute('aria-valuenow'));
+  if (target !== -100 && target !== 100 && (target - start) % 15 !== 0) {
+    throw new Error(`Gauge target ${target} cannot be reached from ${start} with 15-point controls.`);
+  }
+
+  for (let moves = 0; moves < 32; moves += 1) {
     const current = Number(await gauge.getAttribute('aria-valuenow'));
+    if (current === target) return;
     const moveGodward = current < target;
     const button = page.getByRole('button', {
       name: moveGodward ? '神側へ15ポイント移動' : '堕天側へ15ポイント移動',
@@ -32,6 +38,8 @@ async function moveFinalIrenaGaugeTo(page: Page, target: number) {
     await button.click();
     await expect(gauge).toHaveAttribute('aria-valuenow', String(next));
   }
+
+  throw new Error(`Gauge did not reach target ${target} within 32 moves (current ${await gauge.getAttribute('aria-valuenow')}).`);
 }
 
 
@@ -504,7 +512,6 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
   await moveFinalIrenaGaugeTo(page, 63);
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
-  const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
