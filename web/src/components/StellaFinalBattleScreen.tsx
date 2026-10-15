@@ -166,13 +166,15 @@ interface ShortIrenaBossDamageResolution {
 
 /**
  * Normal actions from final-duel Irena can cross only one Kaiser phase gate.
- * The dedicated GOD/DEMON finisher is intentionally resolved separately: it
- * retains the existing ×5/×8 burst and can cross phases as its payoff.
+ * The finisher uses the same phase gate in forms one and two; only the final
+ * form permits defeat. This preserves a climax without letting the first
+ * finisher erase the phase structure.
  */
 function resolveShortIrenaBossDamage(
   currentHp: number,
   requestedDamage: number,
   currentPhase: BattlePhase,
+  allowDefeat = false,
 ): ShortIrenaBossDamageResolution {
   const safeDamage = Math.max(0, Math.ceil(requestedDamage));
   const hpBeforeGate = Math.max(0, currentHp - safeDamage);
@@ -180,7 +182,7 @@ function resolveShortIrenaBossDamage(
     ? Math.ceil(EX_KAISER_TOTAL_HP * (2 / 3))
     : currentPhase === 2
       ? Math.ceil(EX_KAISER_TOTAL_HP / 3)
-      : 1;
+      : allowDefeat ? 0 : 1;
   const remainingHp = Math.min(currentHp, Math.max(phaseGateHp, hpBeforeGate));
   return {
     remainingHp,
@@ -293,19 +295,26 @@ export const StellaFinalBattleScreen: React.FC<{
             * (current.allPowerTurns > 0 ? 2 : 1)
             * (current.allThingsTurns > 0 ? 4 : 1)
             * (current.playerPressureTurns > 0 ? Math.max(0, stats.attack - 25) / Math.max(1, stats.attack) : 1));
-        // Preserve the existing final-duel damage scaling: GOD ×5, DEMON ×8.
+        // Both finishers remain stronger than a normal hit, but their base multipliers
+        // are tuned to the 5,000-HP final form rather than deleting the whole boss.
+        const finisherMultiplier = alignment === 'GOD' ? 1.5 : 1.7;
         const finisherPower = applyShortIrenaDamageFloor(
-          Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * (alignment === 'GOD' ? 5 : 8)),
+          Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * finisherMultiplier),
           2000,
         );
-        // The finisher is the deliberate phase-piercing payoff. Keep the original GOD ×5 / DEMON ×8 damage.
-        const actualDamage = Math.min(current.kaiserHp, finisherPower);
-        const remainingBossHp = Math.max(0, current.kaiserHp - actualDamage);
+        const bossHit = resolveShortIrenaBossDamage(
+          current.kaiserHp,
+          finisherPower,
+          current.phase,
+          current.phase === 3,
+        );
+        const actualDamage = bossHit.actualDamage;
+        const remainingBossHp = bossHit.remainingHp;
         const name = alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」';
         const logs = [
           ...current.logs,
           name + 'の威力' + finisherPower.toLocaleString('ja-JP') + '。実ダメージ' + actualDamage.toLocaleString('ja-JP')
-            + '。形態をまたいで突破できる究極技。'
+            + (bossHit.cappedAtPhaseGate ? '。形態を飛ばさないため、次形態のHP境界で制限。' : '。')
             + (remainingBossHp <= 0 ? 'EXカイザー撃破。ルート効果を選択する。' : '究極技後のルートを選択する。'),
         ];
         let phase = current.phase;
@@ -435,7 +444,7 @@ export const StellaFinalBattleScreen: React.FC<{
           * (current.allThingsTurns > 0 ? 999 : 1)
           * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
           * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
-        log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + 'を発動。既存の陣営倍率で大ダメージを与えた後、3ルートから選択する。');
+        log((alignment === 'GOD' ? '神側の究極必殺技「創世」×1.5' : '堕天側の究極必殺技「終焉」×1.7') + 'を発動。通常形態では次形態のHP境界を越えない。実際のダメージ後、3ルートから選択する。');
         // FINISH consumes one player turn. Snapshot current multipliers, then tick timed effects once.
         const tick = (value: number) => Math.max(0, value - 1);
         return {
@@ -1362,7 +1371,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・神側倍率×5。形態をまたいで突破できる。発動後に神側の3ルートを選ぶ' : '終焉・堕天側倍率×8。形態をまたいで突破できる。発動後に堕天側の3ルートを選ぶ') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・倍率×1.5。第一・第二形態はHP境界で制限、終局では撃破可能' : '終焉・倍率×1.7。第一・第二形態はHP境界で制限、終局では撃破可能') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
                     <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
