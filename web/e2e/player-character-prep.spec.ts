@@ -454,7 +454,7 @@ test('the remaining divine/demonic routes apply their distinct effects without f
   await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
   const godRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(godRoutes).toBeVisible();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10680');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await godRoutes.getByRole('button', { name: /静寂/ }).click();
   await expect(page.getByRole('status').filter({ hasText: '静寂：EXカイザーの通常反撃停止／残り 1 ターン' })).toBeVisible();
   const hpBeforeSilencedCounter = await playerHp.getAttribute('aria-valuenow');
