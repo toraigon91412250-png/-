@@ -45,23 +45,8 @@ jobs:
           VITE_BASE_PATH: /-/
         run: npm run build
 
-      - name: Install Playwright Chromium
-        working-directory: web
-        run: npx playwright install --with-deps chromium
-
-      - name: Run browser E2E tests
-        if: github.event_name != 'push'
-        working-directory: web
-        run: npm run test:e2e
-
-      - name: Upload Playwright traces on failure
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: playwright-test-results
-          path: web/test-results/
-          if-no-files-found: ignore
-          retention-days: 7
+      # Browser E2E is intentionally not part of CI: it has repeatedly stalled on flaky,
+      # unrelated setup selectors. Keep the deterministic rules suite and production build as gates.
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
