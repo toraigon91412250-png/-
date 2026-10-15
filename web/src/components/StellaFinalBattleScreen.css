@@ -188,6 +188,18 @@
   .stella-final__normal-attack { align-items: flex-start; }
   .stella-final__normal-attack button { min-height: 48px; }
   .stella-final__normal-attack > span { flex-wrap: wrap; }
+  /* Keep existing combat controls in a thumb-friendly order on phones; no duplicate action bar. */
+  .stella-final__powers { display: flex; flex-direction: column; }
+  .stella-final__powers-heading { order: 0; }
+  .stella-final__counter-forecast { order: 1; }
+  .stella-final__status-strip { order: 2; }
+  .stella-final__daten-gauge { order: 3; }
+  .stella-final__gauge-controls { order: 4; }
+  .stella-final__opening-choice { order: 5; }
+  .stella-final__normal-attack { order: 6; }
+  .stella-final__power-grid { order: 7; }
+  .stella-final__short-finish-row { order: 8; }
+  .stella-final__no-forecast { order: 9; }
   .stella-final__result-actions { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
