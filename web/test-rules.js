@@ -171,6 +171,23 @@ assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidd
   'The active battle layout must prevent page scrolling.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-copy p \{ display: none; \}/,
   'Compact battle command cards hide descriptions.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--player/,
+  'The large player illustration is rendered in the active arena.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--kaiser/,
+  'The large Kaiser illustration is rendered in the active arena.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__combat-heading/,
+  'The battle header shows the title, phase, and current turn.');
+assert.match(shortIrenaFinalBattleSource, /<Flame size={30}/,
+  'The ultimate command has a distinctive flame icon.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__arena-art/,
+  'The active arena displays large character art.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-card button\{position:absolute;inset:0;/,
+  'Each available command tile is a large tap target.');
+assert.match(finalBattleUiCss, /\.stella-final--playing\{height:100vh;height:100dvh;overflow:hidden/,
+  'The full active battle viewport is locked against scrolling.');
+assert.ok(!shortIrenaFinalBattleSource.includes('<p>防御力1.5倍、速度999倍。効果4ターン。</p>'),
+  'Skill explanations are removed from the command tiles.');
+
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
 assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
