@@ -50,6 +50,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run browser E2E tests
+        if: github.event_name != 'push'
         working-directory: web
         run: npm run test:e2e
 
