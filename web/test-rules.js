@@ -177,7 +177,7 @@ assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--kaiser/,
   'The large Kaiser illustration is rendered in the active arena.');
 assert.match(shortIrenaFinalBattleSource, /stella-final__combat-heading/,
   'The battle header shows the title, phase, and current turn.');
-assert.match(shortIrenaFinalBattleSource, /<Flame size={30}/,
+assert.match(shortIrenaFinalBattleSource, /<Flame size=\{30\}/,
   'The ultimate command has a distinctive flame icon.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__arena-art/,
   'The active arena displays large character art.');
