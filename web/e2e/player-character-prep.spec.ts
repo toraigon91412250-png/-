@@ -775,7 +775,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await attack.click();
   // Ordinary attacks stop at the next form gate; the dedicated ultimate can pierce forms.
   await expect(bossHp).toHaveAttribute('aria-valuenow', '5000');
-  await expect(page.locator('.stella-final__phase')).toContainText('第三形態・終局');
+  await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -907,7 +907,7 @@ test('divine-stage authorities enforce gauge gates, change real combat stats, an
   const hpBefore = Number(await bossHp.getAttribute('aria-valuenow'));
   await allThings.click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(hpBefore);
-  await expect(page.locator('.stella-final__log-lines')).toContainText('権能「万象支配」。発動時の攻撃は');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('権能「万象支配」。発動時の実ダメージは');
   await expect(page.getByRole('status').filter({ hasText: '万象支配：攻撃4倍・防御2倍・速度999倍／残り 1 ターン' })).toBeVisible();
   await expect(page.getByText(/実効ステータス：ATK 1,440／DEF 400／SPD 239,760/)).toBeVisible();
   await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
