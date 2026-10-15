@@ -420,8 +420,9 @@ export const StellaFinalBattleScreen: React.FC<{
       } else if (action === 'ASCENSION') {
         if (ascensionTurns > 0) return current;
         gaugeDelta = 60;
-        // The casting turn is included in the three-turn duration.
-        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS;
+        // The casting turn is not one of the three boosted action turns.
+        // Keep the buff active for the next three player actions, then apply recoil.
+        ascensionTurns = SHORT_IRENA_ASCENSION_TURNS + 1;
         log('権能「絶界昇華」。攻撃・防御・速度が3倍になる（3ターン）。強化中は三大権能を使用できない。神側へ傾く。');
       } else if (action === 'CONTROL_GOD' || action === 'CONTROL_DEMON') {
         if (allMightUsed) return current;
