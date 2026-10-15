@@ -77,12 +77,63 @@ const {
   shiftDatenGauge,
   getDatenAlignment,
   getDatenAuthorityStage,
+  canActivateShortIrenaAscension,
+  shouldFailAtShortIrenaFinalDeadline,
   shouldRearmShortIrenaFinisher,
   getShortIrenaNormalAttackGaugeDelta,
   getShortIrenaOriginalAttackMultiplier,
   getShortIrenaCounterDamage,
 } = await import('./src/utils/shortIrenaFinalBattle.ts');
 assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
+
+// Regression coverage for the phase-three Ascension softlock.
+assert.strictEqual(canActivateShortIrenaAscension(30, 0, 2, null), true,
+  'Ascension remains usable before the final phase when gauge and effect state allow it.');
+assert.strictEqual(canActivateShortIrenaAscension(29, 0, 2, null), false,
+  'Ascension remains unavailable without the required God-side gauge.');
+assert.strictEqual(canActivateShortIrenaAscension(60, 1, 3, 3), false,
+  'Ascension cannot be reactivated while its effect is already active.');
+assert.strictEqual(canActivateShortIrenaAscension(60, 0, 3, 2), true,
+  'Ascension remains available with more than one final action remaining.');
+assert.strictEqual(canActivateShortIrenaAscension(60, 0, 3, 1), false,
+  'The last available final-phase action must be reserved for the finisher.');
+assert.strictEqual(canActivateShortIrenaAscension(60, 0, 3, 0), false,
+  'Ascension must not become available after the final-turn clock reaches zero.');
+
+const usableFinalDeadline = {
+  alignment: 'GOD',
+  skipKaiserAction: false,
+  action: 'ATTACK',
+  actionLockTurns: 0,
+  finisherUsedAtAlignment: null,
+  ascensionTurns: 0,
+};
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline(usableFinalDeadline), false,
+  'A valid aligned final finisher opportunity must remain available at zero turns.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({ ...usableFinalDeadline, ascensionTurns: 2 }), true,
+  'An active Ascension buff must not leave a no-action FIGHTING state at the deadline.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({ ...usableFinalDeadline, alignment: null }), true,
+  'The final deadline without either alignment must still result in defeat.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({ ...usableFinalDeadline, skipKaiserAction: true }), true,
+  'The final deadline must still defeat a player who cannot stop the terminal action.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({ ...usableFinalDeadline, action: 'PASS' }), true,
+  'Passing on the final deadline must still result in defeat.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({ ...usableFinalDeadline, actionLockTurns: 1 }), true,
+  'An action lock at the final deadline must still result in defeat.');
+assert.strictEqual(shouldFailAtShortIrenaFinalDeadline({
+  ...usableFinalDeadline, finisherUsedAtAlignment: 'GOD',
+}), true, 'A finisher already used at the current alignment cannot be used again.');
+const shortIrenaFinalBattleSource = await readFile(new URL('./src/components/StellaFinalBattleScreen.tsx', import.meta.url), 'utf8');
+assert.match(shortIrenaFinalBattleSource,
+  /action === 'ASCENSION' && !canActivateShortIrenaAscension\(/,
+  'The battle handler must enforce the same Ascension availability rule as the button.');
+assert.match(shortIrenaFinalBattleSource,
+  /const canActivateAscension = canActivateShortIrenaAscension\(/,
+  'The visible button must derive availability from the tested rule.');
+assert.match(shortIrenaFinalBattleSource,
+  /finalTurnsLeft === 0 && shouldFailAtShortIrenaFinalDeadline\(/,
+  'Deadline resolution must force a terminal result when the finisher is blocked.');
+
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
 assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
