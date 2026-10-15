@@ -711,3 +711,52 @@
   .stella-final__power-copy small { font-size: 10px; }
   .stella-final__short-effect-status { font-size: 11px; }
 }
+
+
+/* Iteration 5: keep recoil recovery beside the state that explains it. */
+.stella-final__status-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 141, 163, .24);
+}
+.stella-final__status-action span {
+  min-width: 0;
+  color: #ffcbd5;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.stella-final__status-action button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  max-width: 52%;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 179, 194, .45);
+  border-radius: 9px;
+  color: #fff5f7;
+  background: linear-gradient(110deg, rgba(125, 32, 57, .94), rgba(68, 20, 41, .96));
+  font: inherit;
+  font-size: 11px;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.stella-final__status-action button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+@media (max-width: 650px) {
+  .stella-final__status-action {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stella-final__status-action button {
+    width: 100%;
+    max-width: none;
+    min-height: 44px;
+  }
+}
