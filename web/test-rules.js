@@ -926,48 +926,35 @@ assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');
 assert.strictEqual(loadStatPoints(), 14);
 
-// Stella's one-time Lv.100 reward must be compatible with old saves, atomic on
-// storage failure, idempotent on retries, and separate from the reveal/unlock.
-const stellaModeTestKeys = [
-  'duel_arena_stat_points',
-  'duel_arena_raid_reward_progress',
-  STELLA_MODE_PROGRESS_KEY,
-];
-const stellaModeStateBeforeTest = new Map(
-  stellaModeTestKeys.map(key => [key, storageValues.get(key)]),
-);
+// Stella progression must follow Lv.100 -> warp/regular Stella mode -> EX Kaiser -> final duel.
+const stellaModeTestKeys = ['duel_arena_stat_points', 'duel_arena_raid_reward_progress', STELLA_MODE_PROGRESS_KEY];
+const stellaModeStateBeforeTest = new Map(stellaModeTestKeys.map(key => [key, storageValues.get(key)]));
 const originalSetItemForStellaModeTest = globalThis.localStorage.setItem;
+const expectedInitialStellaProgress = {
+  isUnlocked: false, stellaModeUnlocked: false, exKaiserDefeated: false,
+  revealAvailable: false, kaiser100RewardClaimed: false, finalBattleCleared: false, finalBattleRewardClaimed: false,
+};
 try {
   storageValues.set('duel_arena_stat_points', '12');
   storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
-    coreFragments: 0,
-    imprintTickets: 0,
-    bonusStatPoints: 0,
-    claimedVictoryRunIds: [],
+    coreFragments: 0, imprintTickets: 0, bonusStatPoints: 0, claimedVictoryRunIds: [],
   }));
   storageValues.delete(STELLA_MODE_PROGRESS_KEY);
 
-  assert.deepStrictEqual(
-    loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'A save created before Stella existed must default to locked without throwing.',
-  );
-  assert.strictEqual(unlockStellaMode().persisted, false, 'Stella cannot unlock before the reveal is claimed.');
-  assert.strictEqual(recordExKaiserVictory().persisted, false, 'EX Kaiser cannot be recorded before the Lv.100 reward is claimed.');
+  assert.deepStrictEqual(loadStellaModeProgress(), expectedInitialStellaProgress,
+    'A save created before Stella existed must default to locked without throwing.');
+  assert.strictEqual(unlockStellaMode().persisted, false, 'Stella mode cannot unlock before the Lv.100 reveal.');
+  assert.strictEqual(recordExKaiserVictory().persisted, false, 'EX Kaiser cannot be recorded before its prerequisites.');
 
+  // A legacy +50P marker with no warp flag must not get stuck on the old EX-first route.
   storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({
-    isUnlocked: false,
-    revealAvailable: true,
-    kaiser100RewardClaimed: true,
+    isUnlocked: false, stellaModeUnlocked: false, exKaiserDefeated: false,
+    revealAvailable: false, kaiser100RewardClaimed: true,
   }));
-  assert.deepStrictEqual(
-    loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'Legacy saves with a Lv.100-only reveal must be sent through EX Kaiser first.',
-  );
+  assert.strictEqual(loadStellaModeProgress().revealAvailable, true,
+    'A legacy +50P claim with no mode unlock must migrate to the warp entrance.');
+
   storageValues.delete(STELLA_MODE_PROGRESS_KEY);
-
-
   let failPointWriteOnce = true;
   globalThis.localStorage.setItem = (key, value) => {
     if (key === 'duel_arena_stat_points' && failPointWriteOnce) {
@@ -979,49 +966,51 @@ try {
   const failedStellaClaim = claimKaiser100VictoryReward();
   assert.strictEqual(failedStellaClaim.persisted, false, 'A partial reward write must be reported as failure.');
   assert.strictEqual(loadStatPoints(), 12, 'A failed Lv.100 claim must not grant the 50 points.');
-  assert.deepStrictEqual(
-    loadStellaModeProgress(),
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: false, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'A failed reward transaction must roll back the reveal and claim marker.',
-  );
+  assert.deepStrictEqual(loadStellaModeProgress(), expectedInitialStellaProgress,
+    'A failed reward transaction must roll back the reveal and claim marker.');
 
   globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
   const firstStellaClaim = claimKaiser100VictoryReward();
   assert.strictEqual(firstStellaClaim.persisted, true);
   assert.strictEqual(firstStellaClaim.rewardGranted, true);
   assert.strictEqual(loadStatPoints(), 62, 'A successful first claim grants exactly 50 base points.');
-  assert.deepStrictEqual(
-    firstStellaClaim.progress,
-    { isUnlocked: false, exKaiserDefeated: false, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'Claiming the Lv.100 reward grants points and unlocks the EX Kaiser challenge, not the hidden entrance.',
-  );
+  assert.deepStrictEqual(firstStellaClaim.progress, {
+    isUnlocked: false, stellaModeUnlocked: false, exKaiserDefeated: false,
+    revealAvailable: true, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false,
+  }, 'The Lv.100 win grants +50P and reveals the warp before Stella mode or EX is unlocked.');
 
   const repeatedStellaClaim = claimKaiser100VictoryReward();
   assert.strictEqual(repeatedStellaClaim.persisted, true);
   assert.strictEqual(repeatedStellaClaim.rewardGranted, false, 'Repeating the claim must not grant another reward.');
   assert.strictEqual(loadStatPoints(), 62, 'Repeated Lv.100 wins must not duplicate the +50 points.');
 
-  assert.strictEqual(unlockStellaMode().persisted, false, 'The hidden mode stays locked until EX Kaiser is defeated.');
+  const firstStellaUnlock = unlockStellaMode();
+  assert.strictEqual(firstStellaUnlock.persisted, true, 'Confirming the warp should unlock playable Stella mode.');
+  assert.deepStrictEqual(firstStellaUnlock.progress, {
+    isUnlocked: false, stellaModeUnlocked: true, exKaiserDefeated: false,
+    revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false,
+  }, 'After the warp, Stella mode is open but EX victory and the final duel remain locked.');
+  assert.strictEqual(unlockStellaMode().persisted, true, 'Stella-mode unlock confirmation should be idempotent.');
+
   const firstExVictory = recordExKaiserVictory();
   assert.strictEqual(firstExVictory.persisted, true);
-  assert.deepStrictEqual(
-    firstExVictory.progress,
-    { isUnlocked: false, exKaiserDefeated: true, revealAvailable: true, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'EX Kaiser victory reveals the hidden entrance.',
-  );
+  assert.deepStrictEqual(firstExVictory.progress, {
+    isUnlocked: true, stellaModeUnlocked: true, exKaiserDefeated: true,
+    revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false,
+  }, 'Only an EX Kaiser victory after Stella mode unlock should open the dedicated final duel.');
   assert.strictEqual(recordExKaiserVictory().persisted, true, 'Repeating an EX victory must be idempotent.');
-  const firstStellaUnlock = unlockStellaMode();
-  assert.strictEqual(firstStellaUnlock.persisted, true);
-  assert.deepStrictEqual(
-    firstStellaUnlock.progress,
-    { isUnlocked: true, exKaiserDefeated: true, revealAvailable: false, kaiser100RewardClaimed: true, finalBattleCleared: false, finalBattleRewardClaimed: false },
-    'The hidden mode unlock should happen only after the reveal is confirmed.',
-  );
-  assert.strictEqual(unlockStellaMode().persisted, true, 'Unlock confirmation should be idempotent.');
-  assert.strictEqual(loadStatPoints(), 62, 'Unlocking Stella must not change the reward total.');
+  assert.strictEqual(loadStatPoints(), 62, 'Unlocking Stella and beating EX must not repeat the +50P reward.');
 
-  // The final-battle reward is separate from the normal Lv.100 +50P reward.
-  // Raid bonus points are included by loadStatPoints but must not be folded into the base save.
+  // Old saves where isUnlocked already meant final-battle access stay fully unlocked.
+  storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({
+    isUnlocked: true, exKaiserDefeated: false, kaiser100RewardClaimed: true,
+  }));
+  const migratedFinalBattle = loadStellaModeProgress();
+  assert.strictEqual(migratedFinalBattle.stellaModeUnlocked, true);
+  assert.strictEqual(migratedFinalBattle.exKaiserDefeated, true);
+  assert.strictEqual(migratedFinalBattle.isUnlocked, true);
+  storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify(firstExVictory.progress));
+
   storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
     coreFragments: 0, imprintTickets: 0, bonusStatPoints: 17, claimedVictoryRunIds: [],
   }));
@@ -1076,7 +1065,7 @@ try {
     else storageValues.set(key, value);
   }
 }
-console.log('✓ Stella unlock migration, one-time reward, storage rollback, and unlock sequencing are covered.');
+console.log('✓ Stella Lv.100 -> warp -> playable mode -> EX -> final duel migration, rewards, and storage rollback are covered.');
 
 // A single battle-result save is the sole source of battle talent EXP.
 const talentProgressKeyForRewardTest = 'duel_arena_irena_talent_progress';
