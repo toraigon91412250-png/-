@@ -1053,7 +1053,7 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
 
   await page.getByRole('button', { name: /Lv\.100/ }).click();
   await page.getByRole('button', { name: '読み込む', exact: true }).click();
-  await expect(page.locator('.build-save-panel__message')).toContainText('Lv100監査用を読み込みました。');
+  await expect(page.locator('.build-save-panel__message')).toContainText('「Lv100監査用」を読み込みました。');
   await expect(page.getByText(/残り\s*0P\s*\/\s*500P/)).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
