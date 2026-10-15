@@ -522,6 +522,39 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
 });
+test('a previously used endpoint ultimate cannot soft-lock the final-turn judgment', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+    Math.random = () => 0;
+  });
+
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const routes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(routes).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await routes.getByRole('button', { name: /静寂/ }).click();
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り7ターン');
+
+  // The first attack consumes 静寂; later attacks cannot finish the boss
+  // because the special duel keeps normal attacks from reducing its HP below 1.
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  for (let action = 0; action < 7; action += 1) await attack.click();
+
+  await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。究極必殺技はこの終点で使用済みのため再使用できず敗北。');
+});
+
 test('short-duel Irena loses when the final turn expires without a locked divine/demonic route', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
