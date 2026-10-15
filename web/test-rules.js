@@ -72,6 +72,7 @@ assert.deepStrictEqual(
 const {
   SHORT_IRENA_STAT_POINT_TOTAL,
   calculateShortIrenaAttackDamage,
+  applyShortIrenaDamageFloor,
   getShortIrenaCombatStats,
   shiftDatenGauge,
   getDatenAlignment,
@@ -89,6 +90,10 @@ assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attac
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
 assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
 assert.strictEqual(shiftDatenGauge(0, -60), -60, 'Existing large gauge adjustments must retain their requested movement.');
+assert.strictEqual(shiftDatenGauge(30, -15), 15, 'A reverse move from +30 must stop at +15.');
+assert.strictEqual(shiftDatenGauge(-30, 15), -15, 'A reverse move from -30 must stop at -15.');
+assert.strictEqual(shiftDatenGauge(100, 15), 100, 'The upper gauge limit must be clamped.');
+assert.strictEqual(shiftDatenGauge(-100, -15), -100, 'The lower gauge limit must be clamped.');
 assert.strictEqual(shiftDatenGauge(-60, -50), -100);
 assert.strictEqual(shiftDatenGauge(60, 50), 100);
 assert.strictEqual(shiftDatenGauge(80, -40), 40, 'Reverse movement must not be dampened.');
@@ -132,6 +137,10 @@ assert.deepStrictEqual(calculateShortIrenaAttackDamage(0, 180, 1), {
   damage: 1,
   targetDefense: 0,
 }, 'Defense-null must not turn a zero attack into a negative or zero damage result.');
+assert.strictEqual(applyShortIrenaDamageFloor(1, 3000), 3000, '万象支配 must guarantee at least 3000 after defense.');
+assert.strictEqual(applyShortIrenaDamageFloor(1999.1, 3000), 3000, 'The ability floor applies after normal defense math.');
+assert.strictEqual(applyShortIrenaDamageFloor(3000, 2000), 3000, 'A floor cannot reduce larger damage.');
+assert.strictEqual(applyShortIrenaDamageFloor(1999.1, 2000), 2000, '創世 and 終焉 must guarantee 2000.');
 
 assert.deepStrictEqual({
   maxHp: IRENA.maxHp,
