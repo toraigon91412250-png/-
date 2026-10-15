@@ -1104,6 +1104,8 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
   await page.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
+  await page.getByRole('button', { name: '火力', exact: true }).click();
+  await expect(page.getByText(/残り\\s*0P\\s*\\/\\s*554P/)).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
   await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
