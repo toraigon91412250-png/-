@@ -1018,3 +1018,81 @@ test('repeated same-direction gauge choices replay the light/dark flash', async 
   await expect(flash).toBeVisible();
   await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
 });
+
+test('a real normal Lv.100 victory persists the +50P reward once and exposes only the EX route', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stat_points', '500');
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
+    window.localStorage.setItem('duel_arena_ability_progress', JSON.stringify({
+      levels: { ABYSS: 1, FALLEN: 0, BLACK_WING: 1, FALLEN_KING: 0, JUDGMENT: 0 },
+      shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+    }));
+    window.localStorage.setItem('duel_arena_build_saves_v1', JSON.stringify({
+      version: 1,
+      saves: [{
+        id: 'normal-lv100-audit-build',
+        name: 'Lv100監査用',
+        createdAt: 1,
+        updatedAt: 1,
+        snapshot: {
+          statAllocation: { maxHp: 0, attack: 500, defense: 0, speed: 0 },
+          abilityIds: ['ABYSS', 'BLACK_WING'],
+          imprintIds: [],
+        },
+      }],
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  await page.getByRole('button', { name: /Lv\.100/ }).click();
+  await page.getByRole('button', { name: '読み込む', exact: true }).click();
+  await expect(page.locator('.build-save-panel__message')).toContainText('Lv100監査用を読み込みました。');
+  await expect(page.getByText(/残り\s*0P\s*\/\s*500P/)).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  const attack = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  const turnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
+  const victoryTitle = page.getByText('VICTORY', { exact: true });
+
+  // Play the real level-100 fight, including the forced 50% phase transition.
+  for (let actionCount = 0; actionCount < 6; actionCount += 1) {
+    if (await victoryTitle.isVisible().catch(() => false)) break;
+    const turnBefore = await turnMarker.innerText();
+    await attack.click();
+    await expect.poll(async () => (
+      await victoryTitle.isVisible().catch(() => false)
+      || (await turnMarker.innerText().catch(() => '')) !== turnBefore
+    ), { timeout: 20_000 }).toBe(true);
+  }
+
+  await expect(victoryTitle).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText('勝利！', { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('552');
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return raw ? JSON.parse(raw).kaiser100RewardClaimed : false;
+  })).toBe(true);
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    const progress = raw ? JSON.parse(raw) : {};
+    return {
+      isUnlocked: progress.isUnlocked,
+      exKaiserDefeated: progress.exKaiserDefeated,
+      revealAvailable: progress.revealAvailable,
+    };
+  })).toEqual({ isUnlocked: false, exKaiserDefeated: false, revealAvailable: false });
+
+  await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+});
