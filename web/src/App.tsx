@@ -128,8 +128,15 @@ export const App: React.FC = () => {
 
     const completedLevel = battleState.battleConfig.kaiserLevel;
     const playerWon = battleState.winnerIsPlayer === true;
+    const currentStellaProgress = loadStellaModeProgress();
+    // EX battles launched directly from Developer Tools are combat-only tests until normal unlocks exist.
+    // Do not create an artificial save-error message or advance the normal Kaiser challenge track.
+    const isDeveloperOnlyExTest =
+      battleState.battleConfig.kaiserChallengeMode === 'EX'
+      && battleSetupReturnScreen === 'DEV_TOOLS'
+      && (!currentStellaProgress.kaiser100RewardClaimed || !currentStellaProgress.stellaModeUnlocked);
 
-    if (completedLevel === 100 && playerWon) {
+    if (completedLevel === 100 && playerWon && !isDeveloperOnlyExTest) {
       const result = battleState.battleConfig.kaiserChallengeMode === 'EX'
         ? recordExKaiserVictory()
         : claimKaiser100VictoryReward();
@@ -148,7 +155,9 @@ export const App: React.FC = () => {
     setAvailableStatPoints(loadStatPoints());
     setIrenaTalentProgress(loadIrenaTalentProgress());
 
-    const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
+    const nextChallengeProgress = isDeveloperOnlyExTest
+      ? loadKaiserChallengeProgress()
+      : recordKaiserChallengeResult(completedLevel, playerWon);
     setKaiserChallengeProgress(nextChallengeProgress);
     setBattleSetup(prev => ({
       ...prev,
