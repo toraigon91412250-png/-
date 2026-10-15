@@ -792,6 +792,12 @@ export function setSkillProgressForDeveloper(
   });
 }
 
+/** Unlock 超堕天撃 directly for focused combat testing in Developer Tools. */
+export function unlockSuperFallenShotForDeveloper(): IrenaSkillProgress {
+  const current = loadSkillProgress();
+  return persistSkillProgress({ ...current, superFallenShotUnlocked: true });
+}
+
 export function resetProgressForDeveloper(): {
   abilityProgress: AbilityProgress;
   recruitmentProgress: RecruitmentProgress;
