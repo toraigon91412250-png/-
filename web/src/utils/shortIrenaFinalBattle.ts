@@ -86,6 +86,15 @@ export function getDatenAuthorityStage(gauge: number): ShortIrenaAuthorityStage 
   return 0;
 }
 
+export function shouldRearmShortIrenaFinisher(usedAlignment: ShortIrenaAlignment | null, gauge: number): boolean {
+  if (usedAlignment === null) return false;
+  const boundedGauge = Math.max(
+    SHORT_IRENA_GAUGE_MIN,
+    Math.min(SHORT_IRENA_GAUGE_MAX, Math.round(gauge)),
+  );
+  return Math.abs(boundedGauge) < SHORT_IRENA_AUTHORITY_STAGE_ONE;
+}
+
 export function getDatenAlignment(gauge: number): ShortIrenaAlignment | null {
   if (gauge >= 100) return 'GOD';
   if (gauge <= -100) return 'DEMON';

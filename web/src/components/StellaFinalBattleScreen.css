@@ -405,11 +405,11 @@
   animation: short-irena-alignment-flash .3s ease-out both;
 }
 .stella-final__alignment-flash--god {
-  background: radial-gradient(circle at center, rgba(255,255,255,.96), rgba(211,222,255,.66) 42%, rgba(255,255,255,0) 82%);
+  background-color: rgba(255, 255, 255, .9);
   mix-blend-mode: screen;
 }
 .stella-final__alignment-flash--demon {
-  background: radial-gradient(circle at center, rgba(2,2,7,.15), rgba(3,1,8,.78) 65%, rgba(0,0,0,.96));
+  background-color: rgba(0, 0, 0, .82);
 }
 @keyframes short-irena-alignment-flash {
   0% { opacity: 0; }

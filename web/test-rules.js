@@ -76,6 +76,7 @@ const {
   shiftDatenGauge,
   getDatenAlignment,
   getDatenAuthorityStage,
+  shouldRearmShortIrenaFinisher,
   getShortIrenaNormalAttackGaugeDelta,
   getShortIrenaOriginalAttackMultiplier,
   getShortIrenaCounterDamage,
@@ -105,6 +106,11 @@ assert.strictEqual(getDatenAuthorityStage(60), 2);
 assert.strictEqual(getDatenAuthorityStage(-99), 2);
 assert.strictEqual(getDatenAuthorityStage(100), 3);
 assert.strictEqual(getDatenAuthorityStage(-100), 3);
+assert.strictEqual(shouldRearmShortIrenaFinisher(null, 0), false);
+assert.strictEqual(shouldRearmShortIrenaFinisher('GOD', 29), true);
+assert.strictEqual(shouldRearmShortIrenaFinisher('GOD', 30), false);
+assert.strictEqual(shouldRearmShortIrenaFinisher('DEMON', -29), true);
+assert.strictEqual(shouldRearmShortIrenaFinisher('DEMON', -30), false);
 assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('GOD', IRENA.speed + 720), 18);
 assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('DEMON', IRENA.speed), -12);
 assert.strictEqual(getShortIrenaOriginalAttackMultiplier(1), 0.55);

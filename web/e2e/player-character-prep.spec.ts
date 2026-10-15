@@ -15,6 +15,11 @@ async function chooseOpeningIrenaAlignment(page: Page, alignment: 'GOD' | 'DEMON
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossHpBefore));
   const flash = page.getByTestId('short-irena-alignment-flash');
   await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-image', 'none');
+  await expect(flash).toHaveCSS(
+    'background-color',
+    alignment === 'GOD' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.82)',
+  );
   await expect(flash).toBeHidden({ timeout: 1500 });
   await expect(button).toBeHidden();
 }
@@ -388,12 +393,19 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
   await expect(godFinisher).toBeDisabled();
 
-  // One terminal arrival grants one ultimate. Leaving and re-entering restores it.
+  // Leaving the endpoint briefly is not enough to reset the consumed ultimate.
   await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
   await expect(gauge).toHaveAttribute('aria-valuenow', '85');
   await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
   await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(godFinisher).toBeDisabled();
+  await moveFinalIrenaGaugeTo(page, 25);
+  await expect(gauge).toHaveAttribute('aria-valuenow', '25');
+  await expect(godFinisher).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '40');
+  await moveFinalIrenaGaugeTo(page, 100);
   await expect(godFinisher).toBeEnabled();
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
@@ -697,7 +709,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
       finalBattleCleared: true, finalBattleRewardClaimed: true,
     }));
     window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
-      maxHp: 0, attack: 0, defense: 0, speed: 0,
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
     }));
   });
 
@@ -725,9 +737,12 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(pass).toBeVisible();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await pass.click();
-  await moveFinalIrenaGaugeTo(page, 30);
+  await moveFinalIrenaGaugeTo(page, 45);
 
   await ascension.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  const ultimate = page.getByRole('button', { name: '神側の究極必殺技 創世' });
+  await expect(ultimate).toBeDisabled();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
@@ -756,14 +771,14 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
-  await expect(page.getByRole('button', { name: '神側の究極必殺技 創世' })).toBeDisabled();
+  await expect(ultimate).toBeDisabled();
 
   await pass.click();
   await expect(ascension).toBeEnabled();
   await expect(terminus).toBeDisabled();
   await expect(controlGod).toBeEnabled();
   await expect(controlDemon).toBeEnabled();
-  await expect(page.getByRole('button', { name: '神側の究極必殺技 創世' })).toBeEnabled();
+  await expect(ultimate).toBeEnabled();
 });
 
 test('legacy unlocked save can still enter the EX Kaiser challenge without resetting Stella progress', async ({ page }) => {

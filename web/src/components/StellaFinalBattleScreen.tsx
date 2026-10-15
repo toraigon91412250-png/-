@@ -24,6 +24,7 @@ import {
   calculateShortIrenaAttackDamage,
   getDatenAlignment,
   getDatenAuthorityStage,
+  shouldRearmShortIrenaFinisher,
   SHORT_IRENA_GAUGE_STEP,
   getShortIrenaCombatStats,
   getShortIrenaCounterDamage,
@@ -302,7 +303,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (current.finalTurnsLeft === 0 && action !== 'FINISH') return current;
       if (current.actionLockTurns > 0 && action !== 'PASS') return current;
       if (current.actionLockTurns === 0 && action === 'PASS') return current;
-      if (current.ascensionTurns > 0 && (action === 'TERMINUS' || action === 'ASCENSION' || action === 'CONTROL_GOD' || action === 'CONTROL_DEMON')) return current;
+      if (current.ascensionTurns > 0 && (action === 'TERMINUS' || action === 'ASCENSION' || action === 'CONTROL_GOD' || action === 'CONTROL_DEMON' || action === 'FINISH')) return current;
 
       const turn = current.turn;
       const stats = getShortIrenaCombatStats(current.shortIrenaAllocation);
@@ -443,8 +444,11 @@ export const StellaFinalBattleScreen: React.FC<{
       if (alignment && alignment !== previousAlignment) {
         log('ゲージが' + (alignment === 'GOD' ? '神側' : '堕天側') + 'の終点に到達。対応する究極必殺技が解放された。');
       } else if (!alignment && previousAlignment) {
+        log('ゲージが終点から戻り、究極必殺技は封印された。再使用にはゲージを中央域（絶対値30未満）まで戻す必要がある。発動済みの効果やクールダウンはゲージ移動では解除されない。');
+      }
+      if (shouldRearmShortIrenaFinisher(finisherUsedAtAlignment, datenGauge)) {
         finisherUsedAtAlignment = null;
-        log('ゲージが終点から戻り、究極必殺技は再び封印された。発動済みの効果やクールダウンは維持される。');
+        log('ゲージが中央域へ戻った。究極必殺技を再び解放できる。');
       }
 
       const newPhase = phaseForHp(kaiserHp);
@@ -977,7 +981,7 @@ export const StellaFinalBattleScreen: React.FC<{
                       <span className="stella-final__daten-gauge-center" />
                       <span className="stella-final__daten-gauge-marker" style={{ left: ((battle.datenGauge + 100) / 2) + '%' }} />
                     </div>
-                    <p>{battle.alignment ? (battle.finisherUsedAtAlignment === battle.alignment ? '究極技は発動済み。この終点にいる間は再使用できない。ゲージを戻して再到達すると再解放される。' : '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。') : 'ゲージ操作±15、通常攻撃12〜18（速度依存）、終極殲滅−60、絶界昇華＋60、理外掌握±50。逆方向にも制限なく移動でき、発動済み効果やクールダウンは維持される。'}</p>
+                    <p>{battle.alignment ? (battle.finisherUsedAtAlignment === battle.alignment ? '究極技は発動済み。この終点では再使用できない。ゲージを中央域（絶対値30未満）まで戻すと再解放できる。' : '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。') : 'ゲージ操作±15、通常攻撃12〜18（速度依存）、終極殲滅−60、絶界昇華＋60、理外掌握±50。逆方向にも制限なく移動でき、発動済み効果やクールダウンは維持される。'}</p>
                     <div className="stella-final__authority-stage" role="status" aria-label="権能解放段階">
                       <strong>{authorityStageLabel}</strong>
                       <span>現在値 {battle.datenGauge} / 100</span>
@@ -1021,7 +1025,7 @@ export const StellaFinalBattleScreen: React.FC<{
                   </div>
                   <div className="stella-final__short-finish-row">
                     <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・既存の神側倍率で大ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・既存の堕天側倍率で大ダメージ。発動後に堕天側の3ルートを選ぶ') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
-                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
+                    <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
                   )}
