@@ -26,6 +26,7 @@ import {
   getDatenAlignment,
   canActivateShortIrenaAscension,
   shouldFailAtShortIrenaFinalDeadline,
+  getShortIrenaFinalTurnLimit,
   getDatenAuthorityStage,
   shouldRearmShortIrenaFinisher,
   SHORT_IRENA_GAUGE_STEP,
@@ -332,20 +333,9 @@ export const StellaFinalBattleScreen: React.FC<{
             phase = nextPhase;
             logs.push(PHASE_NAMES[phase] + 'へ移行。究極技のダメージ後もHPを引き継ぐ。');
             if (phase === 3) {
-              const effectiveSpeed = current.finisherEffectiveSpeedSnapshot
-                ?? (Math.max(1, stats.speed)
-                  * current.allMightSpeedMultiplier
-                  * (current.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
-                  * (current.godMightTurns > 0 ? 3 : 1)
-                  * (current.divineSpeedTurns > 0 ? 999 : 1)
-                  * (current.allPowerTurns > 0 ? 2 : 1)
-                  * (current.allThingsTurns > 0 ? 999 : 1)
-                  * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
-                  * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1));
-              const speedExtraTurns = Math.min(5, Math.floor(Math.max(0, effectiveSpeed - 240) / 180));
-              finalTurnLimit = 8 + Math.floor(Math.random() * 3) + speedExtraTurns;
+              finalTurnLimit = getShortIrenaFinalTurnLimit(Math.random());
               finalTurnsLeft = Math.max(0, finalTurnLimit - 1);
-              logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速さ配分による猶予 +' + speedExtraTurns + 'ターン。究極必殺技を発動したターンを1ターン消費。');
+              logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速度倍率による追加猶予はない。究極必殺技を発動したターンを1ターン消費。');
             }
           } else if (current.phase === 3 && current.finalTurnsLeft !== null) {
             finalTurnsLeft = Math.max(0, current.finalTurnsLeft - 1);
@@ -652,10 +642,9 @@ export const StellaFinalBattleScreen: React.FC<{
         phase = newPhase;
         log(PHASE_NAMES[phase] + 'へ移行。これまでのダメージは引き継がれる。');
         if (phase === 3) {
-          const speedExtraTurns = Math.min(5, Math.floor(Math.max(0, effectiveSpeed - 240) / 180));
-          finalTurnLimit = 8 + Math.floor(Math.random() * 3) + speedExtraTurns;
+          finalTurnLimit = getShortIrenaFinalTurnLimit(Math.random());
           finalTurnsLeft = finalTurnLimit;
-          logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速さ配分による猶予 +' + speedExtraTurns + 'ターン。');
+          logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速度倍率による追加猶予はない。');
         }
       }
 
@@ -1241,8 +1230,8 @@ export const StellaFinalBattleScreen: React.FC<{
           <section className="stella-final__briefing" aria-label="最終決戦ルール">
             <div className="stella-final__briefing-heading"><Shield size={18} /> 最終決戦のルール</div>
             <p>EXカイザーは三形態。HP境界は10,000／5,000で、形態変化後も残りHPを引き継ぐ。通常攻撃と通常権能は、一度の行動で次の形態を飛ばせない。</p>
-            <p>第三形態に入ると基本8～10ターン。速度240超過分は最大+5ターンの追加猶予。究極技で第三形態へ入った場合、その発動ターン分を1手消費する。期限を過ぎると終局の必殺技で敗北。</p>
-            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手で神化／堕天を選び、ゲージを15ポイント移動。±30／±60で権能が増え、±100で究極技を解放する。創世×5／終焉×8は第一・第二形態で次のHP境界に止まり、第三形態では撃破可能。攻撃配分は火力、速度配分は終局の追加猶予に影響する。</p>}
+            <p>第三形態の制限ターン数は8～10ターンで、速度や速度倍率による追加猶予はない。究極技で第三形態へ入った場合、その発動ターン分を1手消費する。期限を過ぎると終局の必殺技で敗北。</p>
+            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手で神化／堕天を選び、ゲージを15ポイント移動。±30／±60で権能が増え、±100で究極技を解放する。創世×5／終焉×8は第一・第二形態で次のHP境界に止まり、第三形態では撃破可能。攻撃配分は火力、速度配分は敵より先に行動するために影響する。</p>}
             <p className="stella-final__prototype-note">戦闘データ：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}／天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ（1回）。</p>
             {preloadStatus === 'loading' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材をプリロード中…</p>}
             {preloadStatus === 'ready' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材 読み込み完了</p>}
