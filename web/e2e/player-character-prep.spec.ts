@@ -378,6 +378,15 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect(bossHp).toHaveAttribute('aria-valuenow', '600', 'Route application does not trigger a follow-up attack.');
   await expect(page.getByRole('status').filter({ hasText: '神威：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
+  await expect(godFinisher).toBeDisabled();
+
+  // One terminal arrival grants one ultimate. Leaving and re-entering restores it.
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '85');
+  await expect(godFinisher).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(godFinisher).toBeEnabled();
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
