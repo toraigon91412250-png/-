@@ -160,10 +160,3 @@ export function getShortIrenaOriginalAttackMultiplier(activationTurn: number): n
 export function applyShortIrenaDamageFloor(damage: number, minimumDamage: number): number {
   return Math.max(Math.ceil(damage), Math.ceil(minimumDamage));
 }
-
-/** Advances the short-duel pressure timer once, unless that action cleanses pressure. */
-export function advanceShortIrenaPressureTurns(currentTurns: number, cleansedThisTurn = false): number {
-  if (cleansedThisTurn) return 0;
-  const safeTurns = Number.isFinite(currentTurns) ? Math.max(0, Math.floor(currentTurns)) : 0;
-  return Math.max(0, safeTurns - 1);
-}
