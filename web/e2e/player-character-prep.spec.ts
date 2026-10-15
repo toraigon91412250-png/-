@@ -330,7 +330,7 @@ test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, a
   await expect(gauge).toHaveAttribute('aria-valuenow', '-15');
   await moveFinalIrenaGaugeTo(page, -100);
   await expect(gauge).toHaveAttribute('aria-valuenow', '-100');
-  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('第3段階');
+  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('終点・究極必殺技');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1193/);
 
   const demonFinisher = page.getByRole('button', { name: '堕天側の究極必殺技 終焉' });
@@ -360,7 +360,7 @@ test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, a
   await expect(gauge).toHaveAttribute('aria-valuenow', '15');
   await moveFinalIrenaGaugeTo(page, 100);
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
-  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('第3段階');
+  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('終点・究極必殺技');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1194/);
 
   const godFinisher = page.getByRole('button', { name: '神側の究極必殺技 創世' });
