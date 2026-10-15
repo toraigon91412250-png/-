@@ -288,7 +288,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
 });
 
 
-test('final-duel Irena uses the 15-point gauge, existing ultimate multipliers, and distinct route effects', async ({ page }) => {
+test('final-duel Irena uses the reversible gauge, existing ultimate multipliers, and distinct route effects', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -537,13 +537,13 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   // Gauge movement remains available on either side after stage two unlocks.
   const moveGod = page.getByRole('button', { name: '神側へ15ポイント移動' });
   for (let move = 0; move < 4; move += 1) await moveGod.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-15');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-3');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り4ターン');
 
   // Spend the last four turns moving toward the centre without reaching either endpoint.
   for (let move = 0; move < 4; move += 1) await moveGod.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '57');
   await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
   await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
 });
