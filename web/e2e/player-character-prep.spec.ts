@@ -689,7 +689,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await ascension.click();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
-  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
   await expect(controlGod).toBeDisabled();
@@ -697,6 +697,14 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
+
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -715,6 +723,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(terminus).toBeDisabled();
   await expect(controlGod).toBeEnabled();
   await expect(controlDemon).toBeEnabled();
+  await expect(page.getByRole('button', { name: '神側の究極必殺技 創世' })).toBeEnabled();
 });
 
 test('legacy unlocked save can still enter the EX Kaiser challenge without resetting Stella progress', async ({ page }) => {
