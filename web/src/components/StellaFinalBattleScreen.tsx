@@ -916,6 +916,17 @@ export const StellaFinalBattleScreen: React.FC<{
     STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[1],
     shortStats.defense,
   );
+  const shortIrenaCounterBaseDamage = STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[battle.phase];
+  const shortIrenaForecastEffectiveDefense = Math.max(0, shortStats.defense)
+    * (battle.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
+    * (battle.godMightTurns > 0 ? 3 : 1)
+    * (battle.divineSpeedTurns > 0 ? 1.5 : 1)
+    * (battle.allPowerTurns > 0 ? 2 : 1)
+    * (battle.allThingsTurns > 0 ? 2 : 1)
+    * (battle.defenseDownTurns > 0 ? SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER : 1);
+  const shortIrenaCounterForecast = battle.kaiserActionLockTurns > 0
+    ? 0
+    : getShortIrenaCounterDamage(shortIrenaCounterBaseDamage, shortIrenaForecastEffectiveDefense);
   const authorityStage = getDatenAuthorityStage(battle.datenGauge);
   const authorityStageLabel = authorityStage === 0
     ? '0〜29ポイント：権能未解放'
@@ -1158,6 +1169,29 @@ export const StellaFinalBattleScreen: React.FC<{
                 <div><span>{battle.fighterId === 'stella' ? "STELLA'S AUTHORITIES" : 'FINAL DUEL COMMANDS'}</span><h2>最終決戦の行動</h2></div>
                 {isFighting && <span className="stella-final__turn-chip">第 {battle.turn} ターン</span>}
               </div>
+
+              {battle.fighterId === 'short-irena' && (
+                <section className={'stella-final__counter-forecast' + (battle.phase === 3 && (battle.finalTurnsLeft ?? 99) <= 2 ? ' stella-final__counter-forecast--urgent' : '')}
+                  aria-label="EXカイザーの次の行動予告" aria-live="polite">
+                  <div className="stella-final__counter-forecast-heading">
+                    <span>敵の行動予告</span>
+                    <strong>{battle.phase === 3 ? '第三形態・終局' : PHASE_NAMES[battle.phase]}</strong>
+                  </div>
+                  <div className="stella-final__counter-forecast-values">
+                    <div><span>通常反撃の基本値</span><strong>{shortIrenaCounterBaseDamage.toLocaleString('ja-JP')}</strong></div>
+                    <div><span>現在の防御込み目安</span><strong>{shortIrenaCounterForecast.toLocaleString('ja-JP')} ダメージ</strong></div>
+                  </div>
+                  {battle.kaiserActionLockTurns > 0
+                    ? <p>通常反撃は停止中。第三形態の終局判定は止められない。</p>
+                    : <p>防御補正は現在の状態を反映。今から防御を上げる権能を発動した場合、実際の被ダメージはさらに減る。</p>}
+                  {battle.phase === 3 && battle.finalTurnsLeft !== null && (
+                    <div className="stella-final__final-deadline" role="status">
+                      終局まで <strong>{battle.finalTurnsLeft} 手</strong>
+                      <span>防御・反撃停止では終局判定を防げない。</span>
+                    </div>
+                  )}
+                </section>
+              )}
 
               {battle.fighterId === 'short-irena' ? (
                 <>
