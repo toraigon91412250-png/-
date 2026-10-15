@@ -938,3 +938,35 @@ test('divine-stage authorities enforce gauge gates, change real combat stats, an
   await expect(page.locator('.stella-final__log-lines')).toContainText('威力28,800');
   await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍' })).toHaveCount(0);
 });
+
+test('EX Kaiser remains Lv.100 when a developer-style Lv.100 clear leaves normal progression below Lv.100', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    // Mirrors the persisted result of clearing Lv.100 from Developer Tools:
+    // one-time reward/EX access is saved, but the normal challenge ladder is not advanced.
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: false,
+      exKaiserDefeated: false,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
+    }));
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 10 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
+  await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
+});
