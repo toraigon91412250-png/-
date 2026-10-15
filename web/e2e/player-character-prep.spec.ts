@@ -383,7 +383,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   // One terminal arrival grants one ultimate. Leaving and re-entering restores it.
   await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
   await expect(gauge).toHaveAttribute('aria-valuenow', '85');
-  await expect(godFinisher).toBeDisabled();
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
   await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
   await expect(godFinisher).toBeEnabled();
