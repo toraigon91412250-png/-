@@ -631,3 +631,83 @@
   .stella-final__counter-forecast-values strong { font-size: 13px; }
   .stella-final__counter-forecast > p { font-size: 11px; }
 }
+
+
+/* Iteration 3: keep current effects visible without scattering them through the action list. */
+.stella-final__status-strip {
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(180, 165, 255, .22);
+  border-radius: 11px;
+  background: rgba(7, 10, 26, .84);
+}
+.stella-final__status-strip-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.stella-final__status-strip-heading > span {
+  color: #a99aff;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .13em;
+}
+.stella-final__status-strip-heading > strong {
+  color: #f1edff;
+  font-size: 12px;
+  font-weight: 950;
+}
+.stella-final__status-strip-heading > small {
+  margin-left: auto;
+  color: #b9c4db;
+  font-size: 10px;
+  font-weight: 850;
+}
+.stella-final__status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stella-final__status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  max-width: 100%;
+  padding: 6px 9px;
+  border: 1px solid rgba(181, 169, 255, .3);
+  border-radius: 8px;
+  color: #eae5ff;
+  background: rgba(69, 55, 128, .3);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.stella-final__status-chip--debuff {
+  border-color: rgba(255, 133, 155, .36);
+  color: #ffdce3;
+  background: rgba(103, 28, 48, .3);
+}
+.stella-final__status-chip--control {
+  border-color: rgba(142, 202, 255, .34);
+  color: #d9eeff;
+  background: rgba(28, 67, 111, .3);
+}
+.stella-final__status-empty {
+  margin: 0;
+  color: #bac4dc;
+  font-size: 11px;
+  line-height: 1.55;
+}
+.stella-final__power-copy p { font-size: 11px; }
+.stella-final__power-copy small { font-size: 10px; }
+.stella-final__daten-gauge p { font-size: 11px; }
+.stella-final__short-effect-status { font-size: 11px; line-height: 1.55; }
+@media (max-width: 650px) {
+  .stella-final__status-strip { padding: 10px; }
+  .stella-final__status-chip { font-size: 11px; }
+  .stella-final__power-copy p { font-size: 11px; }
+  .stella-final__power-copy small { font-size: 10px; }
+  .stella-final__short-effect-status { font-size: 11px; }
+}
