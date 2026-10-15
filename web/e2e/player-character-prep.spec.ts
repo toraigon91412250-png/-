@@ -1106,6 +1106,12 @@ test('a real normal Lv.100 victory reveals warp, unlocks Stella mode, then enabl
   await page.getByRole('button', { name: '開発者ツール', exact: true }).click();
   await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
   await page.getByRole('button', { name: 'Lv.100', exact: true }).click();
+  // Returning from another battle flow can leave fewer than two developer abilities selected.
+  // Select two available abilities explicitly so the setup button is valid.
+  const unselectedAbilities = page.getByRole('button').filter({ hasText: '未選択' });
+  await unselectedAbilities.nth(0).click();
+  await unselectedAbilities.nth(0).click();
+  await expect(page.getByRole('button', { name: 'この設定でバトル準備へ' })).toBeEnabled();
   await page.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
