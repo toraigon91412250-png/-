@@ -314,9 +314,6 @@ export const StellaFinalBattleScreen: React.FC<{
         return {
           ...current,
           turn: turn + 1,
-          finalTurnsLeft: current.phase === 3 && current.finalTurnsLeft !== null
-            ? Math.max(0, current.finalTurnsLeft - 1)
-            : current.finalTurnsLeft,
           finisherPending: alignment,
           finisherRoutePending: null,
           normalAttackCutIn: false,
