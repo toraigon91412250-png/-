@@ -81,6 +81,10 @@ const {
   getShortIrenaNormalAttackGaugeDelta,
   getShortIrenaOriginalAttackMultiplier,
   getShortIrenaCounterDamage,
+  getShortIrenaBossPhase,
+  resolveShortIrenaBossDamage,
+  getShortIrenaFinisherMultiplier,
+  calculateShortIrenaFinisherPower,
 } = await import('./src/utils/shortIrenaFinalBattle.ts');
 assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
@@ -141,6 +145,49 @@ assert.strictEqual(applyShortIrenaDamageFloor(1, 3000), 3000, '万象支配 must
 assert.strictEqual(applyShortIrenaDamageFloor(1999.1, 3000), 3000, 'The ability floor applies after normal defense math.');
 assert.strictEqual(applyShortIrenaDamageFloor(3000, 2000), 3000, 'A floor cannot reduce larger damage.');
 assert.strictEqual(applyShortIrenaDamageFloor(1999.1, 2000), 2000, '創世 and 終焉 must guarantee 2000.');
+
+console.log('--- Testing final-Irena phase gates and finishers ---');
+assert.strictEqual(getShortIrenaBossPhase(15000), 1, 'Full Kaiser HP must be phase one.');
+assert.strictEqual(getShortIrenaBossPhase(10001), 1, 'Phase one ends only above 10,000 HP.');
+assert.strictEqual(getShortIrenaBossPhase(10000), 2, 'Exactly 10,000 HP starts phase two.');
+assert.strictEqual(getShortIrenaBossPhase(5001), 2, 'Phase two ends only above 5,000 HP.');
+assert.strictEqual(getShortIrenaBossPhase(5000), 3, 'Exactly 5,000 HP starts the final phase.');
+assert.strictEqual(getShortIrenaBossPhase(0), 3, 'Zero HP remains classified as the final phase for terminal handling.');
+
+assert.deepStrictEqual(
+  resolveShortIrenaBossDamage(15000, 50000, 1),
+  { remainingHp: 10000, actualDamage: 5000, cappedAtPhaseGate: true },
+  'Even an extreme first-phase hit must stop at the 10,000 HP gate.',
+);
+assert.deepStrictEqual(
+  resolveShortIrenaBossDamage(12000, 1000, 1),
+  { remainingHp: 11000, actualDamage: 1000, cappedAtPhaseGate: false },
+  'Hits that do not reach the gate must preserve their full damage.',
+);
+assert.deepStrictEqual(
+  resolveShortIrenaBossDamage(10000, 50000, 2),
+  { remainingHp: 5000, actualDamage: 5000, cappedAtPhaseGate: true },
+  'Even an extreme second-phase hit must stop at the 5,000 HP gate.',
+);
+assert.deepStrictEqual(
+  resolveShortIrenaBossDamage(5000, 50000, 3),
+  { remainingHp: 1, actualDamage: 4999, cappedAtPhaseGate: true },
+  'A non-finisher in the final phase must leave Kaiser at 1 HP, never silently win.',
+);
+assert.deepStrictEqual(
+  resolveShortIrenaBossDamage(5000, 50000, 3, true),
+  { remainingHp: 0, actualDamage: 5000, cappedAtPhaseGate: false },
+  'The ultimate finisher is allowed to defeat Kaiser in the final phase.',
+);
+assert.strictEqual(getShortIrenaFinisherMultiplier('GOD'), 5, 'The GOD ultimate multiplier must remain ×5.');
+assert.strictEqual(getShortIrenaFinisherMultiplier('DEMON'), 8, 'The DEMON ultimate multiplier must remain ×8.');
+assert.strictEqual(calculateShortIrenaFinisherPower(100, 10, 'GOD'), 5000,
+  'GOD finisher power must use the ×5 formula without an unintended extra multiplier.');
+assert.strictEqual(calculateShortIrenaFinisherPower(100, 10, 'DEMON'), 8000,
+  'DEMON finisher power must use the ×8 formula without an unintended extra multiplier.');
+assert.strictEqual(calculateShortIrenaFinisherPower(1, 1, 'GOD'), 2000,
+  'Finisher minimum power must remain 2,000 even on a weak build.');
+console.log('✓ Final-Irena phase boundaries, extreme-damage caps, final-phase lethal permission, and GOD ×5 / DEMON ×8 verified.');
 
 assert.deepStrictEqual({
   maxHp: IRENA.maxHp,
