@@ -1347,8 +1347,12 @@ export const StellaFinalBattleScreen: React.FC<{
                   </div>
                   {canMoveShortIrenaGauge && (
                     <div className="stella-final__gauge-controls" aria-label="ゲージ操作">
-                      <button type="button" aria-label="神側へ15ポイント移動" disabled={!isFighting || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.actionLockTurns > 0 || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('MOVE_GOD')}>神側へ +15</button>
-                      <button type="button" aria-label="堕天側へ15ポイント移動" disabled={!isFighting || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.actionLockTurns > 0 || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('MOVE_DEMON')}>堕天側へ −15</button>
+                      {battle.datenGauge < 100 && (
+                        <button type="button" aria-label="神側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_GOD')}>神側へ +15</button>
+                      )}
+                      {battle.datenGauge > -100 && (
+                        <button type="button" aria-label="堕天側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_DEMON')}>堕天側へ −15</button>
+                      )}
                     </div>
                   )}
                   {!battle.initialChoiceMade ? (
@@ -1365,42 +1369,42 @@ export const StellaFinalBattleScreen: React.FC<{
                     {shortIrenaCommandWindow && canUseDivineSpeed && (
                     <article className="stella-final__power-card stella-final__power-card--divine-speed">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>神域の速度</h3><p>防御力1.5倍、速度999倍。効果4ターン。</p><small>{battle.divineSpeedTurns > 0 ? '残り ' + battle.divineSpeedTurns + ' ターン' : !canUseDivineSpeed ? '神側30ポイント以上で解放' : '防御1.5倍・速度999倍／4ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>神域の速度</h3><small>{battle.divineSpeedTurns > 0 ? '残り ' + battle.divineSpeedTurns + ' ターン' : !canUseDivineSpeed ? '神側30ポイント以上で解放' : '防御1.5倍・速度999倍／4ターン'}</small></div>
                       <button type="button" aria-label="神域の速度を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseDivineSpeed || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('DIVINE_SPEED')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canUseAllPower && (
                     <article className="stella-final__power-card stella-final__power-card--all-power">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>全能降臨</h3><p>攻撃力・防御力・速度を2倍。効果4ターン。</p><small>{battle.allPowerTurns > 0 ? '残り ' + battle.allPowerTurns + ' ターン' : !canUseAllPower ? '神側60ポイント以上で解放' : '攻撃・防御・速度2倍／4ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>全能降臨</h3><small>{battle.allPowerTurns > 0 ? '残り ' + battle.allPowerTurns + ' ターン' : !canUseAllPower ? '神側60ポイント以上で解放' : '攻撃・防御・速度2倍／4ターン'}</small></div>
                       <button type="button" aria-label="全能降臨を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllPower || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_POWER')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canUseAllThings && (
                     <article className="stella-final__power-card stella-final__power-card--all-things">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>万象支配</h3><p>攻撃威力は最低3,000相当。形態上限で実ダメージが下がる場合がある。攻撃4倍・防御2倍・速度999倍、状態異常を解除。</p><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神側100ポイントで解放' : '威力最低3,000／形態上限あり・2ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>万象支配</h3><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神側100ポイントで解放' : '威力最低3,000／形態上限あり・2ターン'}</small></div>
                       <button type="button" aria-label="万象支配を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllThings || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_THINGS')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn && (
                     <article className="stella-final__power-card stella-final__power-card--terminus">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通（威力最低5,000相当）。形態上限で実ダメージが下がる場合がある。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '威力最低5,000・形態上限あり／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '威力最低5,000・形態上限あり／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canActivateAscension && (
                     <article className="stella-final__power-card stella-final__power-card--ascension">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30ポイント以上で解放' : !canActivateAscension ? '終局の最終ターンは発動不可。必殺技を優先' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
+                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30ポイント以上で解放' : !canActivateAscension ? '終局の最終ターンは発動不可。必殺技を優先' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
                       <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canActivateAscension || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canUseAllMight && !battle.allMightUsed && (
                     <article className="stella-final__power-card stella-final__power-card--control">
                       <div className="stella-final__power-icon"><Shield size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>理外掌握</h3><p>敵の通常行動を1回停止し、HP全回復・全CTリセット・速度{SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER}倍（永続）。終局の即死判定は止められない。</p><small>{battle.allMightUsed ? '使用済み：全能×' + battle.allMightMultiplier.toFixed(1) + '・元攻撃力×' + battle.allMightBaseAttackMultiplier.toFixed(2) + '（永続）' : !canUseAllMight ? 'ゲージ60ポイント以上で解放' : '使用ターン×' + SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER + '倍で全能倍率を永続確定'}</small></div>
+                      <div className="stella-final__power-copy"><h3>理外掌握</h3><small>{battle.allMightUsed ? '使用済み：全能×' + battle.allMightMultiplier.toFixed(1) + '・元攻撃力×' + battle.allMightBaseAttackMultiplier.toFixed(2) + '（永続）' : !canUseAllMight ? 'ゲージ60ポイント以上で解放' : '使用ターン×' + SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER + '倍で全能倍率を永続確定'}</small></div>
                       <div className="stella-final__control-buttons">
                         <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
                         <button type="button" aria-label="理外掌握：堕天側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_DEMON')}>堕天側へ</button>
@@ -1422,21 +1426,21 @@ export const StellaFinalBattleScreen: React.FC<{
                   {isFighting && battle.turn >= battle.immortalReadyTurn && (
                     <article className="stella-final__power-card stella-final__power-card--immortal">
                     <div className="stella-final__power-icon"><Shield size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>不滅</h3><p>次の反撃を1ターン完全無敵で無効化。</p><small>{battle.turn < battle.immortalReadyTurn ? '次回使用：第 ' + battle.immortalReadyTurn + ' ターン' : '使用可能・4ターン周期'}</small></div>
+                    <div className="stella-final__power-copy"><h3>不滅</h3><small>{battle.turn < battle.immortalReadyTurn ? '次回使用：第 ' + battle.immortalReadyTurn + ' ターン' : '使用可能・4ターン周期'}</small></div>
                     <button type="button" aria-label="不滅を発動" disabled={!isFighting || battle.turn < battle.immortalReadyTurn} onClick={() => takeAction('IMMORTAL')}>発動</button>
                   </article>
                   )}
                   {isFighting && battle.rebirthUses < REBIRTH_RATIOS.length && battle.playerHp < fighterMaxHp && (
                     <article className="stella-final__power-card stella-final__power-card--rebirth">
                     <div className="stella-final__power-icon"><HeartPulse size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>再誕</h3><p>最大HPを基準に100% → 50% → 25%回復。</p><small>使用回数：{battle.rebirthUses} / 3</small></div>
+                    <div className="stella-final__power-copy"><h3>再誕</h3><small>使用回数：{battle.rebirthUses} / 3</small></div>
                     <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.playerHp >= fighterMaxHp} onClick={() => takeAction('REBIRTH')}>回復</button>
                   </article>
                   )}
                   {isFighting && !battle.meteorUsed && (
                     <article className="stella-final__power-card stella-final__power-card--meteor">
                     <div className="stella-final__power-icon"><Zap size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>天象支配</h3><p>巨大な隕石を落とす一度きりの大技。</p><small>{battle.meteorUsed ? '使用済み' : '試作値：' + METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP') + 'ダメージ・1回'}</small></div>
+                    <div className="stella-final__power-copy"><h3>天象支配</h3><small>{battle.meteorUsed ? '使用済み' : '試作値：' + METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP') + 'ダメージ・1回'}</small></div>
                     <button type="button" aria-label="天象支配を発動" disabled={!isFighting || battle.meteorUsed} onClick={() => takeAction('METEOR')}>発動</button>
                   </article>
                   )}
