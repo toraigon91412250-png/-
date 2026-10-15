@@ -48,6 +48,17 @@ async function moveFinalIrenaGaugeTo(page: Page, target: number) {
 }
 
 
+async function startFinalIrenaAtGauge(page: Page, target: number) {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'GOD');
+  await moveFinalIrenaGaugeTo(page, target);
+}
+
 async function startFinalIrenaAtEndpoint(page: Page, alignment: 'GOD' | 'DEMON') {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
@@ -769,14 +780,6 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   const ultimate = page.getByRole('button', { name: '神側の究極必殺技 創世' });
   await expect(ultimate).toBeDisabled();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
-  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
-  await expect(terminus).toBeDisabled();
-  await expect(ascension).toBeDisabled();
-  await expect(controlGod).toBeDisabled();
-  await expect(controlDemon).toBeDisabled();
-
-  await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -784,7 +787,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -793,6 +796,12 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  await expect(ascension).toBeEnabled();
+  await expect(controlGod).toBeEnabled();
+  await expect(controlDemon).toBeEnabled();
+
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
@@ -854,4 +863,77 @@ test('mobile battle top controls are shifted below the iPhone status area', asyn
   expect(attackBox).not.toBeNull();
   expect(backBox!.y).toBeGreaterThanOrEqual(20);
   expect(attackBox!.y + attackBox!.height).toBeLessThanOrEqual(844);
+});
+
+
+test('divine-stage authorities enforce gauge gates, change real combat stats, and tick once per turn', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({ maxHp: 0, attack: 0, defense: 0, speed: 0 }));
+  });
+
+  await startFinalIrenaAtGauge(page, 30);
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
+  const divineSpeed = page.getByRole('button', { name: '神域の速度を発動' });
+  await expect(divineSpeed).toBeEnabled();
+  await expect(page.getByRole('button', { name: '全能降臨を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '万象支配を発動' })).toBeDisabled();
+  await divineSpeed.click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3690');
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 3 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 300／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect(divineSpeed).toBeDisabled();
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 300／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 1 ターン' })).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍' })).toHaveCount(0);
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 60);
+  const allPower = page.getByRole('button', { name: '全能降臨を発動' });
+  await expect(allPower).toBeEnabled();
+  await expect(page.getByRole('button', { name: '万象支配を発動' })).toBeDisabled();
+  await allPower.click();
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 3 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 720／DEF 400／SPD 480/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 720／DEF 400／SPD 480/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 100);
+  const allThings = page.getByRole('button', { name: '万象支配を発動' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await expect(allThings).toBeEnabled();
+  const hpBefore = Number(await bossHp.getAttribute('aria-valuenow'));
+  await allThings.click();
+  await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(hpBefore);
+  await expect(page.locator('.stella-final__log-lines')).toContainText('権能「万象支配」。発動時の攻撃は');
+  await expect(page.getByRole('status').filter({ hasText: '万象支配：攻撃4倍・防御2倍・速度999倍／残り 1 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 1,440／DEF 400／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '万象支配：攻撃4倍・防御2倍・速度999倍' })).toHaveCount(0);
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 75);
+  await page.getByRole('button', { name: '全能降臨を発動' }).click();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 1 ターン' })).toBeVisible();
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  await expect(page.getByRole('dialog', { name: '創世のルート選択' })).toBeVisible({ timeout: 5000 });
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力28,800');
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍' })).toHaveCount(0);
 });
