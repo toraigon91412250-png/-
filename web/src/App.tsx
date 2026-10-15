@@ -407,7 +407,7 @@ export const App: React.FC = () => {
     const progress = loadStellaModeProgress();
     // Legacy saves can mark Stella as unlocked without the player ever seeing the post-Lv.100 EX route.
     // Keep the EX challenge replayable after the one-time Lv.100 reward has been claimed.
-    if (!progress.kaiser100RewardClaimed || !progress.stellaModeUnlocked) return;
+    if (!progress.stellaModeUnlocked || (!progress.kaiser100RewardClaimed && !progress.exKaiserDefeated)) return;
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     handleOpenBattleSetup({
