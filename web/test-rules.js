@@ -150,6 +150,27 @@ assert.match(shortIrenaFinalBattleSource,
   /finalTurnsLeft === 0 && shouldFailAtShortIrenaFinalDeadline\(/,
   'Deadline resolution must force a terminal result when the finisher is blocked.');
 
+assert.match(shortIrenaFinalBattleSource, /stella-final--playing/,
+  'Only the active battle screen opts into the no-scroll compact layout.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaCommandWindow && canUseDivineSpeed/,
+  'Locked or unavailable Irena authorities are not rendered.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaCommandWindow && canUseAllThings/,
+  'The highest-gauge authority is rendered only at its actual unlock threshold.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaUltimateWindow && \(/,
+  'The ultimate button is rendered only when the current finisher can be used.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__counter-forecast--stella/,
+  'Stella battle displays the Kaiser next-action forecast.');
+assert.ok(!shortIrenaFinalBattleSource.includes('<p>防御力1.5倍、速度999倍。効果4ターン。</p>'),
+  'Combat action cards omit long skill descriptions.');
+assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
+  'The gauge does not offer an impossible move beyond the positive cap.');
+assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
+  'The gauge does not offer an impossible move beyond the negative cap.');
+const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
+assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidden/,
+  'The active battle layout must prevent page scrolling.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-copy p \{ display: none; \}/,
+  'Compact battle command cards hide descriptions.');
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
 assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
