@@ -798,9 +798,10 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
-  await expect(ascension).toBeEnabled();
-  await expect(controlGod).toBeEnabled();
-  await expect(controlDemon).toBeEnabled();
+  // The expiry recoil locks abilities until the required PASS action is consumed.
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
 
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
