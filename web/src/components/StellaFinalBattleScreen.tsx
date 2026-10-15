@@ -64,6 +64,7 @@ interface StellaFinalBattleState {
   initialChoiceMade: boolean;
   alignmentFlash: ShortIrenaAlignment | null;
   finisherRoutePending: ShortIrenaAlignment | null;
+  finisherUsedAtAlignment: ShortIrenaAlignment | null;
   godMightTurns: number;
   kaiserActionLockTurns: number;
   kaiserDefenseNullTurns: number;
@@ -112,6 +113,7 @@ function createInitialBattle(
     initialChoiceMade: fighterId !== 'short-irena',
     alignmentFlash: null,
     finisherRoutePending: null,
+    finisherUsedAtAlignment: null,
     godMightTurns: 0,
     kaiserActionLockTurns: 0,
     kaiserDefenseNullTurns: 0,
@@ -309,7 +311,7 @@ export const StellaFinalBattleScreen: React.FC<{
 
       if (action === 'FINISH') {
         const alignment = getDatenAlignment(current.datenGauge);
-        if (!alignment) return current;
+        if (!alignment || current.finisherUsedAtAlignment === alignment) return current;
         log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + 'を発動。既存の陣営倍率で大ダメージを与えた後、3ルートから選択する。');
         return {
           ...current,
@@ -328,6 +330,7 @@ export const StellaFinalBattleScreen: React.FC<{
       let finalTurnsLeft = current.finalTurnsLeft;
       let datenGauge = current.datenGauge;
       let alignment = current.alignment;
+      let finisherUsedAtAlignment = current.finisherUsedAtAlignment;
       let initialChoiceMade = current.initialChoiceMade;
       let alignmentFlash: ShortIrenaAlignment | null = null;
       let godMightTurns = current.godMightTurns;
@@ -439,6 +442,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (alignment && alignment !== previousAlignment) {
         log('ゲージが' + (alignment === 'GOD' ? '神側' : '堕天側') + 'の終点に到達。対応する究極必殺技が解放された。');
       } else if (!alignment && previousAlignment) {
+        finisherUsedAtAlignment = null;
         log('ゲージが終点から戻り、究極必殺技は再び封印された。発動済みの効果やクールダウンは維持される。');
       }
 
@@ -516,6 +520,7 @@ export const StellaFinalBattleScreen: React.FC<{
         alignment,
         initialChoiceMade,
         alignmentFlash,
+        finisherUsedAtAlignment,
         godMightTurns,
         kaiserActionLockTurns,
         kaiserDefenseNullTurns,
@@ -599,6 +604,7 @@ export const StellaFinalBattleScreen: React.FC<{
         status,
         playerHp,
         finisherRoutePending: null,
+        finisherUsedAtAlignment: alignment,
         godMightTurns,
         kaiserActionLockTurns,
         kaiserDefenseNullTurns,
@@ -749,7 +755,7 @@ export const StellaFinalBattleScreen: React.FC<{
   const canUseTerminus = battle.datenGauge <= -30;
   const canUseAscension = battle.datenGauge >= 30;
   const canUseAllMight = authorityStage >= 2;
-  const canUseUltimate = getDatenAlignment(battle.datenGauge) !== null;
+  const canUseUltimate = battle.alignment !== null && battle.finisherUsedAtAlignment !== battle.alignment;
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
   const resultTitle = battle.status === 'VICTORY' ? '最終決戦 勝利' : '最終決戦 敗北';
 
