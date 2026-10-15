@@ -202,8 +202,16 @@
   .stella-final__no-forecast { order: 9; }
   .stella-final__result-actions { grid-template-columns: 1fr; }
 }
+/* Consistent feedback for existing controls: no extra UI or duplicate actions. */
+.stella-final button { touch-action: manipulation; }
+.stella-final button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.stella-final button:active:not(:disabled) {
+  filter: brightness(1.14);
+  transform: translateY(1px);
+}
 @media (prefers-reduced-motion: reduce) {
   .stella-final__meteor-cut-in, .stella-final__meteor-cut-in img { animation-duration: .01ms !important; }
+  .stella-final button:active:not(:disabled) { transform: none; }
 }
 
 
