@@ -1449,9 +1449,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 </div>
               )}
 
-              {false && (
-                <p className="stella-final__no-forecast">ステラ戦では敵の攻撃予測は表示されない。</p>
-              )}
+
             </section>
 
             <section className="stella-final__battle-log" aria-label="戦闘ログ">
