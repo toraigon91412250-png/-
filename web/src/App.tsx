@@ -205,9 +205,11 @@ export const App: React.FC = () => {
     const currentImprintProgress = loadImprintProgress();
     const currentKaiserProgress = loadKaiserChallengeProgress();
     const currentStellaProgress = loadStellaModeProgress();
-    const selectableKaiserLevels = allowAllKaiserLevels
-      ? BATTLE_CHALLENGE_LEVELS
-      : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
+    const selectableKaiserLevels = mode === 'EX_KAISER'
+      ? BATTLE_CHALLENGE_LEVELS.filter(level => level === 100)
+      : allowAllKaiserLevels
+        ? BATTLE_CHALLENGE_LEVELS
+        : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
     setKaiserChallengeProgress(currentKaiserProgress);
     setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
@@ -229,7 +231,7 @@ export const App: React.FC = () => {
         ...prefill,
         playerCharacterId: safePlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prefill.abilities) : prefill.abilities,
-        kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
       });
@@ -240,7 +242,7 @@ export const App: React.FC = () => {
           ? safePlayerCharacterId
           : requestedPlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prev.abilities) : prev.abilities,
-        kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
       }));

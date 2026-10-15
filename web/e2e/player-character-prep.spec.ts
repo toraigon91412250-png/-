@@ -48,6 +48,17 @@ async function moveFinalIrenaGaugeTo(page: Page, target: number) {
 }
 
 
+async function startFinalIrenaAtGauge(page: Page, target: number) {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'GOD');
+  await moveFinalIrenaGaugeTo(page, target);
+}
+
 async function startFinalIrenaAtEndpoint(page: Page, alignment: 'GOD' | 'DEMON') {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
@@ -769,14 +780,6 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   const ultimate = page.getByRole('button', { name: '神側の究極必殺技 創世' });
   await expect(ultimate).toBeDisabled();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
-  await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
-  await expect(terminus).toBeDisabled();
-  await expect(ascension).toBeDisabled();
-  await expect(controlGod).toBeDisabled();
-  await expect(controlDemon).toBeDisabled();
-
-  await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -784,7 +787,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -793,6 +796,13 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
+  await expect(terminus).toBeDisabled();
+  // The expiry recoil locks abilities until the required PASS action is consumed.
+  await expect(ascension).toBeDisabled();
+  await expect(controlGod).toBeDisabled();
+  await expect(controlDemon).toBeDisabled();
+
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
@@ -854,4 +864,367 @@ test('mobile battle top controls are shifted below the iPhone status area', asyn
   expect(attackBox).not.toBeNull();
   expect(backBox!.y).toBeGreaterThanOrEqual(20);
   expect(attackBox!.y + attackBox!.height).toBeLessThanOrEqual(844);
+});
+
+
+test('divine-stage authorities enforce gauge gates, change real combat stats, and tick once per turn', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({ maxHp: 0, attack: 0, defense: 0, speed: 0 }));
+  });
+
+  await startFinalIrenaAtGauge(page, 30);
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
+  const divineSpeed = page.getByRole('button', { name: '神域の速度を発動' });
+  await expect(divineSpeed).toBeEnabled();
+  await expect(page.getByRole('button', { name: '全能降臨を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '万象支配を発動' })).toBeDisabled();
+  await divineSpeed.click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3690');
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 3 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 300／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect(divineSpeed).toBeDisabled();
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 300／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍／残り 1 ターン' })).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect(page.getByRole('status').filter({ hasText: '神域の速度：防御1.5倍・速度999倍' })).toHaveCount(0);
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 60);
+  const allPower = page.getByRole('button', { name: '全能降臨を発動' });
+  await expect(allPower).toBeEnabled();
+  await expect(page.getByRole('button', { name: '万象支配を発動' })).toBeDisabled();
+  await allPower.click();
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 3 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 720／DEF 400／SPD 480/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 720／DEF 400／SPD 480/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 100);
+  const allThings = page.getByRole('button', { name: '万象支配を発動' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await expect(allThings).toBeEnabled();
+  const hpBefore = Number(await bossHp.getAttribute('aria-valuenow'));
+  await allThings.click();
+  await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(hpBefore);
+  await expect(page.locator('.stella-final__log-lines')).toContainText('権能「万象支配」。発動時の攻撃は');
+  await expect(page.getByRole('status').filter({ hasText: '万象支配：攻撃4倍・防御2倍・速度999倍／残り 1 ターン' })).toBeVisible();
+  await expect(page.getByText(/実効ステータス：ATK 1,440／DEF 400／SPD 239,760/)).toBeVisible();
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '万象支配：攻撃4倍・防御2倍・速度999倍' })).toHaveCount(0);
+  await expect(page.getByText(/実効ステータス：ATK 360／DEF 200／SPD 240/)).toBeVisible();
+
+  await startFinalIrenaAtGauge(page, 75);
+  await page.getByRole('button', { name: '全能降臨を発動' }).click();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 1 ターン' })).toBeVisible();
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  await expect(page.getByRole('dialog', { name: '創世のルート選択' })).toBeVisible({ timeout: 5000 });
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('威力28,800');
+  await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍' })).toHaveCount(0);
+});
+
+test('EX Kaiser remains Lv.100 when a developer-style Lv.100 clear leaves normal progression below Lv.100', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    // Mirrors the persisted result of clearing Lv.100 from Developer Tools:
+    // one-time reward/EX access is saved, but the normal challenge ladder is not advanced.
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: false,
+      exKaiserDefeated: false,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
+    }));
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 10 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.getByText('EX挑戦：Lv.100固定')).toBeVisible();
+  await expect(page.getByText('EXカイザーへの挑戦はLv.100固定です。通常のカイザー挑戦の解放進行とは別に戦います。')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
+  await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
+});
+
+test('repeated same-direction gauge choices replay the light/dark flash', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 0, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  await startFinalIrenaAtGauge(page, 15);
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const flash = page.getByTestId('short-irena-alignment-flash');
+  const moveGod = page.getByRole('button', { name: '神側へ15ポイント移動' });
+  const moveDemon = page.getByRole('button', { name: '堕天側へ15ポイント移動' });
+
+  await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '30');
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
+  const firstGodFlash = await flash.elementHandle();
+  expect(firstGodFlash).not.toBeNull();
+
+  // A second same-direction choice before the first 300ms flash clears must remount it.
+  await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect.poll(() => firstGodFlash!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
+
+  await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '30');
+  await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
+  const firstDemonFlash = await flash.elementHandle();
+  expect(firstDemonFlash).not.toBeNull();
+
+  await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect.poll(() => firstDemonFlash!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
+});
+
+test('a real normal Lv.100 victory persists the +50P reward once and exposes only the EX route', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stat_points', '500');
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
+    window.localStorage.setItem('duel_arena_ability_progress', JSON.stringify({
+      levels: { ABYSS: 1, FALLEN: 0, BLACK_WING: 1, FALLEN_KING: 0, JUDGMENT: 0 },
+      shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+    }));
+    window.localStorage.setItem('duel_arena_build_saves_v1', JSON.stringify({
+      version: 1,
+      saves: [{
+        id: 'normal-lv100-audit-build',
+        name: 'Lv100監査用',
+        createdAt: 1,
+        updatedAt: 1,
+        snapshot: {
+          statAllocation: { maxHp: 50, attack: 450, defense: 0, speed: 0 },
+          abilityIds: ['ABYSS', 'BLACK_WING'],
+          imprintIds: [],
+        },
+      }],
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: /挑戦の準備/ }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+
+  await page.getByRole('button', { name: /Lv\.100/ }).click();
+  await page.getByRole('button', { name: '読み込む', exact: true }).click();
+  await expect(page.locator('.build-save-panel__message')).toContainText('「Lv100監査用」を読み込みました。');
+  await expect(page.getByText(/残り\s*0P\s*\/\s*500P/)).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  const attack = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  const turnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
+  const victoryTitle = page.getByText('VICTORY', { exact: true });
+
+  // Play the real level-100 fight, including the forced 50% phase transition.
+  for (let actionCount = 0; actionCount < 6; actionCount += 1) {
+    if (await victoryTitle.isVisible().catch(() => false)) break;
+    const turnBefore = await turnMarker.innerText();
+    await attack.click();
+    await expect.poll(async () => (
+      await victoryTitle.isVisible().catch(() => false)
+      || (await turnMarker.innerText().catch(() => '')) !== turnBefore
+    ), { timeout: 20_000 }).toBe(true);
+  }
+
+  await expect(victoryTitle).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText('勝利！', { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('552');
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return raw ? JSON.parse(raw).kaiser100RewardClaimed : false;
+  })).toBe(true);
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    const progress = raw ? JSON.parse(raw) : {};
+    return {
+      isUnlocked: progress.isUnlocked,
+      exKaiserDefeated: progress.exKaiserDefeated,
+      revealAvailable: progress.revealAvailable,
+    };
+  })).toEqual({ isUnlocked: false, exKaiserDefeated: false, revealAvailable: false });
+
+  await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+
+  // Replay Lv.100 through the real Developer Tools path. It is still a NORMAL
+  // Kaiser fight, must not grant the one-time +50P again, and must retain EX access.
+  await page.getByRole('button', { name: '開発者ツール', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lv.100', exact: true }).click();
+  await page.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
+  await page.getByRole('button', { name: '火力', exact: true }).click();
+  await expect(page.getByText(/残り\s*0P\s*\/\s*552P/)).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  const secondVictoryTitle = page.getByText('VICTORY', { exact: true });
+  const secondTurnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
+  const secondAttack = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  for (let actionCount = 0; actionCount < 6; actionCount += 1) {
+    if (await secondVictoryTitle.isVisible().catch(() => false)) break;
+    const turnBefore = await secondTurnMarker.innerText();
+    await secondAttack.click();
+    await expect.poll(async () => (
+      await secondVictoryTitle.isVisible().catch(() => false)
+      || (await secondTurnMarker.innerText().catch(() => '')) !== turnBefore
+    ), { timeout: 20_000 }).toBe(true);
+  }
+  await expect(secondVictoryTitle).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('554');
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return raw ? JSON.parse(raw).kaiser100RewardClaimed : false;
+  })).toBe(true);
+
+  await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+});
+
+test('Developer Tools first-time normal Lv.100 victory unlocks EX while preserving the normal Lv.10 ladder', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stat_points', '500');
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 10 }));
+    window.localStorage.setItem('duel_arena_ability_progress', JSON.stringify({
+      levels: { ABYSS: 1, FALLEN: 0, BLACK_WING: 1, FALLEN_KING: 0, JUDGMENT: 0 },
+      shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0 },
+    }));
+    window.localStorage.setItem('duel_arena_build_saves_v1', JSON.stringify({
+      version: 1,
+      saves: [{
+        id: 'developer-lv100-first-clear',
+        name: 'DevTools Lv100監査用',
+        createdAt: 1,
+        updatedAt: 1,
+        snapshot: {
+          statAllocation: { maxHp: 50, attack: 450, defense: 0, speed: 0 },
+          abilityIds: ['ABYSS', 'BLACK_WING'],
+          imprintIds: [],
+        },
+      }],
+    }));
+    Math.random = () => 0.99;
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: '開発者ツール', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lv.100', exact: true }).click();
+  await page.getByRole('button', { name: /深淵/ }).click();
+  await page.getByRole('button', { name: /黒翼/ }).click();
+  await page.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
+
+  await page.getByRole('button', { name: '読み込む', exact: true }).click();
+  await expect(page.locator('.build-save-panel__message')).toContainText('「DevTools Lv100監査用」を読み込みました。');
+  await expect(page.getByText(/残り\s*0P\s*\/\s*500P/)).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  const victoryTitle = page.getByText('VICTORY', { exact: true });
+  const turnMarker = page.getByText(/^第\s*\d+\s*ターン$/);
+  const attack = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  for (let actionCount = 0; actionCount < 6; actionCount += 1) {
+    if (await victoryTitle.isVisible().catch(() => false)) break;
+    const turnBefore = await turnMarker.innerText();
+    await attack.click();
+    await expect.poll(async () => (
+      await victoryTitle.isVisible().catch(() => false)
+      || (await turnMarker.innerText().catch(() => '')) !== turnBefore
+    ), { timeout: 20_000 }).toBe(true);
+  }
+
+  await expect(victoryTitle).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('552');
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    const progress = raw ? JSON.parse(raw) : {};
+    return {
+      kaiser100RewardClaimed: progress.kaiser100RewardClaimed === true,
+      exKaiserDefeated: progress.exKaiserDefeated === true,
+      revealAvailable: progress.revealAvailable === true,
+      isUnlocked: progress.isUnlocked === true,
+    };
+  })).toEqual({
+    kaiser100RewardClaimed: true,
+    exKaiserDefeated: false,
+    revealAvailable: false,
+    isUnlocked: false,
+  });
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_kaiser_challenge_progress');
+    return raw ? JSON.parse(raw).unlockedLevel : null;
+  })).toBe(10);
+
+  await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
+  await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
 });

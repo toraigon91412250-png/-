@@ -351,7 +351,9 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             </div>
             <div style={{ textAlign: 'right', fontSize: '11px', color: '#FFCC80', fontWeight: 900 }}>
               <div>挑戦状況</div>
-              {allowAllKaiserLevels ? (
+              {isExKaiserChallenge ? (
+                <div style={{ marginTop: '3px', fontSize: '13px' }}>EX挑戦：Lv.100固定</div>
+              ) : allowAllKaiserLevels ? (
                 <div style={{ marginTop: '3px', fontSize: '13px' }}>開発者テスト：全Lv選択可能</div>
               ) : (
                 <div style={{ marginTop: '3px', fontSize: '13px' }}>Lv.{unlockedKaiserLevel} 解放中</div>
@@ -359,9 +361,11 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             </div>
           </div>
           <p style={{ margin: '8px 0 0', fontSize: '11px', lineHeight: 1.55, color: '#9AA8BF' }}>
-            {allowAllKaiserLevels
-              ? '開発者テストでは、進行状況に関係なく任意のレベルで戦闘を開始できます。'
-              : '勝利すると次の10レベルが解放されます。選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです。'}
+            {isExKaiserChallenge
+              ? 'EXカイザーへの挑戦はLv.100固定です。通常のカイザー挑戦の解放進行とは別に戦います。'
+              : allowAllKaiserLevels
+                ? '開発者テストでは、進行状況に関係なく任意のレベルで戦闘を開始できます。'
+                : '勝利すると次の10レベルが解放されます。選べるのは「次の挑戦」と「直前にクリアしたレベル」のみです。'}
           </p>
 
           <div style={{

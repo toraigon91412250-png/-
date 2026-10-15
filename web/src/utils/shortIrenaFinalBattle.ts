@@ -155,3 +155,8 @@ export function getShortIrenaOriginalAttackMultiplier(activationTurn: number): n
   const turn = Math.max(1, Math.floor(activationTurn));
   return Math.min(1, 0.5 + turn * 0.05);
 }
+
+/** Guarantees the specified minimum after normal damage calculation and rounding. */
+export function applyShortIrenaDamageFloor(damage: number, minimumDamage: number): number {
+  return Math.max(Math.ceil(damage), Math.ceil(minimumDamage));
+}
