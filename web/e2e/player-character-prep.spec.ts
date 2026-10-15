@@ -118,6 +118,39 @@ test('Stella mode is playable after the warp and the dedicated final duel stays 
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'ステラ最終決戦を開く' })).toHaveCount(0);
 });
+
+test('unlocked Stella final duel exposes the expected authorities after EX victory', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true,
+      stellaModeUnlocked: true,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      exKaiserDefeated: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
+    }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
+  await expect(page.getByRole('heading', { name: 'EXカイザー 最終決戦' })).toBeVisible();
+
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '不滅を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '再誕を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '天象支配を発動' })).toBeEnabled();
+
+  await page.getByRole('button', { name: '不滅を発動' }).click();
+  const battleLog = page.locator('.stella-final__log-lines');
+  await expect(battleLog.getByText(/権能「不滅」を発動/)).toBeVisible();
+  await expect(page.getByText(/次回使用：第 4 ターン/)).toBeVisible();
+});
+
 test('Stella final duel uses the player-favored balance tuning in actual combat', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
