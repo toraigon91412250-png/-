@@ -24,6 +24,11 @@ export const SHORT_IRENA_ASCENSION_DEFENSE_DOWN_TURNS = 3;
 
 export const SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER = 0.3;
 export const SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER = 1000;
+
+/** Final-phase deadline remains 8–10 turns regardless of speed or speed buffs. */
+export function getShortIrenaFinalTurnLimit(random: () => number = Math.random): number {
+  return 8 + Math.floor(random() * 3);
+}
 export const SHORT_IRENA_STAT_ALLOCATION_KEY = 'duel_arena_short_irena_stat_allocation';
 
 export const SHORT_IRENA_GAUGE_MIN = -100;
