@@ -1095,4 +1095,39 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+
+  // Replay Lv.100 through the real Developer Tools path. It is still a NORMAL
+  // Kaiser fight, must not grant the one-time +50P again, and must retain EX access.
+  await page.getByRole('button', { name: '開発者ツール', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '開発者ツール' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lv.100', exact: true }).click();
+  await page.getByRole('button', { name: 'この設定でバトル準備へ' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByText('開発者テスト：全Lv選択可能')).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  await expect(page.getByRole('status', { name: '戦闘出撃中' })).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  const secondVictoryTitle = page.getByText('VICTORY', { exact: true });
+  const secondTurnMarker = page.getByText(/^第\\s*\\d+\\s*ターン$/);
+  const secondAttack = page.locator('.battle-action-dock button[aria-label="攻撃"]');
+  for (let actionCount = 0; actionCount < 6; actionCount += 1) {
+    if (await secondVictoryTitle.isVisible().catch(() => false)) break;
+    const turnBefore = await secondTurnMarker.innerText();
+    await secondAttack.click();
+    await expect.poll(async () => (
+      await secondVictoryTitle.isVisible().catch(() => false)
+      || (await secondTurnMarker.innerText().catch(() => '')) !== turnBefore
+    ), { timeout: 20_000 }).toBe(true);
+  }
+  await expect(secondVictoryTitle).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('554');
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    return raw ? JSON.parse(raw).kaiser100RewardClaimed : false;
+  })).toBe(true);
+
+  await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
 });
