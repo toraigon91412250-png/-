@@ -26,6 +26,14 @@ export const SHORT_IRENA_ALL_MIGHT_TURN_MULTIPLIER = 0.3;
 export const SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER = 1000;
 export const SHORT_IRENA_STAT_ALLOCATION_KEY = 'duel_arena_short_irena_stat_allocation';
 
+export const SHORT_IRENA_GAUGE_MIN = -100;
+export const SHORT_IRENA_GAUGE_MAX = 100;
+export const SHORT_IRENA_GAUGE_STEP = 15;
+export const SHORT_IRENA_AUTHORITY_STAGE_ONE = 30;
+export const SHORT_IRENA_AUTHORITY_STAGE_TWO = 60;
+
+export type ShortIrenaAuthorityStage = 0 | 1 | 2 | 3;
+
 export type ShortIrenaRoute = 'GOD' | 'DEMON';
 export type ShortIrenaAlignment = ShortIrenaRoute;
 
@@ -58,15 +66,33 @@ export function getShortIrenaCombatStats(allocation?: Partial<StatAllocation> | 
 }
 
 /**
- * At a strong lean, opposite movement is reduced to one quarter. Once an end
- * is reached the screen locks the route, so small reversals cannot flip art.
+ * Apply the requested movement without damping reversals. Explicit gauge controls
+ * request 15 points; existing skills and speed-scaled attacks keep their own movement.
  */
 export function shiftDatenGauge(currentValue: number, requestedDelta: number): number {
-  const current = Math.max(-100, Math.min(100, Math.round(currentValue)));
-  let delta = Math.round(requestedDelta);
-  if (current >= 60 && delta < 0) delta = Math.ceil(delta * 0.25);
-  else if (current <= -60 && delta > 0) delta = Math.floor(delta * 0.25);
-  return Math.max(-100, Math.min(100, current + delta));
+  const current = Math.max(SHORT_IRENA_GAUGE_MIN, Math.min(SHORT_IRENA_GAUGE_MAX, Math.round(currentValue)));
+  const delta = Math.round(requestedDelta);
+  return Math.max(
+    SHORT_IRENA_GAUGE_MIN,
+    Math.min(SHORT_IRENA_GAUGE_MAX, current + delta),
+  );
+}
+
+export function getDatenAuthorityStage(gauge: number): ShortIrenaAuthorityStage {
+  const progress = Math.abs(Math.max(SHORT_IRENA_GAUGE_MIN, Math.min(SHORT_IRENA_GAUGE_MAX, gauge)));
+  if (progress >= SHORT_IRENA_GAUGE_MAX) return 3;
+  if (progress >= SHORT_IRENA_AUTHORITY_STAGE_TWO) return 2;
+  if (progress >= SHORT_IRENA_AUTHORITY_STAGE_ONE) return 1;
+  return 0;
+}
+
+export function shouldRearmShortIrenaFinisher(usedAlignment: ShortIrenaAlignment | null, gauge: number): boolean {
+  if (usedAlignment === null) return false;
+  const boundedGauge = Math.max(
+    SHORT_IRENA_GAUGE_MIN,
+    Math.min(SHORT_IRENA_GAUGE_MAX, Math.round(gauge)),
+  );
+  return Math.abs(boundedGauge) < SHORT_IRENA_AUTHORITY_STAGE_ONE;
 }
 
 export function getDatenAlignment(gauge: number): ShortIrenaAlignment | null {
@@ -79,6 +105,20 @@ export function getShortIrenaNormalAttackGaugeDelta(route: ShortIrenaRoute, spee
   const speedBonus = Math.min(6, Math.floor(Math.max(0, speed - IRENA.speed) / 120));
   const step = 12 + speedBonus;
   return route === 'GOD' ? step : -step;
+}
+
+export function calculateShortIrenaAttackDamage(
+  rawAttackDamage: number,
+  targetDefense: number,
+  defenseNullTurns: number,
+): { damage: number; targetDefense: number } {
+  const effectiveDefense = defenseNullTurns > 0
+    ? 0
+    : Math.max(0, Math.floor(targetDefense));
+  return {
+    targetDefense: effectiveDefense,
+    damage: Math.max(1, Math.ceil(rawAttackDamage) - effectiveDefense),
+  };
 }
 
 export function getShortIrenaCounterDamage(baseCounterDamage: number, defense: number): number {
@@ -108,11 +148,10 @@ export function saveShortIrenaAllocation(input: Partial<StatAllocation>): boolea
 }
 
 /**
- * Early All Might activation weakens Irena's original attack stat.
- * Turn 1 starts at 55%; the penalty improves by five percentage points
- * per turn and reaches the normal attack stat at turn 10.
+ * Early All Might activation weakens Irena's base attack independently of the
+ * persistent turn-based All Might damage multiplier.
  */
 export function getShortIrenaOriginalAttackMultiplier(activationTurn: number): number {
   const turn = Math.max(1, Math.floor(activationTurn));
-  return Math.max(0.5, Math.min(1, 1 - Math.max(0, 10 - turn) * 0.05));
+  return Math.min(1, 0.5 + turn * 0.05);
 }

@@ -70,7 +70,7 @@ export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
     },
     'short-irena': {
       id: 'short-irena',
-      name: '短期決戦モード・いれーな',
+      name: '最終決戦用いれーな',
       title: '最終決戦専用・神魔境界',
       maxHp: IRENA.maxHp,
       attack: IRENA.attack,

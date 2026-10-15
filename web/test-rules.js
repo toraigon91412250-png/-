@@ -71,9 +71,14 @@ assert.deepStrictEqual(
 );
 const {
   SHORT_IRENA_STAT_POINT_TOTAL,
+  calculateShortIrenaAttackDamage,
   getShortIrenaCombatStats,
   shiftDatenGauge,
   getDatenAlignment,
+  getDatenAuthorityStage,
+  shouldRearmShortIrenaFinisher,
+  getShortIrenaNormalAttackGaugeDelta,
+  getShortIrenaOriginalAttackMultiplier,
   getShortIrenaCounterDamage,
 } = await import('./src/utils/shortIrenaFinalBattle.ts');
 assert.strictEqual(SHORT_IRENA_STAT_POINT_TOTAL, 150);
@@ -83,15 +88,50 @@ assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack *
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
 assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
-assert.strictEqual(shiftDatenGauge(0, -60), -60);
+assert.strictEqual(shiftDatenGauge(0, -60), -60, 'Existing large gauge adjustments must retain their requested movement.');
 assert.strictEqual(shiftDatenGauge(-60, -50), -100);
 assert.strictEqual(shiftDatenGauge(60, 50), 100);
-assert.strictEqual(shiftDatenGauge(80, -40), 70, 'A strong lean must resist opposite movement.');
+assert.strictEqual(shiftDatenGauge(80, -40), 40, 'Reverse movement must not be dampened.');
+assert.strictEqual(shiftDatenGauge(90, 15), 100, 'The God endpoint must clamp to +100.');
+assert.strictEqual(shiftDatenGauge(-90, -15), -100, 'The Demon endpoint must clamp to -100.');
+assert.strictEqual(shiftDatenGauge(-15, 15), 0, 'The gauge may return to its center.');
 assert.strictEqual(getDatenAlignment(100), 'GOD');
 assert.strictEqual(getDatenAlignment(-100), 'DEMON');
 assert.strictEqual(getDatenAlignment(99), null);
+assert.strictEqual(getDatenAuthorityStage(29), 0);
+assert.strictEqual(getDatenAuthorityStage(-29), 0);
+assert.strictEqual(getDatenAuthorityStage(30), 1);
+assert.strictEqual(getDatenAuthorityStage(-59), 1);
+assert.strictEqual(getDatenAuthorityStage(60), 2);
+assert.strictEqual(getDatenAuthorityStage(-99), 2);
+assert.strictEqual(getDatenAuthorityStage(100), 3);
+assert.strictEqual(getDatenAuthorityStage(-100), 3);
+assert.strictEqual(shouldRearmShortIrenaFinisher(null, 0), false);
+assert.strictEqual(shouldRearmShortIrenaFinisher('GOD', 29), true);
+assert.strictEqual(shouldRearmShortIrenaFinisher('GOD', 30), false);
+assert.strictEqual(shouldRearmShortIrenaFinisher('DEMON', -29), true);
+assert.strictEqual(shouldRearmShortIrenaFinisher('DEMON', -30), false);
+assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('GOD', IRENA.speed + 720), 18);
+assert.strictEqual(getShortIrenaNormalAttackGaugeDelta('DEMON', IRENA.speed), -12);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(1), 0.55);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(2), 0.6);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(5), 0.75);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(10), 1);
+assert.strictEqual(getShortIrenaOriginalAttackMultiplier(20), 1);
 assert.strictEqual(getShortIrenaCounterDamage(230, 200), 130);
 assert.strictEqual(getShortIrenaCounterDamage(230, 1100), 50);
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(2880, 180, 0), {
+  damage: 2700,
+  targetDefense: 180,
+}, 'Normal attacks must apply the current Kaiser defense.');
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(2880, 180, 3), {
+  damage: 2880,
+  targetDefense: 0,
+}, 'Collapse must change real attack damage by treating Kaiser defense as zero.');
+assert.deepStrictEqual(calculateShortIrenaAttackDamage(0, 180, 1), {
+  damage: 1,
+  targetDefense: 0,
+}, 'Defense-null must not turn a zero attack into a negative or zero damage result.');
 
 assert.deepStrictEqual({
   maxHp: IRENA.maxHp,

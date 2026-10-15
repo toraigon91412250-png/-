@@ -1,4 +1,63 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function chooseOpeningIrenaAlignment(page: Page, alignment: 'GOD' | 'DEMON') {
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  const button = page.getByRole('button', { name: alignment === 'GOD' ? '神化を選択' : '堕天を選択' });
+  const gaugeBefore = Number(await gauge.getAttribute('aria-valuenow'));
+  const bossHpBefore = Number(await bossHp.getAttribute('aria-valuenow'));
+
+  await expect(button).toBeVisible();
+  await button.click();
+
+  const gaugeAfter = Number(await gauge.getAttribute('aria-valuenow'));
+  expect(alignment === 'GOD' ? gaugeAfter > gaugeBefore : gaugeAfter < gaugeBefore).toBe(true);
+  await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossHpBefore));
+  const flash = page.getByTestId('short-irena-alignment-flash');
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-image', 'none');
+  await expect(flash).toHaveCSS(
+    'background-color',
+    alignment === 'GOD' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.82)',
+  );
+  await expect(flash).toBeHidden({ timeout: 1500 });
+  await expect(button).toBeHidden();
+}
+
+async function moveFinalIrenaGaugeTo(page: Page, target: number) {
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const start = Number(await gauge.getAttribute('aria-valuenow'));
+  if (target !== -100 && target !== 100 && (target - start) % 15 !== 0) {
+    throw new Error(`Gauge target ${target} cannot be reached from ${start} with 15-point controls.`);
+  }
+
+  for (let moves = 0; moves < 32; moves += 1) {
+    const current = Number(await gauge.getAttribute('aria-valuenow'));
+    if (current === target) return;
+    const moveGodward = current < target;
+    const button = page.getByRole('button', {
+      name: moveGodward ? '神側へ15ポイント移動' : '堕天側へ15ポイント移動',
+    });
+    const next = Math.max(-100, Math.min(100, current + (moveGodward ? 15 : -15)));
+    await expect(button).toBeEnabled();
+    await button.click();
+    await expect(gauge).toHaveAttribute('aria-valuenow', String(next));
+  }
+
+  throw new Error(`Gauge did not reach target ${target} within 32 moves (current ${await gauge.getAttribute('aria-valuenow')}).`);
+}
+
+
+async function startFinalIrenaAtEndpoint(page: Page, alignment: 'GOD' | 'DEMON') {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, alignment);
+  await moveFinalIrenaGaugeTo(page, alignment === 'GOD' ? 100 : -100);
+}
 
 test('normal battle setup keeps Stella hidden from Irena mode', async ({ page }) => {
   await page.addInitScript(() => {
@@ -149,7 +208,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
 
   const characterPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
   await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：ステラ' })).toBeVisible();
-  await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' })).toHaveCount(0);
+  await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' })).toHaveCount(0);
 
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
   const playerHp = page.locator('[role="progressbar"][aria-label="ステラのHP"]');
@@ -194,7 +253,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await rewardSaveError.getByRole('button', { name: '報酬保存を再試行' }).click();
   const rewardNotice = page.getByRole('status', { name: '最終決戦クリア報酬' });
   await expect(rewardNotice).toContainText('+100P');
-  await expect(rewardNotice).toContainText('短期決戦モード・いれーなが解放');
+  await expect(rewardNotice).toContainText('最終決戦用いれーなが解放');
   await expect.poll(() => page.evaluate(() => window.localStorage.getItem('duel_arena_stat_points'))).toBe('162');
   await expect.poll(() => page.evaluate(() => {
     const value = window.localStorage.getItem('duel_arena_stella_mode_progress');
@@ -210,12 +269,12 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   const unlockedPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
-  const finalIrenaChoice = unlockedPicker.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' });
+  const finalIrenaChoice = unlockedPicker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' });
   await expect(finalIrenaChoice).toBeVisible();
   await finalIrenaChoice.click();
   await expect(finalIrenaChoice).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('.stella-final__fighter--stella .stella-final__fighter-name')).toHaveText('短期決戦モード・いれーな');
-  await expect(page.getByRole('region', { name: '短期決戦モード・いれーなの150P育成' })).toBeVisible();
+  await expect(page.locator('.stella-final__fighter--stella .stella-final__fighter-name')).toHaveText('最終決戦用いれーな');
+  await expect(page.getByRole('region', { name: '最終決戦用いれーなの150P育成' })).toBeVisible();
 
   const pickerBox = await unlockedPicker.boundingBox();
   const viewport = page.viewportSize();
@@ -225,19 +284,24 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   expect(pickerBox!.x + pickerBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
 
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
-  await expect(page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
+  await chooseOpeningIrenaAlignment(page, 'GOD');
+  await expect(page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' })).toHaveAttribute('aria-valuemax', '4000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '30');
+  await expect(page.getByRole('button', { name: '絶界昇華を発動' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
 
   // The dedicated version does not enter the normal battle roster.
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
-  await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /短期決戦モード・いれーな/ })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /最終決戦用いれーな/ })).toHaveCount(0);
 });
 
 
-test('short-duel Irena allocates 150P and uses both image-backed divine/demonic final routes', async ({ page }) => {
+test('final-duel Irena uses the reversible gauge, existing ultimate multipliers, and distinct route effects', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -246,7 +310,7 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
       finalBattleCleared: true, finalBattleRewardClaimed: true,
     }));
     window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
-      maxHp: 0, attack: 150, defense: 0, speed: 0,
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
     }));
   });
   await page.goto('/');
@@ -255,87 +319,159 @@ test('short-duel Irena allocates 150P and uses both image-backed divine/demonic 
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
 
   const picker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
-  const shortIrena = picker.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' });
+  const shortIrena = picker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' });
   await expect(shortIrena).toBeVisible();
   await shortIrena.click();
-  const build = page.getByRole('region', { name: '短期決戦モード・いれーなの150P育成' });
+  const build = page.getByRole('region', { name: '最終決戦用いれーなの150P育成' });
   await expect(build).toContainText('150 / 150P 使用・残り 0P');
   await expect(build.getByRole('button', { name: '攻撃を1P増やす' })).toBeDisabled();
 
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
-  await expect(page.getByRole('heading', { name: '最終決戦の行動' })).toBeVisible();
-  const normalAttack = page.getByRole('button', { name: '通常攻撃' });
-  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
-  const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const controlGod = page.getByRole('button', { name: '理外掌握：神側へ' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await expect(gauge).toHaveAttribute('aria-valuenow', '0');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '15000');
+  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '神化を選択' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '堕天を選択' })).toBeVisible();
 
-  await normalAttack.click();
-  const demonCutIn = page.getByTestId('short-irena-normal-cutin');
-  const cutInStartedAt = Date.now();
-  await expect(demonCutIn).toBeVisible();
-  await page.waitForTimeout(600);
-  await expect(demonCutIn).toBeVisible();
-  const demonCutInImage = demonCutIn.locator('img');
-  await expect.poll(() => demonCutInImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-  const cutInBox = await demonCutInImage.boundingBox();
-  const viewport = page.viewportSize();
-  expect(cutInBox).not.toBeNull();
-  expect(viewport).not.toBeNull();
-  expect(cutInBox!.x).toBeGreaterThanOrEqual(0);
-  expect(cutInBox!.x + cutInBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
-  expect(cutInBox!.y).toBeGreaterThanOrEqual(0);
-  expect(cutInBox!.y + cutInBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
-  await expect(demonCutIn).toBeHidden({ timeout: 700 });
-  expect(Date.now() - cutInStartedAt).toBeGreaterThanOrEqual(600);
-
-  await terminus.click();
-  await expect(page.getByRole('button', { name: '行動不能ターンを消費' })).toBeVisible();
-  await page.getByRole('button', { name: '行動不能ターンを消費' }).click();
-  await controlDemon.click();
-  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '-100');
+  // Opening choice changes only the gauge, and the cut-in always returns to normal.
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await expect(page.getByRole('button', { name: '終極殲滅を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '絶界昇華を発動' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-15');
+  await moveFinalIrenaGaugeTo(page, -100);
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-100');
+  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('終点・究極必殺技');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1193/);
-  const demonFinisher = page.getByRole('button', { name: '堕天側の最終必殺技' });
+
+  const demonFinisher = page.getByRole('button', { name: '堕天側の究極必殺技 終焉' });
   await expect(demonFinisher).toBeEnabled();
   await demonFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
   const demonFinisherImage = page.getByTestId('short-irena-finisher-image');
   await expect(demonFinisherImage).toHaveAttribute('src', /413F5794/);
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-  await expect(demonFinisherImage).toHaveCSS('object-fit', 'contain');
-  await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力116,122');
+  const demonRoutePicker = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(demonRoutePicker).toBeVisible({ timeout: 5000 });
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0');
+  await demonRoutePicker.getByRole('button', { name: /崩壊/ }).click();
+  await expect(demonRoutePicker).toBeHidden();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '0', 'The selected route must not add a follow-up attack.');
+  await expect(page.getByRole('status').filter({ hasText: '崩壊：EXカイザーの防御0／残り 3 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('終焉の分岐「崩壊」');
 
-  await page.getByRole('button', { name: 'もう一度挑む' }).click();
-  await expect(controlGod).toBeEnabled();
-  await controlGod.click();
-  await ascension.click();
-  await expect(page.getByRole('progressbar', { name: '堕天ゲージ' })).toHaveAttribute('aria-valuenow', '100');
+  // Reloading starts a fresh battle with the same final-duel-only save, not a normal roster change.
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'GOD');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await moveFinalIrenaGaugeTo(page, 100);
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('status', { name: '権能解放段階' })).toContainText('終点・究極必殺技');
   await expect(page.getByTestId('final-battle-player-portrait')).toHaveAttribute('src', /IMG_1194/);
-  const godFinisher = page.getByRole('button', { name: '神側の最終必殺技' });
+
+  const godFinisher = page.getByRole('button', { name: '神側の究極必殺技 創世' });
   await expect(godFinisher).toBeEnabled();
   await godFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
   const godFinisherImage = page.getByTestId('short-irena-finisher-image');
   await expect(godFinisherImage).toHaveAttribute('src', /IMG_1199/);
   await expect.poll(() => godFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-  await expect(godFinisherImage).toHaveCSS('object-fit', 'contain');
-  const godImageBox = await godFinisherImage.boundingBox();
-  expect(godImageBox).not.toBeNull();
-  expect(godImageBox!.x).toBeGreaterThanOrEqual(0);
-  expect(godImageBox!.x + godImageBox!.width).toBeLessThanOrEqual(viewport!.width + 1);
-  expect(godImageBox!.y).toBeGreaterThanOrEqual(0);
-  expect(godImageBox!.y + godImageBox!.height).toBeLessThanOrEqual(viewport!.height + 1);
-  await expect(page.getByRole('heading', { name: '最終決戦 勝利' })).toBeVisible({ timeout: 5000 });
-  await expect(page.locator('.stella-final__log-lines')).toContainText('威力42,768');
+  const godRoutePicker = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(godRoutePicker).toBeVisible({ timeout: 5000 });
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await godRoutePicker.getByRole('button', { name: /神威/ }).click();
+  await expect(godRoutePicker).toBeHidden();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600', 'Route application does not trigger a follow-up attack.');
+  await expect(page.getByRole('status').filter({ hasText: '神威：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
+  await expect(godFinisher).toBeDisabled();
+
+  // Leaving the endpoint briefly is not enough to reset the consumed ultimate.
+  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '85');
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(godFinisher).toBeDisabled();
+  await moveFinalIrenaGaugeTo(page, 25);
+  await expect(gauge).toHaveAttribute('aria-valuenow', '25');
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
+  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '40');
+  await moveFinalIrenaGaugeTo(page, 100);
+  await expect(godFinisher).toBeEnabled();
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
-  await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /短期決戦モード・いれーな/ })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /最終決戦用いれーな/ })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => {
     const value = window.localStorage.getItem('duel_arena_short_irena_stat_allocation');
-    return value ? JSON.parse(value).attack : -1;
+    return value ? JSON.parse(value).maxHp : -1;
   })).toBe(150);
+});
+
+test('the remaining divine/demonic routes apply their distinct effects without follow-up attacks', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  // GOD / 静寂: the next actual Kaiser counter is suppressed exactly once.
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const godRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(godRoutes).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await godRoutes.getByRole('button', { name: /静寂/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '静寂：EXカイザーの通常反撃停止／残り 1 ターン' })).toBeVisible();
+  const hpBeforeSilencedCounter = await playerHp.getAttribute('aria-valuenow');
+  await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', hpBeforeSilencedCounter!);
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('静寂によりカイザーの通常反撃を停止');
+
+  // GOD / 再臨: set the existing authority cooldown state back to its ready turn.
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const rebirthRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(rebirthRoutes).toBeVisible();
+  await rebirthRoutes.getByRole('button', { name: /再臨/ }).click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('再使用可能にした');
+  
+  // DEMON / 断絶: immunity is applied for ten turns. The current engine has no Kaiser buff source.
+  await startFinalIrenaAtEndpoint(page, 'DEMON');
+  await page.getByRole('button', { name: '堕天側の究極必殺技 終焉' }).click();
+  const severRoutes = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(severRoutes).toBeVisible();
+  await severRoutes.getByRole('button', { name: /断絶/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '断絶：カイザーのバフ付与無効／残り 10 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('新たなバフ付与を10ターン拒否');
+
+  // DEMON / 消滅: pressure is cleared and resistance is set for five turns.
+  await startFinalIrenaAtEndpoint(page, 'DEMON');
+  await page.getByRole('button', { name: '堕天側の究極必殺技 終焉' }).click();
+  const extinguishRoutes = page.getByRole('dialog', { name: '終焉のルート選択' });
+  await expect(extinguishRoutes).toBeVisible();
+  await extinguishRoutes.getByRole('button', { name: /消滅/ }).click();
+  await expect(page.getByRole('status').filter({ hasText: '消滅：重圧耐性／残り 5 ターン' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('重圧を解除し、重圧耐性を5ターン');
 });
 
 test('failed final-battle image preload blocks battle start and can be retried', async ({ page }) => {
@@ -378,25 +514,59 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
-  const playerHp = page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' });
+  await chooseOpeningIrenaAlignment(page, 'GOD');
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
   await page.getByRole('button', { name: '通常攻撃' }).click();
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
+  await moveFinalIrenaGaugeTo(page, 63);
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
-  const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '3880');
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
-  await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 50));
-  await expect(page.getByRole('status').filter({ hasText: '全能 0.6倍' })).toBeVisible();
-  await expect(page.getByText(/元攻撃力×0\.60（永続）/)).toBeVisible();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(page.getByRole('status').filter({ hasText: '全能 1.5倍' })).toBeVisible();
+  await expect(page.getByText(/元攻撃力×0\.75（永続）/)).toBeVisible();
   await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
 });
+test('a previously used endpoint ultimate cannot soft-lock the final-turn judgment', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+    Math.random = () => 0;
+  });
+
+  await startFinalIrenaAtEndpoint(page, 'GOD');
+  const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
+  await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
+  const routes = page.getByRole('dialog', { name: '創世のルート選択' });
+  await expect(routes).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '600');
+  await routes.getByRole('button', { name: /静寂/ }).click();
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り7ターン');
+
+  // The first attack consumes 静寂; later attacks cannot finish the boss
+  // because the special duel keeps normal attacks from reducing its HP below 1.
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  for (let action = 0; action < 7; action += 1) await attack.click();
+
+  await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。究極必殺技はこの終点で使用済みのため再使用できず敗北。');
+});
+
 test('short-duel Irena loses when the final turn expires without a locked divine/demonic route', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -414,45 +584,70 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
-  const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
-  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
-  const ascension = page.getByRole('button', { name: '絶界昇華を発動' });
-  const pass = page.getByRole('button', { name: '行動不能ターンを消費' });
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
 
   for (let turn = 0; turn < 4; turn += 1) await attack.click();
   await expect(page.locator('.stella-final__phase')).toContainText('03');
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
-  // Keep the route unlocked until the countdown expires.
-  // Ascension moves -48 to +12; boosted actions reach +60 without locking the route.
-  await ascension.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '12');
-  await attack.click();
-  await attack.click();
-  await attack.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '60');
-  await expect(pass).toBeVisible();
+  // Gauge movement remains available on either side after stage two unlocks.
+  const moveGod = page.getByRole('button', { name: '神側へ15ポイント移動' });
+  for (let move = 0; move < 4; move += 1) await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-3');
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り4ターン');
 
-  // Consume Ascension recoil, then use Terminus from +60. Its opposite-gauge
-  // penalty is limited to -15, leaving the route at +45 rather than locking it.
-  await pass.click();
-  await terminus.click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
-  await expect(pass).toBeVisible();
-  await pass.click();
+  // Spend the last four turns moving toward the centre without reaching either endpoint.
+  for (let move = 0; move < 4; move += 1) await moveGod.click();
+  await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '57');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('最終判定。堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
+  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
+});
 
-  // All Might can skip the current Kaiser action, but cannot stop the final deadline.
-  // The gauge lands at -5, so the loss is specifically caused by an unlocked route.
+test('理外掌握 cannot stop the final instant-death judgment', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+    Math.random = () => 0;
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
+
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const moveDemon = page.getByRole('button', { name: '堕天側へ15ポイント移動' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+
+  for (let turn = 0; turn < 4; turn += 1) await attack.click();
+  await expect(page.locator('.stella-final__phase')).toContainText('03');
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
+  await expect(controlDemon).toBeEnabled();
+
+  // Keep the gauge at the demonic endpoint until only one turn remains.
+  for (let turn = 0; turn < 7; turn += 1) await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-100');
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り1ターン');
+
   await controlDemon.click();
   await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-5');
-  await expect(page.locator('.stella-final__log-lines')).toContainText('堕天ゲージが神側にも堕天側にも振り切れていないため敗北');
-  await expect(page.getByRole('button', { name: '最終必殺技（未解放）' })).toBeDisabled();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('理外掌握でもカイザーの即死行動は止められず、敗北。');
 });
 
 test('理外掌握 resets active authority cooldowns and skips exactly the current Kaiser action', async ({ page }) => {
@@ -471,10 +666,12 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await moveFinalIrenaGaugeTo(page, -60);
 
-  const playerHp = page.getByRole('progressbar', { name: '短期決戦モード・いれーなのHP' });
+  const playerHp = page.getByRole('progressbar', { name: '最終決戦用いれーなのHP' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
   const control = page.getByRole('button', { name: '理外掌握：神側へ' });
@@ -483,8 +680,11 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
   await terminus.click();
   await expect(terminus).toBeDisabled();
   await expect(pass).toBeVisible();
+  const ultimate = page.getByRole('button', { name: '堕天側の究極必殺技 終焉' });
+  await expect(ultimate).toBeDisabled();
   await pass.click();
   await expect(terminus).toBeDisabled();
+  await expect(ultimate).toBeEnabled();
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
 
   // The cooldown is still active before All Might, then must be ready next turn.
@@ -497,7 +697,7 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
 
   await terminus.click();
   await expect.poll(async () => Number(await bossHp.getAttribute('aria-valuenow'))).toBeLessThan(bossBeforeControl);
-  await expect(page.locator('.stella-final__log-lines')).toContainText('第4ターン：権能「終極殲滅」');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('第8ターン：権能「終極殲滅」');
 });
 
 test('絶界昇華 triples effective stats and blocks all authorities for its full active duration', async ({ page }) => {
@@ -509,15 +709,17 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
       finalBattleCleared: true, finalBattleRewardClaimed: true,
     }));
     window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
-      maxHp: 0, attack: 0, defense: 0, speed: 0,
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
     }));
   });
 
   await page.goto('/');
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: '最終決戦キャラクター：短期決戦モード・いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
+  await moveFinalIrenaGaugeTo(page, -30);
 
   const attack = page.getByRole('button', { name: '通常攻撃' });
   const terminus = page.getByRole('button', { name: '終極殲滅を発動' });
@@ -535,8 +737,12 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(pass).toBeVisible();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await pass.click();
+  await moveFinalIrenaGaugeTo(page, 45);
 
   await ascension.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  const ultimate = page.getByRole('button', { name: '神側の究極必殺技 創世' });
+  await expect(ultimate).toBeDisabled();
   await expect(page.getByText(/実効ステータス：ATK 1,080／DEF 600／SPD 720/)).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 3 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
@@ -545,7 +751,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1360');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -564,13 +770,15 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
   await expect(pass).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '-93');
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
+  await expect(ultimate).toBeDisabled();
 
   await pass.click();
   await expect(ascension).toBeEnabled();
-  await expect(terminus).toBeEnabled();
+  await expect(terminus).toBeDisabled();
   await expect(controlGod).toBeEnabled();
   await expect(controlDemon).toBeEnabled();
+  await expect(ultimate).toBeEnabled();
 });
 
 test('legacy unlocked save can still enter the EX Kaiser challenge without resetting Stella progress', async ({ page }) => {
