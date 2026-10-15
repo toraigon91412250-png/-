@@ -51,7 +51,7 @@ async function moveFinalIrenaGaugeTo(page: Page, target: number) {
 async function startFinalIrenaAtGauge(page: Page, target: number) {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -62,7 +62,7 @@ async function startFinalIrenaAtGauge(page: Page, target: number) {
 async function startFinalIrenaAtEndpoint(page: Page, alignment: 'GOD' | 'DEMON') {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -88,21 +88,24 @@ test('normal battle setup keeps Stella hidden from Irena mode', async ({ page })
   await expect(roster.getByRole('button', { name: 'ステラ（仮）、天星の翼' })).toHaveCount(0);
 });
 
-test('unlocked Stella mode opens the dedicated EX Kaiser final battle and all three powers', async ({ page }) => {
+test('unlocked Stella final duel exposes the expected authorities after EX victory', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: true,
+      stellaModeUnlocked: true,
       revealAvailable: false,
       kaiser100RewardClaimed: true,
       exKaiserDefeated: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
     }));
   });
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('heading', { name: 'EXカイザー 最終決戦' })).toBeVisible();
 
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -132,7 +135,7 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
 
@@ -156,35 +159,13 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   await expect(page.locator('.stella-final__phase')).toContainText('02');
 });
 
-test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance', async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
-      isUnlocked: false,
-      exKaiserDefeated: false,
-      revealAvailable: false,
-      kaiser100RewardClaimed: true,
-    }));
-    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
-  });
-
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
-  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
-  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
-  await expect(page.locator('.battle-challenge-level-caption')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: /戦闘開始/ })).toBeEnabled();
-});
-
-
 test('EX Kaiser starts with EX mode and doubled Lv.100 stats after battle restart', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: false,
+      stellaModeUnlocked: true,
       exKaiserDefeated: false,
       revealAvailable: false,
       kaiser100RewardClaimed: true,
@@ -244,7 +225,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
 
   const characterPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
   await expect(characterPicker.getByRole('button', { name: '最終決戦キャラクター：ステラ' })).toBeVisible();
@@ -307,7 +288,7 @@ test('actual Stella final-battle victory saves +100P once and unlocks only final
   // The persisted marker survives a reload and exposes only the dedicated version in this mode.
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   const unlockedPicker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
   const finalIrenaChoice = unlockedPicker.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' });
   await expect(finalIrenaChoice).toBeVisible();
@@ -356,7 +337,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   });
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
 
   const picker = page.getByRole('region', { name: '最終決戦の操作キャラクター' });
@@ -406,7 +387,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   // Reloading starts a fresh battle with the same final-duel-only save, not a normal roster change.
   await page.reload();
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -524,7 +505,7 @@ test('failed final-battle image preload blocks battle start and can be retried',
   const blockedStellaCutIn = (url: URL) => url.pathname === '/src/assets/IMG_1186.jpg' && url.search === '';
   await page.route(blockedStellaCutIn, route => route.abort());
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   const preloadError = page.getByRole('alert', { name: '最終決戦画像のプリロード失敗' });
   await expect(preloadError).toBeVisible({ timeout: 15000 });
   await expect(preloadError).toContainText('IMG_1186.jpg');
@@ -548,7 +529,7 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
     }));
   });
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -618,7 +599,7 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -660,7 +641,7 @@ test('理外掌握 cannot stop the final instant-death judgment', async ({ page 
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -700,7 +681,7 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -750,7 +731,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   });
 
   await page.goto('/');
-  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await page.getByRole('button', { name: 'ステラ最終決戦を開く' }).click();
   await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
   await page.getByRole('button', { name: '最終決戦を開始' }).click();
@@ -947,6 +928,7 @@ test('EX Kaiser remains Lv.100 when a developer-style Lv.100 clear leaves normal
     // one-time reward/EX access is saved, but the normal challenge ladder is not advanced.
     window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
       isUnlocked: false,
+      stellaModeUnlocked: true,
       exKaiserDefeated: false,
       revealAvailable: false,
       kaiser100RewardClaimed: true,
@@ -1019,7 +1001,7 @@ test('repeated same-direction gauge choices replay the light/dark flash', async 
   await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
 });
 
-test('a real normal Lv.100 victory persists the +50P reward once and exposes only the EX route', async ({ page }) => {
+test('a real normal Lv.100 victory reveals warp, unlocks Stella mode, then enables EX without duplicating +50P', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -1085,16 +1067,31 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
   await expect.poll(() => page.evaluate(() => {
     const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
     const progress = raw ? JSON.parse(raw) : {};
-    return {
-      isUnlocked: progress.isUnlocked,
-      exKaiserDefeated: progress.exKaiserDefeated,
-      revealAvailable: progress.revealAvailable,
-    };
-  })).toEqual({ isUnlocked: false, exKaiserDefeated: false, revealAvailable: false });
+    return { isUnlocked: progress.isUnlocked, stellaModeUnlocked: progress.stellaModeUnlocked,
+      exKaiserDefeated: progress.exKaiserDefeated, revealAvailable: progress.revealAvailable };
+  })).toEqual({ isUnlocked: false, stellaModeUnlocked: false, exKaiserDefeated: false, revealAvailable: true });
 
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: /隠された領域へ進む/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toHaveCount(0);
+  await page.getByRole('button', { name: /隠された領域へ進む/ }).click();
+  await expect(page.getByRole('heading', { name: 'ステラモード解放' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '解放を確認' }).click();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem('duel_arena_stella_mode_progress');
+    const progress = raw ? JSON.parse(raw) : {};
+    return { isUnlocked: progress.isUnlocked, stellaModeUnlocked: progress.stellaModeUnlocked,
+      exKaiserDefeated: progress.exKaiserDefeated, revealAvailable: progress.revealAvailable };
+  })).toEqual({ isUnlocked: false, stellaModeUnlocked: true, exKaiserDefeated: false, revealAvailable: false });
+
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '操作キャラクター' })
+    .getByRole('button', { name: 'ステラ（仮）、天星の翼' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '戻る' }).click();
+  await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
 
   // Replay Lv.100 through the real Developer Tools path. It is still a NORMAL
   // Kaiser fight, must not grant the one-time +50P again, and must retain EX access.
@@ -1131,10 +1128,11 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
 
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラ最終決戦を開く' })).toHaveCount(0);
 });
 
-test('Developer Tools first-time normal Lv.100 victory unlocks EX while preserving the normal Lv.10 ladder', async ({ page }) => {
+test('Developer Tools Lv.100 victory reveals Stella mode before EX and preserves the normal Lv.10 ladder', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -1201,12 +1199,14 @@ test('Developer Tools first-time normal Lv.100 victory unlocks EX while preservi
       kaiser100RewardClaimed: progress.kaiser100RewardClaimed === true,
       exKaiserDefeated: progress.exKaiserDefeated === true,
       revealAvailable: progress.revealAvailable === true,
+      stellaModeUnlocked: progress.stellaModeUnlocked === true,
       isUnlocked: progress.isUnlocked === true,
     };
   })).toEqual({
     kaiser100RewardClaimed: true,
     exKaiserDefeated: false,
-    revealAvailable: false,
+    revealAvailable: true,
+    stellaModeUnlocked: false,
     isUnlocked: false,
   });
   await expect.poll(() => page.evaluate(() => {
@@ -1215,8 +1215,17 @@ test('Developer Tools first-time normal Lv.100 victory unlocks EX while preservi
   })).toBe(10);
 
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
+  await expect(page.getByRole('button', { name: /隠された領域へ進む/ })).toBeVisible();
+  await page.getByRole('button', { name: /隠された領域へ進む/ }).click();
+  await expect(page.getByRole('heading', { name: 'ステラモード解放' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '解放を確認' }).click();
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
+  await expect(page.getByRole('region', { name: '操作キャラクター' })
+    .getByRole('button', { name: 'ステラ（仮）、天星の翼' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '戻る' }).click();
   await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');

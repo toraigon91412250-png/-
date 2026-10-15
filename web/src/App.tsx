@@ -220,7 +220,7 @@ export const App: React.FC = () => {
         : getPlayerCharacterById(prefill?.playerCharacterId ?? battleSetup.playerCharacterId).id;
     const safePlayerCharacterId = mode === 'DEVELOPER'
       && requestedPlayerCharacterId === STELLA.id
-      && !currentStellaProgress.isUnlocked
+      && !currentStellaProgress.stellaModeUnlocked
         ? IRENA.id
         : requestedPlayerCharacterId;
     const keepStellaAbilities = (abilities: BattleSetupConfig['abilities']) =>
@@ -390,6 +390,13 @@ export const App: React.FC = () => {
   const handleOpenStellaMode = () => {
     const progress = loadStellaModeProgress();
     setStellaModeProgress(progress);
+    if (!progress.stellaModeUnlocked) return;
+    handleOpenBattleSetup(undefined, 'SELECT', false, 'STELLA');
+  };
+
+  const handleOpenStellaFinalBattle = () => {
+    const progress = loadStellaModeProgress();
+    setStellaModeProgress(progress);
     if (!progress.isUnlocked || !progress.exKaiserDefeated) return;
     cancelBattle();
     setBattleSetupMode('NORMAL');
@@ -400,7 +407,7 @@ export const App: React.FC = () => {
     const progress = loadStellaModeProgress();
     // Legacy saves can mark Stella as unlocked without the player ever seeing the post-Lv.100 EX route.
     // Keep the EX challenge replayable after the one-time Lv.100 reward has been claimed.
-    if (!progress.kaiser100RewardClaimed && !progress.isUnlocked && !progress.exKaiserDefeated) return;
+    if (!progress.stellaModeUnlocked || (!progress.kaiser100RewardClaimed && !progress.exKaiserDefeated)) return;
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     handleOpenBattleSetup({
@@ -421,7 +428,7 @@ export const App: React.FC = () => {
 
   const handleStartBattle = (config: BattleSetupConfig) => {
     const safePlayerCharacterId = config.playerCharacterId === STELLA.id
-      && !loadStellaModeProgress().isUnlocked
+      && !loadStellaModeProgress().stellaModeUnlocked
         ? IRENA.id
         : config.playerCharacterId;
     const battleConfigWithImprints: BattleSetupConfig = {
@@ -601,13 +608,15 @@ export const App: React.FC = () => {
           availableStatPoints={availableStatPoints}
           abilityProgress={abilityProgress}
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
-          stellaModeUnlocked={stellaModeProgress.isUnlocked}
-          exKaiserChallengeAvailable={stellaModeProgress.kaiser100RewardClaimed && !stellaModeProgress.exKaiserDefeated && !stellaModeProgress.isUnlocked}
-          exKaiserReplayAvailable={stellaModeProgress.exKaiserDefeated || stellaModeProgress.isUnlocked}
+          stellaModeUnlocked={stellaModeProgress.stellaModeUnlocked}
+          stellaFinalBattleUnlocked={stellaModeProgress.isUnlocked && stellaModeProgress.exKaiserDefeated}
+          exKaiserChallengeAvailable={stellaModeProgress.kaiser100RewardClaimed && stellaModeProgress.stellaModeUnlocked && !stellaModeProgress.exKaiserDefeated}
+          exKaiserReplayAvailable={stellaModeProgress.stellaModeUnlocked && stellaModeProgress.exKaiserDefeated}
           stellaRewardSaveError={stellaRewardSaveError}
           onRevealStella={handleRevealStella}
           onStartExKaiser={handleStartExKaiser}
           onOpenStellaMode={handleOpenStellaMode}
+          onOpenStellaFinalBattle={handleOpenStellaFinalBattle}
         />
       ) : screen === 'GROWTH_HUB' ? (
         <GrowthHubScreen
@@ -678,13 +687,13 @@ export const App: React.FC = () => {
           playerCharacters={battleSetupMode === 'STELLA'
             ? [STELLA]
             : battleSetupMode === 'DEVELOPER'
-              ? PLAYER_CHARACTERS.filter(character => character.id !== STELLA.id || stellaModeProgress.isUnlocked)
+              ? PLAYER_CHARACTERS.filter(character => character.id !== STELLA.id || stellaModeProgress.stellaModeUnlocked)
               : [IRENA]}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
             ? STELLA.id
             : getPlayerCharacterById(battleSetup.playerCharacterId).id}
           onSelectPlayerCharacter={playerCharacterId => {
-            if (playerCharacterId === STELLA.id && !loadStellaModeProgress().isUnlocked) return;
+            if (playerCharacterId === STELLA.id && !loadStellaModeProgress().stellaModeUnlocked) return;
             setBattleSetup(prev => ({ ...prev, playerCharacterId }));
           }}
           abilityProgress={abilityProgress}
