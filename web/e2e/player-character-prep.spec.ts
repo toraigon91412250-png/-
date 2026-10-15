@@ -502,13 +502,13 @@ test('理外掌握 fixes the turn-based multiplier, heals, stops one Kaiser acti
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '3760');
-  await moveFinalIrenaGaugeTo(page, 60);
+  await moveFinalIrenaGaugeTo(page, 63);
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
   const gaugeBeforeControl = Number(await gauge.getAttribute('aria-valuenow'));
   await page.getByRole('button', { name: '理外掌握：神側へ' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4000');
   await expect(bossHp).toHaveAttribute('aria-valuenow', String(bossBeforeControl));
-  await expect(gauge).toHaveAttribute('aria-valuenow', String(gaugeBeforeControl + 15));
+  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
   await expect(page.getByRole('status').filter({ hasText: '全能 1.5倍' })).toBeVisible();
   await expect(page.getByText(/元攻撃力×0\.75（永続）/)).toBeVisible();
   await expect(page.getByRole('button', { name: '理外掌握：堕天側へ' })).toBeDisabled();
