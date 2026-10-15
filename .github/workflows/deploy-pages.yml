@@ -100,11 +100,11 @@ jobs:
             throw new Error('Published page did not contain the expected game document title.');
           }
 
-          const assets = [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:m?js|css)(?:\\?[^"']*)?)["']/g)]
+          const assets = [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:m?js|css)(?:\?[^"']*)?)["']/g)]
             .map(match => match[1]);
-          const scripts = assets.filter(asset => /\.m?js(?:\\?|$)/.test(new URL(asset, pageUrl).pathname));
+          const scripts = assets.filter(asset => /\.m?js(?:\?|$)/.test(new URL(asset, pageUrl).pathname));
           if (scripts.length === 0) throw new Error('No built JavaScript entry point was found in the published HTML.');
-          if (!assets.some(asset => /\.css(?:\\?|$)/.test(new URL(asset, pageUrl).pathname))) {
+          if (!assets.some(asset => /\.css(?:\?|$)/.test(new URL(asset, pageUrl).pathname))) {
             throw new Error('No built CSS asset was found in the published HTML.');
           }
 
