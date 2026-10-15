@@ -536,3 +536,98 @@
   .stella-final__build-preset span { font-size: 10px; }
   .stella-final__short-build-impact > div strong { font-size: 12px; }
 }
+
+
+/* Iteration 2: a compact, explicit boss-intent forecast for Short Irena. */
+.stella-final__counter-forecast {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 151, 172, .38);
+  border-left: 4px solid #ff829a;
+  border-radius: 11px;
+  background: linear-gradient(110deg, rgba(91, 22, 45, .42), rgba(18, 13, 34, .84));
+}
+.stella-final__counter-forecast--urgent {
+  border-color: rgba(255, 91, 122, .76);
+  background: linear-gradient(110deg, rgba(120, 20, 42, .64), rgba(26, 8, 24, .94));
+  box-shadow: 0 0 18px rgba(255, 72, 107, .1);
+}
+.stella-final__counter-forecast-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.stella-final__counter-forecast-heading span {
+  color: #ffb8c7;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+}
+.stella-final__counter-forecast-heading strong {
+  color: #fff3f6;
+  font-size: 12px;
+  font-weight: 950;
+}
+.stella-final__counter-forecast-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+.stella-final__counter-forecast-values > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 173, 190, .16);
+  border-radius: 8px;
+  background: rgba(4, 5, 17, .5);
+}
+.stella-final__counter-forecast-values span {
+  color: #d4bfd0;
+  font-size: 10px;
+}
+.stella-final__counter-forecast-values strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final__counter-forecast > p {
+  margin: 8px 0 0;
+  color: #e3d7e4;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.stella-final__final-deadline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 175, 193, .25);
+  color: #ffe9ee;
+  font-size: 11px;
+  font-weight: 850;
+}
+.stella-final__final-deadline strong {
+  color: #fff;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final__final-deadline span {
+  width: 100%;
+  color: #ffc5d1;
+  font-size: 10px;
+  line-height: 1.45;
+}
+@media (max-width: 650px) {
+  .stella-final__counter-forecast { padding: 10px; }
+  .stella-final__counter-forecast-values > div { padding: 8px; }
+  .stella-final__counter-forecast-values span { font-size: 10px; }
+  .stella-final__counter-forecast-values strong { font-size: 13px; }
+  .stella-final__counter-forecast > p { font-size: 11px; }
+}
