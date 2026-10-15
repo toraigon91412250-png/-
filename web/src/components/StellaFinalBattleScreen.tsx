@@ -405,10 +405,10 @@ export const StellaFinalBattleScreen: React.FC<{
       } else if (action === 'TERMINUS') {
         if (turn < terminusReadyTurn) return current;
         terminusReadyTurn = turn + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS;
-        gaugeDelta = -SHORT_IRENA_GAUGE_STEP;
+        gaugeDelta = -60;
         const damage = Math.ceil(Math.max(
           SHORT_IRENA_TERMINUS_MIN_DAMAGE,
-          stats.attack * allMightMultiplier * allMightBaseAttackMultiplier * 2.5,
+          stats.attack * allMightMultiplier * allMightBaseAttackMultiplier * (wasGodMight ? 3 : 1) * pressureAttackMultiplier * 2.5,
         ));
         kaiserHp = Math.max(1, kaiserHp - damage);
         actionLockTurns = SHORT_IRENA_TERMINUS_RECOIL_ACTION_LOCK_TURNS;
@@ -416,7 +416,7 @@ export const StellaFinalBattleScreen: React.FC<{
         log('権能「終極殲滅」。防御貫通で' + damage.toLocaleString('ja-JP') + 'ダメージ。CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン。反動で次の1ターン行動不能、速度50%低下（2ターン）。堕天側へ傾く。');
       } else if (action === 'ASCENSION') {
         if (ascensionTurns > 0) return current;
-        gaugeDelta = SHORT_IRENA_GAUGE_STEP;
+        gaugeDelta = 60;
         // The casting turn is included in the three-turn duration.
         ascensionTurns = SHORT_IRENA_ASCENSION_TURNS;
         log('権能「絶界昇華」。攻撃・防御・速度が3倍になる（3ターン）。強化中は三大権能を使用できない。神側へ傾く。');
@@ -429,7 +429,7 @@ export const StellaFinalBattleScreen: React.FC<{
         playerHp = stats.maxHp;
         terminusReadyTurn = turn + 1;
         skipKaiserAction = true;
-        gaugeDelta = action === 'CONTROL_GOD' ? SHORT_IRENA_GAUGE_STEP : -SHORT_IRENA_GAUGE_STEP;
+        gaugeDelta = action === 'CONTROL_GOD' ? 50 : -50;
         log('権能「理外掌握／全能」。使用ターン' + turn + 'により攻撃倍率×' + allMightMultiplier.toFixed(1) + 'を永続確定。元攻撃力は×' + allMightBaseAttackMultiplier.toFixed(2) + 'に補正。HP全回復、全権能のCTをリセット、速度' + SHORT_IRENA_ALL_MIGHT_SPEED_MULTIPLIER + '倍（永続）。カイザーの通常行動を1回停止するが、終局の即死判定は止められない。' + (action === 'CONTROL_GOD' ? '神側' : '堕天側') + 'へ干渉。');
       }
 
