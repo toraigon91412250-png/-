@@ -1075,6 +1075,8 @@ test('a real normal Lv.100 victory reveals warp, unlocks Stella mode, then enabl
   await expect(page.getByRole('button', { name: /隠された領域へ進む/ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toHaveCount(0);
   await page.getByRole('button', { name: /隠された領域へ進む/ }).click();
+  await expect(page.getByRole('heading', { name: 'ステラモード解放' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '解放を確認' }).click();
   await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
@@ -1215,6 +1217,8 @@ test('Developer Tools Lv.100 victory reveals Stella mode before EX and preserves
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
   await expect(page.getByRole('button', { name: /隠された領域へ進む/ })).toBeVisible();
   await page.getByRole('button', { name: /隠された領域へ進む/ }).click();
+  await expect(page.getByRole('heading', { name: 'ステラモード解放' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '解放を確認' }).click();
   await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
   await page.getByRole('button', { name: 'ステラモードを開く' }).click();
