@@ -13,6 +13,21 @@
 html, body, #root { min-height: 100%; }
 button, input, select, textarea { font-family: inherit; }
 button { touch-action: manipulation; }
+:where(button) { transition: translate 90ms ease-out; }
+:where(button:active:not(:disabled)) {
+  translate: 0 1px;
+  filter: brightness(1.07);
+}
+/* Cancel hover lift while pressed so the shared 1px touch-down remains visible. */
+.home-dashboard__primary-action:active:not(:disabled),
+.home-dashboard__growth-entry-action:active:not(:disabled),
+.home-dashboard__mode-card:active:not(:disabled),
+.growth-hub__action:active:not(:disabled),
+.gacha-hub__summon-card:active:not(:disabled),
+.raid-v1-start-button:active:not(:disabled),
+.stella-warp__continue:active:not(:disabled) {
+  transform: none;
+}
 button:focus-visible, summary:focus-visible {
   outline: 2px solid var(--ui-gold);
   outline-offset: 3px;
@@ -45,7 +60,7 @@ button:focus-visible, summary:focus-visible {
   color: #DCE2EF !important;
 }
 .battle-setup-content h1 { letter-spacing: -.025em; }
-.battle-setup-content button { transition: border-color 140ms ease, filter 140ms ease, transform 140ms ease; }
+.battle-setup-content button { transition: border-color 140ms ease, filter 140ms ease, transform 140ms ease, translate 90ms ease-out; }
 .battle-setup-content button:not(:disabled):hover { filter: brightness(1.08); }
 .battle-setup-content button:disabled { cursor: not-allowed !important; }
 .battle-setup-content .battle-setup-quickbuild button { min-height: 44px; }
@@ -93,7 +108,7 @@ button:focus-visible, summary:focus-visible {
   background: linear-gradient(145deg, rgba(17, 47, 52, .98), rgba(14, 20, 32, .98)) !important;
 }
 .imprint-screen button, .imprint-gacha-screen button, .talent-board-screen button {
-  transition: border-color 140ms ease, filter 140ms ease, transform 140ms ease;
+  transition: border-color 140ms ease, filter 140ms ease, transform 140ms ease, translate 90ms ease-out;
 }
 .imprint-screen button:not(:disabled):hover, .imprint-gacha-screen button:not(:disabled):hover,
 .talent-board-screen button:not(:disabled):hover { filter: brightness(1.08); }
@@ -109,4 +124,5 @@ button:focus-visible, summary:focus-visible {
   button, .battle-setup-content button, .imprint-screen button, .imprint-gacha-screen button, .talent-board-screen button {
     transition-duration: .01ms !important;
   }
+  button:active:not(:disabled) { translate: none; }
 }
