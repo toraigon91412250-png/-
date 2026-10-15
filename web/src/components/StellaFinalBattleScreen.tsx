@@ -216,7 +216,7 @@ const SHORT_IRENA_BUILD_PRESETS: ReadonlyArray<{
   {
     id: 'ASSAULT',
     label: '火力型',
-    description: '攻撃優先。反撃を受ける前に押し切る',
+    description: '攻撃優先。形態を削り、終局で火力を出す',
     allocation: { maxHp: 20, attack: 75, defense: 20, speed: 35 },
   },
   {
@@ -1236,10 +1236,10 @@ export const StellaFinalBattleScreen: React.FC<{
         {battle.status === 'READY' ? (
           <section className="stella-final__briefing" aria-label="最終決戦ルール">
             <div className="stella-final__briefing-heading"><Shield size={18} /> 最終決戦のルール</div>
-            <p>EXカイザーは三形態。形態が変わってもHPは回復せず、与えたダメージを引き継ぐ。</p>
-            <p>第三形態に入ると、制限ターンが8～10ターンからランダムに決まり、期限を過ぎると終局の必殺技で敗北する。</p>
-            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手の神化／堕天では攻撃せずゲージを15ポイント動かす。30・60・100ポイントで権能段階が上がり、100ポイントで創世／終焉が解放される。</p>}
-            <p className="stella-final__prototype-note">試作バランス：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}、天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ。数値は調整用の仮設定。</p>
+            <p>EXカイザーは三形態。HP境界は10,000／5,000で、形態変化後も残りHPを引き継ぐ。通常攻撃と通常権能は、一度の行動で次の形態を飛ばせない。</p>
+            <p>第三形態に入ると基本8～10ターン。速度240超過分は最大+5ターンの追加猶予。究極技で第三形態へ入った場合、その発動ターン分を1手消費する。期限を過ぎると終局の必殺技で敗北。</p>
+            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手で神化／堕天を選び、ゲージを15ポイント移動。±30／±60で権能が増え、±100で究極技を解放する。創世×1.5／終焉×1.7は第一・第二形態で次のHP境界に止まり、第三形態では撃破可能。攻撃配分は火力、速度配分は終局の追加猶予に影響する。</p>}
+            <p className="stella-final__prototype-note">戦闘データ：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}／天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ（1回）。</p>
             {preloadStatus === 'loading' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材をプリロード中…</p>}
             {preloadStatus === 'ready' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材 読み込み完了</p>}
             {preloadStatus === 'error' && <div className="stella-final__asset-error" role="alert" aria-label="最終決戦画像のプリロード失敗"><strong>画像を読み込めないため、戦闘を開始できない。</strong><p>{preloadError}</p><button type="button" onClick={() => setPreloadRetryKey(value => value + 1)}>画像を再読み込み</button></div>}
@@ -1338,22 +1338,22 @@ export const StellaFinalBattleScreen: React.FC<{
                   <div className="stella-final__power-grid stella-final__short-authorities">
                     <article className="stella-final__power-card stella-final__power-card--divine-speed">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>神域の速度</h3><p>防御力1.5倍、速度999倍。効果4ターン。</p><small>{battle.divineSpeedTurns > 0 ? '残り ' + battle.divineSpeedTurns + ' ターン' : !canUseDivineSpeed ? '神化側30ポイント以上で解放' : '防御1.5倍・速度999倍／4ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>神域の速度</h3><p>防御力1.5倍、速度999倍。効果4ターン。</p><small>{battle.divineSpeedTurns > 0 ? '残り ' + battle.divineSpeedTurns + ' ターン' : !canUseDivineSpeed ? '神側30ポイント以上で解放' : '防御1.5倍・速度999倍／4ターン'}</small></div>
                       <button type="button" aria-label="神域の速度を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseDivineSpeed || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('DIVINE_SPEED')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--all-power">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>全能降臨</h3><p>攻撃力・防御力・速度を2倍。効果4ターン。</p><small>{battle.allPowerTurns > 0 ? '残り ' + battle.allPowerTurns + ' ターン' : !canUseAllPower ? '神化側60ポイント以上で解放' : '攻撃・防御・速度2倍／4ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>全能降臨</h3><p>攻撃力・防御力・速度を2倍。効果4ターン。</p><small>{battle.allPowerTurns > 0 ? '残り ' + battle.allPowerTurns + ' ターン' : !canUseAllPower ? '神側60ポイント以上で解放' : '攻撃・防御・速度2倍／4ターン'}</small></div>
                       <button type="button" aria-label="全能降臨を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllPower || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_POWER')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--all-things">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>万象支配</h3><p>攻撃威力は最低3,000。通常行動では次形態を飛ばせない。攻撃4倍・防御2倍・速度999倍、状態異常を解除。</p><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神側100ポイントで解放' : '威力最低3,000／形態上限あり・2ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>万象支配</h3><p>攻撃威力は最低3,000相当。形態上限で実ダメージが下がる場合がある。攻撃4倍・防御2倍・速度999倍、状態異常を解除。</p><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神側100ポイントで解放' : '威力最低3,000／形態上限あり・2ターン'}</small></div>
                       <button type="button" aria-label="万象支配を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllThings || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_THINGS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--terminus">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通（威力最低5,000）。通常行動では次形態を飛ばせない。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '威力最低5,000・形態上限あり／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通（威力最低5,000相当）。形態上限で実ダメージが下がる場合がある。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '威力最低5,000・形態上限あり／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--ascension">
