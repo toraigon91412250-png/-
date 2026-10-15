@@ -40,12 +40,14 @@ interface HomeDashboardProps {
   onOpenDeveloperTools: () => void;
   stellaUnlockAvailable: boolean;
   stellaModeUnlocked: boolean;
+  stellaFinalBattleUnlocked: boolean;
   exKaiserChallengeAvailable: boolean;
   exKaiserReplayAvailable: boolean;
   stellaRewardSaveError: boolean;
   onRevealStella: () => void;
   onStartExKaiser: () => void;
   onOpenStellaMode: () => void;
+  onOpenStellaFinalBattle: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -63,12 +65,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenDeveloperTools,
   stellaUnlockAvailable,
   stellaModeUnlocked,
+  stellaFinalBattleUnlocked,
   exKaiserChallengeAvailable,
   exKaiserReplayAvailable,
   stellaRewardSaveError,
   onRevealStella,
   onStartExKaiser,
   onOpenStellaMode,
+  onOpenStellaFinalBattle,
 }) => {
   const playerChar = getIrenaWithSkillProgress(skillProgress);
   const winRate = overallStats.totalBattles > 0
@@ -119,10 +123,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </div>
             <p className="home-dashboard__hero-description">
               {stellaUnlockAvailable
-                ? 'EXカイザーの先に、まだ知られていない領域が現れた。'
+                ? 'Lv.100の先に、まだ知られていない領域が現れた。'
                 : exKaiserChallengeAvailable
-                  ? 'Lv.100の先に現れたEXカイザーを撃破し、隠された領域へ進め。'
-                  : unlockedKaiserLevel >= 100
+                  ? 'ステラモードが解放された。次はEXカイザーに挑め。'
+                  : exKaiserReplayAvailable
+                    ? 'EXカイザーを撃破した。最終決戦への道が開かれた。'
+                    : unlockedKaiserLevel >= 100
                     ? '最終段階が解放済み。ビルドを仕上げ、Lv.100の試練へ。'
                     : '勝利で次のレベルが解放。育成と編成を整え、次の強敵へ。'}
             </p>
@@ -222,7 +228,23 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <span className="home-dashboard__mode-copy">
                   <small>HIDDEN CHARACTER UNLOCKED</small>
                   <strong>ステラモード</strong>
-                  <span>星の力を操る、もうひとつの戦いへ。</span>
+                  <span>ステラを操作して、通常のカイザーに挑戦。</span>
+                </span>
+                <span className="home-dashboard__mode-meta"><span>解放済み</span><ChevronRight size={18} /></span>
+              </button>
+            )}
+            {stellaFinalBattleUnlocked && (
+              <button
+                className="home-dashboard__mode-card home-dashboard__mode-card--stella"
+                type="button"
+                onClick={onOpenStellaFinalBattle}
+                aria-label="ステラ最終決戦を開く"
+              >
+                <span className="home-dashboard__mode-art" aria-hidden="true"><Swords size={28} /></span>
+                <span className="home-dashboard__mode-copy">
+                  <small>EX KAISER DEFEATED</small>
+                  <strong>ステラ最終決戦</strong>
+                  <span>EXカイザー撃破後に挑める、最後の戦い。</span>
                 </span>
                 <span className="home-dashboard__mode-meta"><span>解放済み</span><ChevronRight size={18} /></span>
               </button>
