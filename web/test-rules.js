@@ -133,6 +133,21 @@ assert.match(shortIrenaFinalBattleSource,
 assert.match(shortIrenaFinalBattleSource,
   /finalTurnsLeft === 0 && shouldFailAtShortIrenaFinalDeadline\(/,
   'Deadline resolution must force a terminal result when the finisher is blocked.');
+assert.match(shortIrenaFinalBattleSource, /stella-final--playing/,
+  'Only the active battle screen opts into the no-scroll compact layout.');
+assert.match(shortIrenaFinalBattleSource, /canUseShortIrenaSkill && canUseDivineSpeed/,
+  'Locked or unavailable Irena authorities are not rendered.');
+assert.match(shortIrenaFinalBattleSource, /canUseShortIrenaSkill && canUseAllThings/,
+  'The highest-gauge authority is rendered only at its actual unlock threshold.');
+assert.match(shortIrenaFinalBattleSource, /canUseShortIrenaUltimate && \(/,
+  'The ultimate button is rendered only when the current finisher can be used.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__counter-forecast--stella/,
+  'Stella battle now displays the Kaiser next-action forecast.');
+const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
+assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidden/,
+  'The active battle layout must prevent page scrolling.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-copy p \{ display: none; \}/,
+  'Compact battle command cards hide descriptions.');
 
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
