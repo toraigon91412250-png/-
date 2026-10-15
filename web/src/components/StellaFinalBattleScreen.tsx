@@ -963,12 +963,12 @@ export const StellaFinalBattleScreen: React.FC<{
               {battle.fighterId === 'short-irena' ? (
                 <>
                   <div className="stella-final__daten-gauge" aria-label="堕天ゲージ表示">
-                    <div className="stella-final__daten-gauge-labels"><strong>堕天側</strong><span>{battle.alignment ? (battle.alignment === 'GOD' ? '神側の終点' : '堕天側の終点') : '中央から移動'}</span><strong>神側</strong></div>
+                    <div className="stella-final__daten-gauge-labels"><strong>堕天側</strong><span>{battle.alignment ? (battle.alignment === 'GOD' ? '神側の終点' : '堕天側の終点') : battle.datenGauge > 0 ? '神側へ傾いている' : battle.datenGauge < 0 ? '堕天側へ傾いている' : '中央'}</span><strong>神側</strong></div>
                     <div className={'stella-final__daten-gauge-track' + (battle.alignment ? ' is-' + battle.alignment.toLowerCase() : '')} role="progressbar" aria-label="堕天ゲージ" aria-valuemin={-100} aria-valuemax={100} aria-valuenow={battle.datenGauge}>
                       <span className="stella-final__daten-gauge-center" />
                       <span className="stella-final__daten-gauge-marker" style={{ left: ((battle.datenGauge + 100) / 2) + '%' }} />
                     </div>
-                    <p>{battle.alignment ? (battle.finisherUsedAtAlignment === battle.alignment ? '究極技は発動済み。この終点にいる間は再使用できない。ゲージを戻して再到達すると再解放される。' : '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。') : '神側はプラス、堕天側はマイナス。移動1回につき15ポイント。ゲージ移動だけで発動済み効果やクールダウンは解除されない。'}</p>
+                    <p>{battle.alignment ? (battle.finisherUsedAtAlignment === battle.alignment ? '究極技は発動済み。この終点にいる間は再使用できない。ゲージを戻して再到達すると再解放される。' : '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。') : 'ゲージ操作±15、通常攻撃12〜18（速度依存）、終極殲滅−60、絶界昇華＋60、理外掌握±50。逆方向にも制限なく移動でき、発動済み効果やクールダウンは維持される。'}</p>
                     <div className="stella-final__authority-stage" role="status" aria-label="権能解放段階">
                       <strong>{authorityStageLabel}</strong>
                       <span>現在値 {battle.datenGauge} / 100</span>
