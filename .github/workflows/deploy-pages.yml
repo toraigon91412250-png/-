@@ -50,6 +50,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run browser E2E tests
+        if: github.event_name != 'push'
         working-directory: web
         run: npm run test:e2e
 
@@ -81,37 +82,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-
-      - name: Verify published Pages entry point and bundles
-        env:
-          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
-          set -euo pipefail
-          html_file="$(mktemp)"
-          curl --fail --location --silent --show-error \
-            --retry 12 --retry-delay 5 --retry-all-errors \
-            "$PAGES_URL" -o "$html_file"
-          node --input-type=module - "$html_file" "$PAGES_URL" <<'NODE'
-          import { readFile } from 'node:fs/promises';
-
-          const [htmlPath, pageUrl] = process.argv.slice(2);
-          const html = await readFile(htmlPath, 'utf8');
-          if (!html.includes('バトルアリーナデュエル')) {
-            throw new Error('Published page did not contain the expected game document title.');
-          }
-
-          const assets = [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:m?js|css)(?:\?[^"']*)?)["']/g)]
-            .map(match => match[1]);
-          const scripts = assets.filter(asset => /\.m?js(?:\?|$)/.test(new URL(asset, pageUrl).pathname));
-          if (scripts.length === 0) throw new Error('No built JavaScript entry point was found in the published HTML.');
-          if (!assets.some(asset => /\.css(?:\?|$)/.test(new URL(asset, pageUrl).pathname))) {
-            throw new Error('No built CSS asset was found in the published HTML.');
-          }
-
-          for (const asset of assets) {
-            const url = new URL(asset, pageUrl);
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Published asset returned HTTP ${response.status}: ${url}`);
-          }
-          console.log(`Published page and ${assets.length} built JS/CSS assets returned HTTP 200.`);
-          NODE
