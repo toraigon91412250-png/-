@@ -557,6 +557,47 @@ test('short-duel Irena loses when the final turn expires without a locked divine
   await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
 });
 
+test('理外掌握 cannot stop the final instant-death judgment', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 150, attack: 0, defense: 0, speed: 0,
+    }));
+    Math.random = () => 0;
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ステラモードを開く' }).click();
+  await expect(page.getByRole('status').filter({ hasText: '最終決戦の画像素材 読み込み完了' })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: '最終決戦キャラクター：最終決戦用いれーな' }).click();
+  await page.getByRole('button', { name: '最終決戦を開始' }).click();
+  await chooseOpeningIrenaAlignment(page, 'DEMON');
+
+  const attack = page.getByRole('button', { name: '通常攻撃' });
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const moveDemon = page.getByRole('button', { name: '堕天側へ15ポイント移動' });
+  const controlDemon = page.getByRole('button', { name: '理外掌握：堕天側へ' });
+
+  for (let turn = 0; turn < 4; turn += 1) await attack.click();
+  await expect(page.locator('.stella-final__phase')).toContainText('03');
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
+  await expect(controlDemon).toBeEnabled();
+
+  // Keep the gauge at the demonic endpoint until only one turn remains.
+  for (let turn = 0; turn < 7; turn += 1) await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '-100');
+  await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り1ターン');
+
+  await controlDemon.click();
+  await expect(page.getByRole('heading', { name: '最終決戦 敗北' })).toBeVisible();
+  await expect(page.locator('.stella-final__log-lines')).toContainText('理外掌握でもカイザーの即死行動は止められず、敗北。');
+});
+
 test('理外掌握 resets active authority cooldowns and skips exactly the current Kaiser action', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
