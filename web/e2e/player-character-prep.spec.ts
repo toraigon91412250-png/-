@@ -1041,7 +1041,7 @@ test('repeated same-direction gauge choices replay the light/dark flash', async 
   await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
 });
 
-test('a real normal Lv.100 victory persists the +50P reward once and exposes only the EX route', async ({ page }) => {
+test('a real normal Lv.100 victory reveals warp, unlocks Stella mode, then enables EX without duplicating +50P', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
@@ -1166,7 +1166,8 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
 
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラ最終決戦を開く' })).toBeVisible();
 });
 
 test('Developer Tools Lv.100 victory reveals Stella mode before EX and preserves the normal Lv.10 ladder', async ({ page }) => {
