@@ -66,16 +66,15 @@ export function getShortIrenaCombatStats(allocation?: Partial<StatAllocation> | 
 }
 
 /**
- * Every gauge-manipulation action moves exactly 15 points in the requested
- * direction. The endpoints are clamped, while moving back is never dampened.
+ * Apply the requested movement without damping reversals. Explicit gauge controls
+ * request 15 points; existing skills and speed-scaled attacks keep their own movement.
  */
 export function shiftDatenGauge(currentValue: number, requestedDelta: number): number {
   const current = Math.max(SHORT_IRENA_GAUGE_MIN, Math.min(SHORT_IRENA_GAUGE_MAX, Math.round(currentValue)));
-  const direction = Math.sign(requestedDelta);
-  if (direction === 0) return current;
+  const delta = Math.round(requestedDelta);
   return Math.max(
     SHORT_IRENA_GAUGE_MIN,
-    Math.min(SHORT_IRENA_GAUGE_MAX, current + direction * SHORT_IRENA_GAUGE_STEP),
+    Math.min(SHORT_IRENA_GAUGE_MAX, current + delta),
   );
 }
 
@@ -93,8 +92,10 @@ export function getDatenAlignment(gauge: number): ShortIrenaAlignment | null {
   return null;
 }
 
-export function getShortIrenaNormalAttackGaugeDelta(route: ShortIrenaRoute, _speed: number): number {
-  return route === 'GOD' ? SHORT_IRENA_GAUGE_STEP : -SHORT_IRENA_GAUGE_STEP;
+export function getShortIrenaNormalAttackGaugeDelta(route: ShortIrenaRoute, speed: number): number {
+  const speedBonus = Math.min(6, Math.floor(Math.max(0, speed - IRENA.speed) / 120));
+  const step = 12 + speedBonus;
+  return route === 'GOD' ? step : -step;
 }
 
 export function calculateShortIrenaAttackDamage(
