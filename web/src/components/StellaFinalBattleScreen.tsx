@@ -990,7 +990,6 @@ export const StellaFinalBattleScreen: React.FC<{
         ? '60〜99ポイント：第2段階'
         : '100ポイント：終点・究極必殺技';
   const canUseTerminus = battle.datenGauge <= -30;
-  const canUseAscension = battle.datenGauge >= 30;
   const canActivateAscension = canActivateShortIrenaAscension(battle.datenGauge, battle.ascensionTurns, battle.phase, battle.finalTurnsLeft);
   const canUseDivineSpeed = battle.datenGauge >= 30;
   const canUseAllPower = battle.datenGauge >= 60;
