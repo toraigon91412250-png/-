@@ -1021,6 +1021,7 @@ export const StellaFinalBattleScreen: React.FC<{
         )}
         {battle.alignmentFlash && battle.fighterId === 'short-irena' && (
           <div
+            key={battle.alignmentFlashId}
             className={'stella-final__alignment-flash stella-final__alignment-flash--' + battle.alignmentFlash.toLowerCase()}
             data-testid="short-irena-alignment-flash"
             aria-hidden="true"
