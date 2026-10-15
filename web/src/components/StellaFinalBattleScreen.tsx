@@ -23,6 +23,10 @@ import {
   SHORT_IRENA_TERMINUS_SPEED_DOWN_TURNS,
   calculateShortIrenaAttackDamage,
   applyShortIrenaDamageFloor,
+  calculateShortIrenaFinisherPower,
+  getShortIrenaBossPhase,
+  getShortIrenaFinisherMultiplier,
+  resolveShortIrenaBossDamage,
   getDatenAlignment,
   getDatenAuthorityStage,
   shouldRearmShortIrenaFinisher,
@@ -35,6 +39,7 @@ import {
   saveShortIrenaAllocation,
   shiftDatenGauge,
   type ShortIrenaAlignment,
+  type ShortIrenaBossPhase,
 } from '../utils/shortIrenaFinalBattle';
 import { STELLA_FINAL_BATTLE_IMAGES } from '../data/stellaFinalBattleConfig';
 import type { StatAllocation } from '../types/game';
@@ -45,7 +50,7 @@ const { bossMaxHp: EX_KAISER_TOTAL_HP, meteorDamage: METEOR_DAMAGE_PROTOTYPE } =
 type BattleStatus = 'READY' | 'FIGHTING' | 'VICTORY' | 'DEFEAT';
 type FinalAction = 'ATTACK' | 'IMMORTAL' | 'REBIRTH' | 'METEOR';
 type ShortIrenaFinisherRoute = 'GOD_MIGHT' | 'GOD_SILENCE' | 'GOD_REBIRTH' | 'DEMON_COLLAPSE' | 'DEMON_SEVER' | 'DEMON_EXTINGUISH';
-type BattlePhase = 1 | 2 | 3;
+type BattlePhase = ShortIrenaBossPhase;
 
 interface StellaFinalBattleState {
   status: BattleStatus;
@@ -153,42 +158,7 @@ function createInitialBattle(
 }
 
 function phaseForHp(hp: number): BattlePhase {
-  if (hp > EX_KAISER_TOTAL_HP * (2 / 3)) return 1;
-  if (hp > EX_KAISER_TOTAL_HP / 3) return 2;
-  return 3;
-} 
-
-interface ShortIrenaBossDamageResolution {
-  remainingHp: number;
-  actualDamage: number;
-  cappedAtPhaseGate: boolean;
-}
-
-/**
- * Normal actions from final-duel Irena can cross only one Kaiser phase gate.
- * The finisher uses the same phase gate in forms one and two; only the final
- * form permits defeat. This preserves a climax without letting the first
- * finisher erase the phase structure.
- */
-function resolveShortIrenaBossDamage(
-  currentHp: number,
-  requestedDamage: number,
-  currentPhase: BattlePhase,
-  allowDefeat = false,
-): ShortIrenaBossDamageResolution {
-  const safeDamage = Math.max(0, Math.ceil(requestedDamage));
-  const hpBeforeGate = Math.max(0, currentHp - safeDamage);
-  const phaseGateHp = currentPhase === 1
-    ? Math.ceil(EX_KAISER_TOTAL_HP * (2 / 3))
-    : currentPhase === 2
-      ? Math.ceil(EX_KAISER_TOTAL_HP / 3)
-      : allowDefeat ? 0 : 1;
-  const remainingHp = Math.min(currentHp, Math.max(phaseGateHp, hpBeforeGate));
-  return {
-    remainingHp,
-    actualDamage: Math.max(0, currentHp - remainingHp),
-    cappedAtPhaseGate: currentHp > phaseGateHp && hpBeforeGate < phaseGateHp,
-  };
+  return getShortIrenaBossPhase(hp);
 }
 
 const PHASE_NAMES: Record<BattlePhase, string> = {
@@ -297,10 +267,10 @@ export const StellaFinalBattleScreen: React.FC<{
             * (current.playerPressureTurns > 0 ? Math.max(0, stats.attack - 25) / Math.max(1, stats.attack) : 1));
         // Keep the original GOD ×5 / DEMON ×8 spectacle. The phase gate limits
         // forms one and two, while the final phase remains a valid ultimate payoff.
-        const finisherMultiplier = alignment === 'GOD' ? 5 : 8;
-        const finisherPower = applyShortIrenaDamageFloor(
-          Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * finisherMultiplier),
-          2000,
+        const finisherPower = calculateShortIrenaFinisherPower(
+          stats.normalAttackDamage,
+          effectiveAttackMultiplier,
+          alignment,
         );
         const bossHit = resolveShortIrenaBossDamage(
           current.kaiserHp,
@@ -444,7 +414,7 @@ export const StellaFinalBattleScreen: React.FC<{
           * (current.allThingsTurns > 0 ? 999 : 1)
           * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
           * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
-        log((alignment === 'GOD' ? '神側の究極必殺技「創世」×5' : '堕天側の究極必殺技「終焉」×8') + 'を発動。第一・第二形態では次形態のHP境界を越えない。実際のダメージ後、3ルートから選択する。');
+        log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + '×' + getShortIrenaFinisherMultiplier(alignment) + 'を発動。第一・第二形態では次形態のHP境界を越えない。実際のダメージ後、3ルートから選択する。');
         // FINISH consumes one player turn. Snapshot current multipliers, then tick timed effects once.
         const tick = (value: number) => Math.max(0, value - 1);
         return {
