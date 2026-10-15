@@ -396,7 +396,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             padding: '2px 4px',
-            transition: 'transform 0.1s ease, filter 0.15s ease',
+            transition: 'transform 0.1s ease, filter 0.15s ease, translate 90ms ease-out',
           }}
           onMouseDown={e => isEnabled && (e.currentTarget.style.transform = 'scale(0.96)')}
           onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
@@ -419,7 +419,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             padding: '2px 4px',
-            transition: 'transform 0.1s ease, filter 0.15s ease',
+            transition: 'transform 0.1s ease, filter 0.15s ease, translate 90ms ease-out',
           }}
           onMouseDown={e => isEnabled && (e.currentTarget.style.transform = 'scale(0.96)')}
           onMouseUp={e => isEnabled && (e.currentTarget.style.transform = 'scale(1)')}
@@ -443,7 +443,7 @@ export const ActionDock: React.FC<ActionDockProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             padding: '2px 4px',
-            transition: 'transform 0.1s ease, filter 0.15s ease',
+            transition: 'transform 0.1s ease, filter 0.15s ease, translate 90ms ease-out',
           }}
           onMouseDown={e => isEnabled && isSpecialReady && (e.currentTarget.style.transform = 'scale(0.96)')}
           onMouseUp={e => isEnabled && isSpecialReady && (e.currentTarget.style.transform = 'scale(1)')}
