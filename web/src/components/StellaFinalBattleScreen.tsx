@@ -968,7 +968,7 @@ export const StellaFinalBattleScreen: React.FC<{
                       <span className="stella-final__daten-gauge-center" />
                       <span className="stella-final__daten-gauge-marker" style={{ left: ((battle.datenGauge + 100) / 2) + '%' }} />
                     </div>
-                    <p>{battle.alignment ? '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。' : '神側はプラス、堕天側はマイナス。移動1回につき15ポイント。ゲージ移動だけで発動済み効果やクールダウンは解除されない。'}</p>
+                    <p>{battle.alignment ? (battle.finisherUsedAtAlignment === battle.alignment ? '究極技は発動済み。この終点にいる間は再使用できない。ゲージを戻して再到達すると再解放される。' : '終点到達中。対応する究極必殺技が使用可能。ゲージが戻ると封印される。') : '神側はプラス、堕天側はマイナス。移動1回につき15ポイント。ゲージ移動だけで発動済み効果やクールダウンは解除されない。'}</p>
                     <div className="stella-final__authority-stage" role="status" aria-label="権能解放段階">
                       <strong>{authorityStageLabel}</strong>
                       <span>現在値 {battle.datenGauge} / 100</span>
@@ -1011,7 +1011,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・既存の神側倍率で大ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・既存の堕天側倍率で大ダメージ。発動後に堕天側の3ルートを選ぶ') : '100ポイントの終点到達時に解放'}</small></div>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・既存の神側倍率で大ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・既存の堕天側倍率で大ダメージ。発動後に堕天側の3ルートを選ぶ') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
                     <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
