@@ -466,3 +466,297 @@
 .stella-final__gauge-controls button:last-child{border-color:rgba(255,137,160,.35);background:rgba(92,24,48,.78)}
 .stella-final__gauge-controls button:disabled{opacity:.35;cursor:not-allowed}
 @media(max-width:380px){.stella-final__authority-stage{align-items:flex-start;flex-direction:column}.stella-final__gauge-controls button{font-size:10px;padding:8px 5px}}
+
+
+/* Iteration 1: readable build choices and immediate combat impact. */
+.stella-final__build-preset-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  margin: 10px 0;
+}
+.stella-final__build-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 9px 10px;
+  border: 1px solid rgba(173,164,224,.28);
+  border-radius: 10px;
+  color: #f2efff;
+  background: rgba(6,9,25,.8);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.stella-final__build-preset[aria-pressed="true"] {
+  border-color: #c6b8ff;
+  background: linear-gradient(135deg, rgba(108,82,189,.5), rgba(46,35,91,.78));
+  box-shadow: inset 0 0 0 1px rgba(216,204,255,.22), 0 0 14px rgba(156,129,255,.12);
+}
+.stella-final__build-preset:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.stella-final__build-preset strong { font-size: 12px; font-weight: 950; }
+.stella-final__build-preset span { color: #bfc8df; font-size: 10px; line-height: 1.45; }
+.stella-final__short-build-impact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.stella-final__short-build-impact > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid rgba(173,164,224,.2);
+  border-radius: 9px;
+  background: rgba(4,7,20,.76);
+}
+.stella-final__short-build-impact > div span { color: #b7c2d9; font-size: 10px; }
+.stella-final__short-build-impact > div strong { color: #fff; font-size: 14px; font-weight: 950; font-variant-numeric: tabular-nums; }
+.stella-final__short-build-impact p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #aeb9d0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+@media (max-width: 650px) {
+  .stella-final__build-preset-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .stella-final__build-preset { min-height: 68px; }
+  .stella-final__build-preset strong { font-size: 12px; }
+  .stella-final__build-preset span { font-size: 10px; }
+  .stella-final__short-build-impact > div strong { font-size: 12px; }
+}
+
+
+/* Iteration 2: a compact, explicit boss-intent forecast for Short Irena. */
+.stella-final__counter-forecast {
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 151, 172, .38);
+  border-left: 4px solid #ff829a;
+  border-radius: 11px;
+  background: linear-gradient(110deg, rgba(91, 22, 45, .42), rgba(18, 13, 34, .84));
+}
+.stella-final__counter-forecast--urgent {
+  border-color: rgba(255, 91, 122, .76);
+  background: linear-gradient(110deg, rgba(120, 20, 42, .64), rgba(26, 8, 24, .94));
+  box-shadow: 0 0 18px rgba(255, 72, 107, .1);
+}
+.stella-final__counter-forecast-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.stella-final__counter-forecast-heading span {
+  color: #ffb8c7;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+}
+.stella-final__counter-forecast-heading strong {
+  color: #fff3f6;
+  font-size: 12px;
+  font-weight: 950;
+}
+.stella-final__counter-forecast-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+.stella-final__counter-forecast-values > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 173, 190, .16);
+  border-radius: 8px;
+  background: rgba(4, 5, 17, .5);
+}
+.stella-final__counter-forecast-values span {
+  color: #d4bfd0;
+  font-size: 10px;
+}
+.stella-final__counter-forecast-values strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final__counter-forecast > p {
+  margin: 8px 0 0;
+  color: #e3d7e4;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.stella-final__final-deadline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 175, 193, .25);
+  color: #ffe9ee;
+  font-size: 11px;
+  font-weight: 850;
+}
+.stella-final__final-deadline strong {
+  color: #fff;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final__final-deadline span {
+  width: 100%;
+  color: #ffc5d1;
+  font-size: 10px;
+  line-height: 1.45;
+}
+@media (max-width: 650px) {
+  .stella-final__counter-forecast { padding: 10px; }
+  .stella-final__counter-forecast-values > div { padding: 8px; }
+  .stella-final__counter-forecast-values span { font-size: 10px; }
+  .stella-final__counter-forecast-values strong { font-size: 13px; }
+  .stella-final__counter-forecast > p { font-size: 11px; }
+}
+
+
+/* Iteration 3: keep current effects visible without scattering them through the action list. */
+.stella-final__status-strip {
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(180, 165, 255, .22);
+  border-radius: 11px;
+  background: rgba(7, 10, 26, .84);
+}
+.stella-final__status-strip-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.stella-final__status-strip-heading > span {
+  color: #a99aff;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .13em;
+}
+.stella-final__status-strip-heading > strong {
+  color: #f1edff;
+  font-size: 12px;
+  font-weight: 950;
+}
+.stella-final__status-strip-heading > small {
+  margin-left: auto;
+  color: #b9c4db;
+  font-size: 10px;
+  font-weight: 850;
+}
+.stella-final__status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stella-final__status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  max-width: 100%;
+  padding: 6px 9px;
+  border: 1px solid rgba(181, 169, 255, .3);
+  border-radius: 8px;
+  color: #eae5ff;
+  background: rgba(69, 55, 128, .3);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.stella-final__status-chip--debuff {
+  border-color: rgba(255, 133, 155, .36);
+  color: #ffdce3;
+  background: rgba(103, 28, 48, .3);
+}
+.stella-final__status-chip--control {
+  border-color: rgba(142, 202, 255, .34);
+  color: #d9eeff;
+  background: rgba(28, 67, 111, .3);
+}
+.stella-final__status-empty {
+  margin: 0;
+  color: #bac4dc;
+  font-size: 11px;
+  line-height: 1.55;
+}
+.stella-final__power-copy p { font-size: 11px; }
+.stella-final__power-copy small { font-size: 10px; }
+.stella-final__daten-gauge p { font-size: 11px; }
+.stella-final__short-effect-status { font-size: 11px; line-height: 1.55; }
+@media (max-width: 650px) {
+  .stella-final__status-strip { padding: 10px; }
+  .stella-final__status-chip { font-size: 11px; }
+  .stella-final__power-copy p { font-size: 11px; }
+  .stella-final__power-copy small { font-size: 10px; }
+  .stella-final__short-effect-status { font-size: 11px; }
+}
+
+
+/* Iteration 5: keep recoil recovery beside the state that explains it. */
+.stella-final__status-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 141, 163, .24);
+}
+.stella-final__status-action span {
+  min-width: 0;
+  color: #ffcbd5;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.stella-final__status-action button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  max-width: 52%;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 179, 194, .45);
+  border-radius: 9px;
+  color: #fff5f7;
+  background: linear-gradient(110deg, rgba(125, 32, 57, .94), rgba(68, 20, 41, .96));
+  font: inherit;
+  font-size: 11px;
+  font-weight: 950;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.stella-final__status-action button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+@media (max-width: 650px) {
+  .stella-final__status-action {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stella-final__status-action button {
+    width: 100%;
+    max-width: none;
+    min-height: 44px;
+  }
+}
