@@ -1037,7 +1037,7 @@ test('a real normal Lv.100 victory persists the +50P reward once and exposes onl
         createdAt: 1,
         updatedAt: 1,
         snapshot: {
-          statAllocation: { maxHp: 0, attack: 500, defense: 0, speed: 0 },
+          statAllocation: { maxHp: 50, attack: 450, defense: 0, speed: 0 },
           abilityIds: ['ABYSS', 'BLACK_WING'],
           imprintIds: [],
         },
