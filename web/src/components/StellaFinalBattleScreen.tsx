@@ -341,12 +341,46 @@ export const StellaFinalBattleScreen: React.FC<{
       if (action === 'FINISH') {
         const alignment = getDatenAlignment(current.datenGauge);
         if (!alignment || current.finisherUsedAtAlignment === alignment) return current;
+        const finisherPressureMultiplier = current.playerPressureTurns > 0
+          ? Math.max(0, stats.attack - 25) / Math.max(1, stats.attack)
+          : 1;
+        const finisherAttackMultiplier = current.allMightMultiplier
+          * current.allMightBaseAttackMultiplier
+          * (current.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
+          * (current.godMightTurns > 0 ? 3 : 1)
+          * (current.allPowerTurns > 0 ? 2 : 1)
+          * (current.allThingsTurns > 0 ? 4 : 1)
+          * finisherPressureMultiplier;
+        const finisherEffectiveSpeed = Math.max(1, stats.speed)
+          * current.allMightSpeedMultiplier
+          * (current.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
+          * (current.godMightTurns > 0 ? 3 : 1)
+          * (current.divineSpeedTurns > 0 ? 999 : 1)
+          * (current.allPowerTurns > 0 ? 2 : 1)
+          * (current.allThingsTurns > 0 ? 999 : 1)
+          * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
+          * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
         log((alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」') + 'を発動。既存の陣営倍率で大ダメージを与えた後、3ルートから選択する。');
+        // FINISH consumes one player turn. Snapshot current multipliers, then tick timed effects once.
+        const tick = (value: number) => Math.max(0, value - 1);
         return {
           ...current,
           turn: turn + 1,
           finisherPending: alignment,
           finisherRoutePending: null,
+          finisherAttackMultiplierSnapshot: finisherAttackMultiplier,
+          finisherEffectiveSpeedSnapshot: finisherEffectiveSpeed,
+          godMightTurns: tick(current.godMightTurns),
+          divineSpeedTurns: tick(current.divineSpeedTurns),
+          allPowerTurns: tick(current.allPowerTurns),
+          allThingsTurns: tick(current.allThingsTurns),
+          kaiserActionLockTurns: tick(current.kaiserActionLockTurns),
+          kaiserDefenseNullTurns: tick(current.kaiserDefenseNullTurns),
+          kaiserBuffImmuneTurns: tick(current.kaiserBuffImmuneTurns),
+          playerPressureTurns: tick(current.playerPressureTurns),
+          playerPressureImmuneTurns: tick(current.playerPressureImmuneTurns),
+          speedDownTurns: tick(current.speedDownTurns),
+          defenseDownTurns: tick(current.defenseDownTurns),
           normalAttackCutIn: false,
           logs: logs.slice(-8),
         };
