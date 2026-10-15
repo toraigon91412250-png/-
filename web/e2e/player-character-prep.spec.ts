@@ -587,8 +587,11 @@ test('理外掌握 resets active authority cooldowns and skips exactly the curre
   await terminus.click();
   await expect(terminus).toBeDisabled();
   await expect(pass).toBeVisible();
+  const ultimate = page.getByRole('button', { name: '堕天側の究極必殺技 終焉' });
+  await expect(ultimate).toBeDisabled();
   await pass.click();
   await expect(terminus).toBeDisabled();
+  await expect(ultimate).toBeEnabled();
   const bossBeforeControl = Number(await bossHp.getAttribute('aria-valuenow'));
 
   // The cooldown is still active before All Might, then must be ready next turn.
