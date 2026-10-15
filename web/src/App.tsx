@@ -231,7 +231,7 @@ export const App: React.FC = () => {
         ...prefill,
         playerCharacterId: safePlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prefill.abilities) : prefill.abilities,
-        kaiserLevel: selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
       });
@@ -242,7 +242,7 @@ export const App: React.FC = () => {
           ? safePlayerCharacterId
           : requestedPlayerCharacterId,
         abilities: mode === 'STELLA' ? keepStellaAbilities(prev.abilities) : prev.abilities,
-        kaiserLevel: selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
+        kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
       }));
