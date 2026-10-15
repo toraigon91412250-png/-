@@ -24,6 +24,8 @@ import {
   calculateShortIrenaAttackDamage,
   applyShortIrenaDamageFloor,
   getDatenAlignment,
+  canActivateShortIrenaAscension,
+  shouldFailAtShortIrenaFinalDeadline,
   getDatenAuthorityStage,
   shouldRearmShortIrenaFinisher,
   SHORT_IRENA_GAUGE_STEP,
@@ -406,7 +408,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (!current.initialChoiceMade && action !== 'DIVINIZE' && action !== 'FALLEN') return current;
       if (current.initialChoiceMade && (action === 'DIVINIZE' || action === 'FALLEN')) return current;
       if (action === 'TERMINUS' && current.datenGauge > -30) return current;
-      if (action === 'ASCENSION' && current.datenGauge < 30) return current;
+      if (action === 'ASCENSION' && !canActivateShortIrenaAscension(current.datenGauge, current.ascensionTurns, current.phase, current.finalTurnsLeft)) return current;
       if (action === 'DIVINE_SPEED' && current.datenGauge < 30) return current;
       if (action === 'ALL_POWER' && current.datenGauge < 60) return current;
       if (action === 'ALL_THINGS' && current.datenGauge !== 100) return current;
@@ -695,13 +697,14 @@ export const StellaFinalBattleScreen: React.FC<{
         log('最終決戦用いれーなは戦闘不能になった。');
       } else if (current.phase === 3 && finalTurnsLeft !== null) {
         finalTurnsLeft = Math.max(0, finalTurnsLeft - 1);
-        if (finalTurnsLeft === 0 && (
-          !alignment
-          || skipKaiserAction
-          || action === 'PASS'
-          || actionLockTurns > 0
-          || finisherUsedAtAlignment === alignment
-        )) {
+        if (finalTurnsLeft === 0 && shouldFailAtShortIrenaFinalDeadline({
+          alignment,
+          skipKaiserAction,
+          action,
+          actionLockTurns,
+          finisherUsedAtAlignment,
+          ascensionTurns,
+        })) {
           status = 'DEFEAT';
           playerHp = 0;
           logs.push(
@@ -999,6 +1002,7 @@ export const StellaFinalBattleScreen: React.FC<{
         : '100ポイント：終点・究極必殺技';
   const canUseTerminus = battle.datenGauge <= -30;
   const canUseAscension = battle.datenGauge >= 30;
+  const canActivateAscension = canActivateShortIrenaAscension(battle.datenGauge, battle.ascensionTurns, battle.phase, battle.finalTurnsLeft);
   const canUseDivineSpeed = battle.datenGauge >= 30;
   const canUseAllPower = battle.datenGauge >= 60;
   const canUseAllThings = battle.datenGauge === 100;
@@ -1358,8 +1362,8 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--ascension">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30ポイント以上で解放' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
-                      <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAscension || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
+                      <div className="stella-final__power-copy"><h3>絶界昇華</h3><p>攻撃・防御・速度を3倍にする自己強化。</p><small>{battle.ascensionTurns > 0 ? '強化中：残り' + battle.ascensionTurns + 'ターン' : !canUseAscension ? '神側30ポイント以上で解放' : !canActivateAscension ? '終局の最終ターンは発動不可。必殺技を優先' : '持続' + SHORT_IRENA_ASCENSION_TURNS + 'ターン／終了後に反動'}</small></div>
+                      <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canActivateAscension || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--control">
                       <div className="stella-final__power-icon"><Shield size={21} /></div>
