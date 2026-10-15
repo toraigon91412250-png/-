@@ -961,6 +961,8 @@ test('EX Kaiser remains Lv.100 when a developer-style Lv.100 clear leaves normal
   await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
   await expect(page.getByRole('heading', { name: 'バトル選択' })).toBeVisible();
   await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toContainText('全戦闘ステータスが2倍');
+  await expect(page.getByText('EX挑戦：Lv.100固定')).toBeVisible();
+  await expect(page.getByText('EXカイザーへの挑戦はLv.100固定です。通常のカイザー挑戦の解放進行とは別に戦います。')).toBeVisible();
   await expect(page.getByRole('button', { name: /Lv\.100/ })).toBeVisible();
   await page.getByRole('button', { name: /戦闘開始/ }).click();
 
