@@ -972,3 +972,49 @@ test('EX Kaiser remains Lv.100 when a developer-style Lv.100 clear leaves normal
   await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
   await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
 });
+
+test('repeated same-direction gauge choices replay the light/dark flash', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
+      finalBattleCleared: true, finalBattleRewardClaimed: true,
+    }));
+    window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
+      maxHp: 0, attack: 0, defense: 0, speed: 0,
+    }));
+  });
+
+  await startFinalIrenaAtGauge(page, 15);
+  const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
+  const flash = page.getByTestId('short-irena-alignment-flash');
+  const moveGod = page.getByRole('button', { name: '神側へ15ポイント移動' });
+  const moveDemon = page.getByRole('button', { name: '堕天側へ15ポイント移動' });
+
+  await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '30');
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
+  const firstGodFlash = await flash.elementHandle();
+  expect(firstGodFlash).not.toBeNull();
+
+  // A second same-direction choice before the first 300ms flash clears must remount it.
+  await moveGod.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '45');
+  await expect.poll(() => firstGodFlash!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
+
+  await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '30');
+  await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
+  const firstDemonFlash = await flash.elementHandle();
+  expect(firstDemonFlash).not.toBeNull();
+
+  await moveDemon.click();
+  await expect(gauge).toHaveAttribute('aria-valuenow', '15');
+  await expect.poll(() => firstDemonFlash!.evaluate(element => element.isConnected)).toBe(false);
+  await expect(flash).toBeVisible();
+  await expect(flash).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.82)');
+});
