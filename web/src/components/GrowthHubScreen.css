@@ -56,7 +56,7 @@
   display: grid; grid-template-columns: minmax(0,1fr) 18px; grid-template-rows: 48px 1fr; align-items: start; gap: 10px;
   width: 100%; min-width: 0; min-height: 183px; padding: 15px; border: 1px solid rgba(144,160,190,.21); border-radius: 16px;
   background: linear-gradient(145deg,rgba(22,31,48,.98),rgba(13,19,32,.99)); color: #F6F8FF; font: inherit; text-align: left; cursor: pointer;
-  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease, translate 90ms ease-out;
 }
 .growth-hub__action:hover { border-color: rgba(203,177,255,.5); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,.16); }
 .growth-hub__action--talent { border-color: rgba(191,163,235,.25); background: linear-gradient(145deg,rgba(39,31,58,.97),rgba(15,19,32,.99)); }
