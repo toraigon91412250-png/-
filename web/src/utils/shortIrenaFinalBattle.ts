@@ -37,6 +37,46 @@ export type ShortIrenaAuthorityStage = 0 | 1 | 2 | 3;
 export type ShortIrenaRoute = 'GOD' | 'DEMON';
 export type ShortIrenaAlignment = ShortIrenaRoute;
 
+/**
+ * The last available action in phase three must be reserved for the finisher.
+ * Ascension cannot be activated when only one action remains because it locks
+ * out the finisher while its buff is active.
+ */
+export function canActivateShortIrenaAscension(
+  gauge: number,
+  ascensionTurns: number,
+  phase: number,
+  finalTurnsLeft: number | null,
+): boolean {
+  if (gauge < 30 || ascensionTurns !== 0) return false;
+  return !(phase === 3 && finalTurnsLeft !== null && finalTurnsLeft <= 1);
+}
+
+export interface ShortIrenaFinalDeadlineCheck {
+  alignment: ShortIrenaAlignment | null;
+  skipKaiserAction: boolean;
+  action: string;
+  actionLockTurns: number;
+  finisherUsedAtAlignment: ShortIrenaAlignment | null;
+  ascensionTurns: number;
+}
+
+/**
+ * A phase-three deadline may remain open at zero only when the finisher is
+ * genuinely usable as the final action. Prevent an active Ascension buff from
+ * leaving the battle in FIGHTING while every action is blocked.
+ */
+export function shouldFailAtShortIrenaFinalDeadline(
+  state: ShortIrenaFinalDeadlineCheck,
+): boolean {
+  return !state.alignment
+    || state.skipKaiserAction
+    || state.action === 'PASS'
+    || state.actionLockTurns > 0
+    || state.finisherUsedAtAlignment === state.alignment
+    || state.ascensionTurns > 0;
+}
+
 export const EMPTY_SHORT_IRENA_ALLOCATION: StatAllocation = {
   maxHp: 0,
   attack: 0,
