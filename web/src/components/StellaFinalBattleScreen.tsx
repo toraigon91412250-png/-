@@ -494,7 +494,13 @@ export const StellaFinalBattleScreen: React.FC<{
         log('最終決戦用いれーなは戦闘不能になった。');
       } else if (current.phase === 3 && finalTurnsLeft !== null) {
         finalTurnsLeft = Math.max(0, finalTurnsLeft - 1);
-        if (finalTurnsLeft === 0 && (!alignment || skipKaiserAction || action === 'PASS' || actionLockTurns > 0)) {
+        if (finalTurnsLeft === 0 && (
+          !alignment
+          || skipKaiserAction
+          || action === 'PASS'
+          || actionLockTurns > 0
+          || finisherUsedAtAlignment === alignment
+        )) {
           status = 'DEFEAT';
           playerHp = 0;
           logs.push(
@@ -502,7 +508,9 @@ export const StellaFinalBattleScreen: React.FC<{
               ? '最終判定。堕天ゲージが神側にも堕天側にも振り切れていないため敗北。'
               : skipKaiserAction
                 ? '最終判定。理外掌握でもカイザーの即死行動は止められず、敗北。'
-                : '最終判定。反動で最終必殺技を放てず、カイザーの即死行動により敗北。',
+                : action === 'PASS' || actionLockTurns > 0
+                  ? '最終判定。反動で最終必殺技を放てず、カイザーの即死行動により敗北。'
+                  : '最終判定。究極必殺技はこの終点で使用済みのため再使用できず敗北。',
           );
         } else if (finalTurnsLeft === 0 && alignment) {
           logs.push('最終判定。' + (alignment === 'GOD' ? '神側' : '堕天側') + 'への傾きは確定済み。最終必殺技を発動できる最後の機会。');
