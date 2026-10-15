@@ -81,7 +81,7 @@
   padding: 7px 15px; border: 1px solid rgba(255,239,196,.83); border-radius: 13px;
   background: linear-gradient(110deg,#F0CD7C,#C88C45); color: #21170B; font: inherit; text-align: left; cursor: pointer;
   box-shadow: 0 9px 24px rgba(189,120,43,.23), inset 0 1px 0 rgba(255,255,255,.3);
-  transition: filter 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  transition: filter 150ms ease, transform 150ms ease, box-shadow 150ms ease, translate 90ms ease-out;
 }
 .home-dashboard__primary-action:hover { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(189,120,43,.29); }
 .home-dashboard__primary-action > svg { flex: 0 0 auto; margin-left: auto; }
@@ -125,7 +125,7 @@
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 14px;
   border: 1px solid rgba(215,194,255,.36); border-radius: 11px; background: rgba(10,14,24,.52);
   color: #F0E5FF; font: inherit; font-size: 12px; font-weight: 950; white-space: nowrap; cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease, translate 90ms ease-out;
 }
 .home-dashboard__growth-entry-action:hover { border-color: rgba(215,194,255,.66); background: rgba(70,52,97,.58); transform: translateY(-1px); }
 .home-dashboard__mode-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
@@ -133,7 +133,7 @@
   position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 48px minmax(0,1fr); grid-template-rows: 1fr auto;
   gap: 11px 13px; min-width: 0; min-height: 154px; padding: 15px; border: 1px solid rgba(144,160,190,.2); border-radius: 17px;
   background: linear-gradient(145deg,rgba(25,34,52,.98),rgba(15,21,34,.99)); color: #F4F7FF; font: inherit; text-align: left; cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,.12); transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12); transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease, translate 90ms ease-out;
 }
 .home-dashboard__mode-card:hover { border-color: rgba(202,184,255,.56); transform: translateY(-2px); box-shadow: 0 13px 25px rgba(0,0,0,.2); }
 .home-dashboard__mode-card::before { content: ""; position: absolute; z-index: -1; width: 150px; height: 150px; top: -80px; right: -44px; border-radius: 50%; background: rgba(153,123,230,.13); filter: blur(1px); }
