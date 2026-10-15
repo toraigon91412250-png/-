@@ -295,9 +295,9 @@ export const StellaFinalBattleScreen: React.FC<{
             * (current.allPowerTurns > 0 ? 2 : 1)
             * (current.allThingsTurns > 0 ? 4 : 1)
             * (current.playerPressureTurns > 0 ? Math.max(0, stats.attack - 25) / Math.max(1, stats.attack) : 1));
-        // Both finishers remain stronger than a normal hit, but their base multipliers
-        // are tuned to the 5,000-HP final form rather than deleting the whole boss.
-        const finisherMultiplier = alignment === 'GOD' ? 1.5 : 1.7;
+        // Keep the original GOD ×5 / DEMON ×8 spectacle. The phase gate limits
+        // forms one and two, while the final phase remains a valid ultimate payoff.
+        const finisherMultiplier = alignment === 'GOD' ? 5 : 8;
         const finisherPower = applyShortIrenaDamageFloor(
           Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * finisherMultiplier),
           2000,
@@ -444,7 +444,7 @@ export const StellaFinalBattleScreen: React.FC<{
           * (current.allThingsTurns > 0 ? 999 : 1)
           * (current.playerPressureTurns > 0 ? Math.max(1, stats.speed - 25) / Math.max(1, stats.speed) : 1)
           * (current.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1);
-        log((alignment === 'GOD' ? '神側の究極必殺技「創世」×1.5' : '堕天側の究極必殺技「終焉」×1.7') + 'を発動。通常形態では次形態のHP境界を越えない。実際のダメージ後、3ルートから選択する。');
+        log((alignment === 'GOD' ? '神側の究極必殺技「創世」×5' : '堕天側の究極必殺技「終焉」×8') + 'を発動。第一・第二形態では次形態のHP境界を越えない。実際のダメージ後、3ルートから選択する。');
         // FINISH consumes one player turn. Snapshot current multipliers, then tick timed effects once.
         const tick = (value: number) => Math.max(0, value - 1);
         return {
@@ -1238,7 +1238,7 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__briefing-heading"><Shield size={18} /> 最終決戦のルール</div>
             <p>EXカイザーは三形態。HP境界は10,000／5,000で、形態変化後も残りHPを引き継ぐ。通常攻撃と通常権能は、一度の行動で次の形態を飛ばせない。</p>
             <p>第三形態に入ると基本8～10ターン。速度240超過分は最大+5ターンの追加猶予。究極技で第三形態へ入った場合、その発動ターン分を1手消費する。期限を過ぎると終局の必殺技で敗北。</p>
-            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手で神化／堕天を選び、ゲージを15ポイント移動。±30／±60で権能が増え、±100で究極技を解放する。創世×1.5／終焉×1.7は第一・第二形態で次のHP境界に止まり、第三形態では撃破可能。攻撃配分は火力、速度配分は終局の追加猶予に影響する。</p>}
+            {selectedFighterId === 'short-irena' && <p>最終決戦用いれーなは150P専用育成。初手で神化／堕天を選び、ゲージを15ポイント移動。±30／±60で権能が増え、±100で究極技を解放する。創世×5／終焉×8は第一・第二形態で次のHP境界に止まり、第三形態では撃破可能。攻撃配分は火力、速度配分は終局の追加猶予に影響する。</p>}
             <p className="stella-final__prototype-note">戦闘データ：EXカイザー最大HP {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}／天象支配 {METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}ダメージ（1回）。</p>
             {preloadStatus === 'loading' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材をプリロード中…</p>}
             {preloadStatus === 'ready' && <p className="stella-final__asset-status" role="status">最終決戦の画像素材 読み込み完了</p>}
@@ -1371,7 +1371,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・倍率×1.5。第一・第二形態はHP境界で制限、終局では撃破可能' : '終焉・倍率×1.7。第一・第二形態はHP境界で制限、終局では撃破可能') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・倍率×5。第一・第二形態はHP境界で制限、終局では撃破可能' : '終焉・倍率×8。第一・第二形態はHP境界で制限、終局では撃破可能') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
                     <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
