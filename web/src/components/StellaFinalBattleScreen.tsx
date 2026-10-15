@@ -165,15 +165,14 @@ interface ShortIrenaBossDamageResolution {
 }
 
 /**
- * Final-duel Irena can hit above a form's remaining HP because her 150P build
- * and authority multipliers are intentionally extreme. Let one action cross
- * at most one Kaiser phase gate; only a phase-three finisher can end the fight.
+ * Normal actions from final-duel Irena can cross only one Kaiser phase gate.
+ * The dedicated GOD/DEMON finisher is intentionally resolved separately: it
+ * retains the existing ×5/×8 burst and can cross phases as its payoff.
  */
 function resolveShortIrenaBossDamage(
   currentHp: number,
   requestedDamage: number,
   currentPhase: BattlePhase,
-  allowDefeat = false,
 ): ShortIrenaBossDamageResolution {
   const safeDamage = Math.max(0, Math.ceil(requestedDamage));
   const hpBeforeGate = Math.max(0, currentHp - safeDamage);
@@ -181,7 +180,7 @@ function resolveShortIrenaBossDamage(
     ? Math.ceil(EX_KAISER_TOTAL_HP * (2 / 3))
     : currentPhase === 2
       ? Math.ceil(EX_KAISER_TOTAL_HP / 3)
-      : allowDefeat ? 0 : 1;
+      : 1;
   const remainingHp = Math.min(currentHp, Math.max(phaseGateHp, hpBeforeGate));
   return {
     remainingHp,
@@ -299,14 +298,14 @@ export const StellaFinalBattleScreen: React.FC<{
           Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier * (alignment === 'GOD' ? 5 : 8)),
           2000,
         );
-        const bossHit = resolveShortIrenaBossDamage(current.kaiserHp, finisherPower, current.phase, true);
-        const actualDamage = bossHit.actualDamage;
-        const remainingBossHp = bossHit.remainingHp;
+        // The finisher is the deliberate phase-piercing payoff. Keep the original GOD ×5 / DEMON ×8 damage.
+        const actualDamage = Math.min(current.kaiserHp, finisherPower);
+        const remainingBossHp = Math.max(0, current.kaiserHp - actualDamage);
         const name = alignment === 'GOD' ? '神側の究極必殺技「創世」' : '堕天側の究極必殺技「終焉」';
         const logs = [
           ...current.logs,
           name + 'の威力' + finisherPower.toLocaleString('ja-JP') + '。実ダメージ' + actualDamage.toLocaleString('ja-JP')
-            + (bossHit.cappedAtPhaseGate ? '。形態を飛ばさないため、今回の実ダメージを制限。' : '。')
+            + '。形態をまたいで突破できる究極技。'
             + (remainingBossHp <= 0 ? 'EXカイザー撃破。ルート効果を選択する。' : '究極技後のルートを選択する。'),
         ];
         let phase = current.phase;
@@ -568,8 +567,8 @@ export const StellaFinalBattleScreen: React.FC<{
         kaiserHp = bossHit.remainingHp;
         normalAttackCutIn = true;
         log('権能「万象支配」。発動時の実ダメージは' + bossHit.actualDamage.toLocaleString('ja-JP')
-          + '（最低3,000保証・形態移行上限適用後）。'
-          + (bossHit.cappedAtPhaseGate ? '次形態へ進むため、今回のダメージを形態移行上限で制限。' : '')
+          + '（威力最低3,000・形態移行上限適用後）。'
+          + (bossHit.cappedAtPhaseGate ? '次形態へ進むため、実ダメージを形態移行上限で制限。' : '')
           + '攻撃4倍・防御2倍・速度999倍、状態異常を解除。効果2ターン（発動ターン込み）。');
       } else if (action === 'PASS') {
         actionLockTurns = Math.max(0, actionLockTurns - 1);
@@ -1151,7 +1150,7 @@ export const StellaFinalBattleScreen: React.FC<{
                   ))}
                 </div>
                 <div className="stella-final__short-build-impact" aria-label="配分による戦闘への影響">
-                  <div><span>通常攻撃の目安</span><strong>{shortIrenaBuildAttackPreview.toLocaleString('ja-JP')} ダメージ</strong></div>
+                  <div><span>初撃の実ダメージ予測</span><strong>{shortIrenaBuildAttackPreview.toLocaleString('ja-JP')} ダメージ</strong></div>
                   <div><span>第一形態の反撃目安</span><strong>{shortIrenaBuildCounterPreview.toLocaleString('ja-JP')} ダメージ</strong></div>
                   <p>目安は強化・状態異常なしの値。実戦中は権能や反動により変化する。</p>
                 </div>
@@ -1327,12 +1326,12 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--all-things">
                       <div className="stella-final__power-icon"><Sparkles size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>万象支配</h3><p>発動時に最低3,000ダメージ。攻撃4倍・防御2倍・速度999倍、状態異常を解除。効果2ターン。</p><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神化側100ポイントで解放' : '最低3,000ダメージ／2ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>万象支配</h3><p>攻撃威力は最低3,000。通常行動では次形態を飛ばせない。攻撃4倍・防御2倍・速度999倍、状態異常を解除。</p><small>{battle.allThingsTurns > 0 ? '残り ' + battle.allThingsTurns + ' ターン' : !canUseAllThings ? '神側100ポイントで解放' : '威力最低3,000／形態上限あり・2ターン'}</small></div>
                       <button type="button" aria-label="万象支配を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllThings || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_THINGS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--terminus">
                       <div className="stella-final__power-icon"><Zap size={21} /></div>
-                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通の一撃（最低5,000ダメージ）。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '最低5,000・防御貫通／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
+                      <div className="stella-final__power-copy"><h3>終極殲滅</h3><p>防御貫通（威力最低5,000）。通常行動では次形態を飛ばせない。反動で1ターン行動不能、速度50%低下（2ターン）。</p><small>{battle.turn < battle.terminusReadyTurn ? 'CT残り ' + (battle.terminusReadyTurn - battle.turn) + ' ターン' : !canUseTerminus ? '堕天側30ポイント以上で解放' : '威力最低5,000・形態上限あり／CT' + SHORT_IRENA_TERMINUS_COOLDOWN_TURNS + 'ターン'}</small></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                     <article className="stella-final__power-card stella-final__power-card--ascension">
@@ -1350,7 +1349,7 @@ export const StellaFinalBattleScreen: React.FC<{
                     </article>
                   </div>
                   <div className="stella-final__short-finish-row">
-                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・既存の神側倍率で大ダメージ。発動後に神側の3ルートを選ぶ' : '終焉・既存の堕天側倍率で大ダメージ。発動後に堕天側の3ルートを選ぶ') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
+                    <div><strong>究極必殺技</strong><small>{canUseUltimate ? (battle.alignment === 'GOD' ? '創世・神側倍率×5。形態をまたいで突破できる。発動後に神側の3ルートを選ぶ' : '終焉・堕天側倍率×8。形態をまたいで突破できる。発動後に堕天側の3ルートを選ぶ') : battle.alignment ? 'この終点では発動済み。ゲージを戻して再到達すると再解放' : '100ポイントの終点到達時に解放'}</small></div>
                     <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : battle.alignment === 'DEMON' ? '堕天側の究極必殺技 終焉' : '究極必殺技（未解放）'} disabled={!isFighting || !battle.initialChoiceMade || !canUseUltimate || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending)} onClick={() => takeShortIrenaAction('FINISH')}>{battle.alignment ? '究極必殺技を放つ' : '未解放'}</button>
                   </div>
                     </>
