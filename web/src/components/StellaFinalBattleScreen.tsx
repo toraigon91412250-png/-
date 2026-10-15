@@ -861,7 +861,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 <p className="stella-final__locked-character">最終決戦にステラで初勝利すると、クリア報酬とともに最終決戦用いれーなが解放される。</p>
               )}
             </div>
-            <p className="stella-final__prototype-note">短期決戦モードは最終決戦限定。通常版いれーなの基礎データ・育成データは変更しない。</p>
+            <p className="stella-final__prototype-note">最終決戦用いれーなは最終決戦限定。通常版いれーなの基礎データ・育成データは変更しない。</p>
             {selectedFighterId === 'short-irena' && (
               <section className="stella-final__short-build" aria-label="最終決戦用いれーなの150P育成">
                 <div className="stella-final__short-build-heading">
