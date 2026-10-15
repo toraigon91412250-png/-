@@ -44,13 +44,13 @@ assert.strictEqual(getShortIrenaFinalTurnLimit(0), 8);
 assert.strictEqual(getShortIrenaFinalTurnLimit(0.5), 9);
 assert.strictEqual(getShortIrenaFinalTurnLimit(0.999), 10);
 assert.strictEqual(getShortIrenaFinalTurnLimit(1), 10);
-const shortIrenaFinalBattleSource = await readFile(new URL('./src/components/StellaFinalBattleScreen.tsx', import.meta.url), 'utf8');
+const shortIrenaTimerBattleSource = await readFile(new URL('./src/components/StellaFinalBattleScreen.tsx', import.meta.url), 'utf8');
 assert.strictEqual(
-  (shortIrenaFinalBattleSource.match(/getShortIrenaFinalTurnLimit\(Math\.random\(\)\)/g) ?? []).length,
+  (shortIrenaTimerBattleSource.match(/getShortIrenaFinalTurnLimit\(Math\.random\(\)\)/g) ?? []).length,
   2,
   'Both final-phase entry paths must use the same speed-independent timer rule.',
 );
-assert.doesNotMatch(shortIrenaFinalBattleSource, /speedExtraTurns|速度240超過分は最大\+5ターン|速度配分による猶予/,
+assert.doesNotMatch(shortIrenaTimerBattleSource, /speedExtraTurns|速度240超過分は最大\+5ターン|速度配分による猶予/,
   'Speed must not grant extra final-phase turns in code or player-facing rules.');
 const regularIrenaSnapshot = {
   maxHp: IRENA.maxHp,
