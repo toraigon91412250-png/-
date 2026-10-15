@@ -446,6 +446,11 @@ export function useBattleGame(
     );
     const nextConfig: BattleSetupConfig = {
       kaiserLevel: battleConfigOverride?.kaiserLevel ?? stateRef.current.battleConfig.kaiserLevel,
+      // Preserve challenge mode when a battle starts or restarts. Without this,
+      // EX Kaiser silently falls back to normal Lv.100 and its victory is misclassified.
+      kaiserChallengeMode: battleConfigOverride?.kaiserChallengeMode
+        ?? stateRef.current.battleConfig.kaiserChallengeMode
+        ?? 'NORMAL',
       playerCharacterId: battleConfigOverride?.playerCharacterId ?? baseP.id,
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
