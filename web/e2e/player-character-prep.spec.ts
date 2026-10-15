@@ -768,7 +768,9 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1540');
+  // Ordinary attacks stop at the next form gate; the dedicated ultimate can pierce forms.
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '5000');
+  await expect(page.locator('.stella-final__phase')).toContainText('第三形態・終局');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
