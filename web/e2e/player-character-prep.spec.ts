@@ -168,6 +168,35 @@ test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance'
 });
 
 
+test('EX Kaiser starts with EX mode and doubled Lv.100 stats after battle restart', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: false,
+      exKaiserDefeated: false,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
+    }));
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
+  await expect(page.getByText('11000 / 11000', { exact: true })).toBeVisible();
+});
+
+
 test('actual Stella final-battle victory saves +100P once and unlocks only final-battle Irena', async ({ page }) => {
   await page.addInitScript(() => {
     const initializedKey = '__e2e_stella_final_reward_initialized';
