@@ -31,7 +31,7 @@
   min-height: 38px; display: inline-flex; align-items: center; gap: 7px;
   color: #c9d3e6; background: rgba(16, 20, 33, .9); border: 1px solid #303a53;
   border-radius: 10px; padding: 0 12px; cursor: pointer; font: inherit; font-size: 12px; font-weight: 800;
-  transition: border-color .16s ease, background .16s ease;
+  transition: border-color .16s ease, background .16s ease, translate 90ms ease-out;
 }
 .raid-v1-back:hover { background: #191e31; border-color: #667393; }
 .raid-v1-project { display: flex; align-items: center; gap: 8px; color: #8f9bb7; font: 800 12px 'Barlow Condensed', sans-serif; letter-spacing: .18em; }
@@ -154,8 +154,9 @@
 .raid-v1-action-heading { display: flex; align-items: end; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .raid-v1-action-heading > span { color: #68748d; font: 800 9px 'Barlow Condensed', sans-serif; letter-spacing: .15em; }
 .raid-v1-action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.raid-v1-action { position: relative; min-height: 117px; min-width: 0; display: grid; grid-template-columns: 35px minmax(0, 1fr); grid-template-rows: auto auto; align-content: start; gap: 7px 9px; padding: 10px; text-align: left; color: var(--raid-text); border: 1px solid #303950; border-radius: 11px; background: linear-gradient(145deg, #171d2d, #111623); cursor: pointer; font: inherit; transition: border-color .14s ease, background .14s ease, transform .14s ease; }
+.raid-v1-action { position: relative; min-height: 117px; min-width: 0; display: grid; grid-template-columns: 35px minmax(0, 1fr); grid-template-rows: auto auto; align-content: start; gap: 7px 9px; padding: 10px; text-align: left; color: var(--raid-text); border: 1px solid #303950; border-radius: 11px; background: linear-gradient(145deg, #171d2d, #111623); cursor: pointer; font: inherit; transition: border-color .14s ease, background .14s ease, transform .14s ease, translate 90ms ease-out; }
 .raid-v1-action:not(:disabled):hover { transform: translateY(-2px); border-color: #8474b8; background: linear-gradient(145deg, #211f39, #131827); }
+.raid-v1-action:not(:disabled):active { transform: none; }
 .raid-v1-action:focus-visible { outline: 2px solid #b9a8ff; outline-offset: 2px; }
 .raid-v1-action:disabled { opacity: .38; cursor: not-allowed; filter: saturate(.55); }
 .raid-v1-action-icon { grid-row: 1; grid-column: 1; width: 35px; height: 35px; display: grid; place-items: center; color: #c4b7ff; border: 1px solid #453d68; border-radius: 9px; background: rgba(60, 47, 90, .42); }
@@ -382,7 +383,7 @@
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
-  transition: filter .16s ease, transform .16s ease;
+  transition: filter .16s ease, transform .16s ease, translate 90ms ease-out;
 }
 .raid-v1-start-button:hover { filter: brightness(1.12); transform: translateY(-1px); }
 .raid-v1-start-button:focus-visible { outline: 3px solid #d6c9ff; outline-offset: 3px; }
