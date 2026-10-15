@@ -1,4 +1,5 @@
 import { IRENA } from '../data/characters';
+import { STELLA_FINAL_BATTLE_TUNING } from '../data/stellaFinalBattleConfig';
 import type { StatAllocation } from '../types/game';
 import {
   applyStatAllocation,
@@ -6,6 +7,67 @@ import {
   getSpentStatPoints,
   normalizeStatAllocation,
 } from './statBuild';
+
+export type ShortIrenaBossPhase = 1 | 2 | 3;
+
+export interface ShortIrenaBossDamageResolution {
+  remainingHp: number;
+  actualDamage: number;
+  cappedAtPhaseGate: boolean;
+}
+
+/** Derive the Kaiser phase from the same HP boundaries used by the final-battle screen. */
+export function getShortIrenaBossPhase(hp: number): ShortIrenaBossPhase {
+  const maxHp = STELLA_FINAL_BATTLE_TUNING.bossMaxHp;
+  if (hp > maxHp * (2 / 3)) return 1;
+  if (hp > maxHp / 3) return 2;
+  return 3;
+}
+
+/**
+ * Apply the final-Irena phase gate to a requested hit.
+ * Phases one and two stop at the next HP boundary; the final phase can defeat Kaiser
+ * only when allowDefeat is true (the ultimate finisher path).
+ */
+export function resolveShortIrenaBossDamage(
+  currentHp: number,
+  requestedDamage: number,
+  currentPhase: ShortIrenaBossPhase,
+  allowDefeat = false,
+): ShortIrenaBossDamageResolution {
+  const safeDamage = Math.max(0, Math.ceil(requestedDamage));
+  const hpBeforeGate = Math.max(0, currentHp - safeDamage);
+  const maxHp = STELLA_FINAL_BATTLE_TUNING.bossMaxHp;
+  const phaseGateHp = currentPhase === 1
+    ? Math.ceil(maxHp * (2 / 3))
+    : currentPhase === 2
+      ? Math.ceil(maxHp / 3)
+      : allowDefeat ? 0 : 1;
+  const remainingHp = Math.min(currentHp, Math.max(phaseGateHp, hpBeforeGate));
+  return {
+    remainingHp,
+    actualDamage: Math.max(0, currentHp - remainingHp),
+    cappedAtPhaseGate: currentHp > phaseGateHp && hpBeforeGate < phaseGateHp,
+  };
+}
+
+/** The finisher multipliers are design constants: GOD ×5 and DEMON ×8. */
+export function getShortIrenaFinisherMultiplier(alignment: ShortIrenaAlignment): number {
+  return alignment === 'GOD' ? 5 : 8;
+}
+
+/** Calculate the displayed finisher power using the live battle formula and its 2,000 minimum. */
+export function calculateShortIrenaFinisherPower(
+  normalAttackDamage: number,
+  effectiveAttackMultiplier: number,
+  alignment: ShortIrenaAlignment,
+): number {
+  const finisherMultiplier = getShortIrenaFinisherMultiplier(alignment);
+  return applyShortIrenaDamageFloor(
+    Math.ceil(normalAttackDamage * effectiveAttackMultiplier * finisherMultiplier),
+    2000,
+  );
+}
 
 export const SHORT_IRENA_STAT_POINT_TOTAL = 150;
 export const SHORT_IRENA_NORMAL_ATTACK_MULTIPLIER = 8;
