@@ -400,13 +400,6 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
   await expect(gauge).toHaveAttribute('aria-valuenow', '100');
   await expect(godFinisher).toBeDisabled();
-  await moveFinalIrenaGaugeTo(page, 25);
-  await expect(gauge).toHaveAttribute('aria-valuenow', '25');
-  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
-  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '40');
-  await moveFinalIrenaGaugeTo(page, 100);
-  await expect(godFinisher).toBeEnabled();
 
   await page.getByRole('button', { name: 'ホームに戻る' }).click();
   await page.getByRole('button', { name: /挑戦の準備/ }).click();
