@@ -191,7 +191,7 @@ test('EX Kaiser starts with EX mode and doubled Lv.100 stats after battle restar
 
   const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
   await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
-  await expect(page.getByRole('button', { name: '通常攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
   await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
   await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
 });
