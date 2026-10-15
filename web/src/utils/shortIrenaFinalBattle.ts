@@ -8,6 +8,11 @@ import {
 } from './statBuild';
 
 export const SHORT_IRENA_STAT_POINT_TOTAL = 150;
+
+/** Third-form deadline is a fixed 8–10 turns and never depends on speed. */
+export function getShortIrenaFinalTurnLimit(randomValue: number): number {
+  return 8 + Math.min(2, Math.max(0, Math.floor(randomValue * 3)));
+}
 export const SHORT_IRENA_NORMAL_ATTACK_MULTIPLIER = 8;
 
 export const SHORT_IRENA_TERMINUS_COOLDOWN_TURNS = 5;

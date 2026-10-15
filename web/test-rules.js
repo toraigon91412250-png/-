@@ -30,12 +30,28 @@ register(
 
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
+const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 
 // Keep the final duel player-favored: strengthen Stella while modestly easing EX Kaiser.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 15000);
 assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 220, 2: 320, 3: 440 });
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
+
+// The final-form deadline is fixed to 8–10 turns and is independent of
+// allocated/effective speed, including extreme speed multipliers.
+assert.strictEqual(getShortIrenaFinalTurnLimit(0), 8);
+assert.strictEqual(getShortIrenaFinalTurnLimit(0.5), 9);
+assert.strictEqual(getShortIrenaFinalTurnLimit(0.999), 10);
+assert.strictEqual(getShortIrenaFinalTurnLimit(1), 10);
+const shortIrenaTimerBattleSource = await readFile(new URL('./src/components/StellaFinalBattleScreen.tsx', import.meta.url), 'utf8');
+assert.strictEqual(
+  (shortIrenaTimerBattleSource.match(/getShortIrenaFinalTurnLimit\(Math\.random\(\)\)/g) ?? []).length,
+  2,
+  'Both final-phase entry paths must use the same speed-independent timer rule.',
+);
+assert.doesNotMatch(shortIrenaTimerBattleSource, /speedExtraTurns|速度240超過分は最大\+5ターン|速度配分による猶予/,
+  'Speed must not grant extra final-phase turns in code or player-facing rules.');
 const regularIrenaSnapshot = {
   maxHp: IRENA.maxHp,
   attack: IRENA.attack,
@@ -133,6 +149,44 @@ assert.match(shortIrenaFinalBattleSource,
 assert.match(shortIrenaFinalBattleSource,
   /finalTurnsLeft === 0 && shouldFailAtShortIrenaFinalDeadline\(/,
   'Deadline resolution must force a terminal result when the finisher is blocked.');
+
+assert.match(shortIrenaFinalBattleSource, /stella-final--playing/,
+  'Only the active battle screen opts into the no-scroll compact layout.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaCommandWindow && canUseDivineSpeed/,
+  'Locked or unavailable Irena authorities are not rendered.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaCommandWindow && canUseAllThings/,
+  'The highest-gauge authority is rendered only at its actual unlock threshold.');
+assert.match(shortIrenaFinalBattleSource, /shortIrenaUltimateWindow && \(/,
+  'The ultimate button is rendered only when the current finisher can be used.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__counter-forecast--stella/,
+  'Stella battle displays the Kaiser next-action forecast.');
+assert.ok(!shortIrenaFinalBattleSource.includes('<p>防御力1.5倍、速度999倍。効果4ターン。</p>'),
+  'Combat action cards omit long skill descriptions.');
+assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
+  'The gauge does not offer an impossible move beyond the positive cap.');
+assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
+  'The gauge does not offer an impossible move beyond the negative cap.');
+const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
+assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidden/,
+  'The active battle layout must prevent page scrolling.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-copy p \{ display: none; \}/,
+  'Compact battle command cards hide descriptions.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--player/,
+  'The large player illustration is rendered in the active arena.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--kaiser/,
+  'The large Kaiser illustration is rendered in the active arena.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__combat-heading/,
+  'The battle header shows the title, phase, and current turn.');
+assert.match(shortIrenaFinalBattleSource, /<Flame size=\{30\}/,
+  'The ultimate command has a distinctive flame icon.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__arena-art/,
+  'The active arena displays large character art.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-card button\{position:absolute;inset:0;/,
+  'Each available command tile is a large tap target.');
+assert.match(finalBattleUiCss, /\.stella-final--playing\{height:100vh;height:100dvh;overflow:hidden/,
+  'The full active battle viewport is locked against scrolling.');
+assert.ok(!shortIrenaFinalBattleSource.includes('<p>防御力1.5倍、速度999倍。効果4ターン。</p>'),
+  'Skill explanations are removed from the command tiles.');
 
 assert.strictEqual(getShortIrenaCombatStats().maxHp, IRENA.maxHp);
 assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
