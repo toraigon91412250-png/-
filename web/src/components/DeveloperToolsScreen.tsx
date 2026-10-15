@@ -22,8 +22,10 @@ interface DeveloperToolsScreenProps {
   onAddImprintTickets: (amount: number) => void;
   onUnlockAllImprints: () => void;
   onSetSkillProgress: (featherLevel: number, ruinLevel: number, shards: number) => void;
+  onUnlockSuperFallenShot: () => void;
   onOpenRecruitment: () => void;
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
+  onOpenExKaiserChallenge: () => void;
   onReset: () => void;
 }
 
@@ -52,8 +54,10 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onAddImprintTickets,
   onUnlockAllImprints,
   onSetSkillProgress,
+  onUnlockSuperFallenShot,
   onOpenRecruitment,
   onOpenBattleSetup,
+  onOpenExKaiserChallenge,
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
@@ -152,6 +156,14 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             color:selectedIds.length===2 ? '#FFF' : '#666F7E',
             fontSize:15, fontWeight:950, cursor:selectedIds.length===2 ? 'pointer' : 'not-allowed',
           }}>この設定でバトル準備へ</button>
+          <div style={{ marginTop:10, color:'#9BA6B8', fontSize:9, lineHeight:1.5 }}>
+            通常の解放条件を確認せず、EXカイザー専用のLv.100戦闘準備を直接開く。
+          </div>
+          <button type="button" onClick={onOpenExKaiserChallenge} style={{
+            width:'100%', minHeight:48, marginTop:6, borderRadius:11,
+            border:'1px solid #B85D75', background:'linear-gradient(135deg,#551B37,#2C1424)',
+            color:'#FFDCE7', fontSize:13, fontWeight:950, cursor:'pointer',
+          }}>EXカイザーに挑む（開発用）</button>
         </section>
 
         <section style={{
@@ -286,6 +298,19 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             <button type="button" onClick={() => { onSetSkillProgress(1,1,0); onRefresh(); }} style={{ minHeight:40, borderRadius:9, border:'1px solid #32424D', background:'#152027', color:'#A8D5E7', fontSize:9, fontWeight:900, cursor:'pointer' }}>スキル初期</button>
             <button type="button" onClick={() => { onSetSkillProgress(5,5,9999); onRefresh(); }} style={{ minHeight:40, borderRadius:9, border:'1px solid #426071', background:'#1B2D36', color:'#B8E7F7', fontSize:9, fontWeight:900, cursor:'pointer' }}>両スキルLv5</button>
             <button type="button" onClick={() => { onSetSkillProgress(10,10,9999); onRefresh(); }} style={{ minHeight:40, borderRadius:9, border:'1px solid #587688', background:'#21333C', color:'#D8F3FF', fontSize:9, fontWeight:900, cursor:'pointer' }}>両スキルMAX</button>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr auto', alignItems:'center', gap:8, marginTop:10, padding:'9px 10px', borderRadius:9, background:'#0E151A', border:'1px solid #293740' }}>
+            <div>
+              <div style={{ color:'#CBEAFF', fontSize:11, fontWeight:950 }}>超堕天撃</div>
+              <div style={{ marginTop:3, color:'#7C8A93', fontSize:9 }}>解放状態: {skillProgress.superFallenShotUnlocked ? '解放済み' : '未解放'}</div>
+            </div>
+            <button type="button" disabled={Boolean(skillProgress.superFallenShotUnlocked)} onClick={() => { onUnlockSuperFallenShot(); onRefresh(); }} style={{
+              minHeight:38, padding:'0 12px', borderRadius:8,
+              border:skillProgress.superFallenShotUnlocked ? '1px solid #42655E' : '1px solid #4B8EB5',
+              background:skillProgress.superFallenShotUnlocked ? '#172824' : '#102A3A',
+              color:skillProgress.superFallenShotUnlocked ? '#8FC3B5' : '#C7EEFF',
+              fontSize:10, fontWeight:950, cursor:skillProgress.superFallenShotUnlocked ? 'default' : 'pointer',
+            }}>{skillProgress.superFallenShotUnlocked ? '解放済み' : '超堕天撃を解放'}</button>
           </div>
           <div style={{ marginTop:10, padding:'9px 10px', borderRadius:9, background:'#0E151A', border:'1px solid #293740', color:'#7C8A93', fontSize:9 }}>
             戦績: {overallStats.totalBattles}戦 / {overallStats.wins}勝 / {overallStats.losses}敗
