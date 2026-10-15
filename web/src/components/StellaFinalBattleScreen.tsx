@@ -166,6 +166,40 @@ const PHASE_NAMES: Record<BattlePhase, string> = {
 
 const REBIRTH_RATIOS = [1, 0.5, 0.25] as const;
 
+type ShortIrenaPresetId = 'BALANCED' | 'ASSAULT' | 'FORTRESS' | 'SPEED';
+
+const SHORT_IRENA_BUILD_PRESETS: ReadonlyArray<{
+  id: ShortIrenaPresetId;
+  label: string;
+  description: string;
+  allocation: StatAllocation;
+}> = [
+  {
+    id: 'BALANCED',
+    label: '均衡型',
+    description: '弱点を作りにくい標準型',
+    allocation: { maxHp: 38, attack: 38, defense: 37, speed: 37 },
+  },
+  {
+    id: 'ASSAULT',
+    label: '火力型',
+    description: '攻撃優先。反撃を受ける前に押し切る',
+    allocation: { maxHp: 20, attack: 75, defense: 20, speed: 35 },
+  },
+  {
+    id: 'FORTRESS',
+    label: '耐久型',
+    description: 'HPと防御優先。長期戦を安定させる',
+    allocation: { maxHp: 55, attack: 20, defense: 55, speed: 20 },
+  },
+  {
+    id: 'SPEED',
+    label: '速度型',
+    description: '速度とゲージ操作を重視',
+    allocation: { maxHp: 20, attack: 30, defense: 20, speed: 80 },
+  },
+];
+
 export const StellaFinalBattleScreen: React.FC<{
   onBackHome: () => void;
   progress: StellaModeProgress;
@@ -304,6 +338,13 @@ export const StellaFinalBattleScreen: React.FC<{
     if (amount > 0 && normalized.remainingPoints < 0) return;
     const saved = saveShortIrenaAllocation(normalized.allocation);
     setShortIrenaAllocation(normalized.allocation);
+    setAllocationSaveError(!saved);
+  };
+
+  const applyShortIrenaPreset = (allocation: StatAllocation) => {
+    const normalized = getShortIrenaCombatStats(allocation).allocation;
+    const saved = saveShortIrenaAllocation(normalized);
+    setShortIrenaAllocation(normalized);
     setAllocationSaveError(!saved);
   };
 
@@ -866,6 +907,15 @@ export const StellaFinalBattleScreen: React.FC<{
   const displayedEffectiveAttack = Math.ceil(shortStats.attack * displayedAllMightMultiplier * displayedAllMightBaseAttackMultiplier * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedAllPowerMultiplier * displayedAllThingsMultiplier * displayedPressureAttackMultiplier);
   const displayedEffectiveDefense = Math.ceil(shortStats.defense * displayedAscensionMultiplier * displayedGodMightMultiplier * (battle.status !== 'READY' && battle.divineSpeedTurns > 0 ? 1.5 : 1) * displayedAllPowerMultiplier * (battle.status !== 'READY' && battle.allThingsTurns > 0 ? 2 : 1) * (battle.status !== 'READY' && battle.defenseDownTurns > 0 ? SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER : 1));
   const displayedEffectiveSpeed = Math.ceil(shortStats.speed * (battle.status === 'READY' ? 1 : battle.allMightSpeedMultiplier) * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedDivineSpeedMultiplier * displayedAllPowerMultiplier * (battle.status !== 'READY' && battle.allThingsTurns > 0 ? 999 : 1) * (battle.status !== 'READY' && battle.playerPressureTurns > 0 ? Math.max(1, shortStats.speed - 25) / Math.max(1, shortStats.speed) : 1) * (battle.status !== 'READY' && battle.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1));
+  const shortIrenaBuildAttackPreview = calculateShortIrenaAttackDamage(
+    shortStats.normalAttackDamage,
+    KAISER.defense,
+    0,
+  ).damage;
+  const shortIrenaBuildCounterPreview = getShortIrenaCounterDamage(
+    STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[1],
+    shortStats.defense,
+  );
   const authorityStage = getDatenAuthorityStage(battle.datenGauge);
   const authorityStageLabel = authorityStage === 0
     ? '0〜29ポイント：権能未解放'
@@ -984,6 +1034,24 @@ export const StellaFinalBattleScreen: React.FC<{
                   <strong>専用ステータス育成</strong>
                   <span>{shortStats.spentPoints} / {SHORT_IRENA_STAT_POINT_TOTAL}P 使用・残り {shortStats.remainingPoints}P</span>
                 </div>
+                <div className="stella-final__build-preset-list" aria-label="おすすめ育成型">
+                  {SHORT_IRENA_BUILD_PRESETS.map(preset => {
+                    const selected = (Object.keys(preset.allocation) as Array<keyof StatAllocation>)
+                      .every(key => preset.allocation[key] === shortIrenaAllocation[key]);
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        aria-pressed={selected}
+                        className="stella-final__build-preset"
+                        onClick={() => applyShortIrenaPreset(preset.allocation)}
+                      >
+                        <strong>{preset.label}</strong>
+                        <span>{preset.description}</span>
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="stella-final__short-build-grid">
                   {([
                     ['maxHp', '最大HP', shortStats.maxHp],
@@ -1001,7 +1069,12 @@ export const StellaFinalBattleScreen: React.FC<{
                     </div>
                   ))}
                 </div>
-                <p>配分換算は通常戦闘と同じ。基本値 HP 4000 / ATK 360 / DEF 200 / SPD 240。通常攻撃は強化後攻撃値×8。</p>
+                <div className="stella-final__short-build-impact" aria-label="配分による戦闘への影響">
+                  <div><span>通常攻撃の目安</span><strong>{shortIrenaBuildAttackPreview.toLocaleString('ja-JP')} ダメージ</strong></div>
+                  <div><span>第一形態の反撃目安</span><strong>{shortIrenaBuildCounterPreview.toLocaleString('ja-JP')} ダメージ</strong></div>
+                  <p>目安は強化・状態異常なしの値。実戦中は権能や反動により変化する。</p>
+                </div>
+                <p>150Pを自由配分。1Pあたり HP +200 / 攻撃 +12 / 防御 +6 / 速度 +6。基本値 HP 4000 / ATK 360 / DEF 200 / SPD 240。プリセット適用後も1P単位で調整できる。</p>
                 {allocationSaveError && <p className="stella-final__asset-error" role="alert">育成配分を保存できなかった。今回は変更を適用するが、再読み込みすると保存されていない可能性がある。</p>}
               </section>
             )}
