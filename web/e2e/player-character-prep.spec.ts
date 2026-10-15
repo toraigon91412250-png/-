@@ -1167,7 +1167,7 @@ test('a real normal Lv.100 victory reveals warp, unlocks Stella mode, then enabl
   await page.getByRole('button', { name: /キャラクター選択に戻る/ }).click();
   await expect(page.getByRole('button', { name: 'EXカイザーに挑む' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'ステラモードを開く' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ステラ最終決戦を開く' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'ステラ最終決戦を開く' })).toHaveCount(0);
 });
 
 test('Developer Tools Lv.100 victory reveals Stella mode before EX and preserves the normal Lv.10 ladder', async ({ page }) => {
