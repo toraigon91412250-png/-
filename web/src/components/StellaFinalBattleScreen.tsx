@@ -1016,6 +1016,11 @@ export const StellaFinalBattleScreen: React.FC<{
     && !battle.finisherPending
     && !battle.finisherRoutePending
     && battle.finalTurnsLeft !== 0;
+  const canUseDivineSpeed = battle.datenGauge >= 30;
+  const canUseAllPower = battle.datenGauge >= 60;
+  const canUseAllThings = battle.datenGauge === 100;
+  const canUseAllMight = authorityStage >= 2;
+  const canUseUltimate = battle.alignment !== null && battle.finisherUsedAtAlignment !== battle.alignment;
   const canUseShortIrenaUltimate = isFighting
     && battle.initialChoiceMade
     && canUseUltimate
@@ -1023,11 +1028,6 @@ export const StellaFinalBattleScreen: React.FC<{
     && battle.ascensionTurns === 0
     && !battle.finisherPending
     && !battle.finisherRoutePending;
-  const canUseDivineSpeed = battle.datenGauge >= 30;
-  const canUseAllPower = battle.datenGauge >= 60;
-  const canUseAllThings = battle.datenGauge === 100;
-  const canUseAllMight = authorityStage >= 2;
-  const canUseUltimate = battle.alignment !== null && battle.finisherUsedAtAlignment !== battle.alignment;
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
   const resultTitle = battle.status === 'VICTORY' ? '最終決戦 勝利' : '最終決戦 敗北';
   const shortIrenaActiveEffects: Array<{ id: string; label: string; kind: 'buff' | 'debuff' | 'control' }> = [
