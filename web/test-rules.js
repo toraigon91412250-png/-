@@ -30,12 +30,28 @@ register(
 
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
+const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 
 // Keep the final duel player-favored: strengthen Stella while modestly easing EX Kaiser.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 15000);
 assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 220, 2: 320, 3: 440 });
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
+
+// The final-form deadline is fixed to 8–10 turns and is independent of
+// allocated/effective speed, including extreme speed multipliers.
+assert.strictEqual(getShortIrenaFinalTurnLimit(0), 8);
+assert.strictEqual(getShortIrenaFinalTurnLimit(0.5), 9);
+assert.strictEqual(getShortIrenaFinalTurnLimit(0.999), 10);
+assert.strictEqual(getShortIrenaFinalTurnLimit(1), 10);
+const shortIrenaFinalBattleSource = await readFile(new URL('./src/components/StellaFinalBattleScreen.tsx', import.meta.url), 'utf8');
+assert.strictEqual(
+  (shortIrenaFinalBattleSource.match(/getShortIrenaFinalTurnLimit\(Math\.random\(\)\)/g) ?? []).length,
+  2,
+  'Both final-phase entry paths must use the same speed-independent timer rule.',
+);
+assert.doesNotMatch(shortIrenaFinalBattleSource, /speedExtraTurns|速度240超過分は最大\+5ターン|速度配分による猶予/,
+  'Speed must not grant extra final-phase turns in code or player-facing rules.');
 const regularIrenaSnapshot = {
   maxHp: IRENA.maxHp,
   attack: IRENA.attack,
