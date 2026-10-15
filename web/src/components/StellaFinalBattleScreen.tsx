@@ -944,6 +944,22 @@ export const StellaFinalBattleScreen: React.FC<{
   const canUseUltimate = battle.alignment !== null && battle.finisherUsedAtAlignment !== battle.alignment;
   const kaiserHpPercent = Math.max(0, (battle.kaiserHp / EX_KAISER_TOTAL_HP) * 100);
   const resultTitle = battle.status === 'VICTORY' ? '最終決戦 勝利' : '最終決戦 敗北';
+  const shortIrenaActiveEffects: Array<{ id: string; label: string; kind: 'buff' | 'debuff' | 'control' }> = [
+    ...(battle.ascensionTurns > 0 ? [{ id: 'ascension', label: '絶界昇華：全能力×3・残り' + battle.ascensionTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.godMightTurns > 0 ? [{ id: 'god-might', label: '神威：全能力×3・残り' + battle.godMightTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.divineSpeedTurns > 0 ? [{ id: 'divine-speed', label: '神域の速度：DEF×1.5／SPD×999・残り' + battle.divineSpeedTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.allPowerTurns > 0 ? [{ id: 'all-power', label: '全能降臨：全能力×2・残り' + battle.allPowerTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.allThingsTurns > 0 ? [{ id: 'all-things', label: '万象支配：ATK×4／DEF×2・残り' + battle.allThingsTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.actionLockTurns > 0 ? [{ id: 'action-lock', label: '反動：行動不能・PASSが必要', kind: 'debuff' as const }] : []),
+    ...(battle.speedDownTurns > 0 ? [{ id: 'speed-down', label: '速度50%低下・残り' + battle.speedDownTurns + 'T', kind: 'debuff' as const }] : []),
+    ...(battle.defenseDownTurns > 0 ? [{ id: 'defense-down', label: '防御50%低下・残り' + battle.defenseDownTurns + 'T', kind: 'debuff' as const }] : []),
+    ...(battle.playerPressureTurns > 0 ? [{ id: 'pressure', label: '重圧：ATK／SPD−25扱い・残り' + battle.playerPressureTurns + 'T', kind: 'debuff' as const }] : []),
+    ...(battle.kaiserActionLockTurns > 0 ? [{ id: 'kaiser-lock', label: '静寂：通常反撃停止・残り' + battle.kaiserActionLockTurns + 'T', kind: 'control' as const }] : []),
+    ...(battle.kaiserDefenseNullTurns > 0 ? [{ id: 'kaiser-defense-null', label: '崩壊：敵防御0・残り' + battle.kaiserDefenseNullTurns + 'T', kind: 'control' as const }] : []),
+    ...(battle.kaiserBuffImmuneTurns > 0 ? [{ id: 'kaiser-buff-immune', label: '断絶：敵バフ無効・残り' + battle.kaiserBuffImmuneTurns + 'T', kind: 'control' as const }] : []),
+    ...(battle.playerPressureImmuneTurns > 0 ? [{ id: 'pressure-immune', label: '消滅：重圧耐性・残り' + battle.playerPressureImmuneTurns + 'T', kind: 'buff' as const }] : []),
+    ...(battle.allMightUsed ? [{ id: 'all-might', label: '理外掌握：全能×' + battle.allMightMultiplier.toFixed(1) + '・永続', kind: 'buff' as const }] : []),
+  ];
 
   return (
     <main className="stella-final" style={{ backgroundImage: 'linear-gradient(180deg, rgba(4, 6, 18, .52), rgba(4, 6, 18, .94)), url(' + JSON.stringify(battleBackground) + ')' }}>
@@ -1193,6 +1209,27 @@ export const StellaFinalBattleScreen: React.FC<{
                 </section>
               )}
 
+              {battle.fighterId === 'short-irena' && (
+                <section className="stella-final__status-strip" aria-label="最終決戦用いれーなの現在の状態">
+                  <div className="stella-final__status-strip-heading">
+                    <span>CURRENT EFFECTS</span>
+                    <strong>現在の状態</strong>
+                    <small>{shortIrenaActiveEffects.length} 件</small>
+                  </div>
+                  {shortIrenaActiveEffects.length > 0 ? (
+                    <div className="stella-final__status-chips">
+                      {shortIrenaActiveEffects.map(effect => (
+                        <span key={effect.id} className={'stella-final__status-chip stella-final__status-chip--' + effect.kind}>
+                          {effect.label}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="stella-final__status-empty">時間制の強化・反動なし。権能はゲージ条件と使用可能表示を確認。</p>
+                  )}
+                </section>
+              )}
+
               {battle.fighterId === 'short-irena' ? (
                 <>
                   <div className="stella-final__daten-gauge" aria-label="堕天ゲージ表示">
@@ -1301,7 +1338,9 @@ export const StellaFinalBattleScreen: React.FC<{
               {battle.fighterId === 'short-irena' && battle.kaiserBuffImmuneTurns > 0 && <p className="stella-final__short-effect-status" role="status">断絶：カイザーのバフ付与無効／残り {battle.kaiserBuffImmuneTurns} ターン</p>}
               {battle.fighterId === 'short-irena' && battle.playerPressureImmuneTurns > 0 && <p className="stella-final__short-effect-status" role="status">消滅：重圧耐性／残り {battle.playerPressureImmuneTurns} ターン</p>}
               {battle.fighterId === 'short-irena' && <p className="stella-final__short-effect-status" role="status">実効ステータス：ATK {displayedEffectiveAttack.toLocaleString('ja-JP')}／DEF {displayedEffectiveDefense.toLocaleString('ja-JP')}／SPD {displayedEffectiveSpeed.toLocaleString('ja-JP')}・全能 {battle.allMightMultiplier.toFixed(1)}倍（永続）</p>}
-              <p className="stella-final__no-forecast">敵の攻撃予測は表示されない。実際の行動を見て、権能を使い分けよう。</p>
+              {battle.fighterId !== 'short-irena' && (
+                <p className="stella-final__no-forecast">ステラ戦では敵の攻撃予測は表示されない。実際の行動を見て、権能を使い分けよう。</p>
+              )}
             </section>
 
             <section className="stella-final__battle-log" aria-label="戦闘ログ">
