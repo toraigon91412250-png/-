@@ -378,7 +378,7 @@ export const CharacterSelectScreen: React.FC<CharacterSelectScreenProps> = ({
             justifyContent: 'center',
             gap: '8px',
             boxShadow: '0 4px 16px rgba(230, 81, 0, 0.4)',
-            transition: 'transform 0.1s ease',
+            transition: 'transform 0.1s ease, translate 90ms ease-out',
           }}
           onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.98)')}
           onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
