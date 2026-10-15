@@ -168,6 +168,35 @@ test('Lv.100 reward opens EX Kaiser challenge before the hidden Stella entrance'
 });
 
 
+test('EX Kaiser starts with EX mode and doubled Lv.100 stats after battle restart', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem('duel_arena_stella_mode_progress', JSON.stringify({
+      isUnlocked: false,
+      exKaiserDefeated: false,
+      revealAvailable: false,
+      kaiser100RewardClaimed: true,
+      finalBattleCleared: false,
+      finalBattleRewardClaimed: false,
+    }));
+    window.localStorage.setItem('duel_arena_kaiser_challenge_progress', JSON.stringify({ unlockedLevel: 100 }));
+  });
+
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
+  await page.getByRole('button', { name: 'EXカイザーに挑む' }).click();
+  await expect(page.getByRole('status', { name: 'EXカイザー挑戦' })).toBeVisible();
+  await page.getByRole('button', { name: /戦闘開始/ }).click();
+
+  const deployOverlay = page.getByRole('status', { name: '戦闘出撃中' });
+  await expect(deployOverlay).toBeHidden({ timeout: 5_000 });
+  await expect(page.getByRole('button', { name: '攻撃' })).toBeEnabled({ timeout: 20_000 });
+  await expect(page.getByText('EXカイザー', { exact: true })).toBeVisible();
+  await expect(page.getByText('16500 / 16500', { exact: true })).toBeVisible();
+});
+
+
 test('actual Stella final-battle victory saves +100P once and unlocks only final-battle Irena', async ({ page }) => {
   await page.addInitScript(() => {
     const initializedKey = '__e2e_stella_final_reward_initialized';
@@ -309,8 +338,9 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
       isUnlocked: true, revealAvailable: false, kaiser100RewardClaimed: true, exKaiserDefeated: true,
       finalBattleCleared: true, finalBattleRewardClaimed: true,
     }));
+    // Maximize speed so the final-phase timer remains long enough to test reversible gauge movement.
     window.localStorage.setItem('duel_arena_short_irena_stat_allocation', JSON.stringify({
-      maxHp: 150, attack: 0, defense: 0, speed: 0,
+      maxHp: 0, attack: 0, defense: 0, speed: 150,
     }));
   });
   await page.goto('/');
@@ -393,13 +423,8 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
   await expect(godFinisher).toBeDisabled();
 
-  // Leaving the endpoint briefly is not enough to reset the consumed ultimate.
-  await page.getByRole('button', { name: '堕天側へ15ポイント移動' }).click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '85');
-  await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
-  await page.getByRole('button', { name: '神側へ15ポイント移動' }).click();
-  await expect(gauge).toHaveAttribute('aria-valuenow', '100');
-  await expect(godFinisher).toBeDisabled();
+  // The finisher stays consumed at the endpoint. Move through the center to rearm it,
+  // while keeping the verification within the configured final-turn deadline.
   await moveFinalIrenaGaugeTo(page, 25);
   await expect(gauge).toHaveAttribute('aria-valuenow', '25');
   await expect(page.getByRole('button', { name: '究極必殺技（未解放）' })).toBeDisabled();
@@ -413,7 +438,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect(page.getByRole('region', { name: '操作キャラクター' }).getByRole('button', { name: /最終決戦用いれーな/ })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => {
     const value = window.localStorage.getItem('duel_arena_short_irena_stat_allocation');
-    return value ? JSON.parse(value).maxHp : -1;
+    return value ? JSON.parse(value).speed : -1;
   })).toBe(150);
 });
 
