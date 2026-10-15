@@ -205,9 +205,11 @@ export const App: React.FC = () => {
     const currentImprintProgress = loadImprintProgress();
     const currentKaiserProgress = loadKaiserChallengeProgress();
     const currentStellaProgress = loadStellaModeProgress();
-    const selectableKaiserLevels = allowAllKaiserLevels
-      ? BATTLE_CHALLENGE_LEVELS
-      : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
+    const selectableKaiserLevels = mode === 'EX_KAISER'
+      ? BATTLE_CHALLENGE_LEVELS.filter(level => level === 100)
+      : allowAllKaiserLevels
+        ? BATTLE_CHALLENGE_LEVELS
+        : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
     setKaiserChallengeProgress(currentKaiserProgress);
     setImprintProgress(currentImprintProgress);
     setAvailableStatPoints(currentStatPoints);
