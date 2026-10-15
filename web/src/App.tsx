@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -128,8 +128,15 @@ export const App: React.FC = () => {
 
     const completedLevel = battleState.battleConfig.kaiserLevel;
     const playerWon = battleState.winnerIsPlayer === true;
+    const currentStellaProgress = loadStellaModeProgress();
+    // EX battles launched directly from Developer Tools are combat-only tests until normal unlocks exist.
+    // Do not create an artificial save-error message or advance the normal Kaiser challenge track.
+    const isDeveloperOnlyExTest =
+      battleState.battleConfig.kaiserChallengeMode === 'EX'
+      && battleSetupReturnScreen === 'DEV_TOOLS'
+      && (!currentStellaProgress.kaiser100RewardClaimed || !currentStellaProgress.stellaModeUnlocked);
 
-    if (completedLevel === 100 && playerWon) {
+    if (completedLevel === 100 && playerWon && !isDeveloperOnlyExTest) {
       const result = battleState.battleConfig.kaiserChallengeMode === 'EX'
         ? recordExKaiserVictory()
         : claimKaiser100VictoryReward();
@@ -148,7 +155,9 @@ export const App: React.FC = () => {
     setAvailableStatPoints(loadStatPoints());
     setIrenaTalentProgress(loadIrenaTalentProgress());
 
-    const nextChallengeProgress = recordKaiserChallengeResult(completedLevel, playerWon);
+    const nextChallengeProgress = isDeveloperOnlyExTest
+      ? loadKaiserChallengeProgress()
+      : recordKaiserChallengeResult(completedLevel, playerWon);
     setKaiserChallengeProgress(nextChallengeProgress);
     setBattleSetup(prev => ({
       ...prev,
@@ -403,11 +412,10 @@ export const App: React.FC = () => {
     setScreen('STELLA_FINAL');
   };
 
-  const handleStartExKaiser = () => {
+  const handleStartExKaiser = (returnTo: 'SELECT' | 'DEV_TOOLS' = 'SELECT', bypassUnlockRequirements = false) => {
     const progress = loadStellaModeProgress();
-    // Legacy saves can mark Stella as unlocked without the player ever seeing the post-Lv.100 EX route.
-    // Keep the EX challenge replayable after the one-time Lv.100 reward has been claimed.
-    if (!progress.stellaModeUnlocked || (!progress.kaiser100RewardClaimed && !progress.exKaiserDefeated)) return;
+    // Keep the normal Home route progression-gated; Developer Tools can bypass the gate for testing.
+    if (!bypassUnlockRequirements && (!progress.stellaModeUnlocked || (!progress.kaiser100RewardClaimed && !progress.exKaiserDefeated))) return;
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     handleOpenBattleSetup({
@@ -418,7 +426,7 @@ export const App: React.FC = () => {
       statAllocation: normalizeStatAllocation(battleSetup.statAllocation, currentStatPoints),
       statPointTotal: currentStatPoints,
       imprints: currentImprintProgress.equippedIds,
-    }, 'SELECT', false, 'EX_KAISER');
+    }, returnTo, false, 'EX_KAISER');
   };
 
   const getBattleCpuOpponent = () =>
@@ -552,6 +560,10 @@ export const App: React.FC = () => {
 
   const handleDeveloperSetSkillProgress = (featherLevel: number, ruinLevel: number, shards: number) => {
     setSkillProgress(setSkillProgressForDeveloper(featherLevel, ruinLevel, shards));
+  };
+
+  const handleDeveloperUnlockSuperFallenShot = () => {
+    setSkillProgress(unlockSuperFallenShotForDeveloper());
   };
 
   const handleDeveloperReset = () => {
@@ -775,8 +787,10 @@ export const App: React.FC = () => {
           onAddImprintTickets={handleDeveloperAddImprintTickets}
           onUnlockAllImprints={handleDeveloperUnlockAllImprints}
           onSetSkillProgress={handleDeveloperSetSkillProgress}
+          onUnlockSuperFallenShot={handleDeveloperUnlockSuperFallenShot}
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
+          onOpenExKaiserChallenge={() => handleStartExKaiser('DEV_TOOLS', true)}
           onReset={handleDeveloperReset}
         />
       )}
