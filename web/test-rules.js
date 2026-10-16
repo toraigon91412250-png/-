@@ -85,6 +85,13 @@ assert.deepStrictEqual(
   ['', '', '', '', ''],
   'Asset imports must resolve to bundled URL strings in the test module loader.',
 );
+const stellaFinalBattleConfigSource = await readFile(new URL('./src/data/stellaFinalBattleConfig.ts', import.meta.url), 'utf8');
+assert.match(stellaFinalBattleConfigSource, /import irenaDemonAttackCutIn from '\.\.\/assets\/IMG_1195\.jpeg';/,
+  'The fallen-side normal attack cut-in uses the intended IMG_1195.jpeg artwork.');
+assert.match(stellaFinalBattleConfigSource, /import irenaDemonFinalFinisher from '\.\.\/\.\.\/\.\.\/IMG_1224\.jpeg';/,
+  'The fallen-side final finisher uses IMG_1224.jpeg instead of the removed image.');
+assert.doesNotMatch(stellaFinalBattleConfigSource, /413F5794-8459-451B-9E19-AF5E185C9FDA/,
+  'The removed final-finisher asset is no longer referenced.');
 const {
   SHORT_IRENA_STAT_POINT_TOTAL,
   calculateShortIrenaAttackDamage,
