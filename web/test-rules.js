@@ -209,8 +209,16 @@ assert.match(finalBattleUiCss, /stella-final__damage-number--kaiser/,
   'Boss damage is displayed in a dedicated large combat number.');
 assert.match(finalBattleUiCss, /stella-final__damage-number--player/,
   'Damage taken by the player is displayed separately from boss damage.');
-assert.match(finalBattleUiCss, /rotate\(-12deg\)/,
-  'Combat damage numbers use the requested angled style.');
+assert.match(finalBattleUiCss, /rotate\(-7deg\)/,
+  'Combat damage numbers retain the requested angle with a subtler motion.');
+assert.match(finalBattleUiCss, /font-weight: 800;/,
+  'Damage typography avoids the extra-bold pop-art treatment.');
+assert.match(finalBattleUiCss, /-webkit-text-stroke: \.75px/,
+  'Damage numbers use a thinner outline for a more restrained combat HUD.');
+assert.match(finalBattleUiCss, /rgba\(224, 199, 157, \.22\)/,
+  'Damage number glows use restrained hues instead of strong neon bloom.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__daten-gauge-track \{\s*height: 15px;/,
+  'The inner gauge track is thicker while the surrounding frame remains unchanged.');
 
 const finalBattleConfigSource = await readFile(new URL('./src/data/stellaFinalBattleConfig.ts', import.meta.url), 'utf8');
 assert.match(finalBattleConfigSource, /IMG_1218\.jpeg/,
@@ -265,6 +273,11 @@ assert.match(shortIrenaFinalBattleSource, /let shouldDeferAlignmentCounter = isO
   'Opening God/Fallen choices defer the enemy response.');
 assert.match(shortIrenaFinalBattleSource, /if \(alignment && alignment !== previousAlignment\) \{\s*shouldDeferAlignmentCounter = true/,
   'Reaching a true God/Fallen alignment also triggers the full-screen portrait reveal.');
+const deferredAlignmentFallback = shortIrenaFinalBattleSource.match(/if \(shouldDeferAlignmentCounter\) \{\s*([\s\S]*?)const pendingDamage/)?.[1] ?? '';
+assert.match(deferredAlignmentFallback, /if \(alignmentFlash === null\) \{\s*alignmentFlash = alignment \?\? \(datenGauge < 0 \? 'DEMON' : 'GOD'\);\s*alignmentFlashId \+= 1;/,
+  'Every deferred counter starts a reveal timer, including attacks that reach ±100 without using a gauge button.');
+assert.ok(shortIrenaFinalBattleSource.includes('if (!battle.alignmentFlash) return;'),
+  'The transition timer remains tied to a visible alignment reveal, so the deferred branch must always create one.');
 assert.match(shortIrenaFinalBattleSource, /const godMightTurns = wasGodMight \? tick\(current\.godMightTurns\)/,
   'Timed buffs still tick when the delayed alignment counter resolves.');
 assert.match(shortIrenaFinalBattleSource, /pendingShortIrenaAction: ShortIrenaAction \| null/,
