@@ -846,9 +846,6 @@ export const StellaFinalBattleScreen: React.FC<{
           : getShortIrenaCounterDamage(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase], effectiveDefense);
         return {
           ...current,
-          phase,
-          datenGauge,
-          alignment,
           // Preserve the action's already-resolved results before delaying the Kaiser turn.
           playerHp,
           kaiserHp,
