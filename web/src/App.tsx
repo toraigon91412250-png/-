@@ -560,6 +560,11 @@ export const App: React.FC = () => {
   };
 
   const handleClaimAchievementReward = (id: string) => {
+    const selectedAchievement = achievementBoard.find(item => item.id === id);
+    if (selectedAchievement?.complete) {
+      const synced = syncAchievementCompletion([id]);
+      if (synced) setAchievementProgress(synced);
+    }
     const result = claimAchievementReward(id);
     if (!result.persisted) {
       setAchievementMessage('報酬の保存に失敗しました。保存容量・ブラウザ設定を確認してください。');
@@ -597,7 +602,7 @@ export const App: React.FC = () => {
       return;
     }
     setAchievementProgress(next);
-    setAbilityProgress(setAbilityForDeveloper('ASTRAL_DOMINION', 0, 0));
+    setAbilityProgress(loadAbilityProgress());
     setAchievementMessage('実績の進捗・受取履歴と最強権能を初期化しました。');
   };
 
