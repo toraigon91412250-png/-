@@ -26,6 +26,7 @@ interface DeveloperToolsScreenProps {
   onOpenRecruitment: () => void;
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
   onOpenExKaiserChallenge: () => void;
+  onOpenStellaFinalBattle: () => void;
   onReset: () => void;
 }
 
@@ -58,6 +59,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onOpenRecruitment,
   onOpenBattleSetup,
   onOpenExKaiserChallenge,
+  onOpenStellaFinalBattle,
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
@@ -164,6 +166,15 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             border:'1px solid #B85D75', background:'linear-gradient(135deg,#551B37,#2C1424)',
             color:'#FFDCE7', fontSize:13, fontWeight:950, cursor:'pointer',
           }}>EXカイザーに挑む（開発用）</button>
+          <button type="button" onClick={onOpenStellaFinalBattle} style={{
+            width:'100%', minHeight:52, marginTop:8, borderRadius:11,
+            border:'1px solid #A58BFF', background:'linear-gradient(135deg,#43286F,#211332)',
+            color:'#F1E7FF', fontSize:14, fontWeight:950, cursor:'pointer',
+            boxShadow:'0 0 18px rgba(151,104,255,.13)',
+          }}>最終決戦をワンボタン開放（開発用）</button>
+          <div style={{ marginTop:6, color:'#A99CC4', fontSize:9, lineHeight:1.5 }}>
+            解放条件をスキップして直接開始。通常の進行状況・初回報酬は変更しない。
+          </div>
         </section>
 
         <section style={{

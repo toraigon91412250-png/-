@@ -252,8 +252,9 @@ const SHORT_IRENA_BUILD_PRESETS: ReadonlyArray<{
 export const StellaFinalBattleScreen: React.FC<{
   onBackHome: () => void;
   progress: StellaModeProgress;
+  isDeveloperPreview?: boolean;
   onClaimVictoryReward: () => StellaFinalBattleRewardResult;
-}> = ({ onBackHome, progress, onClaimVictoryReward }) => {
+}> = ({ onBackHome, progress, isDeveloperPreview = false, onClaimVictoryReward }) => {
   const [selectedFighterId, setSelectedFighterId] = useState<StellaFinalBattleFighterId>('stella');
   const [shortIrenaAllocation, setShortIrenaAllocation] = useState<StatAllocation>(() => loadShortIrenaAllocation());
   const [allocationSaveError, setAllocationSaveError] = useState(false);
@@ -452,10 +453,10 @@ export const StellaFinalBattleScreen: React.FC<{
   };
 
   useEffect(() => {
-    if (battle.status !== 'VICTORY' || battle.fighterId !== 'stella' || rewardAttemptedForVictoryRef.current) return;
+    if (isDeveloperPreview || battle.status !== 'VICTORY' || battle.fighterId !== 'stella' || rewardAttemptedForVictoryRef.current) return;
     rewardAttemptedForVictoryRef.current = true;
     setRewardResult(onClaimVictoryReward());
-  }, [battle.status, battle.fighterId, onClaimVictoryReward]);
+  }, [battle.status, battle.fighterId, isDeveloperPreview, onClaimVictoryReward]);
 
   type ShortIrenaAction = 'DIVINIZE' | 'FALLEN' | 'MOVE_GOD' | 'MOVE_DEMON' | 'ATTACK' | 'DIVINE_SPEED' | 'ALL_POWER' | 'ALL_THINGS' | 'TERMINUS' | 'ASCENSION' | 'CONTROL_GOD' | 'CONTROL_DEMON' | 'FINISH' | 'PASS';
 
@@ -1096,8 +1097,8 @@ export const StellaFinalBattleScreen: React.FC<{
     <main className={"stella-final" + (battle.status !== 'READY' ? ' stella-final--playing' : '') + (battle.fighterId === 'short-irena' && battle.alignment ? ' stella-final--' + battle.alignment.toLowerCase() : '')} style={{ backgroundImage: 'linear-gradient(180deg, rgba(4, 6, 18, .52), rgba(4, 6, 18, .94)), url(' + JSON.stringify(battleBackground) + ')' }}>
       <div className="stella-final__ambient" aria-hidden="true" />
       <header className="stella-final__header">
-        <button type="button" className="stella-final__back" onClick={onBackHome} aria-label="ホームに戻る">
-          <ArrowLeft size={17} /> ホーム
+        <button type="button" className="stella-final__back" onClick={onBackHome} aria-label={isDeveloperPreview ? "開発者ツールに戻る" : "ホームに戻る"}>
+          <ArrowLeft size={17} /> {isDeveloperPreview ? "開発ツール" : "ホーム"}
         </button>
         <div className="stella-final__eyebrow">STELLA MODE / FINAL DUEL</div>
         {battle.status === 'READY' ? (
@@ -1532,18 +1533,20 @@ export const StellaFinalBattleScreen: React.FC<{
                       </div>
                     ) : (
                       <div className="stella-final__reward-notice" role="status" aria-label="最終決戦クリア報酬">
-                        {battle.fighterId === 'stella' && rewardResult?.rewardGranted
-                          ? '初回クリア報酬を獲得！ ステータスポイント +100P。最終決戦用いれーなが解放された。'
-                          : progress.finalBattleRewardClaimed
-                            ? '初回クリア報酬 +100P は獲得済み。最終決戦用いれーなは解放済み。再戦報酬の重複付与はない。'
-                            : '初回クリア報酬はステラでの初勝利時に付与される。'}
+                        {isDeveloperPreview
+                          ? '開発者テスト：この勝利では通常の解放状況・初回クリア報酬を変更しない。'
+                          : battle.fighterId === 'stella' && rewardResult?.rewardGranted
+                            ? '初回クリア報酬を獲得！ ステータスポイント +100P。最終決戦用いれーなが解放された。'
+                            : progress.finalBattleRewardClaimed
+                              ? '初回クリア報酬 +100P は獲得済み。最終決戦用いれーなは解放済み。再戦報酬の重複付与はない。'
+                              : '初回クリア報酬はステラでの初勝利時に付与される。'}
                       </div>
                     )}
                   </>
                 )}
                 <div className="stella-final__result-actions">
                   <button type="button" className="stella-final__start" onClick={startBattle}>もう一度挑む</button>
-                  <button type="button" className="stella-final__return" onClick={onBackHome}>ホームへ戻る</button>
+                  <button type="button" className="stella-final__return" onClick={onBackHome}>{isDeveloperPreview ? "開発者ツールへ戻る" : "ホームへ戻る"}</button>
                 </div>
               </section>
             )}
