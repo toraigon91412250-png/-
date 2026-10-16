@@ -84,6 +84,7 @@ interface StellaFinalBattleState {
   alignmentFlash: ShortIrenaAlignment | null;
   pendingKaiserCounterDamage: number | null;
   pendingShortIrenaAction: ShortIrenaAction | null;
+  pendingShortIrenaSkipKaiserAction: boolean;
   finisherRoutePending: ShortIrenaAlignment | null;
   finisherUsedAtAlignment: ShortIrenaAlignment | null;
   godMightTurns: number;
@@ -141,6 +142,7 @@ function createInitialBattle(
     alignmentFlash: null,
     pendingKaiserCounterDamage: null,
     pendingShortIrenaAction: null,
+    pendingShortIrenaSkipKaiserAction: false,
     finisherRoutePending: null,
     finisherUsedAtAlignment: null,
     godMightTurns: 0,
@@ -360,13 +362,13 @@ export const StellaFinalBattleScreen: React.FC<{
         const pendingDamage = current.pendingKaiserCounterDamage;
         const action = current.pendingShortIrenaAction;
         if (pendingDamage === null || action === null) {
-          return { ...current, alignmentFlash: null, pendingKaiserCounterDamage: null, pendingShortIrenaAction: null };
+          return { ...current, alignmentFlash: null, pendingKaiserCounterDamage: null, pendingShortIrenaAction: null, pendingShortIrenaSkipKaiserAction: false };
         }
 
         // Resolve the delayed counter and then finish the same turn as the non-cinematic path.
         const logs = [...current.logs];
         const log = (message: string) => logs.push('第' + current.turn + 'ターン：' + message);
-        const skipKaiserAction = current.kaiserActionLockTurns > 0;
+        const skipKaiserAction = current.pendingShortIrenaSkipKaiserAction;
         let playerHp = current.playerHp;
         if (skipKaiserAction) {
           log(action === 'CONTROL_GOD' || action === 'CONTROL_DEMON'
@@ -447,6 +449,7 @@ export const StellaFinalBattleScreen: React.FC<{
           alignmentFlash: null,
           pendingKaiserCounterDamage: null,
           pendingShortIrenaAction: null,
+          pendingShortIrenaSkipKaiserAction: false,
           ascensionTurns,
           actionLockTurns,
           defenseDownTurns,
@@ -840,14 +843,44 @@ export const StellaFinalBattleScreen: React.FC<{
           : getShortIrenaCounterDamage(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase], effectiveDefense);
         return {
           ...current,
+          // Persist every part of the action that was already resolved before the
+          // cinematic: attacks, heals, phase changes, cooldowns, and route effects.
+          // Only the Kaiser response and end-of-turn ticks remain deferred.
+          playerHp,
+          kaiserHp,
           phase,
+          finalTurnLimit,
+          finalTurnsLeft,
           datenGauge,
           alignment,
+          finisherUsedAtAlignment,
           initialChoiceMade,
           alignmentFlash,
           alignmentFlashId,
           pendingKaiserCounterDamage: pendingDamage,
           pendingShortIrenaAction: action,
+          pendingShortIrenaSkipKaiserAction: skipKaiserAction,
+          godMightTurns,
+          divineSpeedTurns,
+          allPowerTurns,
+          allThingsTurns,
+          kaiserActionLockTurns,
+          kaiserDefenseNullTurns,
+          kaiserBuffImmuneTurns,
+          kaiserBuffs,
+          playerPressureTurns,
+          playerPressureImmuneTurns,
+          terminusReadyTurn,
+          ascensionTurns,
+          actionLockTurns,
+          speedDownTurns,
+          defenseDownTurns,
+          allMightUsed,
+          allMightMultiplier,
+          allMightBaseAttackMultiplier,
+          allMightSpeedMultiplier,
+          // The full-screen alignment reveal takes precedence over an attack cut-in.
+          normalAttackCutIn: false,
           logs: logs.slice(-8),
         };
       }
