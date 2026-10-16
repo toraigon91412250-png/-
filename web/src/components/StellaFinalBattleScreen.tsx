@@ -1084,15 +1084,16 @@ export const StellaFinalBattleScreen: React.FC<{
     ...(battle.kaiserBuffImmuneTurns > 0 ? [{ id: 'kaiser-buff-immune', label: '断絶 ' + battle.kaiserBuffImmuneTurns + 'T', kind: 'control' as const }] : []),
     ...(battle.playerPressureImmuneTurns > 0 ? [{ id: 'pressure-immune', label: '重圧耐性 ' + battle.playerPressureImmuneTurns + 'T', kind: 'buff' as const }] : []),
     ...(battle.allMightUsed ? [{ id: 'all-might', label: '理外掌握 済', kind: 'buff' as const }] : []),
-    ...(battle.fighterId === 'short-irena' ? [{
-      id: 'effective-stats',
-      label: '実効ステータス：ATK ' + displayedEffectiveAttack.toLocaleString('ja-JP') + '／DEF ' + displayedEffectiveDefense.toLocaleString('ja-JP') + '／SPD ' + displayedEffectiveSpeed.toLocaleString('ja-JP') + '・全能 ' + battle.allMightMultiplier.toFixed(1) + '倍（永続）',
-      kind: 'control' as const,
-    }] : []),
+    ...(battle.fighterId === 'short-irena' ? [
+      { id: 'effective-attack', label: 'ATK ' + displayedEffectiveAttack.toLocaleString('ja-JP'), kind: 'control' as const },
+      { id: 'effective-defense', label: 'DEF ' + displayedEffectiveDefense.toLocaleString('ja-JP'), kind: 'control' as const },
+      { id: 'effective-speed', label: 'SPD ' + displayedEffectiveSpeed.toLocaleString('ja-JP'), kind: 'control' as const },
+      { id: 'all-might-multiplier', label: '全能 ×' + battle.allMightMultiplier.toFixed(1), kind: 'buff' as const },
+    ] : []),
   ];
 
   return (
-    <main className={"stella-final" + (battle.status !== 'READY' ? ' stella-final--playing' : '')} style={{ backgroundImage: 'linear-gradient(180deg, rgba(4, 6, 18, .52), rgba(4, 6, 18, .94)), url(' + JSON.stringify(battleBackground) + ')' }}>
+    <main className={"stella-final" + (battle.status !== 'READY' ? ' stella-final--playing' : '') + (battle.fighterId === 'short-irena' && battle.alignment ? ' stella-final--' + battle.alignment.toLowerCase() : '')} style={{ backgroundImage: 'linear-gradient(180deg, rgba(4, 6, 18, .52), rgba(4, 6, 18, .94)), url(' + JSON.stringify(battleBackground) + ')' }}>
       <div className="stella-final__ambient" aria-hidden="true" />
       <header className="stella-final__header">
         <button type="button" className="stella-final__back" onClick={onBackHome} aria-label="ホームに戻る">
@@ -1278,7 +1279,14 @@ export const StellaFinalBattleScreen: React.FC<{
             className={'stella-final__alignment-flash stella-final__alignment-flash--' + battle.alignmentFlash.toLowerCase()}
             data-testid="short-irena-alignment-flash"
             aria-hidden="true"
-          />
+          >
+            <img
+              className="stella-final__alignment-emblem"
+              src={battle.alignmentFlash === 'GOD' ? STELLA_FINAL_BATTLE_IMAGES.irenaGodCrest : STELLA_FINAL_BATTLE_IMAGES.irenaDemonCrest}
+              alt=""
+            />
+            <span>{battle.alignmentFlash === 'GOD' ? '神化' : '堕天'}</span>
+          </div>
         )}
         {battle.finisherPending && (
           <div className={'stella-final__short-finisher stella-final__short-finisher--' + battle.finisherPending.toLowerCase()} data-testid="short-irena-finisher" role="status" aria-label={battle.finisherPending === 'GOD' ? '神側最終必殺技演出' : '堕天側最終必殺技演出'}>
