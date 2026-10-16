@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -363,6 +363,12 @@ export const App: React.FC = () => {
   };
 
   const handleOpenDeveloperTools = () => {
+    const activation = enableDeveloperMode();
+    if (!activation.persisted) {
+      window.alert('開発者モードを保存できませんでした。ブラウザの保存設定を確認してください。');
+      return;
+    }
+    setStellaModeProgress(activation.progress);
     refreshProgress();
     setScreen('DEV_TOOLS');
   };
@@ -600,6 +606,8 @@ export const App: React.FC = () => {
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
     });
+    setIsDeveloperFinalBattlePreview(false);
+    setScreen('SELECT');
   };
 
   return (

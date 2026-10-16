@@ -430,7 +430,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
@@ -1214,6 +1214,17 @@ try {
 
   assert.deepStrictEqual(loadStellaModeProgress(), expectedInitialStellaProgress,
     'A save created before Stella existed must default to locked without throwing.');
+  assert.notStrictEqual(loadStellaModeProgress().developerModeEnabled, true,
+    'A legacy save must not enable developer mode automatically.');
+  const activatedDeveloperMode = enableDeveloperMode();
+  assert.strictEqual(activatedDeveloperMode.persisted, true,
+    'Developer mode should persist when storage is available.');
+  assert.strictEqual(activatedDeveloperMode.progress.developerModeEnabled, true);
+  assert.strictEqual(loadStellaModeProgress().developerModeEnabled, true,
+    'Developer mode should remain enabled after reloading the saved progress.');
+  assert.strictEqual(enableDeveloperMode().persisted, true,
+    'Enabling developer mode again should be idempotent.');
+  storageValues.delete(STELLA_MODE_PROGRESS_KEY);
   assert.strictEqual(unlockStellaMode().persisted, false, 'Stella mode cannot unlock before the Lv.100 reveal.');
   assert.strictEqual(recordExKaiserVictory().persisted, false, 'EX Kaiser cannot be recorded before its prerequisites.');
 
@@ -1329,6 +1340,20 @@ try {
     'Repeated final-battle victories must not grant another reward.');
   assert.strictEqual(loadStatPoints(), 179,
     'Repeated final-battle victories must not alter the reward total.');
+
+  const storageBeforeDeveloperResetTest = new Map(storageValues);
+  try {
+    storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({
+      ...loadStellaModeProgress(),
+      developerModeEnabled: true,
+    }));
+    resetProgressForDeveloper();
+    assert.notStrictEqual(loadStellaModeProgress().developerModeEnabled, true,
+      'The in-game progression reset must disable persistent developer mode.');
+  } finally {
+    storageValues.clear();
+    for (const [key, value] of storageBeforeDeveloperResetTest) storageValues.set(key, value);
+  }
 } finally {
   globalThis.localStorage.setItem = originalSetItemForStellaModeTest;
   for (const [key, value] of stellaModeStateBeforeTest) {
