@@ -31,7 +31,7 @@ register(
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
-const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
+const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementMetricValue, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
@@ -1274,7 +1274,44 @@ globalThis.localStorage = {
 const storageBeforeAchievementRewardTest = new Map(storageValues);
 try {
   storageValues.clear();
+  storageValues.set('duel_arena_battle_stats', JSON.stringify({ totalBattles: 35, wins: 12, losses: 23 }));
+  const migratedLegacyWins = loadAchievementProgress();
+  assert.strictEqual(migratedLegacyWins.eligibleWins, 12,
+    'Existing non-developer save wins should seed achievement progress once.');
+  assert.ok(storageValues.has('duel_arena_achievement_progress'),
+    'The legacy achievement baseline should be persisted so it cannot be recalculated later.');
+
+  storageValues.clear();
+  storageValues.set('duel_arena_battle_stats', JSON.stringify({ totalBattles: 35, wins: 12, losses: 23 }));
+  storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({ developerModeEnabled: true }));
+  const migratedDeveloperWins = loadAchievementProgress();
+  assert.strictEqual(migratedDeveloperWins.eligibleWins, 0,
+    'Existing win totals must not be imported while Developer Tools mode is active.');
+
+  storageValues.clear();
   storageValues.set('duel_arena_stat_points', '12');
+  const eligibleWinSample = {
+    playerWon: true,
+    kaiserLevel: 10,
+    challengeMode: 'NORMAL',
+    turnNumber: 3,
+    playerHp: 5,
+    playerMaxHp: 100,
+    actionsTaken: [],
+    abilities: [],
+    equippedImprints: [],
+    usedImprints: [],
+    logLines: [],
+    difficulty: 'NORMAL',
+  };
+  const trackedWins = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, eligibleWinSample);
+  assert.strictEqual(trackedWins.eligibleWins, 1,
+    'Eligible gameplay wins must increment the achievement-specific count.');
+  assert.strictEqual(getAchievementMetricValue('WINS', {
+    progress: trackedWins,
+    snapshot: { overallStats: { totalBattles: 100, wins: 99, losses: 1 } },
+  }), 1, 'Developer/test wins in general statistics must not affect achievement win counts.');
+
   const eligibleForFirstReward = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ['first-victory']);
   assert.ok(persistAchievementProgress(eligibleForFirstReward));
   const firstClaim = claimAchievementReward('first-victory');
