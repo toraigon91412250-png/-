@@ -31,7 +31,7 @@ register(
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
-const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
+const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
@@ -45,6 +45,17 @@ assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
 assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
 assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,
   'The ultimate achievement authority must not leak into the regular summon pool.');
+const astralMaxLevelIrena = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10,
+  abilities: [{ id: 'ASTRAL_DOMINION', level: 5 }],
+  imprints: [],
+});
+assert.strictEqual(astralMaxLevelIrena.maxHp, Math.round(IRENA.maxHp * 1.8));
+assert.strictEqual(astralMaxLevelIrena.attack, Math.round(IRENA.attack * 1.8));
+assert.strictEqual(astralMaxLevelIrena.defense, Math.round(IRENA.defense * 1.8));
+assert.strictEqual(astralMaxLevelIrena.speed, Math.round(IRENA.speed * 1.8));
+assert.strictEqual(astralMaxLevelIrena.specialSkillDamage, Math.round(IRENA.specialSkillDamage * 1.8 * 1.5));
+assert.strictEqual(astralMaxLevelIrena.ultimateSkillDamage, Math.round(IRENA.ultimateSkillDamage * 1.8 * 1.5));
 assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.length, 10);
 assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'LAST_STAND'), true);
 assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'STARFALL'), true);
@@ -496,7 +507,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
@@ -1259,6 +1270,33 @@ globalThis.localStorage = {
   removeItem: key => storageValues.delete(key),
   clear: () => storageValues.clear(),
 };
+
+const storageBeforeAchievementRewardTest = new Map(storageValues);
+try {
+  storageValues.clear();
+  storageValues.set('duel_arena_stat_points', '12');
+  const eligibleForFirstReward = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ['first-victory']);
+  assert.ok(persistAchievementProgress(eligibleForFirstReward));
+  const firstClaim = claimAchievementReward('first-victory');
+  assert.strictEqual(firstClaim.claimed, true, 'A completed achievement grants its reward the first time.');
+  assert.strictEqual(loadStatPoints(), 17, 'The first achievement reward adds exactly five stat points.');
+  const duplicateClaim = claimAchievementReward('first-victory');
+  assert.strictEqual(duplicateClaim.claimed, false, 'A duplicate claim cannot grant the same reward twice.');
+  assert.strictEqual(loadStatPoints(), 17, 'A duplicate claim must not change the resource balance.');
+
+  const incompleteAchievements = loadAchievementProgress();
+  assert.strictEqual(unlockAchievementUltimateAuthority().progress.levels.ASTRAL_DOMINION, 0,
+    'The unique authority stays locked before full achievement completion.');
+  const allAchievements = completeAchievementIds(incompleteAchievements, ACHIEVEMENT_DEFINITIONS.map(item => item.id));
+  assert.ok(persistAchievementProgress(allAchievements));
+  const unlockedAuthority = unlockAchievementUltimateAuthority();
+  assert.strictEqual(unlockedAuthority.persisted, true);
+  assert.strictEqual(unlockedAuthority.progress.levels.ASTRAL_DOMINION, 5,
+    'Full completion unlocks the unique authority at max level.');
+} finally {
+  storageValues.clear();
+  for (const [key, value] of storageBeforeAchievementRewardTest) storageValues.set(key, value);
+}
 
 assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the initial 12 points.');
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');
