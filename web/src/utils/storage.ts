@@ -838,8 +838,12 @@ export function resetProgressForDeveloper(): {
     equippedIds: [...INITIAL_IMPRINT_PROGRESS.equippedIds],
   });
   try {
-    // Clear developer mode first, before any other reset write can fail.
+    // Clear developer mode first, without letting this write block the other reset operations.
     localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
+  } catch {
+    // Keep attempting the remaining reset writes if this key cannot be saved.
+  }
+  try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
     localStorage.setItem(IRENA_TALENT_PROGRESS_KEY, JSON.stringify({
