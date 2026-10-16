@@ -255,12 +255,20 @@ assert.match(shortIrenaFinalBattleSource, /stella-final__alignment-choice-icon/,
   'The initial choice buttons still show their choice crests.');
 assert.match(shortIrenaFinalBattleSource, /pendingKaiserCounterDamage: number \| null/,
   'The initial alignment transition stores the counter hit until its reveal completes.');
-assert.match(shortIrenaFinalBattleSource, /const duration = isOpeningTransition \? 1850 : 300/,
-  'The opening alignment reveal runs before the delayed enemy counter.');
-assert.match(shortIrenaFinalBattleSource, /const playerHp = Math\.max\(0, current\.playerHp - pendingDamage\)/,
+assert.match(shortIrenaFinalBattleSource, /const duration = shouldPauseForFormReveal \? \(prefersReducedMotion \? 600 : 1850\) : 300/,
+  'The opening alignment reveal and actual form changes run before the delayed enemy counter.');
+assert.match(shortIrenaFinalBattleSource, /playerHp = Math\.max\(0, playerHp - pendingDamage\)/,
   'The deferred enemy counter applies its damage only after the reveal timer.');
 assert.match(shortIrenaFinalBattleSource, /current\.pendingKaiserCounterDamage !== null\) return current/,
   'Battle actions are locked while the opening reveal is active.');
+assert.match(shortIrenaFinalBattleSource, /let shouldDeferAlignmentCounter = isOpeningChoice/,
+  'Opening God/Fallen choices defer the enemy response.');
+assert.match(shortIrenaFinalBattleSource, /if \(alignment && alignment !== previousAlignment\) \{\s*shouldDeferAlignmentCounter = true/,
+  'Reaching a true God/Fallen alignment also triggers the full-screen portrait reveal.');
+assert.match(shortIrenaFinalBattleSource, /const godMightTurns = wasGodMight \? tick\(current\.godMightTurns\)/,
+  'Timed buffs still tick when the delayed alignment counter resolves.');
+assert.match(shortIrenaFinalBattleSource, /pendingShortIrenaAction: ShortIrenaAction \| null/,
+  'The delayed turn retains its action so deadline and status logic can be completed.');
 assert.ok(!shortIrenaFinalBattleSource.slice(
   shortIrenaFinalBattleSource.indexOf('{battle.alignmentFlash &&'),
   shortIrenaFinalBattleSource.indexOf('{battle.finisherPending &&'),
