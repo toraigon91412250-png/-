@@ -23,6 +23,7 @@ import type {
   RecruitmentProgress,
 } from '../types/game';
 import { getIrenaWithSkillProgress } from '../data/characters';
+import { AchievementSection } from './AchievementSection';
 import './HomeDashboard.css';
 
 interface HomeDashboardProps {
@@ -48,6 +49,7 @@ interface HomeDashboardProps {
   onStartExKaiser: () => void;
   onOpenStellaMode: () => void;
   onOpenStellaFinalBattle: () => void;
+  onAchievementRewardsChanged: () => void;
 }
 
 export const HomeDashboard: React.FC<HomeDashboardProps> = ({
@@ -73,6 +75,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onStartExKaiser,
   onOpenStellaMode,
   onOpenStellaFinalBattle,
+  onAchievementRewardsChanged,
 }) => {
   const playerChar = getIrenaWithSkillProgress(skillProgress);
   const winRate = overallStats.totalBattles > 0
@@ -287,6 +290,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <div className="home-dashboard__record-stat"><strong>{overallStats.losses}</strong><small>敗北</small></div>
           <div className="home-dashboard__record-rate"><strong>{winRate}%</strong><small>勝率</small></div>
         </section>
+
+        <AchievementSection onRewardsChanged={onAchievementRewardsChanged} />
 
         <footer className="home-dashboard__footer">
           <span className="home-dashboard__footer-note"><BookOpen size={15} aria-hidden="true" /> 育成・編成は強化メニューから確認できます。</span>
