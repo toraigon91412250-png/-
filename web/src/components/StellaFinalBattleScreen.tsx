@@ -84,6 +84,8 @@ interface StellaFinalBattleState {
   alignmentFlash: ShortIrenaAlignment | null;
   pendingKaiserCounterDamage: number | null;
   pendingShortIrenaAction: ShortIrenaAction | null;
+  pendingShortIrenaSkipKaiserAction: boolean;
+  pendingShortIrenaWasSpeedDown: boolean;
   finisherRoutePending: ShortIrenaAlignment | null;
   finisherUsedAtAlignment: ShortIrenaAlignment | null;
   godMightTurns: number;
@@ -141,6 +143,8 @@ function createInitialBattle(
     alignmentFlash: null,
     pendingKaiserCounterDamage: null,
     pendingShortIrenaAction: null,
+    pendingShortIrenaSkipKaiserAction: false,
+    pendingShortIrenaWasSpeedDown: false,
     finisherRoutePending: null,
     finisherUsedAtAlignment: null,
     godMightTurns: 0,
@@ -360,13 +364,13 @@ export const StellaFinalBattleScreen: React.FC<{
         const pendingDamage = current.pendingKaiserCounterDamage;
         const action = current.pendingShortIrenaAction;
         if (pendingDamage === null || action === null) {
-          return { ...current, alignmentFlash: null, pendingKaiserCounterDamage: null, pendingShortIrenaAction: null };
+          return { ...current, alignmentFlash: null, pendingKaiserCounterDamage: null, pendingShortIrenaAction: null, pendingShortIrenaSkipKaiserAction: false, pendingShortIrenaWasSpeedDown: false };
         }
 
         // Resolve the delayed counter and then finish the same turn as the non-cinematic path.
         const logs = [...current.logs];
         const log = (message: string) => logs.push('第' + current.turn + 'ターン：' + message);
-        const skipKaiserAction = current.kaiserActionLockTurns > 0;
+        const skipKaiserAction = current.pendingShortIrenaSkipKaiserAction;
         let playerHp = current.playerHp;
         if (skipKaiserAction) {
           log(action === 'CONTROL_GOD' || action === 'CONTROL_DEMON'
@@ -381,7 +385,7 @@ export const StellaFinalBattleScreen: React.FC<{
         const wasDivineSpeed = current.divineSpeedTurns > 0;
         const wasAllPower = current.allPowerTurns > 0;
         const wasAllThings = current.allThingsTurns > 0;
-        const wasSpeedDown = current.speedDownTurns > 0 && action !== 'ALL_THINGS';
+        const wasSpeedDown = current.pendingShortIrenaWasSpeedDown;
         const wasDefenseDown = current.defenseDownTurns > 0 && action !== 'ALL_THINGS';
         let ascensionTurns = current.ascensionTurns;
         let actionLockTurns = current.actionLockTurns;
@@ -447,6 +451,8 @@ export const StellaFinalBattleScreen: React.FC<{
           alignmentFlash: null,
           pendingKaiserCounterDamage: null,
           pendingShortIrenaAction: null,
+          pendingShortIrenaSkipKaiserAction: false,
+          pendingShortIrenaWasSpeedDown: false,
           ascensionTurns,
           actionLockTurns,
           defenseDownTurns,
@@ -840,14 +846,43 @@ export const StellaFinalBattleScreen: React.FC<{
           : getShortIrenaCounterDamage(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase], effectiveDefense);
         return {
           ...current,
+          // Preserve the action's already-resolved results before delaying the Kaiser turn.
+          playerHp,
+          kaiserHp,
           phase,
+          finalTurnLimit,
+          finalTurnsLeft,
           datenGauge,
           alignment,
+          finisherUsedAtAlignment,
           initialChoiceMade,
           alignmentFlash,
           alignmentFlashId,
           pendingKaiserCounterDamage: pendingDamage,
           pendingShortIrenaAction: action,
+          pendingShortIrenaSkipKaiserAction: skipKaiserAction,
+          pendingShortIrenaWasSpeedDown: wasSpeedDown,
+          godMightTurns,
+          divineSpeedTurns,
+          allPowerTurns,
+          allThingsTurns,
+          kaiserActionLockTurns,
+          kaiserDefenseNullTurns,
+          kaiserBuffImmuneTurns,
+          kaiserBuffs,
+          playerPressureTurns,
+          playerPressureImmuneTurns,
+          terminusReadyTurn,
+          ascensionTurns,
+          actionLockTurns,
+          speedDownTurns,
+          defenseDownTurns,
+          allMightUsed,
+          allMightMultiplier,
+          allMightBaseAttackMultiplier,
+          allMightSpeedMultiplier,
+          // The cinematic is the primary action presentation; avoid stacking a cut-in above it.
+          normalAttackCutIn: false,
           logs: logs.slice(-8),
         };
       }
