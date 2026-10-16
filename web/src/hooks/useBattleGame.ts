@@ -94,6 +94,7 @@ export function useBattleGame(
     kaiserLevel: initialBattleConfig.kaiserLevel,
     kaiserChallengeMode: initialBattleConfig.kaiserChallengeMode ?? 'NORMAL',
     playerCharacterId: initialBattleConfig.playerCharacterId ?? initialPlayerChar.id,
+    achievementAuthorityEnabled: initialBattleConfig.achievementAuthorityEnabled === true,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
     imprints: normalizeEquippedImprints(initialBattleConfig.imprints),
     statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
@@ -452,6 +453,9 @@ export function useBattleGame(
         ?? stateRef.current.battleConfig.kaiserChallengeMode
         ?? 'NORMAL',
       playerCharacterId: battleConfigOverride?.playerCharacterId ?? baseP.id,
+      achievementAuthorityEnabled: battleConfigOverride?.achievementAuthorityEnabled
+        ?? stateRef.current.battleConfig.achievementAuthorityEnabled
+        ?? false,
       abilities: normalizeEquippedAbilities(
         battleConfigOverride?.abilities ?? stateRef.current.battleConfig.abilities,
       ),
