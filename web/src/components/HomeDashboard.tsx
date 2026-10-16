@@ -38,6 +38,10 @@ interface HomeDashboardProps {
   recruitmentProgress: RecruitmentProgress;
   abilityProgress: AbilityProgress;
   onOpenDeveloperTools: () => void;
+  onOpenAchievements: () => void;
+  achievementCompletedCount: number;
+  achievementTotalCount: number;
+  astralDominionUnlocked: boolean;
   stellaUnlockAvailable: boolean;
   stellaModeUnlocked: boolean;
   stellaFinalBattleUnlocked: boolean;
@@ -63,6 +67,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   recruitmentProgress,
   abilityProgress,
   onOpenDeveloperTools,
+  onOpenAchievements,
+  achievementCompletedCount,
+  achievementTotalCount,
+  astralDominionUnlocked,
   stellaUnlockAvailable,
   stellaModeUnlocked,
   stellaFinalBattleUnlocked,
@@ -78,7 +86,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const winRate = overallStats.totalBattles > 0
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
-  const unlockedAbilities = Object.values(abilityProgress.levels).filter(level => level > 0).length;
+  const unlockedAbilities = Object.entries(abilityProgress.levels).filter(([id, level]) => id !== 'ASTRAL_DOMINION' && level > 0).length;
   const challengeProgress = Math.max(0, Math.min(100, unlockedKaiserLevel));
 
   return (
@@ -286,6 +294,18 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
           <div className="home-dashboard__record-stat"><strong>{overallStats.wins}</strong><small>勝利</small></div>
           <div className="home-dashboard__record-stat"><strong>{overallStats.losses}</strong><small>敗北</small></div>
           <div className="home-dashboard__record-rate"><strong>{winRate}%</strong><small>勝率</small></div>
+        </section>
+
+        <section className="home-dashboard__achievement-entry" aria-label="実績と報酬">
+          <div className="home-dashboard__achievement-entry-art" aria-hidden="true"><Trophy size={25} /></div>
+          <div className="home-dashboard__achievement-entry-copy">
+            <p className="home-dashboard__section-kicker">ACHIEVEMENTS <span>実績・報酬</span></p>
+            <h2>実績記録 <strong>{achievementCompletedCount}/{achievementTotalCount}</strong></h2>
+            <p>{astralDominionUnlocked ? '最強権能「天星覇権」を獲得済み。まだ受け取っていない報酬も確認できます。' : '戦闘・高難度・育成・収集の課題を達成して報酬を獲得。全達成で最強権能が解放される。'}</p>
+          </div>
+          <button type="button" className="home-dashboard__achievement-entry-action" onClick={onOpenAchievements} aria-label="実績一覧を開く">
+            実績を確認 <ArrowUpRight size={17} aria-hidden="true" />
+          </button>
         </section>
 
         <footer className="home-dashboard__footer">
