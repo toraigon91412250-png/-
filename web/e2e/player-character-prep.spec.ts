@@ -145,20 +145,27 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   const attack = page.getByRole('button', { name: '通常攻撃' });
   await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
-  await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
+  await expect(bossHp).toHaveAttribute('aria-valuemax', '30000');
   await expect(page.locator('.stella-final__normal-attack')).toContainText('2,000');
-  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 15,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
+  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 30,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4780');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '28000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
   await expect(page.getByText('使用回数に応じて最大HPの100%・50%・25%分を回復（HP上限まで）。')).toBeVisible();
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '26000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4120');
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '9000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4240');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '24000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3680');
+  await expect(page.locator('.stella-final__phase')).toContainText('01');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '22000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3240');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '2600');
   await expect(page.locator('.stella-final__phase')).toContainText('02');
 });
 
