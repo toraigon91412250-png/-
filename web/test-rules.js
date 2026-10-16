@@ -275,6 +275,9 @@ assert.match(shortIrenaFinalBattleSource, /STELLA_FINAL_BATTLE_IMAGES\.irenaDemo
   'Choosing Fallen reveals the updated Fallen portrait.');
 assert.match(shortIrenaFinalBattleSource, /canDisplayTerminusCooldown/,
   'Terminus remains visible while it is on cooldown.');
+const terminusCooldownDisplayCondition = shortIrenaFinalBattleSource.match(/const canDisplayTerminusCooldown = ([\\s\\S]*?);/)?.[1] ?? '';
+assert.ok(!terminusCooldownDisplayCondition.includes('canUseTerminus'),
+  'A cooldown tile remains visible even after gauge movement changes the current activation threshold.');
 assert.match(shortIrenaFinalBattleSource, /stella-final__cooldown-badge/,
   'Cooldown actions display their remaining-turn badge.');
 assert.match(shortIrenaFinalBattleSource, /battle\.turn < battle\.immortalReadyTurn && <span className="stella-final__cooldown-badge"/,
