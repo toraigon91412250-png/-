@@ -33,7 +33,7 @@ const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import(
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
-const { IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
+const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
@@ -45,9 +45,9 @@ assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
 assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
 assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,
   'The ultimate achievement authority must not leak into the regular summon pool.');
-assert.strictEqual(IMPRINT_DEFINITIONS.length, 10);
-assert.strictEqual(IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'LAST_STAND'), true);
-assert.strictEqual(IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'STARFALL'), true);
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.length, 10);
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'LAST_STAND'), true);
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'STARFALL'), true);
 assert.strictEqual(new Set(ACHIEVEMENT_DEFINITIONS.map(achievement => achievement.id)).size, ACHIEVEMENT_DEFINITIONS.length,
   'Achievement IDs must stay unique so rewards cannot collide.');
 assert.ok(ACHIEVEMENT_DEFINITIONS.length >= 30, 'The achievement archive should contain long-term and high-difficulty goals.');
