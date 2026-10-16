@@ -839,6 +839,13 @@ export const StellaFinalBattleScreen: React.FC<{
       }
 
       if (shouldDeferAlignmentCounter) {
+        // Every deferred counter must have a live reveal timer to release the turn.
+        // A normal attack/authority can reach ±100 without setting alignmentFlash
+        // in its action branch, so provide the missing transition here as a safe fallback.
+        if (alignmentFlash === null) {
+          alignmentFlash = alignment ?? (datenGauge < 0 ? 'DEMON' : 'GOD');
+          alignmentFlashId += 1;
+        }
         // Freeze the initial choice or actual form change before the enemy counter.
         // Resolve the counter and the rest of this turn exactly once after the reveal.
         const pendingDamage = skipKaiserAction
