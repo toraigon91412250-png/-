@@ -190,6 +190,15 @@ assert.match(screenTransitionLoaderSource, /!minimumTimeElapsed \|\| !extraWorkR
   'Any required screen-specific preload still completes before the loader disappears.');
 assert.doesNotMatch(screenTransitionLoaderSource, /artworkReady|preloadedArtwork/,
   'Decorative loading artwork is not allowed to block normal navigation.');
+assert.doesNotMatch(screenTransitionLoaderSource, /<img|SCREEN_TRANSITION_ARTWORK|\.\.\/assets\//,
+  'Ordinary screen transitions do not render or import loading artwork.');
+assert.doesNotMatch(screenTransitionLoaderSource, /transitionIndex|data-screen-transition-art/,
+  'The ordinary transition loader no longer selects an image by index.');
+const screenTransitionLoaderCss = await readFile(new URL('./src/components/ScreenTransitionLoader.css', import.meta.url), 'utf8');
+assert.match(screenTransitionLoaderCss, /background:\s*#000;/,
+  'Ordinary screen transitions use a plain black screen.');
+assert.doesNotMatch(screenTransitionLoaderCss, /url\(|backdrop-art|loader__art|loader__caption|loader__progress/,
+  'Ordinary screen transitions do not contain image, caption, or progress visuals.');
 const appDeveloperRouteSource = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
 assert.doesNotMatch(appDeveloperRouteSource, /handleOpenDeveloperFinalBattle|onOpenStellaFinalBattle=\{handleOpenDeveloperFinalBattle\}|isDeveloperFinalBattlePreview/,
   'The obsolete developer-only final-battle shortcut is removed.');
