@@ -1097,7 +1097,6 @@ export const StellaFinalBattleScreen: React.FC<{
     && !battle.finisherPending
     && !battle.finisherRoutePending
     && battle.finalTurnsLeft !== 0;
-  const canDisplayTerminus = shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn;
   const canActivateAscension = canActivateShortIrenaAscension(battle.datenGauge, battle.ascensionTurns, battle.phase, battle.finalTurnsLeft);
   const canUseDivineSpeed = battle.datenGauge >= 30;
   const canUseAllPower = battle.datenGauge >= 60;
@@ -1111,6 +1110,7 @@ export const StellaFinalBattleScreen: React.FC<{
     && !battle.finisherPending
     && !battle.finisherRoutePending
     && battle.finalTurnsLeft !== 0;
+  const canDisplayTerminus = shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn;
   const canMoveShortIrenaGauge = isFighting
     && battle.initialChoiceMade
     && battle.actionLockTurns === 0
