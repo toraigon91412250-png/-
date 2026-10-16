@@ -67,7 +67,7 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
   const playerChar = getIrenaWithSkillProgress(skillProgress);
   const talentLevelProgress = getIrenaLevelProgress(irenaTalentProgress.experience);
   const availableTalentPoints = getAvailableIrenaTalentPoints(irenaTalentProgress);
-  const unlockedAbilities = Object.values(abilityProgress.levels).filter(level => level > 0).length;
+  const unlockedAbilities = Object.entries(abilityProgress.levels).filter(([id, level]) => id !== 'ASTRAL_DOMINION' && level > 0).length;
   const equippedCount = imprintProgress.equippedIds.length;
 
   return (
