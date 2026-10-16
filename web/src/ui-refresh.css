@@ -17,6 +17,15 @@ button:focus-visible, summary:focus-visible {
   outline: 2px solid var(--ui-gold);
   outline-offset: 3px;
 }
+
+/* Shared tactile feedback: a brief press plus a restrained arcane glow. */
+button:not(:disabled) { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled):active {
+  transform: scale(.97) translateY(1px) !important;
+  filter: brightness(1.13) saturate(1.12) !important;
+  box-shadow: inset 0 2px 8px rgba(4, 8, 18, .28), 0 0 0 1px rgba(143, 229, 220, .48), 0 0 14px rgba(143, 229, 220, .18) !important;
+  transition-duration: 70ms !important;
+}
 .battle-setup-screen {
   background:
     radial-gradient(ellipse at 88% 0%, rgba(118, 77, 166, .17), transparent 32rem),
@@ -109,4 +118,5 @@ button:focus-visible, summary:focus-visible {
   button, .battle-setup-content button, .imprint-screen button, .imprint-gacha-screen button, .talent-board-screen button {
     transition-duration: .01ms !important;
   }
+  button:not(:disabled):active { transition-duration: .01ms !important; }
 }
