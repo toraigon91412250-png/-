@@ -2464,10 +2464,19 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .stella-final--playing .stella-final__alignment-flash--opening,
+  .stella-final--playing .stella-final__alignment-flash--opening {
+    animation: none;
+    opacity: 1;
+  }
+  .stella-final--playing .stella-final__alignment-flash--opening::before {
+    animation: none;
+    opacity: .12;
+  }
   .stella-final--playing .stella-final__opening-form-portrait,
   .stella-final--playing .stella-final__opening-form-title {
-    animation-duration: 1ms;
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
