@@ -761,9 +761,9 @@ export const App: React.FC = () => {
           onBackHome={() => {
             cancelBattle();
             refreshProgress();
+            setScreen(isDeveloperFinalBattlePreview ? 'DEV_TOOLS' : 'SELECT');
             setIsDeveloperFinalBattlePreview(false);
             setBattleSetupMode('NORMAL');
-            setScreen('SELECT');
           }}
         />
       ) : screen === 'RAID_PROTOTYPE' ? (
