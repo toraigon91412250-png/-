@@ -1320,3 +1320,67 @@
  .stella-final--playing .stella-final__arena-center{top:70px}
  .stella-final--playing .stella-final__fighter{top:5px}
 }
+
+/* Mobile layout correction: safe-area header and content-sized command area. */
+@media (max-width: 650px) {
+  .stella-final--playing .stella-final__header {
+    height: calc(54px + env(safe-area-inset-top, 0px));
+    min-height: calc(54px + env(safe-area-inset-top, 0px));
+    padding: calc(4px + env(safe-area-inset-top, 0px)) 10px 4px;
+    gap: 9px;
+  }
+
+  .stella-final--playing .stella-final__back {
+    flex: 0 0 auto;
+    min-width: 82px;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 12px;
+    touch-action: manipulation;
+  }
+
+  .stella-final--playing .stella-final__content {
+    height: calc(100dvh - 54px - env(safe-area-inset-top, 0px));
+    max-height: calc(100dvh - 54px - env(safe-area-inset-top, 0px));
+    padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .stella-final--playing .stella-final__arena {
+    flex: 1 1 0;
+    min-height: 145px;
+  }
+
+  .stella-final--playing .stella-final__powers {
+    flex: 0 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: min(48dvh, 390px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stella-final--playing .stella-final__power-grid {
+    flex: 0 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 116px), 1fr));
+    grid-template-rows: none;
+    grid-auto-rows: minmax(82px, auto);
+    align-content: start;
+    overflow: visible;
+  }
+
+  .stella-final--playing .stella-final__power-grid:has(> .stella-final__power-card:only-child) {
+    grid-template-columns: minmax(0, min(100%, 240px));
+  }
+
+  .stella-final--playing .stella-final__power-card {
+    min-height: 82px;
+  }
+
+  .stella-final--playing .stella-final__normal-attack,
+  .stella-final--playing .stella-final__battle-log {
+    flex-shrink: 0;
+  }
+}
+
