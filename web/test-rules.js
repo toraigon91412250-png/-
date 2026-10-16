@@ -428,7 +428,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
@@ -1414,8 +1414,10 @@ try {
   assert.ok(JSON.parse(storageValues.get('duel_arena_recruitment_progress')).tickets >= 9999,
     'Recruitment screen must have enough tickets to use multi-pulls.');
   const skillProgressForFullUnlock = JSON.parse(storageValues.get('duel_arena_irena_skill_progress'));
-  assert.strictEqual(skillProgressForFullUnlock.featherLevel, 10);
-  assert.strictEqual(skillProgressForFullUnlock.ruinLevel, 10);
+  assert.strictEqual(skillProgressForFullUnlock.featherLevel, 3,
+    'Unselected feather specialization must remain selectable after full unlock.');
+  assert.strictEqual(skillProgressForFullUnlock.ruinLevel, 3,
+    'Unselected ruin specialization must remain selectable after full unlock.');
   assert.ok(skillProgressForFullUnlock.superFallenShotUnlocked, 'The existing Irena ultimate must be unlocked.');
   assert.ok(skillProgressForFullUnlock.shards >= 9999);
   assert.strictEqual(loadImprintProgress().unlockedIds.length, IMPRINT_DEFINITIONS.length,
@@ -1430,6 +1432,18 @@ try {
 
   assert.strictEqual(unlockAllGameFeaturesForDeveloper().persisted, true, 'The all-unlock action should be safe to repeat.');
   assert.strictEqual(loadStatPoints(), 62, 'Repeating the all-unlock action must not grant the +50P reward again.');
+
+  assert.ok(chooseIrenaSkillPath('FEATHER', 'ABYSS'),
+    'Full unlock must leave the feather specialization selectable.');
+  assert.ok(chooseIrenaSkillPath('RUIN', 'EXECUTION'),
+    'Full unlock must leave the ruin specialization selectable.');
+  for (let level = 3; level < 10; level += 1) {
+    assert.ok(upgradeIrenaSkill('FEATHER'), 'The chosen feather skill should be upgradeable through Lv.10.');
+    assert.ok(upgradeIrenaSkill('RUIN'), 'The chosen ruin skill should be upgradeable through Lv.10.');
+  }
+  const fullyUpgradedSkills = loadSkillProgress();
+  assert.strictEqual(fullyUpgradedSkills.featherLevel, 10);
+  assert.strictEqual(fullyUpgradedSkills.ruinLevel, 10);
 
   const savedBeforeFailedUnlock = new Map(fullUnlockTestKeys.map(key => [key, storageValues.get(key)]));
   globalThis.localStorage.setItem = (key, value) => {
