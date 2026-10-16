@@ -21,8 +21,8 @@ const SCREEN_TRANSITION_ARTWORK = [
   { name: 'IMG_1179.jpeg', src: loadingIrenaNight, hasLoadingText: true },
 ] as const;
 
-// Keep the loading artwork visible briefly without slowing navigation too much.
-const MINIMUM_TRANSITION_TIME_MS = 1_500;
+// Keep non-combat navigation snappy; battle deployment has its own separate loading flow.
+const MINIMUM_TRANSITION_TIME_MS = 450;
 
 export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
   transitionIndex,
@@ -37,42 +37,13 @@ export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
     let cancelled = false;
     let complete = false;
     let minimumTimeElapsed = false;
-    let artworkReady = false;
     let extraWorkReady = !waitFor;
-    let decodeStarted = false;
 
     const finishIfReady = () => {
-      if (cancelled || complete || !minimumTimeElapsed || !artworkReady || !extraWorkReady) return;
+      if (cancelled || complete || !minimumTimeElapsed || !extraWorkReady) return;
       complete = true;
       onComplete();
     };
-
-    const preloadedArtwork = new Image();
-    preloadedArtwork.decoding = 'async';
-
-    const markArtworkReady = () => {
-      if (decodeStarted) return;
-      decodeStarted = true;
-
-      const decode = typeof preloadedArtwork.decode === 'function'
-        ? preloadedArtwork.decode().catch(() => undefined)
-        : Promise.resolve();
-
-      void decode.then(() => {
-        if (cancelled) return;
-        artworkReady = true;
-        finishIfReady();
-      });
-    };
-
-    preloadedArtwork.onload = markArtworkReady;
-    preloadedArtwork.onerror = () => {
-      if (cancelled) return;
-      artworkReady = true;
-      finishIfReady();
-    };
-    preloadedArtwork.src = artwork.src;
-    if (preloadedArtwork.complete) markArtworkReady();
 
     const minimumTimer = window.setTimeout(() => {
       minimumTimeElapsed = true;
@@ -86,7 +57,7 @@ export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
         finishIfReady();
       },
       () => {
-        // An asset error should not trap the player on the loading screen.
+        // A failed optional preload must not trap the player on the loading screen.
         if (cancelled) return;
         extraWorkReady = true;
         finishIfReady();
@@ -97,7 +68,7 @@ export const ScreenTransitionLoader: React.FC<ScreenTransitionLoaderProps> = ({
       cancelled = true;
       window.clearTimeout(minimumTimer);
     };
-  }, [artwork.src, waitFor, onComplete]);
+  }, [waitFor, onComplete]);
 
   return (
     <section

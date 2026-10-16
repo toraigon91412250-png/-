@@ -175,10 +175,21 @@ assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
   'The gauge does not offer an impossible move beyond the negative cap.');
 const developerToolsSource = await readFile(new URL('./src/components/DeveloperToolsScreen.tsx', import.meta.url), 'utf8');
-assert.match(developerToolsSource, /最終決戦をワンボタン開放（開発用）/,
-  'Developer Tools expose a dedicated one-button route to the final battle.');
+assert.match(developerToolsSource, /いれーな最終決戦をすぐ開始/,
+  'Developer Tools expose a clearly named Irena final-battle shortcut.');
+assert.ok(
+  developerToolsSource.indexOf('いれーな最終決戦をすぐ開始') < developerToolsSource.indexOf('⚔️ 対戦テスト'),
+  'The direct final-battle shortcut appears before the generic battle setup on mobile.',
+);
 assert.match(developerToolsSource, /onClick=\{onOpenStellaFinalBattle\}/,
   'The final battle developer shortcut is wired to its route callback.');
+const screenTransitionLoaderSource = await readFile(new URL('./src/components/ScreenTransitionLoader.tsx', import.meta.url), 'utf8');
+assert.match(screenTransitionLoaderSource, /MINIMUM_TRANSITION_TIME_MS = 450;/,
+  'Ordinary screen transitions have a 450ms visual minimum.');
+assert.match(screenTransitionLoaderSource, /!minimumTimeElapsed \|\| !extraWorkReady/,
+  'Any required screen-specific preload still completes before the loader disappears.');
+assert.doesNotMatch(screenTransitionLoaderSource, /artworkReady|preloadedArtwork/,
+  'Decorative loading artwork is not allowed to block normal navigation.');
 const appDeveloperRouteSource = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
 assert.match(appDeveloperRouteSource, /const handleOpenDeveloperFinalBattle = \(\) =>/,
   'App owns the developer-only final-battle route.');
