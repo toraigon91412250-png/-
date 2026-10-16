@@ -1759,3 +1759,535 @@
   }
 }
 
+/* Final battle visual finish: art-led alignment states, readable skills, adaptive command height. */
+.stella-final--playing {
+  --duel-ink: #080a18;
+  --duel-glass: rgba(7, 10, 27, .88);
+  --duel-line: rgba(170, 184, 255, .24);
+  isolation: isolate;
+}
+.stella-final--playing .stella-final__header {
+  padding-top: max(4px, env(safe-area-inset-top, 0px));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.stella-final--playing .stella-final__back {
+  border-color: rgba(180, 202, 255, .38);
+  background: linear-gradient(135deg, rgba(18, 30, 59, .96), rgba(6, 10, 27, .96));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+.stella-final--playing .stella-final__back:active { transform: scale(.97); }
+.stella-final--playing .stella-final__arena {
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 78%, rgba(88, 103, 181, .18), transparent 50%),
+    linear-gradient(180deg, rgba(5, 7, 19, .06), rgba(4, 4, 17, .32));
+}
+.stella-final--playing .stella-final__arena::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 4% -12% 0;
+  pointer-events: none;
+  opacity: .85;
+  background: radial-gradient(ellipse at 50% 58%, rgba(125, 113, 255, .13), transparent 66%);
+}
+.stella-final--playing.stella-final--god .stella-final__arena::before {
+  opacity: .94;
+  background:
+    radial-gradient(ellipse at 27% 46%, rgba(239, 230, 255, .22), transparent 42%),
+    radial-gradient(ellipse at 54% 65%, rgba(116, 165, 255, .18), transparent 61%),
+    radial-gradient(ellipse at 50% 12%, rgba(255, 240, 200, .08), transparent 62%);
+}
+.stella-final--playing.stella-final--demon .stella-final__arena::before {
+  opacity: .96;
+  background:
+    radial-gradient(ellipse at 27% 50%, rgba(255, 23, 75, .25), transparent 43%),
+    radial-gradient(ellipse at 67% 60%, rgba(116, 9, 54, .24), transparent 59%),
+    radial-gradient(ellipse at 50% 8%, rgba(182, 24, 70, .12), transparent 61%);
+}
+.stella-final--playing .stella-final__arena-art { z-index: 1; }
+.stella-final--playing .stella-final__arena-art--player img {
+  filter: drop-shadow(0 0 18px rgba(128, 152, 255, .27));
+  transition: filter .22s ease;
+}
+.stella-final--playing.stella-final--god .stella-final__arena-art--player img {
+  filter: drop-shadow(0 0 22px rgba(205, 208, 255, .48));
+}
+.stella-final--playing.stella-final--demon .stella-final__arena-art--player img {
+  filter: drop-shadow(0 0 24px rgba(255, 35, 82, .48));
+}
+.stella-final--playing .stella-final__arena::after {
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(3,4,16,.08), transparent 36%, rgba(3,3,14,.06) 60%, rgba(4,4,17,.42)),
+    linear-gradient(90deg, rgba(7,8,24,.10), transparent 35%, transparent 65%, rgba(17,4,19,.12));
+}
+.stella-final--playing .stella-final__fighter {
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.stella-final--playing.stella-final--god .stella-final__fighter--stella {
+  border-color: rgba(223, 224, 255, .86);
+  box-shadow: inset 0 0 20px rgba(190, 192, 255, .14), 0 0 18px rgba(149, 156, 255, .18);
+}
+.stella-final--playing.stella-final--demon .stella-final__fighter--stella {
+  border-color: rgba(255, 89, 120, .86);
+  box-shadow: inset 0 0 20px rgba(255, 34, 77, .14), 0 0 19px rgba(255, 29, 71, .18);
+}
+.stella-final--playing .stella-final__hp-track {
+  position: relative;
+  isolation: isolate;
+  background: rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.65);
+}
+.stella-final--playing .stella-final__hp-fill { position: relative; z-index: 0; }
+.stella-final--playing .stella-final__hp-phase-mark {
+  position: absolute;
+  z-index: 2;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: rgba(255, 241, 211, .94);
+  box-shadow: 0 0 5px rgba(255, 225, 158, .65);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.stella-final--playing .stella-final__phase {
+  padding: 3px 8px;
+  border-color: rgba(205, 183, 255, .62);
+  background: linear-gradient(100deg, rgba(40, 24, 77, .9), rgba(11, 8, 27, .9));
+  box-shadow: 0 0 16px rgba(165, 115, 255, .18);
+}
+.stella-final--playing .stella-final__timer {
+  box-shadow: 0 0 18px rgba(255, 43, 88, .23), inset 0 0 10px rgba(255, 43, 88, .08);
+}
+.stella-final--playing .stella-final__powers {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: min(49dvh, 420px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151, 126, 233, .4) transparent;
+  padding: 2px 3px 4px;
+}
+.stella-final--playing .stella-final__powers::-webkit-scrollbar { width: 4px; }
+.stella-final--playing .stella-final__powers::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(151, 126, 233, .4);
+}
+.stella-final--playing .stella-final__power-grid {
+  flex: 0 0 auto;
+  grid-template-rows: repeat(2, minmax(84px, 1fr));
+  align-content: start;
+  overflow: visible;
+}
+.stella-final--playing .stella-final__powers:has(.stella-final__opening-choice) {
+  height: auto;
+  max-height: min(49dvh, 420px);
+  overflow-y: visible;
+  flex: 0 0 auto;
+}
+.stella-final--playing .stella-final__powers:has(.stella-final__power-grid > .stella-final__power-card:nth-child(-n+3):last-child) {
+  height: auto;
+  max-height: min(49dvh, 420px);
+  overflow-y: visible;
+  flex: 0 0 auto;
+}
+.stella-final--playing .stella-final__powers:has(.stella-final__power-grid > .stella-final__power-card:nth-child(-n+3):last-child) .stella-final__power-grid {
+  grid-template-rows: auto;
+}
+.stella-final--playing .stella-final__power-card {
+  border-radius: 9px;
+  transform: translateZ(0);
+  transition: transform .16s ease, border-color .16s ease, filter .16s ease;
+}
+.stella-final--playing .stella-final__power-card:has(button:not(:disabled)) {
+  cursor: pointer;
+}
+.stella-final--playing .stella-final__power-card:has(button:not(:disabled)):active {
+  transform: scale(.975);
+  filter: brightness(1.14);
+}
+.stella-final--playing .stella-final__power-icon img.stella-final__skill-art {
+  display: block;
+  width: clamp(29px, 8vw, 43px);
+  height: clamp(29px, 8vw, 43px);
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 7px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.42), 0 0 14px rgba(255,80,112,.13);
+}
+.stella-final--playing .stella-final__power-card--terminus .stella-final__skill-art {
+  border-color: rgba(255, 94, 119, .72);
+  box-shadow: 0 0 14px rgba(255, 32, 79, .28);
+}
+.stella-final--playing .stella-final__power-card--ascension .stella-final__skill-art {
+  border-color: rgba(242, 175, 255, .75);
+  box-shadow: 0 0 14px rgba(198, 93, 255, .28);
+}
+.stella-final--playing .stella-final__power-card--control .stella-final__skill-art {
+  border-color: rgba(255, 118, 144, .72);
+  box-shadow: 0 0 14px rgba(255, 43, 83, .24);
+}
+.stella-final--playing .stella-final__power-icon svg {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+.stella-final--playing .stella-final__power-card button::before {
+  transition: filter .16s ease, border-color .16s ease, background .16s ease;
+}
+.stella-final--playing .stella-final__power-card:has(button:not(:disabled)):active button::before {
+  filter: brightness(1.28);
+  border-color: rgba(255,255,255,.68);
+}
+.stella-final--playing .stella-final__power-card button:disabled::before {
+  filter: grayscale(.65);
+  opacity: .35;
+}
+.stella-final--playing .stella-final__short-authorities {
+  margin: 0;
+  gap: 5px;
+}
+.stella-final--playing .stella-final__short-finish-row {
+  flex: 0 0 48px;
+  min-height: 48px;
+  border-color: rgba(255, 79, 117, .68);
+  background:
+    radial-gradient(ellipse at 90% 50%, rgba(190, 24, 70, .19), transparent 47%),
+    linear-gradient(100deg, rgba(32, 7, 27, .96), rgba(10, 6, 22, .98));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035), 0 0 18px rgba(255, 30, 82, .1);
+}
+.stella-final--playing .stella-final__short-finish-row:has(button:focus-visible) {
+  outline: 2px solid rgba(255,255,255,.85);
+  outline-offset: 2px;
+}
+.stella-final--playing .stella-final__short-finish-row strong {
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: .015em;
+}
+.stella-final--playing .stella-final__short-finish-row small {
+  color: #ffc2d0;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final--playing .stella-final__short-finish-row button {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  box-shadow: 0 0 15px rgba(255, 31, 77, .32), inset 0 0 0 2px rgba(255,255,255,.08);
+  transition: transform .15s ease, filter .15s ease;
+}
+.stella-final--playing .stella-final__short-finish-row button:active {
+  transform: rotate(45deg) scale(.93);
+  filter: brightness(1.22);
+}
+.stella-final--playing .stella-final__short-finish-row .stella-final__finish-icon {
+  display: block;
+  width: 29px;
+  height: 29px;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 50%;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 8px rgba(255, 255, 255, .16);
+}
+.stella-final--playing .stella-final__normal-attack {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(95, 205, 255, .62);
+  background:
+    radial-gradient(ellipse at 9% 50%, rgba(47, 172, 255, .16), transparent 53%),
+    linear-gradient(100deg, rgba(5, 24, 48, .98), rgba(5, 8, 25, .98));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 0 14px rgba(43, 171, 255, .07);
+}
+.stella-final--playing .stella-final__normal-attack button {
+  border-color: rgba(132, 221, 255, .72);
+  background: linear-gradient(120deg, #1978d5, #10427a);
+  box-shadow: 0 0 16px rgba(43, 168, 255, .2), inset 0 0 0 1px rgba(255,255,255,.12);
+  transition: transform .15s ease, filter .15s ease;
+}
+.stella-final--playing .stella-final__normal-attack button:active {
+  transform: scale(.97);
+  filter: brightness(1.18);
+}
+.stella-final--playing .stella-final__battle-log {
+  border-color: rgba(168, 159, 224, .25);
+  background: linear-gradient(100deg, rgba(7, 9, 23, .95), rgba(10, 8, 24, .9));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+.stella-final--playing .stella-final__status-chip {
+  flex: 0 0 auto;
+  max-width: 72%;
+  min-height: 19px;
+  border-radius: 6px;
+  border-color: rgba(172, 161, 249, .32);
+  background: rgba(63, 51, 122, .36);
+  font-size: 8px;
+}
+.stella-final--playing .stella-final__status-chip--debuff {
+  border-color: rgba(255, 116, 143, .46);
+  background: rgba(105, 25, 49, .43);
+}
+.stella-final--playing .stella-final__status-chip--control {
+  border-color: rgba(100, 197, 255, .38);
+  background: rgba(19, 61, 101, .4);
+}
+.stella-final--playing .stella-final__status-chips { gap: 4px; }
+.stella-final--playing .stella-final__daten-gauge {
+  border-color: rgba(188, 169, 255, .38);
+  box-shadow: inset 0 0 12px rgba(151, 115, 255, .07), 0 3px 12px rgba(0,0,0,.12);
+}
+.stella-final--playing.stella-final--god .stella-final__daten-gauge {
+  border-color: rgba(226, 225, 255, .6);
+  background: linear-gradient(90deg, rgba(40, 42, 99, .4), rgba(12, 16, 38, .8), rgba(183, 177, 255, .16));
+}
+.stella-final--playing.stella-final--demon .stella-final__daten-gauge {
+  border-color: rgba(255, 104, 134, .6);
+  background: linear-gradient(90deg, rgba(128, 18, 48, .46), rgba(25, 9, 24, .85), rgba(70, 31, 77, .25));
+}
+.stella-final--playing .stella-final__daten-gauge-track {
+  height: 9px;
+  background: linear-gradient(90deg, rgba(255, 59, 103, .54), rgba(89, 89, 139, .5), rgba(177, 128, 255, .64));
+}
+.stella-final--playing .stella-final__daten-gauge-marker {
+  width: 14px;
+  height: 15px;
+  border: 2px solid #fff;
+  background: #0a0b1c;
+  box-shadow: 0 0 0 3px rgba(14, 12, 32, .7), 0 0 12px rgba(255,255,255,.55);
+}
+.stella-final--playing .stella-final__daten-gauge-threshold-labels {
+  color: #e4e0f8;
+  font-size: 8px;
+  font-weight: 850;
+}
+.stella-final--playing .stella-final__gauge-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 31px;
+  border-color: rgba(190, 178, 255, .42);
+  background: linear-gradient(110deg, rgba(63, 52, 122, .88), rgba(25, 23, 58, .94));
+  transition: filter .15s ease, transform .15s ease;
+}
+.stella-final--playing .stella-final__gauge-controls button:last-child {
+  border-color: rgba(255, 115, 149, .46);
+  background: linear-gradient(110deg, rgba(118, 31, 59, .86), rgba(45, 10, 30, .94));
+}
+.stella-final--playing .stella-final__gauge-controls button:active { transform: scale(.98); }
+.stella-final--playing .stella-final__direction-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255,255,255,.58);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background: #fff;
+}
+.stella-final--playing .stella-final__opening-choice {
+  display: block;
+  padding: 7px;
+  border-color: rgba(183, 171, 255, .46);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(123, 91, 223, .17), transparent 65%),
+    linear-gradient(130deg, rgba(17, 20, 44, .96), rgba(27, 10, 31, .97));
+}
+.stella-final--playing .stella-final__opening-choice > div:first-child {
+  margin-bottom: 5px;
+  text-align: center;
+}
+.stella-final--playing .stella-final__opening-choice strong {
+  color: #f7f2ff;
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+.stella-final--playing .stella-final__opening-choice-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.stella-final--playing .stella-final__opening-choice-buttons button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: start;
+  min-width: 0;
+  min-height: 60px;
+  padding: 5px 7px;
+  border-radius: 8px;
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 3px 10px rgba(0,0,0,.2);
+  transition: transform .15s ease, filter .15s ease;
+}
+.stella-final--playing .stella-final__opening-choice-buttons button:active {
+  transform: scale(.975);
+  filter: brightness(1.18);
+}
+.stella-final--playing .stella-final__alignment-choice-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(255,255,255,.15);
+}
+.stella-final--playing .stella-final__opening-choice-buttons button span {
+  grid-column: 2;
+  grid-row: 1;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 1000;
+  line-height: 1.1;
+}
+.stella-final--playing .stella-final__opening-choice-buttons button small {
+  grid-column: 2;
+  grid-row: 2;
+  color: rgba(255,255,255,.7);
+  font-size: 7px;
+  letter-spacing: .12em;
+}
+.stella-final--playing .stella-final__authority-stage { display: none; }
+.stella-final--playing .stella-final__damage-number {
+  -webkit-text-stroke: 1.8px rgba(12, 5, 20, .95);
+  filter: drop-shadow(0 4px 7px rgba(0,0,0,.36));
+}
+.stella-final--playing .stella-final__alignment-flash {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, rgba(128, 104, 255, .24), rgba(2,3,14,.94) 72%);
+  animation: stella-final-alignment-transition .72s cubic-bezier(.15,.78,.22,1) both;
+}
+.stella-final--playing .stella-final__alignment-flash--god {
+  background: radial-gradient(circle, rgba(246, 239, 255, .36), rgba(24, 24, 63, .9) 54%, rgba(2,3,14,.97) 84%);
+}
+.stella-final--playing .stella-final__alignment-flash--demon {
+  background: radial-gradient(circle, rgba(255, 31, 77, .32), rgba(53, 5, 28, .92) 50%, rgba(2,2,12,.98) 84%);
+}
+.stella-final--playing .stella-final__alignment-emblem {
+  display: block;
+  width: clamp(100px, 31vw, 190px);
+  height: clamp(100px, 31vw, 190px);
+  border: 2px solid rgba(255,255,255,.78);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background: #fff;
+  box-shadow: 0 0 0 8px rgba(255,255,255,.045), 0 0 44px rgba(203,180,255,.42);
+  animation: stella-final-emblem-burst .72s cubic-bezier(.16,.86,.23,1) both;
+}
+.stella-final--playing .stella-final__alignment-flash--demon .stella-final__alignment-emblem {
+  border-color: rgba(255, 119, 149, .95);
+  box-shadow: 0 0 0 8px rgba(255, 55, 96, .08), 0 0 44px rgba(255, 35, 77, .44);
+}
+.stella-final--playing .stella-final__alignment-flash > span {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(74px, 24vw, 132px));
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: clamp(17px, 5vw, 26px);
+  font-weight: 1000;
+  letter-spacing: .32em;
+  text-shadow: 0 0 21px rgba(255,255,255,.48);
+}
+@keyframes stella-final-alignment-transition {
+  0% { opacity: 0; }
+  16% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes stella-final-emblem-burst {
+  0% { opacity: 0; transform: scale(.52) rotate(-14deg); }
+  30% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  62% { opacity: 1; transform: scale(1) rotate(0); }
+  100% { opacity: 0; transform: scale(1.12) rotate(4deg); }
+}
+.stella-final--playing .stella-final__short-attack-cutin {
+  background:
+    linear-gradient(180deg, rgba(6, 4, 18, .28), rgba(3, 2, 12, .84)),
+    radial-gradient(ellipse at 50% 40%, rgba(166, 24, 62, .26), transparent 70%);
+  backdrop-filter: blur(2px);
+}
+.stella-final--playing .stella-final__short-attack-cutin img {
+  max-width: min(94vw, 1120px);
+  max-height: 76dvh;
+  border: 1px solid rgba(255, 90, 124, .34);
+  box-shadow: 0 0 60px rgba(255, 28, 75, .16);
+}
+.stella-final--playing .stella-final__short-attack-cutin span {
+  bottom: max(11vh, env(safe-area-inset-bottom, 0px) + 36px);
+  border-color: rgba(255, 115, 146, .6);
+  background: linear-gradient(110deg, rgba(91, 8, 35, .94), rgba(16, 5, 20, .96));
+  box-shadow: 0 0 25px rgba(255, 38, 85, .24);
+}
+@media (max-width: 390px) {
+  .stella-final--playing .stella-final__powers {
+    max-height: min(48dvh, 390px);
+  }
+  .stella-final--playing .stella-final__power-grid {
+    gap: 4px;
+  }
+  .stella-final--playing .stella-final__power-card {
+    min-height: 94px;
+    padding: 4px 3px;
+  }
+  .stella-final--playing .stella-final__power-icon img.stella-final__skill-art {
+    width: 31px;
+    height: 31px;
+  }
+  .stella-final--playing .stella-final__opening-choice-buttons {
+    gap: 5px;
+  }
+  .stella-final--playing .stella-final__opening-choice-buttons button {
+    grid-template-columns: 28px minmax(0,1fr);
+    min-height: 54px;
+    padding: 4px;
+  }
+  .stella-final--playing .stella-final__alignment-choice-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+@media (max-height: 650px) {
+  .stella-final--playing .stella-final__arena { min-height: 110px; }
+  .stella-final--playing .stella-final__powers {
+    max-height: min(49dvh, 350px);
+  }
+  .stella-final--playing .stella-final__power-grid {
+    grid-template-rows: repeat(2, minmax(74px, 1fr));
+  }
+  .stella-final--playing .stella-final__power-card { min-height: 78px; }
+  .stella-final--playing .stella-final__power-icon img.stella-final__skill-art {
+    width: 29px;
+    height: 29px;
+  }
+  .stella-final--playing .stella-final__short-finish-row {
+    flex-basis: 43px;
+    min-height: 43px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stella-final--playing .stella-final__back,
+  .stella-final--playing .stella-final__power-card,
+  .stella-final--playing .stella-final__normal-attack button,
+  .stella-final--playing .stella-final__gauge-controls button,
+  .stella-final--playing .stella-final__opening-choice-buttons button,
+  .stella-final--playing .stella-final__alignment-emblem {
+    transition: none;
+    animation: none;
+  }
+}
+

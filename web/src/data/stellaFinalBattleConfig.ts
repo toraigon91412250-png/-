@@ -1,8 +1,15 @@
 import { IRENA, STELLA } from './characters';
 import stellaCutInImage from '../assets/IMG_1186.jpg';
-import irenaGodPortrait from '../assets/IMG_1194.jpeg';
-import irenaDemonPortrait from '../assets/IMG_1193.jpeg';
-import irenaDemonAttackCutIn from '../assets/IMG_1195.jpeg';
+import irenaMiddlePortrait from '../../../IMG_1218.jpeg';
+import irenaDemonAttackCutIn from '../../../IMG_1224.jpeg';
+import irenaDemonCrest from '../../../IMG_1226.jpeg';
+import irenaGodCrest from '../../../IMG_1227.jpeg';
+import irenaGodPortrait from '../../../IMG_1228.jpeg';
+import irenaDemonFinisherIcon from '../../../IMG_1229.jpeg';
+import irenaTerminusIcon from '../../../IMG_1230.jpeg';
+import irenaAllMightIcon from '../../../IMG_1231.jpeg';
+import irenaAscensionIcon from '../../../IMG_1232.jpeg';
+import irenaDemonPortrait from '../../../3CBE9BD5-BD6E-4AAE-BCB3-E86ADA03C184.png';
 import irenaGodFinalFinisher from '../assets/IMG_1199.jpeg';
 import irenaDemonFinalFinisher from '../assets/413F5794-8459-451B-9E19-AF5E185C9FDA.png';
 import kaiserImage from '../assets/img_kaiser.jpg';
@@ -38,9 +45,16 @@ export const STELLA_FINAL_BATTLE_IMAGES = {
   kaiserPortrait: kaiserImage,
   battleBackground,
   irenaBasePortrait: IRENA.imageSrc,
+  irenaMiddlePortrait,
   irenaGodPortrait,
   irenaDemonPortrait,
+  irenaGodCrest,
+  irenaDemonCrest,
   irenaDemonAttackCutIn,
+  irenaDemonFinisherIcon,
+  irenaTerminusIcon,
+  irenaAllMightIcon,
+  irenaAscensionIcon,
   irenaGodFinalFinisher,
   irenaDemonFinalFinisher,
 } as const;
@@ -78,7 +92,7 @@ export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
       speed: IRENA.speed,
       evasionRate: IRENA.evasionRate,
       normalAttackDamage: Math.round(IRENA.attack * 8),
-      imageSrc: IRENA.imageSrc,
+      imageSrc: irenaMiddlePortrait,
       isPrototype: true,
     },
   },
