@@ -424,7 +424,8 @@ assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
 assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
-assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
+assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp / 2,
+  'The maximum offensive build should still exceed the original 15,000-HP final-duel baseline.');
 assert.strictEqual(shiftDatenGauge(0, -60), -60, 'Existing large gauge adjustments must retain their requested movement.');
 assert.strictEqual(shiftDatenGauge(30, -15), 15, 'A reverse move from +30 must stop at +15.');
 assert.strictEqual(shiftDatenGauge(-30, 15), -15, 'A reverse move from -30 must stop at -15.');
