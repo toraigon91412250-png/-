@@ -1671,21 +1671,21 @@ export const StellaFinalBattleScreen: React.FC<{
                     <article className="stella-final__power-card stella-final__power-card--immortal">
                     {battle.turn < battle.immortalReadyTurn && <span className="stella-final__cooldown-badge" aria-label={'クールタイム残り' + (battle.immortalReadyTurn - battle.turn) + 'ターン'}>CT {battle.immortalReadyTurn - battle.turn}</span>}
                     <div className="stella-final__power-icon"><Shield size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>不滅</h3></div>
+                    <div className="stella-final__power-copy"><h3>不滅</h3><p>このターンの反撃を完全無効化。再使用まで3ターン。</p></div>
                     <button type="button" aria-label="不滅を発動" disabled={!isFighting || battle.turn < battle.immortalReadyTurn} onClick={() => takeAction('IMMORTAL')}>発動</button>
                   </article>
                   )}
                   {isFighting && battle.rebirthUses < REBIRTH_RATIOS.length && battle.playerHp < fighterMaxHp && (
                     <article className="stella-final__power-card stella-final__power-card--rebirth">
                     <div className="stella-final__power-icon"><HeartPulse size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>再誕</h3><small>{battle.rebirthUses}/3</small></div>
+                    <div className="stella-final__power-copy"><h3>再誕</h3><p>使用回数に応じて最大HPの100%・50%・25%分を回復（HP上限まで）。</p><small>{battle.rebirthUses}/3</small></div>
                     <button type="button" aria-label="再誕を発動" disabled={!isFighting || battle.rebirthUses >= 3 || battle.playerHp >= fighterMaxHp} onClick={() => takeAction('REBIRTH')}>回復</button>
                   </article>
                   )}
                   {isFighting && !battle.meteorUsed && (
                     <article className="stella-final__power-card stella-final__power-card--meteor">
                     <div className="stella-final__power-icon"><Zap size={21} /></div>
-                    <div className="stella-final__power-copy"><h3>天象支配</h3><small>{METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}</small></div>
+                    <div className="stella-final__power-copy"><h3>天象支配</h3><p>巨大隕石で5,000ダメージ。戦闘中1回。</p><small>{METEOR_DAMAGE_PROTOTYPE.toLocaleString('ja-JP')}</small></div>
                     <button type="button" aria-label="天象支配を発動" disabled={!isFighting || battle.meteorUsed} onClick={() => takeAction('METEOR')}>発動</button>
                   </article>
                   )}
@@ -1693,7 +1693,7 @@ export const StellaFinalBattleScreen: React.FC<{
               )}
               {(battle.fighterId !== 'short-irena' || (battle.initialChoiceMade && battle.actionLockTurns === 0 && battle.finalTurnsLeft !== 0 && !battle.finisherPending && !battle.finisherRoutePending)) && isFighting && (
                 <div className="stella-final__normal-attack">
-                  <span><Swords size={17} /> 通常攻撃</span>
+                  <span><Swords size={17} /> 通常攻撃{battle.fighterId === 'stella' && <small>{fighter.normalAttackDamage.toLocaleString('ja-JP')} ダメージ</small>}</span>
                   <button type="button" aria-label="通常攻撃" onClick={() => battle.fighterId === 'short-irena' ? takeShortIrenaAction('ATTACK') : takeAction('ATTACK')}>攻撃する</button>
                 </div>
               )}

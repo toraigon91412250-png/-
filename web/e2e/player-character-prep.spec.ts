@@ -113,6 +113,8 @@ test('unlocked Stella final duel exposes the expected authorities after EX victo
   await expect(page.getByRole('button', { name: '不滅を発動' })).toBeEnabled();
   await expect(page.getByRole('button', { name: '再誕を発動' })).toBeDisabled();
   await expect(page.getByRole('button', { name: '天象支配を発動' })).toBeEnabled();
+  await expect(page.getByText('このターンの反撃を完全無効化。再使用まで3ターン。')).toBeVisible();
+  await expect(page.getByText('巨大隕石で5,000ダメージ。戦闘中1回。')).toBeVisible();
 
   await page.getByRole('button', { name: '不滅を発動' }).click();
   const battleLog = page.locator('.stella-final__log-lines');
@@ -145,11 +147,12 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
   await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
   await expect(page.locator('.stella-final__normal-attack')).toContainText('2,000');
-  await expect(page.getByText(/試作値：5,000ダメージ・1回/)).toBeVisible();
+  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 15,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4780');
+  await expect(page.getByText('使用回数に応じて最大HPの100%・50%・25%分を回復（HP上限まで）。')).toBeVisible();
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
   await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
