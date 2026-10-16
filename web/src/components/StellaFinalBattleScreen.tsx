@@ -81,6 +81,7 @@ interface StellaFinalBattleState {
   alignment: ShortIrenaAlignment | null;
   initialChoiceMade: boolean;
   alignmentFlash: ShortIrenaAlignment | null;
+  pendingKaiserCounterDamage: number | null;
   finisherRoutePending: ShortIrenaAlignment | null;
   finisherUsedAtAlignment: ShortIrenaAlignment | null;
   godMightTurns: number;
@@ -136,6 +137,7 @@ function createInitialBattle(
     alignment: null,
     initialChoiceMade: fighterId !== 'short-irena',
     alignmentFlash: null,
+    pendingKaiserCounterDamage: null,
     finisherRoutePending: null,
     finisherUsedAtAlignment: null,
     godMightTurns: 0,
@@ -346,11 +348,38 @@ export const StellaFinalBattleScreen: React.FC<{
   useEffect(() => {
     if (!battle.alignmentFlash) return;
     const flashId = battle.alignmentFlashId;
+    const isOpeningTransition = battle.pendingKaiserCounterDamage !== null;
+    const duration = isOpeningTransition ? 1850 : 300;
     const timer = window.setTimeout(() => {
-      setBattle(current => current.alignmentFlashId === flashId ? { ...current, alignmentFlash: null } : current);
-    }, 300);
+      setBattle(current => {
+        if (current.alignmentFlashId !== flashId) return current;
+        const pendingDamage = current.pendingKaiserCounterDamage;
+        if (pendingDamage === null) return { ...current, alignmentFlash: null };
+
+        const playerHp = Math.max(0, current.playerHp - pendingDamage);
+        const logs = [
+          ...current.logs,
+          '第' + current.turn + 'ターン：EXカイザーが変化の隙を見て反撃。防御補正後、' + pendingDamage.toLocaleString('ja-JP') + 'ダメージ。',
+        ];
+        let status: BattleStatus = 'FIGHTING';
+        if (playerHp <= 0) {
+          status = 'DEFEAT';
+          logs.push('最終決戦用いれーなは戦闘不能になった。');
+        }
+
+        return {
+          ...current,
+          status,
+          turn: status === 'FIGHTING' ? current.turn + 1 : current.turn,
+          playerHp,
+          alignmentFlash: null,
+          pendingKaiserCounterDamage: null,
+          logs: logs.slice(-8),
+        };
+      });
+    }, duration);
     return () => window.clearTimeout(timer);
-  }, [battle.alignmentFlash, battle.alignmentFlashId]);
+  }, [battle.alignmentFlash, battle.alignmentFlashId, battle.pendingKaiserCounterDamage]);
 
   useEffect(() => {
     const alignment = battle.finisherPending;
@@ -462,7 +491,7 @@ export const StellaFinalBattleScreen: React.FC<{
 
   const takeShortIrenaAction = (action: ShortIrenaAction) => {
     setBattle(current => {
-      if (current.status !== 'FIGHTING' || current.finisherPending || current.finisherRoutePending) return current;
+      if (current.status !== 'FIGHTING' || current.finisherPending || current.finisherRoutePending || current.pendingKaiserCounterDamage !== null) return current;
       const stage = getDatenAuthorityStage(current.datenGauge);
       if (!current.initialChoiceMade && action !== 'DIVINIZE' && action !== 'FALLEN') return current;
       if (current.initialChoiceMade && (action === 'DIVINIZE' || action === 'FALLEN')) return current;
@@ -478,6 +507,7 @@ export const StellaFinalBattleScreen: React.FC<{
       if (current.actionLockTurns === 0 && action === 'PASS') return current;
       if (current.ascensionTurns > 0 && (action === 'TERMINUS' || action === 'ASCENSION' || action === 'DIVINE_SPEED' || action === 'ALL_POWER' || action === 'ALL_THINGS' || action === 'CONTROL_GOD' || action === 'CONTROL_DEMON' || action === 'FINISH')) return current;
 
+      const isOpeningChoice = !current.initialChoiceMade && (action === 'DIVINIZE' || action === 'FALLEN');
       const turn = current.turn;
       const stats = getShortIrenaCombatStats(current.shortIrenaAllocation);
       const logs = [...current.logs];
@@ -606,7 +636,6 @@ export const StellaFinalBattleScreen: React.FC<{
 
       if (action === 'DIVINIZE' || action === 'MOVE_GOD' || action === 'FALLEN' || action === 'MOVE_DEMON') {
         const movesGodward = action === 'DIVINIZE' || action === 'MOVE_GOD';
-        const isOpeningChoice = action === 'DIVINIZE' || action === 'FALLEN';
         if (isOpeningChoice) initialChoiceMade = true;
         alignmentFlash = movesGodward ? 'GOD' : 'DEMON';
         alignmentFlashId += 1;
@@ -715,6 +744,25 @@ export const StellaFinalBattleScreen: React.FC<{
           finalTurnsLeft = finalTurnLimit;
           logs.push('最終形態の制限開始。残りターン数が' + finalTurnLimit + 'に決定した。速度倍率による追加猶予はない。');
         }
+      }
+
+      if (isOpeningChoice) {
+        // Freeze the opening choice before the enemy counter. Resolve exactly once
+        // when the full-screen alignment takeover has completed.
+        const pendingDamage = skipKaiserAction
+          ? 0
+          : getShortIrenaCounterDamage(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[phase], effectiveDefense);
+        return {
+          ...current,
+          phase,
+          datenGauge,
+          alignment,
+          initialChoiceMade,
+          alignmentFlash,
+          alignmentFlashId,
+          pendingKaiserCounterDamage: pendingDamage,
+          logs: logs.slice(-8),
+        };
       }
 
       if (skipKaiserAction) {
@@ -1042,6 +1090,14 @@ export const StellaFinalBattleScreen: React.FC<{
         ? '60〜99ポイント：第2段階'
         : '100ポイント：終点・究極必殺技';
   const canUseTerminus = battle.datenGauge <= -30;
+  const canDisplayTerminusCooldown = isFighting
+    && battle.initialChoiceMade
+    && canUseTerminus
+    && battle.turn < battle.terminusReadyTurn
+    && !battle.finisherPending
+    && !battle.finisherRoutePending
+    && battle.finalTurnsLeft !== 0;
+  const canDisplayTerminus = shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn;
   const canActivateAscension = canActivateShortIrenaAscension(battle.datenGauge, battle.ascensionTurns, battle.phase, battle.finalTurnsLeft);
   const canUseDivineSpeed = battle.datenGauge >= 30;
   const canUseAllPower = battle.datenGauge >= 60;
@@ -1277,16 +1333,20 @@ export const StellaFinalBattleScreen: React.FC<{
         {battle.alignmentFlash && battle.fighterId === 'short-irena' && (
           <div
             key={battle.alignmentFlashId}
-            className={'stella-final__alignment-flash stella-final__alignment-flash--' + battle.alignmentFlash.toLowerCase()}
+            className={'stella-final__alignment-flash stella-final__alignment-flash--' + battle.alignmentFlash.toLowerCase() + (battle.pendingKaiserCounterDamage !== null ? ' stella-final__alignment-flash--opening' : '')}
             data-testid="short-irena-alignment-flash"
             aria-hidden="true"
           >
-            <img
-              className="stella-final__alignment-emblem"
-              src={battle.alignmentFlash === 'GOD' ? STELLA_FINAL_BATTLE_IMAGES.irenaGodCrest : STELLA_FINAL_BATTLE_IMAGES.irenaDemonCrest}
-              alt=""
-            />
-            <span>{battle.alignmentFlash === 'GOD' ? '神化' : '堕天'}</span>
+            {battle.pendingKaiserCounterDamage !== null && (
+              <>
+                <img
+                  className="stella-final__opening-form-portrait"
+                  src={battle.alignmentFlash === 'GOD' ? STELLA_FINAL_BATTLE_IMAGES.irenaGodPortrait : STELLA_FINAL_BATTLE_IMAGES.irenaDemonPortrait}
+                  alt=""
+                />
+                <strong className="stella-final__opening-form-title">{battle.alignmentFlash === 'GOD' ? '神化' : '堕天'}</strong>
+              </>
+            )}
           </div>
         )}
         {battle.finisherPending && (
@@ -1442,8 +1502,9 @@ export const StellaFinalBattleScreen: React.FC<{
                       <button type="button" aria-label="万象支配を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllThings || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ALL_THINGS')}>発動</button>
                     </article>
                   )}
-                    {shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn && (
+                    {(canDisplayTerminus || canDisplayTerminusCooldown) && (
                     <article className="stella-final__power-card stella-final__power-card--terminus">
+                      {canDisplayTerminusCooldown && <span className="stella-final__cooldown-badge" aria-label={'クールタイム残り' + (battle.terminusReadyTurn - battle.turn) + 'ターン'}>CT {battle.terminusReadyTurn - battle.turn}</span>}
                       <div className="stella-final__power-icon"><img className="stella-final__skill-art" src={STELLA_FINAL_BATTLE_IMAGES.irenaTerminusIcon} alt="" /></div>
                       <div className="stella-final__power-copy"><h3>終極殲滅</h3></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
@@ -1478,8 +1539,9 @@ export const StellaFinalBattleScreen: React.FC<{
                 </>
               ) : (
                 <div className="stella-final__power-grid">
-                  {isFighting && battle.turn >= battle.immortalReadyTurn && (
+                  {isFighting && (
                     <article className="stella-final__power-card stella-final__power-card--immortal">
+                    {battle.turn < battle.immortalReadyTurn && <span className="stella-final__cooldown-badge" aria-label={'クールタイム残り' + (battle.immortalReadyTurn - battle.turn) + 'ターン'}>CT {battle.immortalReadyTurn - battle.turn}</span>}
                     <div className="stella-final__power-icon"><Shield size={21} /></div>
                     <div className="stella-final__power-copy"><h3>不滅</h3></div>
                     <button type="button" aria-label="不滅を発動" disabled={!isFighting || battle.turn < battle.immortalReadyTurn} onClick={() => takeAction('IMMORTAL')}>発動</button>
