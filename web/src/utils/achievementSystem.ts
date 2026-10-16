@@ -247,13 +247,20 @@ export function recordAchievementBattle(currentValue: unknown, sample: Achieveme
   }
   for (const log of sample.logLines) {
     for (const imprint of IMPRINT_DEFINITIONS) {
-      if (log.includes('【' + imprint.name + '】') && !next.usedImprintIds.includes(imprint.id)) {
+      if (log.includes('【') && log.includes(imprint.name) && !next.usedImprintIds.includes(imprint.id)) {
         next.usedImprintIds.push(imprint.id);
       }
     }
   }
   if (sample.actionsTaken.includes('YIN_YANG') && !next.usedImprintIds.includes('YIN_YANG')) next.usedImprintIds.push('YIN_YANG');
   if (sample.actionsTaken.includes('COSTLY_SHOT') && !next.usedImprintIds.includes('COSTLY_SHOT')) next.usedImprintIds.push('COSTLY_SHOT');
+  // Feather Split modifies the player's special action; its first use may not
+  // produce the alternating-bonus log, so track it from the equipped imprint + action.
+  if (sample.equippedImprints.includes('FEATHER_SPLIT')
+    && sample.actionsTaken.includes('SPECIAL')
+    && !next.usedImprintIds.includes('FEATHER_SPLIT')) {
+    next.usedImprintIds.push('FEATHER_SPLIT');
+  }
 
   if (sample.playerWon) {
     next.eligibleWins += 1;
