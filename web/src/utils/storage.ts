@@ -111,6 +111,8 @@ export interface StellaModeProgress {
   finalBattleCleared: boolean;
   /** Authoritative one-time marker for the +100P reward and final-battle Irena unlock. */
   finalBattleRewardClaimed: boolean;
+  /** True after developer mode has been enabled; absent in legacy saves means off. */
+  developerModeEnabled?: boolean;
 }
 
 export interface Kaiser100VictoryRewardResult {
@@ -161,6 +163,7 @@ function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
     // also repairs a missing clear marker without allowing the reward to repeat.
     finalBattleCleared: parsed.finalBattleCleared === true || finalBattleRewardClaimed,
     finalBattleRewardClaimed,
+    ...(parsed.developerModeEnabled === true ? { developerModeEnabled: true } : {}),
   };
 }
 
@@ -172,6 +175,20 @@ export function loadStellaModeProgress(): StellaModeProgress {
     return normalizeStellaModeProgress(JSON.parse(raw) as unknown);
   } catch {
     return { ...INITIAL_STELLA_MODE_PROGRESS };
+  }
+}
+
+/** Permanently enables developer mode until the normal in-game reset clears progression. */
+export function enableDeveloperMode(): { progress: StellaModeProgress; persisted: boolean } {
+  const current = loadStellaModeProgress();
+  if (current.developerModeEnabled === true) return { progress: current, persisted: true };
+
+  const next: StellaModeProgress = { ...current, developerModeEnabled: true };
+  try {
+    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(next));
+    return { progress: next, persisted: true };
+  } catch {
+    return { progress: current, persisted: false };
   }
 }
 
@@ -821,6 +838,8 @@ export function resetProgressForDeveloper(): {
     equippedIds: [...INITIAL_IMPRINT_PROGRESS.equippedIds],
   });
   try {
+    // Clear developer mode first, before any other reset write can fail.
+    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ totalBattles: 0, wins: 0, losses: 0 }));
     localStorage.setItem(STAT_POINTS_KEY, String(INITIAL_STAT_POINTS));
     localStorage.setItem(IRENA_TALENT_PROGRESS_KEY, JSON.stringify({
@@ -828,7 +847,6 @@ export function resetProgressForDeveloper(): {
       ranks: { ...INITIAL_IRENA_TALENT_PROGRESS.ranks },
     }));
     persistRaidRewardProgress({ ...INITIAL_RAID_REWARD_PROGRESS, claimedVictoryRunIds: [] });
-    localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
   } catch {
     // ignore
   }
