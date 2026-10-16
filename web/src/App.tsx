@@ -838,7 +838,6 @@ export const App: React.FC = () => {
       {isScreenTransitioning && (
         <ScreenTransitionLoader
           key={screenTransitionIndex}
-          transitionIndex={screenTransitionIndex}
           waitFor={screenTransitionWaitFor}
           onComplete={handleScreenTransitionComplete}
         />
