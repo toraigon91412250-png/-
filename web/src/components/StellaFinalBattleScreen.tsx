@@ -351,8 +351,9 @@ export const StellaFinalBattleScreen: React.FC<{
   useEffect(() => {
     if (!battle.alignmentFlash) return;
     const flashId = battle.alignmentFlashId;
-    const isOpeningTransition = battle.pendingKaiserCounterDamage !== null;
-    const duration = isOpeningTransition ? 1850 : 300;
+    const shouldPauseForFormReveal = battle.pendingKaiserCounterDamage !== null;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = shouldPauseForFormReveal ? (prefersReducedMotion ? 600 : 1850) : 300;
     const timer = window.setTimeout(() => {
       setBattle(current => {
         if (current.alignmentFlashId !== flashId) return current;
