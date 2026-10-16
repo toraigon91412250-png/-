@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -75,7 +75,6 @@ export const App: React.FC = () => {
   const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
   const [isStellaWarping, setIsStellaWarping] = useState(false);
   const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
-  const [isDeveloperFinalBattlePreview, setIsDeveloperFinalBattlePreview] = useState(false);
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
 
   const handleScreenTransitionComplete = React.useCallback(() => {
@@ -208,16 +207,18 @@ export const App: React.FC = () => {
     mode: BattleSetupMode = returnTo === 'DEV_TOOLS' ? 'DEVELOPER' : 'NORMAL',
   ) => {
     setBattleSetupReturnScreen(returnTo);
-    setAllowAllKaiserLevelsInBattleSetup(allowAllKaiserLevels);
     setBattleSetupMode(mode);
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
     const currentKaiserProgress = loadKaiserChallengeProgress();
     const currentStellaProgress = loadStellaModeProgress();
+    const shouldAllowAllKaiserLevels = allowAllKaiserLevels
+      || (mode === 'NORMAL' && currentStellaProgress.allGameFeaturesUnlocked === true);
+    setAllowAllKaiserLevelsInBattleSetup(shouldAllowAllKaiserLevels);
     const selectableKaiserLevels = mode === 'EX_KAISER'
       ? BATTLE_CHALLENGE_LEVELS.filter(level => level === 100)
-      : allowAllKaiserLevels
+      : shouldAllowAllKaiserLevels
         ? BATTLE_CHALLENGE_LEVELS
         : getSelectableKaiserLevels(currentKaiserProgress.unlockedLevel);
     setKaiserChallengeProgress(currentKaiserProgress);
@@ -414,15 +415,6 @@ export const App: React.FC = () => {
     const progress = loadStellaModeProgress();
     setStellaModeProgress(progress);
     if (!progress.isUnlocked || !progress.exKaiserDefeated) return;
-    setIsDeveloperFinalBattlePreview(false);
-    cancelBattle();
-    setBattleSetupMode('NORMAL');
-    setScreen('STELLA_FINAL');
-  };
-
-  // Developer Tools can open the final battle directly without falsifying normal progression.
-  const handleOpenDeveloperFinalBattle = () => {
-    setIsDeveloperFinalBattlePreview(true);
     cancelBattle();
     setBattleSetupMode('NORMAL');
     setScreen('STELLA_FINAL');
@@ -582,6 +574,14 @@ export const App: React.FC = () => {
     setSkillProgress(unlockSuperFallenShotForDeveloper());
   };
 
+  const handleUnlockAllGameFeatures = (): boolean => {
+    const result = unlockAllGameFeaturesForDeveloper();
+    if (!result.persisted) return false;
+    setStellaModeProgress(result.progress);
+    refreshProgress();
+    return true;
+  };
+
   const handleDeveloperReset = () => {
     const reset = resetProgressForDeveloper();
     setKaiserChallengeProgress(resetKaiserChallengeProgress());
@@ -606,7 +606,6 @@ export const App: React.FC = () => {
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
     });
-    setIsDeveloperFinalBattlePreview(false);
     setScreen('SELECT');
   };
 
@@ -764,13 +763,12 @@ export const App: React.FC = () => {
       ) : screen === 'STELLA_FINAL' ? (
         <StellaFinalBattleScreen
           progress={stellaModeProgress}
-          isDeveloperPreview={isDeveloperFinalBattlePreview}
+          isDeveloperPreview={false}
           onClaimVictoryReward={handleClaimStellaFinalBattleReward}
           onBackHome={() => {
             cancelBattle();
             refreshProgress();
-            setScreen(isDeveloperFinalBattlePreview ? 'DEV_TOOLS' : 'SELECT');
-            setIsDeveloperFinalBattlePreview(false);
+            setScreen('SELECT');
             setBattleSetupMode('NORMAL');
           }}
         />
@@ -811,7 +809,7 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
           onOpenExKaiserChallenge={() => handleStartExKaiser('DEV_TOOLS', true)}
-          onOpenStellaFinalBattle={handleOpenDeveloperFinalBattle}
+          onUnlockAllGameFeatures={handleUnlockAllGameFeatures}
           onReset={handleDeveloperReset}
         />
       )}

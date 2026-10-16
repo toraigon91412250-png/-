@@ -430,8 +430,9 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
+const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 const {
@@ -1362,6 +1363,109 @@ try {
   }
 }
 console.log('✓ Stella Lv.100 -> warp -> playable mode -> EX -> final duel migration, rewards, and storage rollback are covered.');
+
+
+// Full-game unlock must expose normal Irena combat, all registered modes, and each progression screen.
+const fullUnlockTestKeys = [
+  'duel_arena_stat_points',
+  STELLA_MODE_PROGRESS_KEY,
+  'duel_arena_kaiser_challenge_progress',
+  'duel_arena_ability_progress',
+  'duel_arena_recruitment_progress',
+  'duel_arena_irena_skill_progress',
+  IMPRINT_PROGRESS_STORAGE_KEY,
+  'duel_arena_raid_reward_progress',
+  'duel_arena_irena_talent_progress',
+];
+const fullUnlockSaveBeforeTest = new Map(fullUnlockTestKeys.map(key => [key, storageValues.get(key)]));
+const windowDescriptorBeforeFullUnlockTest = Object.getOwnPropertyDescriptor(globalThis, 'window');
+const originalSetItemBeforeFullUnlockTest = globalThis.localStorage.setItem;
+try {
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    writable: true,
+    value: { localStorage: globalThis.localStorage },
+  });
+  for (const key of fullUnlockTestKeys) storageValues.delete(key);
+  storageValues.set('duel_arena_stat_points', '12');
+  storageValues.set('duel_arena_raid_reward_progress', JSON.stringify({
+    coreFragments: 0, imprintTickets: 0, bonusStatPoints: 0, claimedVictoryRunIds: [],
+  }));
+
+  const allFeaturesUnlock = unlockAllGameFeaturesForDeveloper();
+  assert.strictEqual(allFeaturesUnlock.persisted, true, 'The full unlock must persist when storage is available.');
+  assert.strictEqual(loadStellaModeProgress().allGameFeaturesUnlocked, true);
+  assert.strictEqual(loadStellaModeProgress().developerModeEnabled, true);
+  assert.strictEqual(loadStellaModeProgress().stellaModeUnlocked, true, 'Playable Stella mode should be unlocked.');
+  assert.strictEqual(loadStellaModeProgress().exKaiserDefeated, true, 'EX Kaiser access and final battle must be unlocked.');
+  assert.strictEqual(loadStellaModeProgress().isUnlocked, true, 'The final-battle Home entry should be available.');
+  assert.strictEqual(loadStellaModeProgress().finalBattleRewardClaimed, false,
+    'Unlocking access must not falsely claim the final-battle clear reward.');
+  assert.strictEqual(loadStellaModeProgress().kaiser100RewardClaimed, true,
+    'The +50P marker prevents a duplicate Lv.100 reward after the all-unlock action.');
+  assert.strictEqual(loadStatPoints(), 62, 'A fresh all-unlock grants the Lv.100 unlock reward exactly once.');
+
+  const kaiserProgress = JSON.parse(storageValues.get('duel_arena_kaiser_challenge_progress'));
+  assert.deepStrictEqual(kaiserProgress, { unlockedLevel: 100 }, 'Normal Kaiser challenge progression must open through Lv.100.');
+
+  const abilityProgressForFullUnlock = JSON.parse(storageValues.get('duel_arena_ability_progress'));
+  for (const id of ['ABYSS', 'FALLEN', 'BLACK_WING', 'FALLEN_KING', 'JUDGMENT']) {
+    assert.strictEqual(abilityProgressForFullUnlock.levels[id], MAX_ABILITY_LEVEL, id + ' must be max level.');
+    assert.ok(abilityProgressForFullUnlock.shards[id] >= 9999, id + ' must have enough shards to test upgrades.');
+  }
+  assert.ok(JSON.parse(storageValues.get('duel_arena_recruitment_progress')).tickets >= 9999,
+    'Recruitment screen must have enough tickets to use multi-pulls.');
+  const skillProgressForFullUnlock = JSON.parse(storageValues.get('duel_arena_irena_skill_progress'));
+  assert.strictEqual(skillProgressForFullUnlock.featherLevel, 10);
+  assert.strictEqual(skillProgressForFullUnlock.ruinLevel, 10);
+  assert.ok(skillProgressForFullUnlock.superFallenShotUnlocked, 'The existing Irena ultimate must be unlocked.');
+  assert.ok(skillProgressForFullUnlock.shards >= 9999);
+  assert.strictEqual(loadImprintProgress().unlockedIds.length, IMPRINT_DEFINITIONS.length,
+    'All registered imprints should be available for equipment.');
+  const fullUnlockRaid = loadRaidRewardProgress();
+  assert.ok(fullUnlockRaid.coreFragments >= 9999);
+  assert.ok(fullUnlockRaid.imprintTickets >= 9999);
+  const fullUnlockTalents = JSON.parse(storageValues.get('duel_arena_irena_talent_progress'));
+  assert.strictEqual(getIrenaLevel(fullUnlockTalents.experience), 20, 'Irena talent progression should reach its configured cap.');
+  assert.strictEqual(getAvailableIrenaTalentPoints(normalizeIrenaTalentProgress(fullUnlockTalents)), 9,
+    'The full unlock should make all nine talent points available on a fresh save.');
+
+  assert.strictEqual(unlockAllGameFeaturesForDeveloper().persisted, true, 'The all-unlock action should be safe to repeat.');
+  assert.strictEqual(loadStatPoints(), 62, 'Repeating the all-unlock action must not grant the +50P reward again.');
+
+  const savedBeforeFailedUnlock = new Map(fullUnlockTestKeys.map(key => [key, storageValues.get(key)]));
+  globalThis.localStorage.setItem = (key, value) => {
+    if (key === 'duel_arena_kaiser_challenge_progress') throw new Error('simulated full-unlock save failure');
+    originalSetItemBeforeFullUnlockTest(key, value);
+  };
+  const failedFullUnlock = unlockAllGameFeaturesForDeveloper();
+  assert.strictEqual(failedFullUnlock.persisted, false, 'A failed full-unlock transaction must report failure.');
+  for (const key of fullUnlockTestKeys) {
+    assert.strictEqual(storageValues.get(key), savedBeforeFailedUnlock.get(key),
+      'A failed full-unlock transaction must preserve the previous save: ' + key);
+  }
+
+  const developerToolsSourceForFullUnlock = await readFile(new URL('./src/components/DeveloperToolsScreen.tsx', import.meta.url), 'utf8');
+  assert.match(developerToolsSourceForFullUnlock, /全機能開放/,
+    'Developer Tools must provide the full game unlock button.');
+  assert.doesNotMatch(developerToolsSourceForFullUnlock, /いれーな最終決戦をすぐ開始|onOpenStellaFinalBattle/,
+    'The old final-battle shortcut must be replaced in Developer Tools.');
+  const appSourceForFullUnlock = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
+  assert.match(appSourceForFullUnlock, /currentStellaProgress\.allGameFeaturesUnlocked === true/,
+    'Normal battle setup must use the saved flag to open all Kaiser levels.');
+} finally {
+  globalThis.localStorage.setItem = originalSetItemBeforeFullUnlockTest;
+  for (const [key, value] of fullUnlockSaveBeforeTest) {
+    if (value === undefined) storageValues.delete(key);
+    else storageValues.set(key, value);
+  }
+  if (windowDescriptorBeforeFullUnlockTest) {
+    Object.defineProperty(globalThis, 'window', windowDescriptorBeforeFullUnlockTest);
+  } else {
+    Reflect.deleteProperty(globalThis, 'window');
+  }
+}
+console.log('✓ Full game unlock opens normal battles and progression, persists atomically, and is idempotent.');
 
 // A single battle-result save is the sole source of battle talent EXP.
 const talentProgressKeyForRewardTest = 'duel_arena_irena_talent_progress';

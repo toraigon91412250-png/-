@@ -26,7 +26,7 @@ interface DeveloperToolsScreenProps {
   onOpenRecruitment: () => void;
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
   onOpenExKaiserChallenge: () => void;
-  onOpenStellaFinalBattle: () => void;
+  onUnlockAllGameFeatures: () => boolean;
   onReset: () => void;
 }
 
@@ -59,7 +59,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onOpenRecruitment,
   onOpenBattleSetup,
   onOpenExKaiserChallenge,
-  onOpenStellaFinalBattle,
+  onUnlockAllGameFeatures,
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
@@ -67,6 +67,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
     battleSetup.abilities.map(ability => ability.id).slice(0, 2),
   );
   const [confirmReset, setConfirmReset] = useState(false);
+  const [fullUnlockResult, setFullUnlockResult] = useState<'success' | 'failure' | null>(null);
   const ownedImprintCount = IMPRINT_DEFINITIONS.filter(imprint =>
     imprintProgress.unlockedIds.includes(imprint.id),
   ).length;
@@ -103,12 +104,21 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           }}>閉じる</button>
         </header>
 
-        <button type="button" onClick={onOpenStellaFinalBattle} aria-label="いれーな最終決戦をすぐ開始" style={{
-          width:'100%', minHeight:56, marginBottom:12, borderRadius:12,
-          border:'1px solid #A58BFF', background:'linear-gradient(135deg,#43286F,#211332)',
-          color:'#F1E7FF', fontSize:16, fontWeight:950, cursor:'pointer',
-          boxShadow:'0 0 18px rgba(151,104,255,.18)',
-        }}>いれーな最終決戦をすぐ開始</button>
+        <button type="button" onClick={() => setFullUnlockResult(onUnlockAllGameFeatures() ? 'success' : 'failure')} aria-label="このゲームの全機能を開放" style={{
+          width:'100%', minHeight:56, marginBottom:fullUnlockResult ? 8 : 12, borderRadius:12,
+          border:'1px solid #7DD3FC', background:'linear-gradient(135deg,#164E63,#10253D)',
+          color:'#E0F2FE', fontSize:16, fontWeight:950, cursor:'pointer',
+          boxShadow:'0 0 18px rgba(56,189,248,.18)',
+        }}>全機能開放</button>
+        {fullUnlockResult === 'success' ? (
+          <div role="status" style={{ marginBottom:12, padding:'10px 12px', borderRadius:10, border:'1px solid #256D63', background:'#102823', color:'#A7F3D0', fontSize:11, lineHeight:1.6 }}>
+            全機能を開放しました。閉じてホームに戻り、通常の戦闘開始からいれーなで出撃できます。
+          </div>
+        ) : fullUnlockResult === 'failure' ? (
+          <div role="alert" style={{ marginBottom:12, padding:'10px 12px', borderRadius:10, border:'1px solid #7F3542', background:'#2A151B', color:'#FECACA', fontSize:11, lineHeight:1.6 }}>
+            保存に失敗しました。ブラウザの保存設定を確認して、もう一度試してください。
+          </div>
+        ) : null}
         <section style={{
           padding:14, borderRadius:16, border:'1px solid #3B455A',
           background:'rgba(19,24,35,.95)',

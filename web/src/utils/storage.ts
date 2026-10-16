@@ -4,7 +4,8 @@ import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
-import { addIrenaBattleExperience, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress } from './irenaTalentSystem';
+import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
+import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -113,6 +114,8 @@ export interface StellaModeProgress {
   finalBattleRewardClaimed: boolean;
   /** True after developer mode has been enabled; absent in legacy saves means off. */
   developerModeEnabled?: boolean;
+  /** All game modes and normal progression gates were opened by the full-unlock action. */
+  allGameFeaturesUnlocked?: boolean;
 }
 
 export interface Kaiser100VictoryRewardResult {
@@ -164,6 +167,7 @@ function normalizeStellaModeProgress(value: unknown): StellaModeProgress {
     finalBattleCleared: parsed.finalBattleCleared === true || finalBattleRewardClaimed,
     finalBattleRewardClaimed,
     ...(parsed.developerModeEnabled === true ? { developerModeEnabled: true } : {}),
+    ...(parsed.allGameFeaturesUnlocked === true ? { allGameFeaturesUnlocked: true } : {}),
   };
 }
 
@@ -1241,3 +1245,93 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
 
   return { progress: nextProgress, results: draws };
 }
+
+/**
+ * Unlock all currently implemented game modes and give enough development
+ * resources to exercise every progression screen. Related saves are committed
+ * together so a storage failure cannot leave only part of the game unlocked.
+ */
+export function unlockAllGameFeaturesForDeveloper(): {
+  progress: StellaModeProgress;
+  persisted: boolean;
+} {
+  const currentStellaProgress = loadStellaModeProgress();
+  const currentAbilities = loadAbilityProgress();
+  const currentRecruitment = loadRecruitmentProgress();
+  const currentSkills = loadSkillProgress();
+  const currentImprints = loadImprintProgress();
+  const currentRaidRewards = loadRaidRewardProgress();
+  const currentTalents = loadIrenaTalentProgress();
+
+  const nextStellaProgress: StellaModeProgress = {
+    ...currentStellaProgress,
+    isUnlocked: true,
+    stellaModeUnlocked: true,
+    exKaiserDefeated: true,
+    revealAvailable: false,
+    kaiser100RewardClaimed: true,
+    developerModeEnabled: true,
+    allGameFeaturesUnlocked: true,
+  };
+  const nextAbilities = normalizeAbilityProgress({
+    levels: {
+      ABYSS: MAX_ABILITY_LEVEL,
+      FALLEN: MAX_ABILITY_LEVEL,
+      BLACK_WING: MAX_ABILITY_LEVEL,
+      FALLEN_KING: MAX_ABILITY_LEVEL,
+      JUDGMENT: MAX_ABILITY_LEVEL,
+    },
+    shards: {
+      ABYSS: Math.max(9999, currentAbilities.shards.ABYSS),
+      FALLEN: Math.max(9999, currentAbilities.shards.FALLEN),
+      BLACK_WING: Math.max(9999, currentAbilities.shards.BLACK_WING),
+      FALLEN_KING: Math.max(9999, currentAbilities.shards.FALLEN_KING),
+      JUDGMENT: Math.max(9999, currentAbilities.shards.JUDGMENT),
+    },
+  });
+  const nextRecruitment = normalizeRecruitmentProgress({
+    ...currentRecruitment,
+    tickets: Math.max(9999, currentRecruitment.tickets),
+  });
+  const nextSkills = normalizeSkillProgress({
+    ...currentSkills,
+    featherLevel: MAX_SKILL_LEVEL,
+    ruinLevel: MAX_SKILL_LEVEL,
+    shards: Math.max(9999, currentSkills.shards),
+    superFallenShotUnlocked: true,
+  });
+  const nextImprints = normalizeImprintProgress({
+    ...currentImprints,
+    unlockedIds: IMPRINT_DEFINITIONS.map(imprint => imprint.id),
+  });
+  const nextRaidRewards = normalizeRaidRewardProgress({
+    ...currentRaidRewards,
+    coreFragments: Math.max(9999, currentRaidRewards.coreFragments),
+    imprintTickets: Math.max(9999, currentRaidRewards.imprintTickets),
+  });
+  const nextTalents = normalizeIrenaTalentProgress({
+    ...currentTalents,
+    experience: getIrenaXpForLevel(IRENA_TALENT_MAX_LEVEL),
+  });
+  const pointReward = currentStellaProgress.kaiser100RewardClaimed
+    ? 0
+    : KAISER_100_VICTORY_STAT_POINT_REWARD;
+
+  const persisted = persistStorageTransaction([
+    { key: STELLA_MODE_PROGRESS_KEY, value: JSON.stringify(nextStellaProgress) },
+    { key: STAT_POINTS_KEY, value: String(loadBaseStatPoints() + pointReward) },
+    { key: KAISER_CHALLENGE_PROGRESS_KEY, value: JSON.stringify({ unlockedLevel: 100 }) },
+    { key: ABILITY_PROGRESS_KEY, value: JSON.stringify(nextAbilities) },
+    { key: RECRUITMENT_KEY, value: JSON.stringify(nextRecruitment) },
+    { key: SKILL_PROGRESS_KEY, value: JSON.stringify(nextSkills) },
+    { key: IMPRINT_PROGRESS_STORAGE_KEY, value: JSON.stringify(nextImprints) },
+    { key: RAID_REWARD_PROGRESS_KEY, value: JSON.stringify(nextRaidRewards) },
+    { key: IRENA_TALENT_PROGRESS_KEY, value: JSON.stringify(nextTalents) },
+  ]);
+
+  return {
+    progress: persisted ? nextStellaProgress : currentStellaProgress,
+    persisted,
+  };
+}
+
