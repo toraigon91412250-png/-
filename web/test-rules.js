@@ -1307,6 +1307,18 @@ try {
   const trackedWins = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, eligibleWinSample);
   assert.strictEqual(trackedWins.eligibleWins, 1,
     'Eligible gameplay wins must increment the achievement-specific count.');
+  const imprintActivationSample = {
+    ...eligibleWinSample,
+    playerWon: false,
+    actionsTaken: ['SPECIAL'],
+    equippedImprints: ['FEATHER_SPLIT'],
+    logLines: ACHIEVEMENT_IMPRINT_DEFINITIONS
+      .filter(imprint => imprint.id !== 'FEATHER_SPLIT')
+      .map(imprint => '【刻印発動：' + imprint.name + '】効果が発生した。'),
+  };
+  const trackedImprints = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, imprintActivationSample);
+  assert.strictEqual(trackedImprints.usedImprintIds.length, ACHIEVEMENT_IMPRINT_DEFINITIONS.length,
+    'All ten imprint triggers, including prefixed logs and the first Feather Split use, must count.');
   assert.strictEqual(getAchievementMetricValue('WINS', {
     progress: trackedWins,
     snapshot: {
