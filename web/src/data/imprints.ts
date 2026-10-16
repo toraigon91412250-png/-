@@ -94,6 +94,16 @@ export const IMPRINT_DEFINITIONS: readonly ImprintDefinition[] = [
     effect: '穿羽：与ダメージ×1.30、クールタイム3。連羽：与ダメージ×0.70、クールタイム2。前回と異なるモードで羽弾を使用すると、その攻撃に交互ボーナス+15%。出血など羽弾本来の追加効果は両モードで発動する。',
     usageLimit: 'モードごとにクールタイムを独立管理。交互ボーナスは1回の攻撃にのみ適用し、重複しない。',
   },
+  {
+    id: 'TRIUMPH',
+    name: '覇者の残響',
+    symbol: '👑',
+    category: '総合強化',
+    description: '幾多の挑戦を越えた者に応える、勝利の刻印。',
+    trigger: '装備して戦闘を開始すると常時発動。',
+    effect: 'いれーなの最大HP・攻撃・防御・速度をそれぞれ10%強化する。',
+    usageLimit: '装備中の戦闘で常時適用。権能の追加効果とは別に計算される。',
+  },
 ] as const;
 
 export function isImprintId(value: unknown): value is ImprintId {
