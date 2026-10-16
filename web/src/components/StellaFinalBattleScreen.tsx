@@ -751,7 +751,7 @@ export const StellaFinalBattleScreen: React.FC<{
         speedDownTurns = 0;
         defenseDownTurns = 0;
         const rawDamage = Math.max(1, Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier));
-        const resolvedDamage = calculateShortIrenaAttackDamage(rawDamage, KAISER.defense, kaiserDefenseNullTurns).damage;
+        const resolvedDamage = calculateShortIrenaAttackDamage(rawDamage, (KAISER.defense * 2), kaiserDefenseNullTurns).damage;
         const requestedDamage = applyShortIrenaDamageFloor(resolvedDamage, 3000);
         const bossHit = resolveShortIrenaBossDamage(kaiserHp, requestedDamage, phase);
         kaiserHp = bossHit.remainingHp;
@@ -769,7 +769,7 @@ export const StellaFinalBattleScreen: React.FC<{
         const rawDamage = Math.max(1, Math.ceil(stats.normalAttackDamage * effectiveAttackMultiplier));
         const { damage: requestedDamage, targetDefense } = calculateShortIrenaAttackDamage(
           rawDamage,
-          KAISER.defense,
+          (KAISER.defense * 2),
           kaiserDefenseNullTurns,
         );
         const bossHit = resolveShortIrenaBossDamage(kaiserHp, requestedDamage, phase);
@@ -1198,7 +1198,7 @@ export const StellaFinalBattleScreen: React.FC<{
   const displayedEffectiveSpeed = Math.ceil(shortStats.speed * (battle.status === 'READY' ? 1 : battle.allMightSpeedMultiplier) * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedDivineSpeedMultiplier * displayedAllPowerMultiplier * (battle.status !== 'READY' && battle.allThingsTurns > 0 ? 999 : 1) * (battle.status !== 'READY' && battle.playerPressureTurns > 0 ? Math.max(1, shortStats.speed - 25) / Math.max(1, shortStats.speed) : 1) * (battle.status !== 'READY' && battle.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1));
   const shortIrenaBuildAttackRequested = calculateShortIrenaAttackDamage(
     shortStats.normalAttackDamage,
-    KAISER.defense,
+    (KAISER.defense * 2),
     0,
   ).damage;
   const shortIrenaBuildAttackPreview = resolveShortIrenaBossDamage(
