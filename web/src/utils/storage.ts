@@ -1353,7 +1353,30 @@ export function unlockAllGameFeaturesForDeveloper(): {
 export function loadAchievementProgress(): AchievementProgress {
   try {
     const raw = localStorage.getItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY);
-    return raw ? normalizeAchievementProgress(JSON.parse(raw)) : normalizeAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
+    const saved = raw ? JSON.parse(raw) as unknown : null;
+    const savedRecord = saved && typeof saved === 'object'
+      ? saved as Record<string, unknown>
+      : null;
+    if (savedRecord && Object.prototype.hasOwnProperty.call(savedRecord, 'eligibleWins')) {
+      return normalizeAchievementProgress(saved);
+    }
+
+    // Migrate legacy win totals once. Existing Developer Tools sessions may have
+    // polluted general statistics with test battles, so never import that total
+    // when persistent developer mode is active.
+    const legacyWins = loadStellaModeProgress().developerModeEnabled === true
+      ? 0
+      : loadOverallStats().wins;
+    const migrated = normalizeAchievementProgress({
+      ...(savedRecord ?? INITIAL_ACHIEVEMENT_PROGRESS),
+      eligibleWins: legacyWins,
+    });
+    try {
+      localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify(migrated));
+    } catch {
+      // Keep the in-memory migration usable even when persistence is blocked.
+    }
+    return migrated;
   } catch {
     return normalizeAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
   }
