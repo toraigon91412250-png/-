@@ -1295,8 +1295,10 @@ export function unlockAllGameFeaturesForDeveloper(): {
   });
   const nextSkills = normalizeSkillProgress({
     ...currentSkills,
-    featherLevel: MAX_SKILL_LEVEL,
-    ruinLevel: MAX_SKILL_LEVEL,
+    // A path must be selected at Lv.3 before the skill can reach its cap.
+    // Keep unchosen branches selectable; already-specialized skills can be maxed.
+    featherLevel: currentSkills.featherPath ? MAX_SKILL_LEVEL : 3,
+    ruinLevel: currentSkills.ruinPath ? MAX_SKILL_LEVEL : 3,
     shards: Math.max(9999, currentSkills.shards),
     superFallenShotUnlocked: true,
   });
