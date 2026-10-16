@@ -214,7 +214,7 @@ export const App: React.FC = () => {
     const currentKaiserProgress = loadKaiserChallengeProgress();
     const currentStellaProgress = loadStellaModeProgress();
     const shouldAllowAllKaiserLevels = allowAllKaiserLevels
-      || (mode === 'NORMAL' && currentStellaProgress.allGameFeaturesUnlocked === true);
+      || currentStellaProgress.allGameFeaturesUnlocked === true;
     setAllowAllKaiserLevelsInBattleSetup(shouldAllowAllKaiserLevels);
     const selectableKaiserLevels = mode === 'EX_KAISER'
       ? BATTLE_CHALLENGE_LEVELS.filter(level => level === 100)
