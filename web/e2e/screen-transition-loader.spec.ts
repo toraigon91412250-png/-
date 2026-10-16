@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('regular screen changes show loading artwork, while developer tools, battle setup, and raid stay unchanged', async ({ page }) => {
+test('regular screen changes use a brief loader, while developer tools, battle setup, and raid stay unchanged', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
@@ -10,15 +10,18 @@ test('regular screen changes show loading artwork, while developer tools, battle
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(loader).toHaveCount(0);
 
-  // Home -> gacha hub uses the first dedicated loading illustration for roughly 1.8 seconds.
+  // Home -> gacha hub shows the dedicated illustration without imposing the old 1.5-second wait.
   const firstTransitionStartedAt = Date.now();
   await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
   await expect(loader).toBeVisible();
   await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1177.jpeg');
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
   await expect(loader).toBeHidden({ timeout: 5_000 });
-  expect(Date.now() - firstTransitionStartedAt, 'The standard screen loader should remain visible for its 1.8-second minimum duration.')
-    .toBeGreaterThanOrEqual(1_700);
+  const firstTransitionDuration = Date.now() - firstTransitionStartedAt;
+  expect(firstTransitionDuration, 'The short loader should remain visible long enough to read as a transition.')
+    .toBeGreaterThanOrEqual(400);
+  expect(firstTransitionDuration, 'Ordinary navigation should no longer impose the previous long wait.')
+    .toBeLessThan(1_300);
 
   // The recruitment transition waits for its summon artwork to preload.
   await page.getByRole('button', { name: '権能ガチャを開く' }).click();
