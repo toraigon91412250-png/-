@@ -1309,7 +1309,10 @@ try {
     'Eligible gameplay wins must increment the achievement-specific count.');
   assert.strictEqual(getAchievementMetricValue('WINS', {
     progress: trackedWins,
-    snapshot: { overallStats: { totalBattles: 100, wins: 99, losses: 1 } },
+    snapshot: {
+      overallStats: { totalBattles: 100, wins: 99, losses: 1 },
+      abilityProgress: { levels: {} },
+    },
   }), 1, 'Developer/test wins in general statistics must not affect achievement win counts.');
 
   const eligibleForFirstReward = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ['first-victory']);
