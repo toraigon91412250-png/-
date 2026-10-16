@@ -205,6 +205,7 @@ export function useBattleGame(
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
+  const lastStandUsedRef = useRef(false);
   const fallenReleaseLoggedRef = useRef(false);
   const masteryClaimedRef = useRef<Set<string>>(new Set());
   const battleMasteryRewardRef = useRef(0);
@@ -341,9 +342,11 @@ export function useBattleGame(
       target.isPlayer &&
       resultingHp <= 0 &&
       stateRef.current.battleConfig.imprints?.includes('LAST_STAND') &&
+      !lastStandUsedRef.current &&
       !stateRef.current.usedImprints.includes('LAST_STAND')
     );
     if (lastStandIsEligible) {
+      lastStandUsedRef.current = true;
       resultingHp = 1;
       updateState(prev => ({
         ...prev,
@@ -494,6 +497,7 @@ export function useBattleGame(
     judgmentMarksRef.current = 0;
     judgmentReadyRef.current = false;
     fallenKingSurvivalCountRef.current = 0;
+    lastStandUsedRef.current = false;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
     cancelPendingBattleWork();
