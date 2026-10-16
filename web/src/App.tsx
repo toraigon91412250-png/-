@@ -7,7 +7,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper } from './utils/storage';
+import { syncAchievementProgress, loadAchievementProgress, unlockAllAchievementsForDeveloper, claimAllAchievementRewardsForDeveloper, addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -26,7 +26,7 @@ import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePrel
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
 import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
-import type { StellaModeProgress } from './utils/storage';
+import type { AchievementProgress, StellaModeProgress } from './utils/storage';
 
 type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
 type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER';
@@ -73,6 +73,7 @@ export const App: React.FC = () => {
   const [isBattleDeploying, setIsBattleDeploying] = useState(false);
   const [allowAllKaiserLevelsInBattleSetup, setAllowAllKaiserLevelsInBattleSetup] = useState(false);
   const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
+  const [achievementProgress, setAchievementProgress] = useState<AchievementProgress>(() => syncAchievementProgress());
   const [isStellaWarping, setIsStellaWarping] = useState(false);
   const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
@@ -159,6 +160,7 @@ export const App: React.FC = () => {
       ? loadKaiserChallengeProgress()
       : recordKaiserChallengeResult(completedLevel, playerWon);
     setKaiserChallengeProgress(nextChallengeProgress);
+    setAchievementProgress(syncAchievementProgress());
     setBattleSetup(prev => ({
       ...prev,
       kaiserLevel: playerWon ? nextChallengeProgress.unlockedLevel : completedLevel,
@@ -178,6 +180,7 @@ export const App: React.FC = () => {
     setAbilityProgress(loadAbilityProgress());
     const currentStatPoints = loadStatPoints();
     setAvailableStatPoints(currentStatPoints);
+    setAchievementProgress(syncAchievementProgress());
     setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
   };
 
@@ -447,11 +450,14 @@ export const App: React.FC = () => {
       && !loadStellaModeProgress().stellaModeUnlocked
         ? IRENA.id
         : config.playerCharacterId;
+    const latestAchievementProgress = syncAchievementProgress();
+    setAchievementProgress(latestAchievementProgress);
     const battleConfigWithImprints: BattleSetupConfig = {
       ...config,
       playerCharacterId: safePlayerCharacterId,
       kaiserChallengeMode: battleSetupMode === 'EX_KAISER' ? 'EX' : 'NORMAL',
       imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
+      achievementAuthorityEnabled: latestAchievementProgress.absoluteAuthorityUnlocked,
     };
     setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
@@ -582,6 +588,21 @@ export const App: React.FC = () => {
     return true;
   };
 
+  const handleUnlockAllAchievements = (): boolean => {
+    const result = unlockAllAchievementsForDeveloper();
+    if (!result.persisted) return false;
+    setAchievementProgress(result.progress);
+    refreshProgress();
+    return true;
+  };
+
+  const handleClaimAllAchievementRewards = () => {
+    const result = claimAllAchievementRewardsForDeveloper();
+    setAchievementProgress(result.progress);
+    refreshProgress();
+    return result;
+  };
+
   const handleDeveloperReset = () => {
     const reset = resetProgressForDeveloper();
     setKaiserChallengeProgress(resetKaiserChallengeProgress());
@@ -597,6 +618,7 @@ export const App: React.FC = () => {
     setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
     setStellaModeProgress(loadStellaModeProgress());
+    setAchievementProgress(loadAchievementProgress());
     setStellaRewardSaveError(false);
     setBattleSetupMode('NORMAL');
     setBattleSetup({
@@ -646,6 +668,7 @@ export const App: React.FC = () => {
           onStartExKaiser={handleStartExKaiser}
           onOpenStellaMode={handleOpenStellaMode}
           onOpenStellaFinalBattle={handleOpenStellaFinalBattle}
+          onAchievementRewardsChanged={refreshProgress}
         />
       ) : screen === 'GROWTH_HUB' ? (
         <GrowthHubScreen
@@ -810,6 +833,9 @@ export const App: React.FC = () => {
           onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
           onOpenExKaiserChallenge={() => handleStartExKaiser('DEV_TOOLS', true)}
           onUnlockAllGameFeatures={handleUnlockAllGameFeatures}
+          achievementProgress={achievementProgress}
+          onUnlockAllAchievements={handleUnlockAllAchievements}
+          onClaimAllAchievementRewards={handleClaimAllAchievementRewards}
           onReset={handleDeveloperReset}
         />
       )}
