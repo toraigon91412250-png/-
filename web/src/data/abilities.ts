@@ -76,6 +76,19 @@ export const ABILITY_DEFINITIONS: readonly AbilityDefinition[] = [
       '2段階で執行 / ダメージ×3.00 / DEF60%無視 / 敵現在HP20%追加',
     ],
   },
+  {
+    id: 'ASTRAL_DOMINION',
+    name: '天星覇権',
+    symbol: '✦',
+    shortDescription: '全実績達成で目覚める最強の権能。いれーなの戦闘能力を大幅に高める。',
+    levelDescriptions: [
+      '全実績達成報酬。全ステータス×1.25。',
+      '全実績達成報酬。全ステータス×1.35。',
+      '全実績達成報酬。全ステータス×1.45。',
+      '全実績達成報酬。全ステータス×1.60。',
+      '全実績達成報酬。全ステータス×1.80、特殊技・必殺技×1.50。',
+    ],
+  },
 ];
 
 export function getAbilityDefinition(id: AbilityId): AbilityDefinition {
