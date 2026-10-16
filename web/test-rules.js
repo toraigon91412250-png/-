@@ -252,7 +252,45 @@ assert.match(shortIrenaFinalBattleSource, /irenaAllMightIcon/,
 assert.match(shortIrenaFinalBattleSource, /stella-final__hp-phase-mark/,
   'The Kaiser HP bar marks both phase boundaries.');
 assert.match(shortIrenaFinalBattleSource, /stella-final__alignment-emblem/,
-  'Alignment selection presents the corresponding crest transition.');
+  'The actual alignment selection buttons still show their choice crests.');
+assert.match(shortIrenaFinalBattleSource, /pendingKaiserCounterDamage: number \| null/,
+  'The initial alignment transition stores the counter hit until its reveal completes.');
+assert.match(shortIrenaFinalBattleSource, /const duration = isOpeningTransition \? 1850 : 300/,
+  'The opening alignment reveal runs before the delayed enemy counter.');
+assert.match(shortIrenaFinalBattleSource, /const playerHp = Math\.max\(0, current\.playerHp - pendingDamage\)/,
+  'The deferred enemy counter applies its damage only after the reveal timer.');
+assert.match(shortIrenaFinalBattleSource, /current\.pendingKaiserCounterDamage !== null\) return current/,
+  'Battle actions are locked while the opening reveal is active.');
+assert.ok(!shortIrenaFinalBattleSource.slice(
+  shortIrenaFinalBattleSource.indexOf('{battle.alignmentFlash &&'),
+  shortIrenaFinalBattleSource.indexOf('{battle.finisherPending &&'),
+).includes('irenaGodCrest') && !shortIrenaFinalBattleSource.slice(
+  shortIrenaFinalBattleSource.indexOf('{battle.alignmentFlash &&'),
+  shortIrenaFinalBattleSource.indexOf('{battle.finisherPending &&'),
+).includes('irenaDemonCrest'),
+  'The alignment transition itself does not show the God or Fallen crest.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__opening-form-portrait/,
+  'Alignment switching features a large portrait instead of a crest.');
+assert.match(shortIrenaFinalBattleSource, /STELLA_FINAL_BATTLE_IMAGES\.irenaDemonPortrait/,
+  'Choosing Fallen reveals the updated Fallen portrait.');
+assert.match(shortIrenaFinalBattleSource, /canDisplayTerminusCooldown/,
+  'Terminus remains visible while it is on cooldown.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__cooldown-badge/,
+  'Cooldown actions display their remaining-turn badge.');
+assert.match(shortIrenaFinalBattleSource, /battle\.turn < battle\.immortalReadyTurn && <span className="stella-final__cooldown-badge"/,
+  'Immortal remains visible during its cooldown.');
+assert.match(shortIrenaFinalBattleSource, /\}, 1650\);/,
+  'Damage-number removal timer matches the longer visual duration.');
+assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-card button::before \{\s*content: none !important;/,
+  'Skill tiles no longer display a redundant activation button label.');
+assert.match(finalBattleUiCss, /font-size: clamp\(51px, 14\.25vw, 108px\)/,
+  'Damage numbers use a roughly 1.5x desktop scale.');
+assert.match(finalBattleUiCss, /font-size: clamp\(48px, 15vw, 72px\)/,
+  'Damage numbers use a roughly 1.5x scale on narrow phones.');
+assert.match(finalBattleUiCss, /animation-duration: 1650ms/,
+  'Damage-number animation lasts for 1.65 seconds.');
+assert.match(finalBattleUiCss, /stella-final-opening-portrait/,
+  'The opening form reveal has a dedicated full-screen portrait animation.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__arena-art/,
   'The active arena displays large character art.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-card button\{position:absolute;inset:0;/,
