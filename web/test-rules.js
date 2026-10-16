@@ -174,6 +174,24 @@ assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
   'The gauge does not offer an impossible move beyond the positive cap.');
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
   'The gauge does not offer an impossible move beyond the negative cap.');
+const developerToolsSource = await readFile(new URL('./src/components/DeveloperToolsScreen.tsx', import.meta.url), 'utf8');
+assert.match(developerToolsSource, /最終決戦をワンボタン開放（開発用）/,
+  'Developer Tools expose a dedicated one-button route to the final battle.');
+assert.match(developerToolsSource, /onClick=\{onOpenStellaFinalBattle\}/,
+  'The final battle developer shortcut is wired to its route callback.');
+const appDeveloperRouteSource = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
+assert.match(appDeveloperRouteSource, /const handleOpenDeveloperFinalBattle = \(\) =>/,
+  'App owns the developer-only final-battle route.');
+assert.match(appDeveloperRouteSource, /onOpenStellaFinalBattle=\{handleOpenDeveloperFinalBattle\}/,
+  'App wires the developer route into the developer tools screen.');
+assert.match(appDeveloperRouteSource, /if \(!progress\.isUnlocked \|\| !progress\.exKaiserDefeated\) return;/,
+  'Normal final-battle progression remains gated.');
+assert.match(appDeveloperRouteSource, /isDeveloperPreview=\{isDeveloperFinalBattlePreview\}/,
+  'The final battle knows when it was opened from Developer Tools.');
+assert.match(shortIrenaFinalBattleSource, /if \(isDeveloperPreview \|\| battle\.status !== 'VICTORY'/,
+  'Developer final-battle previews do not claim permanent victory rewards.');
+assert.match(shortIrenaFinalBattleSource, /開発者テスト：この勝利では通常の解放状況・初回クリア報酬を変更しない。/,
+  'The final-battle result clearly identifies reward-neutral developer testing.');
 const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
 assert.match(finalBattleUiCss, /stella-final__power-icon img\.stella-final__skill-art/,
   'Custom skill art fits the small mobile ability tile.');
