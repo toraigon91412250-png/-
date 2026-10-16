@@ -2053,7 +2053,7 @@
   background: linear-gradient(90deg, rgba(128, 18, 48, .46), rgba(25, 9, 24, .85), rgba(70, 31, 77, .25));
 }
 .stella-final--playing .stella-final__daten-gauge-track {
-  height: 9px;
+  height: 15px;
   background: linear-gradient(90deg, rgba(255, 59, 103, .54), rgba(89, 89, 139, .5), rgba(177, 128, 255, .64));
 }
 .stella-final--playing .stella-final__daten-gauge-marker {
@@ -2435,21 +2435,29 @@
   padding-right: 24px;
 }
 .stella-final--playing .stella-final__damage-number {
+  font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", sans-serif;
   font-size: clamp(51px, 14.25vw, 108px);
+  font-weight: 800;
+  letter-spacing: -.055em;
+  -webkit-text-stroke: .75px rgba(7, 9, 20, .88);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .34));
   animation-duration: 1650ms;
 }
 .stella-final--playing .stella-final__damage-number--kaiser {
   right: 8%;
+  color: #f2e9d8;
+  text-shadow: 0 1px 3px rgba(9, 8, 18, .88), 0 0 7px rgba(224, 199, 157, .22);
 }
 .stella-final--playing .stella-final__damage-number--player {
   left: 7%;
+  color: #eee5eb;
+  text-shadow: 0 1px 3px rgba(9, 8, 18, .88), 0 0 7px rgba(198, 151, 174, .22);
 }
 @keyframes stella-final-damage-pop {
-  0% { opacity: 0; transform: translateY(22px) rotate(-12deg) scale(.62); }
-  11% { opacity: 1; transform: translateY(0) rotate(-12deg) scale(1.12); }
-  24% { opacity: 1; transform: translateY(-3px) rotate(-12deg) scale(1); }
-  78% { opacity: 1; transform: translateY(-13px) rotate(-12deg) scale(1); }
-  100% { opacity: 0; transform: translateY(-48px) rotate(-12deg) scale(1.04); }
+  0% { opacity: 0; transform: translateY(13px) rotate(-7deg) scale(.94); }
+  12% { opacity: 1; transform: translateY(0) rotate(-7deg) scale(1); }
+  78% { opacity: 1; transform: translateY(-5px) rotate(-7deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-25px) rotate(-7deg) scale(1.01); }
 }
 @media (max-width: 390px) {
   .stella-final--playing .stella-final__damage-number {
