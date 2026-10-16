@@ -1382,7 +1382,17 @@ export function markAllAchievementsCompleteForDeveloper(): AchievementProgress |
 }
 
 export function resetAchievementProgressForDeveloper(): AchievementProgress | null {
-  return persistAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
+  const currentAbilities = loadAbilityProgress();
+  const nextAbilities = normalizeAbilityProgress({
+    levels: { ...currentAbilities.levels, ASTRAL_DOMINION: 0 },
+    shards: { ...currentAbilities.shards, ASTRAL_DOMINION: 0 },
+  });
+  const nextAchievements = normalizeAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
+  const persisted = persistStorageTransaction([
+    { key: ACHIEVEMENT_PROGRESS_STORAGE_KEY, value: JSON.stringify(nextAchievements) },
+    { key: ABILITY_PROGRESS_KEY, value: JSON.stringify(nextAbilities) },
+  ]);
+  return persisted ? nextAchievements : null;
 }
 
 export function unlockAchievementUltimateAuthority(): { progress: AbilityProgress; persisted: boolean } {
