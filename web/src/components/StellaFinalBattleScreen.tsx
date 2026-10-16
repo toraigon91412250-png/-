@@ -326,7 +326,7 @@ export const StellaFinalBattleScreen: React.FC<{
       const timer = window.setTimeout(() => {
         setDamagePopups(existing => existing.filter(item => item.id !== popup.id));
         damagePopupTimersRef.current.delete(popup.id);
-      }, 1100);
+      }, 1650);
       damagePopupTimersRef.current.set(popup.id, timer);
     });
   }, [battle.status, battle.fighterId, battle.playerHp, battle.kaiserHp]);
