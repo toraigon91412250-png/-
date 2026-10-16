@@ -1,17 +1,19 @@
 import { AbilityId, AbilityProgress, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
-import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { ACHIEVEMENTS, type AchievementId, type AchievementMetric, type AchievementReward } from '../data/achievements';
+import { ABILITY_DEFINITIONS, MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
 import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
-import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
+import { KAISER_CHALLENGE_PROGRESS_KEY, loadKaiserChallengeProgress } from './kaiserChallengeProgress';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
 const STAT_POINTS_KEY = 'duel_arena_stat_points';
 const RAID_REWARD_PROGRESS_KEY = 'duel_arena_raid_reward_progress';
 export const STELLA_MODE_PROGRESS_KEY = 'duel_arena_stella_mode_progress';
+export const ACHIEVEMENT_PROGRESS_STORAGE_KEY = 'duel_arena_achievement_progress';
 
 interface StorageWrite {
   key: string;
@@ -844,6 +846,7 @@ export function resetProgressForDeveloper(): {
   try {
     // Clear developer mode first, without letting this write block the other reset operations.
     localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
+    localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify({ unlockedIds: [], claimedIds: [], absoluteAuthorityUnlocked: false }));
   } catch {
     // Keep attempting the remaining reset writes if this key cannot be saved.
   }
@@ -1337,3 +1340,243 @@ export function unlockAllGameFeaturesForDeveloper(): {
   };
 }
 
+
+
+export interface AchievementProgress {
+  /** Achievement IDs that have been earned at least once; never regress when later stats change. */
+  unlockedIds: AchievementId[];
+  /** Achievement reward IDs already paid out. */
+  claimedIds: AchievementId[];
+  /** Permanent unlock for the all-achievements ultimate authority. */
+  absoluteAuthorityUnlocked: boolean;
+}
+
+export interface AchievementMetrics extends Record<AchievementMetric, number> {}
+
+export interface AchievementRewardClaimResult {
+  progress: AchievementProgress;
+  claimed: boolean;
+  persisted: boolean;
+  reward?: AchievementReward;
+}
+
+const INITIAL_ACHIEVEMENT_PROGRESS: AchievementProgress = {
+  unlockedIds: [],
+  claimedIds: [],
+  absoluteAuthorityUnlocked: false,
+};
+
+function normalizeAchievementProgress(value: unknown): AchievementProgress {
+  const parsed = value && typeof value === 'object'
+    ? value as Partial<AchievementProgress>
+    : {};
+  const validIds = new Set(ACHIEVEMENTS.map(achievement => achievement.id));
+  const unlockedIds = Array.isArray(parsed.unlockedIds)
+    ? Array.from(new Set(parsed.unlockedIds.filter((id): id is AchievementId =>
+        typeof id === 'string' && validIds.has(id as AchievementId))))
+    : [];
+  const claimedIds = Array.isArray(parsed.claimedIds)
+    ? Array.from(new Set(parsed.claimedIds.filter((id): id is AchievementId =>
+        typeof id === 'string' && validIds.has(id as AchievementId))))
+    : [];
+  const allCompleted = ACHIEVEMENTS.every(achievement => unlockedIds.includes(achievement.id));
+  return {
+    unlockedIds,
+    claimedIds,
+    absoluteAuthorityUnlocked: parsed.absoluteAuthorityUnlocked === true || allCompleted,
+  };
+}
+
+export function loadAchievementProgress(): AchievementProgress {
+  try {
+    const raw = localStorage.getItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY);
+    return raw === null
+      ? { ...INITIAL_ACHIEVEMENT_PROGRESS, unlockedIds: [], claimedIds: [] }
+      : normalizeAchievementProgress(JSON.parse(raw));
+  } catch {
+    return { ...INITIAL_ACHIEVEMENT_PROGRESS, unlockedIds: [], claimedIds: [] };
+  }
+}
+
+function persistAchievementProgress(progress: AchievementProgress): boolean {
+  try {
+    localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify(normalizeAchievementProgress(progress)));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Derive achievement requirements from the game's existing saved progression. */
+export function getAchievementMetrics(): AchievementMetrics {
+  const overall = loadOverallStats();
+  const kaiser = loadKaiserChallengeProgress();
+  const stella = loadStellaModeProgress();
+  const recruitment = loadRecruitmentProgress();
+  const abilities = loadAbilityProgress();
+  const imprints = loadImprintProgress();
+  const raid = loadRaidRewardProgress();
+  const skills = loadSkillProgress();
+
+  const knownRecruitmentIds = new Set(RECRUITMENT_REWARDS.map(reward => reward.id));
+  const collectedRecruitmentIds = new Set(recruitment.collectedIds.filter(id => knownRecruitmentIds.has(id)));
+  const unlockedAbilityCount = Object.values(abilities.levels).filter(level => level > 0).length;
+  const maxedAbilityCount = Object.values(abilities.levels).filter(level => level >= MAX_ABILITY_LEVEL).length;
+  const allImprintsOwned = IMPRINT_DEFINITIONS.every(imprint => imprints.unlockedIds.includes(imprint.id));
+  const skillPathsSelected = Number(Boolean(skills.featherPath)) + Number(Boolean(skills.ruinPath));
+  const skillMaxedCount = Number(skills.featherLevel >= MAX_SKILL_LEVEL) + Number(skills.ruinLevel >= MAX_SKILL_LEVEL);
+
+  return {
+    totalBattles: overall.totalBattles,
+    wins: overall.wins,
+    kaiserLevel: kaiser.unlockedLevel,
+    normalLevel100: Number(stella.kaiser100RewardClaimed),
+    stellaModeUnlocked: Number(stella.stellaModeUnlocked),
+    exKaiserDefeated: Number(stella.exKaiserDefeated),
+    finalBattleCleared: Number(stella.finalBattleCleared || stella.finalBattleRewardClaimed),
+    recruitmentPulls: recruitment.totalPulls,
+    recruitmentCollectionComplete: Number(
+      knownRecruitmentIds.size > 0 && [...knownRecruitmentIds].every(id => collectedRecruitmentIds.has(id)),
+    ),
+    abilityUnlockedCount: unlockedAbilityCount,
+    abilityMaxedCount: maxedAbilityCount,
+    imprintsOwned: imprints.unlockedIds.length,
+    allImprintsOwned: Number(allImprintsOwned),
+    imprintsEquipped: imprints.equippedIds.length,
+    raidVictories: raid.claimedVictoryRunIds.length,
+    skillPathsSelected,
+    skillMaxedCount,
+  };
+}
+
+/**
+ * Promote any newly satisfied milestones to permanent unlocks. This is safe to
+ * call on Home entry and before starting a battle; rewards remain separately claimable.
+ */
+export function syncAchievementProgress(): AchievementProgress {
+  const current = loadAchievementProgress();
+  const metrics = getAchievementMetrics();
+  const unlocked = new Set(current.unlockedIds);
+  for (const achievement of ACHIEVEMENTS) {
+    if (metrics[achievement.metric] >= achievement.target) unlocked.add(achievement.id);
+  }
+
+  const unlockedIds = ACHIEVEMENTS
+    .filter(achievement => unlocked.has(achievement.id))
+    .map(achievement => achievement.id);
+  const absoluteAuthorityUnlocked = current.absoluteAuthorityUnlocked
+    || ACHIEVEMENTS.every(achievement => unlocked.has(achievement.id));
+  const next: AchievementProgress = {
+    ...current,
+    unlockedIds,
+    absoluteAuthorityUnlocked,
+  };
+
+  if (
+    next.absoluteAuthorityUnlocked === current.absoluteAuthorityUnlocked
+    && next.unlockedIds.length === current.unlockedIds.length
+  ) {
+    return current;
+  }
+
+  return persistAchievementProgress(next) ? next : current;
+}
+
+export function claimAchievementReward(id: AchievementId): AchievementRewardClaimResult {
+  const current = syncAchievementProgress();
+  const achievement = ACHIEVEMENTS.find(candidate => candidate.id === id);
+  if (!achievement || !current.unlockedIds.includes(id)) {
+    return { progress: current, claimed: false, persisted: false };
+  }
+  if (current.claimedIds.includes(id)) {
+    return { progress: current, claimed: false, persisted: true, reward: achievement.reward };
+  }
+
+  const reward = achievement.reward;
+  const nextAchievementProgress: AchievementProgress = {
+    ...current,
+    claimedIds: [...current.claimedIds, id],
+  };
+  const writes: StorageWrite[] = [
+    { key: ACHIEVEMENT_PROGRESS_STORAGE_KEY, value: JSON.stringify(nextAchievementProgress) },
+  ];
+
+  if ((reward.statPoints ?? 0) > 0) {
+    writes.push({ key: STAT_POINTS_KEY, value: String(loadBaseStatPoints() + Math.floor(reward.statPoints ?? 0)) });
+  }
+
+  if ((reward.recruitmentTickets ?? 0) > 0) {
+    const recruitment = loadRecruitmentProgress();
+    const nextRecruitment = normalizeRecruitmentProgress({
+      ...recruitment,
+      tickets: recruitment.tickets + Math.floor(reward.recruitmentTickets ?? 0),
+    });
+    writes.push({ key: RECRUITMENT_KEY, value: JSON.stringify(nextRecruitment) });
+  }
+
+  if ((reward.imprintTickets ?? 0) > 0) {
+    const raid = loadRaidRewardProgress();
+    const nextRaid = normalizeRaidRewardProgress({
+      ...raid,
+      imprintTickets: raid.imprintTickets + Math.floor(reward.imprintTickets ?? 0),
+    });
+    writes.push({ key: RAID_REWARD_PROGRESS_KEY, value: JSON.stringify(nextRaid) });
+  }
+
+  if ((reward.skillShards ?? 0) > 0) {
+    const skills = loadSkillProgress();
+    const nextSkills = normalizeSkillProgress({
+      ...skills,
+      shards: skills.shards + Math.floor(reward.skillShards ?? 0),
+    });
+    writes.push({ key: SKILL_PROGRESS_KEY, value: JSON.stringify(nextSkills) });
+  }
+
+  if ((reward.abilityShardsEach ?? 0) > 0) {
+    const abilities = loadAbilityProgress();
+    const nextShards = { ...abilities.shards };
+    (Object.keys(nextShards) as AbilityId[]).forEach(abilityId => {
+      nextShards[abilityId] += Math.floor(reward.abilityShardsEach ?? 0);
+    });
+    const nextAbilities = normalizeAbilityProgress({ levels: { ...abilities.levels }, shards: nextShards });
+    writes.push({ key: ABILITY_PROGRESS_KEY, value: JSON.stringify(nextAbilities) });
+  }
+
+  const persisted = persistStorageTransaction(writes);
+  return {
+    progress: persisted ? normalizeAchievementProgress(nextAchievementProgress) : current,
+    claimed: persisted,
+    persisted,
+    reward,
+  };
+}
+
+/** Developer-only: mark every listed achievement earned, without silently granting its currency rewards. */
+export function unlockAllAchievementsForDeveloper(): { progress: AchievementProgress; persisted: boolean } {
+  const next: AchievementProgress = {
+    unlockedIds: ACHIEVEMENTS.map(achievement => achievement.id),
+    claimedIds: loadAchievementProgress().claimedIds,
+    absoluteAuthorityUnlocked: true,
+  };
+  const persisted = persistAchievementProgress(next);
+  return {
+    progress: persisted ? normalizeAchievementProgress(next) : loadAchievementProgress(),
+    persisted,
+  };
+}
+
+/** Developer-only: collect currently unlocked achievement rewards once each. */
+export function claimAllAchievementRewardsForDeveloper(): {
+  progress: AchievementProgress;
+  claimedCount: number;
+  persisted: boolean;
+} {
+  let claimedCount = 0;
+  let persisted = true;
+  for (const achievement of ACHIEVEMENTS) {
+    const result = claimAchievementReward(achievement.id);
+    if (!result.persisted) persisted = false;
+    if (result.claimed) claimedCount += 1;
+  }
+  return { progress: loadAchievementProgress(), claimedCount, persisted };
+}
