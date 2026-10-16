@@ -145,7 +145,7 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
   await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
   await expect(page.locator('.stella-final__normal-attack')).toContainText('2,000');
-  await expect(page.getByText(/試作値：5,000ダメージ・1回/)).toBeVisible();
+  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 15,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
 
   await attack.click();
   await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
