@@ -377,7 +377,6 @@ export const StellaFinalBattleScreen: React.FC<{
           log('EXカイザーの反撃。適用中の防御補正後、' + pendingDamage.toLocaleString('ja-JP') + 'ダメージを受けた。');
         }
 
-        const wasAscended = current.ascensionTurns > 0;
         const wasGodMight = current.godMightTurns > 0;
         const wasDivineSpeed = current.divineSpeedTurns > 0;
         const wasAllPower = current.allPowerTurns > 0;
