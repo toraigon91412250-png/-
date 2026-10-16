@@ -2291,3 +2291,183 @@
   }
 }
 
+/* Final duel refinement: stop-time alignment takeover, larger damage, cooldown-ready icons. */
+.stella-final--playing .stella-final__alignment-flash--opening {
+  position: fixed;
+  z-index: 130;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: auto;
+  isolation: isolate;
+  background: radial-gradient(ellipse at 50% 42%, rgba(44, 15, 40, .72), rgba(2, 3, 13, .98) 73%);
+  mix-blend-mode: normal;
+  animation: stella-final-opening-stop 1600ms cubic-bezier(.14,.78,.18,1) both;
+}
+.stella-final--playing .stella-final__alignment-flash--opening.stella-final__alignment-flash--god {
+  background:
+    radial-gradient(ellipse at 50% 34%, rgba(229, 223, 255, .5), transparent 44%),
+    radial-gradient(ellipse at 50% 50%, rgba(47, 43, 112, .94), rgba(2, 3, 14, .98) 76%);
+}
+.stella-final--playing .stella-final__alignment-flash--opening.stella-final__alignment-flash--demon {
+  background:
+    radial-gradient(ellipse at 50% 37%, rgba(255, 20, 73, .32), transparent 49%),
+    radial-gradient(ellipse at 50% 50%, rgba(72, 3, 29, .96), rgba(2, 2, 10, .99) 77%);
+}
+.stella-final--playing .stella-final__alignment-flash--opening::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -20%;
+  pointer-events: none;
+  opacity: .45;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(115deg, transparent 0 24px, rgba(255,255,255,.045) 25px 26px, transparent 27px 48px);
+  animation: stella-final-time-stop-lines 1600ms ease-out both;
+}
+.stella-final--playing .stella-final__opening-form-portrait {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(88vw, 580px);
+  height: min(74dvh, 760px);
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 0 22px rgba(205, 184, 255, .28));
+  animation: stella-final-opening-portrait 1500ms cubic-bezier(.14,.84,.18,1) both;
+}
+.stella-final--playing .stella-final__alignment-flash--opening.stella-final__alignment-flash--demon .stella-final__opening-form-portrait {
+  filter: drop-shadow(0 0 24px rgba(255, 27, 74, .65)) drop-shadow(0 0 70px rgba(196, 7, 53, .26));
+}
+.stella-final--playing .stella-final__opening-form-title {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: max(5vh, env(safe-area-inset-bottom, 0px) + 20px);
+  color: #fff;
+  font-size: clamp(30px, 9vw, 56px);
+  line-height: 1;
+  letter-spacing: .3em;
+  text-align: center;
+  text-indent: .3em;
+  font-weight: 1000;
+  text-shadow: 0 3px 0 rgba(12, 4, 19, .9), 0 0 22px rgba(255,255,255,.62);
+  animation: stella-final-opening-title 1450ms cubic-bezier(.16,.84,.2,1) both;
+}
+.stella-final--playing .stella-final__alignment-flash--opening.stella-final__alignment-flash--demon .stella-final__opening-form-title {
+  color: #fff1f4;
+  text-shadow: 0 3px 0 #40051b, 0 0 20px rgba(255, 30, 75, .95), 0 0 52px rgba(255, 9, 64, .45);
+}
+@keyframes stella-final-opening-stop {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  19% { opacity: 1; }
+  72% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes stella-final-opening-portrait {
+  0% { opacity: 0; transform: translateY(6%) scale(.68) rotate(-3deg); filter: brightness(2.1) blur(7px); }
+  18% { opacity: 1; transform: translateY(0) scale(1.04) rotate(1deg); filter: brightness(1.25) blur(0); }
+  38% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+  74% { opacity: 1; transform: translateY(-1%) scale(1.015) rotate(0); }
+  100% { opacity: 0; transform: translateY(-2%) scale(1.06) rotate(0); }
+}
+@keyframes stella-final-opening-title {
+  0%, 15% { opacity: 0; transform: translateY(14px) scale(.86); }
+  28% { opacity: 1; transform: translateY(0) scale(1.04); }
+  70% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-5px) scale(1.02); }
+}
+@keyframes stella-final-time-stop-lines {
+  0% { opacity: 0; transform: scale(1.2) rotate(-5deg); }
+  18% { opacity: .45; transform: scale(1) rotate(0); }
+  75% { opacity: .3; }
+  100% { opacity: 0; transform: scale(.98); }
+}
+
+/* The skill tile itself is the button. Keep skill names, remove the redundant "activate" strip. */
+.stella-final--playing .stella-final__power-card button::before {
+  content: none !important;
+  display: none !important;
+}
+.stella-final--playing .stella-final__power-card button {
+  cursor: pointer;
+}
+.stella-final--playing .stella-final__power-card:has(> button:disabled) {
+  border-color: rgba(166, 166, 195, .32);
+  filter: saturate(.55);
+}
+.stella-final--playing .stella-final__power-card:has(> button:disabled) .stella-final__power-icon {
+  filter: grayscale(.9) opacity(.52);
+}
+.stella-final--playing .stella-final__cooldown-badge {
+  position: absolute;
+  z-index: 4;
+  top: 5px;
+  right: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 31px;
+  min-height: 19px;
+  padding: 2px 5px;
+  border: 1px solid rgba(255, 214, 133, .8);
+  border-radius: 5px;
+  color: #fff4cb;
+  background: rgba(13, 9, 23, .93);
+  box-shadow: 0 1px 8px rgba(0,0,0,.6), 0 0 10px rgba(255, 185, 69, .13);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.stella-final--playing .stella-final__power-card:has(.stella-final__cooldown-badge) .stella-final__power-copy h3 {
+  padding-right: 24px;
+}
+.stella-final--playing .stella-final__damage-number {
+  font-size: clamp(51px, 14.25vw, 108px);
+  animation-duration: 1650ms;
+}
+.stella-final--playing .stella-final__damage-number--kaiser {
+  right: 8%;
+}
+.stella-final--playing .stella-final__damage-number--player {
+  left: 7%;
+}
+@keyframes stella-final-damage-pop {
+  0% { opacity: 0; transform: translateY(22px) rotate(-12deg) scale(.62); }
+  11% { opacity: 1; transform: translateY(0) rotate(-12deg) scale(1.12); }
+  24% { opacity: 1; transform: translateY(-3px) rotate(-12deg) scale(1); }
+  78% { opacity: 1; transform: translateY(-13px) rotate(-12deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-48px) rotate(-12deg) scale(1.04); }
+}
+@media (max-width: 390px) {
+  .stella-final--playing .stella-final__damage-number {
+    font-size: clamp(48px, 15vw, 72px);
+  }
+  .stella-final--playing .stella-final__opening-form-portrait {
+    width: min(94vw, 520px);
+    height: min(70dvh, 640px);
+  }
+  .stella-final--playing .stella-final__opening-form-title {
+    font-size: clamp(28px, 9vw, 42px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stella-final--playing .stella-final__alignment-flash--opening,
+  .stella-final--playing .stella-final__opening-form-portrait,
+  .stella-final--playing .stella-final__opening-form-title {
+    animation-duration: 1ms;
+  }
+}
+
