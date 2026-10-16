@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Flame, HeartPulse, Shield, Sparkles, Swords, TimerReset, Zap } from 'lucide-react';
+import { ArrowLeft, HeartPulse, Shield, Sparkles, Swords, TimerReset, Zap } from 'lucide-react';
 import { KAISER } from '../data/characters';
 import kaiserImage from '../assets/img_kaiser.jpg';
 import battleBackground from '../assets/戦闘中背景.png';
@@ -1156,6 +1156,8 @@ export const StellaFinalBattleScreen: React.FC<{
             <div className="stella-final__hp-meta"><span>HP</span><strong>{battle.kaiserHp.toLocaleString('ja-JP')} / {EX_KAISER_TOTAL_HP.toLocaleString('ja-JP')}</strong></div>
             <div className="stella-final__hp-track" role="progressbar" aria-label="EXカイザーのHP" aria-valuemin={0} aria-valuemax={EX_KAISER_TOTAL_HP} aria-valuenow={battle.kaiserHp}>
               <span className="stella-final__hp-fill stella-final__hp-fill--boss" style={{ width: kaiserHpPercent + '%' }} />
+              <span className="stella-final__hp-phase-mark" style={{ left: '33.333%' }} aria-hidden="true" />
+              <span className="stella-final__hp-phase-mark" style={{ left: '66.667%' }} aria-hidden="true" />
             </div>
           </div>
                         
@@ -1392,10 +1394,10 @@ export const StellaFinalBattleScreen: React.FC<{
                   {canMoveShortIrenaGauge && (
                     <div className="stella-final__gauge-controls" aria-label="ゲージ操作">
                       {battle.datenGauge < 100 && (
-                        <button type="button" aria-label="神側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_GOD')}>神側へ +15</button>
+                        <button type="button" aria-label="神側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_GOD')}><img className="stella-final__direction-icon" src={STELLA_FINAL_BATTLE_IMAGES.irenaGodCrest} alt="" /><span>神側へ +15</span></button>
                       )}
                       {battle.datenGauge > -100 && (
-                        <button type="button" aria-label="堕天側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_DEMON')}>堕天側へ −15</button>
+                        <button type="button" aria-label="堕天側へ15ポイント移動" onClick={() => takeShortIrenaAction('MOVE_DEMON')}><img className="stella-final__direction-icon" src={STELLA_FINAL_BATTLE_IMAGES.irenaDemonCrest} alt="" /><span>堕天側へ −15</span></button>
                       )}
                     </div>
                   )}
@@ -1403,8 +1405,8 @@ export const StellaFinalBattleScreen: React.FC<{
                     <section className="stella-final__opening-choice" aria-label="最初の行動">
                       <div><strong>最初の行動</strong></div>
                       <div className="stella-final__opening-choice-buttons">
-                        <button type="button" aria-label="神化を選択" onClick={() => takeShortIrenaAction('DIVINIZE')}>神化</button>
-                        <button type="button" aria-label="堕天を選択" onClick={() => takeShortIrenaAction('FALLEN')}>堕天</button>
+                        <button type="button" aria-label="神化を選択" onClick={() => takeShortIrenaAction('DIVINIZE')}><img className="stella-final__alignment-choice-icon" src={STELLA_FINAL_BATTLE_IMAGES.irenaGodCrest} alt="" /><span>神化</span><small>DIVINIZE</small></button>
+                        <button type="button" aria-label="堕天を選択" onClick={() => takeShortIrenaAction('FALLEN')}><img className="stella-final__alignment-choice-icon" src={STELLA_FINAL_BATTLE_IMAGES.irenaDemonCrest} alt="" /><span>堕天</span><small>FALLEN</small></button>
                       </div>
                     </section>
                   ) : (
@@ -1433,21 +1435,21 @@ export const StellaFinalBattleScreen: React.FC<{
                   )}
                     {shortIrenaCommandWindow && canUseTerminus && battle.turn >= battle.terminusReadyTurn && (
                     <article className="stella-final__power-card stella-final__power-card--terminus">
-                      <div className="stella-final__power-icon"><Zap size={21} /></div>
+                      <div className="stella-final__power-icon"><img className="stella-final__skill-art" src={STELLA_FINAL_BATTLE_IMAGES.irenaTerminusIcon} alt="" /></div>
                       <div className="stella-final__power-copy"><h3>終極殲滅</h3></div>
                       <button type="button" aria-label="終極殲滅を発動" disabled={!isFighting || !battle.initialChoiceMade || !canUseTerminus || battle.turn < battle.terminusReadyTurn || battle.actionLockTurns > 0 || battle.ascensionTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('TERMINUS')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canActivateAscension && (
                     <article className="stella-final__power-card stella-final__power-card--ascension">
-                      <div className="stella-final__power-icon"><Sparkles size={21} /></div>
+                      <div className="stella-final__power-icon"><img className="stella-final__skill-art" src={STELLA_FINAL_BATTLE_IMAGES.irenaAscensionIcon} alt="" /></div>
                       <div className="stella-final__power-copy"><h3>絶界昇華</h3><small>{SHORT_IRENA_ASCENSION_TURNS}T</small></div>
                       <button type="button" aria-label="絶界昇華を発動" disabled={!isFighting || !battle.initialChoiceMade || !canActivateAscension || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('ASCENSION')}>発動</button>
                     </article>
                   )}
                     {shortIrenaCommandWindow && canUseAllMight && !battle.allMightUsed && (
                     <article className="stella-final__power-card stella-final__power-card--control">
-                      <div className="stella-final__power-icon"><Shield size={21} /></div>
+                      <div className="stella-final__power-icon"><img className="stella-final__skill-art" src={STELLA_FINAL_BATTLE_IMAGES.irenaAllMightIcon} alt="" /></div>
                       <div className="stella-final__power-copy"><h3>理外掌握</h3></div>
                       <div className="stella-final__control-buttons">
                         <button type="button" aria-label="理外掌握：神側へ" disabled={!isFighting || !battle.initialChoiceMade || !canUseAllMight || battle.allMightUsed || battle.ascensionTurns > 0 || battle.actionLockTurns > 0 || Boolean(battle.finisherPending) || Boolean(battle.finisherRoutePending) || battle.finalTurnsLeft === 0} onClick={() => takeShortIrenaAction('CONTROL_GOD')}>神側へ</button>
@@ -1459,7 +1461,7 @@ export const StellaFinalBattleScreen: React.FC<{
                   {shortIrenaUltimateWindow && (
                     <div className="stella-final__short-finish-row">
                       <div><strong>{battle.alignment === 'GOD' ? '究極必殺技・創世' : '究極必殺技・終焉'}</strong><small>{battle.alignment === 'GOD' ? '神側倍率 ×5' : '堕天側倍率 ×8'}</small></div>
-                      <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : '堕天側の究極必殺技 終焉'} onClick={() => takeShortIrenaAction('FINISH')}><Flame size={30} aria-hidden="true" /><span className="stella-final__sr-only">究極必殺技を放つ</span></button>
+                      <button type="button" aria-label={battle.alignment === 'GOD' ? '神側の究極必殺技 創世' : '堕天側の究極必殺技 終焉'} onClick={() => takeShortIrenaAction('FINISH')}><img className="stella-final__finish-icon" src={battle.alignment === 'GOD' ? STELLA_FINAL_BATTLE_IMAGES.irenaGodCrest : STELLA_FINAL_BATTLE_IMAGES.irenaDemonFinisherIcon} alt="" /><span className="stella-final__sr-only">究極必殺技を放つ</span></button>
                     </div>
                   )}
                     </>
