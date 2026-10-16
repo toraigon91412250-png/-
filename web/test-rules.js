@@ -31,12 +31,54 @@ register(
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
+const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
+const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
+const { IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
+const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 
-// Keep the final duel player-favored: strengthen Stella while modestly easing EX Kaiser.
-assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 15000);
-assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 220, 2: 320, 3: 440 });
+// Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
+assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 440, 2: 640, 3: 880 });
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
+
+assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
+assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,
+  'The ultimate achievement authority must not leak into the regular summon pool.');
+assert.strictEqual(IMPRINT_DEFINITIONS.length, 10);
+assert.strictEqual(IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'LAST_STAND'), true);
+assert.strictEqual(IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'STARFALL'), true);
+assert.strictEqual(new Set(ACHIEVEMENT_DEFINITIONS.map(achievement => achievement.id)).size, ACHIEVEMENT_DEFINITIONS.length,
+  'Achievement IDs must stay unique so rewards cannot collide.');
+assert.ok(ACHIEVEMENT_DEFINITIONS.length >= 30, 'The achievement archive should contain long-term and high-difficulty goals.');
+const cleanVictorySample = {
+  playerWon: true,
+  kaiserLevel: 10,
+  challengeMode: 'NORMAL',
+  turnNumber: 4,
+  playerHp: 100,
+  playerMaxHp: 100,
+  actionsTaken: ['ATTACK'],
+  abilities: [],
+  equippedImprints: [],
+  usedImprints: [],
+  logLines: [],
+  difficulty: 'NORMAL',
+};
+const firstAchievementWin = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, cleanVictorySample);
+assert.strictEqual(firstAchievementWin.currentWinStreak, 1);
+assert.strictEqual(firstAchievementWin.quickWins, 1);
+assert.strictEqual(firstAchievementWin.noAbilityWins, 1);
+assert.strictEqual(firstAchievementWin.noSpecialUltimateWins, 1);
+assert.strictEqual(firstAchievementWin.noImprintWins, 1);
+assert.ok(firstAchievementWin.wonKaiserLevels.includes(10));
+const afterLoss = recordAchievementBattle(firstAchievementWin, { ...cleanVictorySample, playerWon: false, turnNumber: 12 });
+assert.strictEqual(afterLoss.currentWinStreak, 0, 'A defeat must break the active achievement win streak.');
+assert.strictEqual(afterLoss.bestWinStreak, 1, 'The best streak must remain after a defeat.');
+const allAchievementIdsForDev = markAllAchievementsForDeveloper(INITIAL_ACHIEVEMENT_PROGRESS);
+assert.strictEqual(allAchievementIdsForDev.completedIds.length, ACHIEVEMENT_DEFINITIONS.length);
+assert.strictEqual(normalizeAchievementProgress({ claimedRewardIds: ['unknown-id'] }).claimedRewardIds.length, 0,
+  'Unknown achievement IDs cannot create claimable rewards.');
 
 // The final-form deadline is fixed to 8–10 turns and is independent of
 // allocated/effective speed, including extreme speed multipliers.
