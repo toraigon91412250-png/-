@@ -75,6 +75,7 @@ export const App: React.FC = () => {
   const [stellaModeProgress, setStellaModeProgress] = useState<StellaModeProgress>(() => loadStellaModeProgress());
   const [isStellaWarping, setIsStellaWarping] = useState(false);
   const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
+  const [isDeveloperFinalBattlePreview, setIsDeveloperFinalBattlePreview] = useState(false);
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
 
   const handleScreenTransitionComplete = React.useCallback(() => {
@@ -407,6 +408,15 @@ export const App: React.FC = () => {
     const progress = loadStellaModeProgress();
     setStellaModeProgress(progress);
     if (!progress.isUnlocked || !progress.exKaiserDefeated) return;
+    setIsDeveloperFinalBattlePreview(false);
+    cancelBattle();
+    setBattleSetupMode('NORMAL');
+    setScreen('STELLA_FINAL');
+  };
+
+  // Developer Tools can open the final battle directly without falsifying normal progression.
+  const handleOpenDeveloperFinalBattle = () => {
+    setIsDeveloperFinalBattlePreview(true);
     cancelBattle();
     setBattleSetupMode('NORMAL');
     setScreen('STELLA_FINAL');
@@ -746,10 +756,12 @@ export const App: React.FC = () => {
       ) : screen === 'STELLA_FINAL' ? (
         <StellaFinalBattleScreen
           progress={stellaModeProgress}
+          isDeveloperPreview={isDeveloperFinalBattlePreview}
           onClaimVictoryReward={handleClaimStellaFinalBattleReward}
           onBackHome={() => {
             cancelBattle();
             refreshProgress();
+            setIsDeveloperFinalBattlePreview(false);
             setBattleSetupMode('NORMAL');
             setScreen('SELECT');
           }}
@@ -791,6 +803,7 @@ export const App: React.FC = () => {
           onOpenRecruitment={() => handleOpenRecruitment('GACHA_HUB')}
           onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
           onOpenExKaiserChallenge={() => handleStartExKaiser('DEV_TOOLS', true)}
+          onOpenStellaFinalBattle={handleOpenDeveloperFinalBattle}
           onReset={handleDeveloperReset}
         />
       )}
