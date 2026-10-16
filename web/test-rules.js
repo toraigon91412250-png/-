@@ -54,6 +54,9 @@ assert.doesNotMatch(shortIrenaTimerBattleSource, /speedExtraTurns|速度240超�
   'Speed must not grant extra final-phase turns in code or player-facing rules.');
 assert.match(shortIrenaTimerBattleSource, /<h3>不滅<\/h3><p>このターンの反撃を完全無効化。再使用まで3ターン。<\/p>/,
   'Stella’s Immortal authority explains its turn protection and reuse interval before activation.');
+assert.match(shortIrenaTimerBattleSource, /<span><Swords size=\{17\} \/> 通常攻撃\{battle\.fighterId === 'stella' && <small>\{fighter\.normalAttackDamage\.toLocaleString\('ja-JP'\)\} ダメージ<\/small>\}<\/span>/,
+  'Stella’s fixed normal-attack damage is displayed, without showing a misleading fixed value for Short Duel Irena.');
+
 assert.match(shortIrenaTimerBattleSource, /<h3>再誕<\/h3><p>使用回数に応じて最大HPの100%・50%・25%分を回復（HP上限まで）。<\/p>/,
   'Stella’s Rebirth authority explains the diminishing healing and HP cap before activation.');
 assert.match(shortIrenaTimerBattleSource, /<h3>天象支配<\/h3><p>巨大隕石で5,000ダメージ。戦闘中1回。<\/p>/,
