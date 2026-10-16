@@ -269,6 +269,15 @@ assert.match(shortIrenaFinalBattleSource, /const godMightTurns = wasGodMight \? 
   'Timed buffs still tick when the delayed alignment counter resolves.');
 assert.match(shortIrenaFinalBattleSource, /pendingShortIrenaAction: ShortIrenaAction \| null/,
   'The delayed turn retains its action so deadline and status logic can be completed.');
+const deferredAlignmentBranch = shortIrenaFinalBattleSource.match(/if \\(shouldDeferAlignmentCounter\\) \\{([\\s\\S]*?)\\n      \\}\\n\\n      if \\(skipKaiserAction\\)/)?.[1] ?? '';
+for (const field of ['playerHp', 'kaiserHp', 'finalTurnLimit', 'finalTurnsLeft', 'terminusReadyTurn', 'allMightUsed', 'allMightMultiplier']) {
+  assert.match(deferredAlignmentBranch, new RegExp('\\\\b' + field + ','),
+    'A form reveal must preserve resolved combat field ' + field + ' before delaying the counter.');
+}
+assert.match(shortIrenaFinalBattleSource, /pendingShortIrenaSkipKaiserAction: boolean/,
+  'Deferred form changes retain whether the action skips the Kaiser response.');
+assert.match(shortIrenaFinalBattleSource, /const skipKaiserAction = current\\.pendingShortIrenaSkipKaiserAction/,
+  'Delayed resolution respects a same-action Kaiser skip from Dominion Beyond Reason.');
 assert.ok(!shortIrenaFinalBattleSource.slice(
   shortIrenaFinalBattleSource.indexOf('{battle.alignmentFlash &&'),
   shortIrenaFinalBattleSource.indexOf('{battle.finisherPending &&'),
