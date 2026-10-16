@@ -1,20 +1,25 @@
 import { expect, test } from '@playwright/test';
 
-test('regular screen changes use a brief loader, while developer tools, battle setup, and raid stay unchanged', async ({ page }) => {
+test('regular screen changes use a dark-only loader, while battle and raid loading stay unchanged', async ({ page }) => {
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
   const loader = page.getByTestId('screen-transition-loader');
+  const expectDarkLoader = async () => {
+    await expect(loader).toBeVisible();
+    await expect(loader.locator('img')).toHaveCount(0);
+    await expect(loader).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+    await expect(loader).not.toContainText('NOW LOADING...');
+  };
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'バトルアリーナデュエル' })).toBeVisible();
   await expect(loader).toHaveCount(0);
 
-  // Home -> gacha hub shows the dedicated illustration without imposing the old 1.5-second wait.
+  // Home -> gacha hub briefly covers the new screen with black only.
   const firstTransitionStartedAt = Date.now();
   await page.getByRole('button', { name: '黒翼召喚を開く' }).click();
-  await expect(loader).toBeVisible();
-  await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1177.jpeg');
+  await expectDarkLoader();
   await expect(page.getByRole('heading', { name: 'ガチャ' })).toBeVisible();
   await expect(loader).toBeHidden({ timeout: 5_000 });
   const firstTransitionDuration = Date.now() - firstTransitionStartedAt;
@@ -23,22 +28,19 @@ test('regular screen changes use a brief loader, while developer tools, battle s
   expect(firstTransitionDuration, 'Ordinary navigation should no longer impose the previous long wait.')
     .toBeLessThan(1_300);
 
-  // The recruitment transition waits for its summon artwork to preload.
+  // Screen-specific asynchronous preparation is still honored, without showing artwork.
   await page.getByRole('button', { name: '権能ガチャを開く' }).click();
-  await expect(loader).toBeVisible();
-  await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1176.jpeg');
+  await expectDarkLoader();
   await expect(loader).toBeHidden({ timeout: 15_000 });
   await expect(page.getByRole('button', { name: '戻る', exact: true })).toBeVisible();
 
   // Recruitment -> gacha hub -> home both use the transition overlay.
   await page.getByRole('button', { name: '戻る', exact: true }).click();
-  await expect(loader).toBeVisible();
-  await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1178.jpeg');
+  await expectDarkLoader();
   await expect(loader).toBeHidden({ timeout: 5_000 });
 
   await page.locator('.bottom-navigation').getByRole('button', { name: 'ホーム', exact: true }).click();
-  await expect(loader).toBeVisible();
-  await expect(loader).toHaveAttribute('data-screen-transition-art', 'IMG_1179.jpeg');
+  await expectDarkLoader();
   await expect(loader).toBeHidden({ timeout: 5_000 });
 
   // Developer tools and the existing battle/raid transitions are intentionally excluded.
