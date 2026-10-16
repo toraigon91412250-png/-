@@ -158,8 +158,16 @@ assert.match(shortIrenaFinalBattleSource, /shortIrenaCommandWindow && canUseAllT
   'The highest-gauge authority is rendered only at its actual unlock threshold.');
 assert.match(shortIrenaFinalBattleSource, /shortIrenaUltimateWindow && \(/,
   'The ultimate button is rendered only when the current finisher can be used.');
-assert.match(shortIrenaFinalBattleSource, /stella-final__counter-forecast--stella/,
-  'Stella battle displays the Kaiser next-action forecast.');
+assert.ok(!shortIrenaFinalBattleSource.includes('stella-final__counter-forecast'),
+  'The combat HUD must not render enemy action prediction panels.');
+assert.ok(!shortIrenaFinalBattleSource.includes("'予測 ' + normalAttackDamage"),
+  'The normal attack command must not display predicted damage.');
+assert.match(shortIrenaFinalBattleSource, /previous\.kaiserHp - current\.kaiserHp/,
+  'The displayed Kaiser damage must come from actual HP lost.');
+assert.match(shortIrenaFinalBattleSource, /previous\.playerHp - current\.playerHp/,
+  'Incoming damage must be measured from the player HP that was actually lost.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__damage-number--' \+ popup\.target/,
+  'Actual damage must render as a target-specific combat popup.');
 assert.ok(!shortIrenaFinalBattleSource.includes('<p>防御力1.5倍、速度999倍。効果4ターン。</p>'),
   'Combat action cards omit long skill descriptions.');
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
@@ -167,6 +175,14 @@ assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
   'The gauge does not offer an impossible move beyond the negative cap.');
 const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
+assert.match(finalBattleUiCss, /stella-final__damage-number--kaiser/,
+  'Boss damage is displayed in a dedicated large combat number.');
+assert.match(finalBattleUiCss, /stella-final__damage-number--player/,
+  'Damage taken by the player is displayed separately from boss damage.');
+assert.match(finalBattleUiCss, /rotate\(-12deg\)/,
+  'Combat damage numbers use the requested angled style.');
+assert.match(finalBattleUiCss, /stella-final__daten-gauge-threshold-labels/,
+  'The gauge exposes the intermediate authority thresholds.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidden/,
   'The active battle layout must prevent page scrolling.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-copy p \{ display: none; \}/,

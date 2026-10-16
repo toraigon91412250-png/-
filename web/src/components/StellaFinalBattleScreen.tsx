@@ -50,6 +50,19 @@ type FinalAction = 'ATTACK' | 'IMMORTAL' | 'REBIRTH' | 'METEOR';
 type ShortIrenaFinisherRoute = 'GOD_MIGHT' | 'GOD_SILENCE' | 'GOD_REBIRTH' | 'DEMON_COLLAPSE' | 'DEMON_SEVER' | 'DEMON_EXTINGUISH';
 type BattlePhase = 1 | 2 | 3;
 
+interface BattleDamagePopup {
+  id: number;
+  target: 'player' | 'kaiser';
+  amount: number;
+}
+
+interface BattleHpSnapshot {
+  status: BattleStatus;
+  fighterId: StellaFinalBattleFighterId;
+  playerHp: number;
+  kaiserHp: number;
+}
+
 interface StellaFinalBattleState {
   status: BattleStatus;
   turn: number;
@@ -248,6 +261,15 @@ export const StellaFinalBattleScreen: React.FC<{
   const [preloadError, setPreloadError] = useState<string | null>(null);
   const [preloadRetryKey, setPreloadRetryKey] = useState(0);
   const [battle, setBattle] = useState<StellaFinalBattleState>(() => createInitialBattle());
+  const [damagePopups, setDamagePopups] = useState<BattleDamagePopup[]>([]);
+  const previousCombatHpRef = useRef<BattleHpSnapshot>({
+    status: battle.status,
+    fighterId: battle.fighterId,
+    playerHp: battle.playerHp,
+    kaiserHp: battle.kaiserHp,
+  });
+  const nextDamagePopupIdRef = useRef(0);
+  const damagePopupTimersRef = useRef(new Map<number, number>());
   const rewardAttemptedForVictoryRef = useRef(false);
   const [rewardResult, setRewardResult] = useState<StellaFinalBattleRewardResult | null>(null);
 
@@ -264,6 +286,52 @@ export const StellaFinalBattleScreen: React.FC<{
     });
     return () => { cancelled = true; };
   }, [preloadRetryKey]);
+
+  // Show actual HP lost in the battlefield HUD, without predicting future damage.
+  useEffect(() => {
+    const previous = previousCombatHpRef.current;
+    const current: BattleHpSnapshot = {
+      status: battle.status,
+      fighterId: battle.fighterId,
+      playerHp: battle.playerHp,
+      kaiserHp: battle.kaiserHp,
+    };
+    previousCombatHpRef.current = current;
+
+    if (previous.status !== 'FIGHTING' || previous.fighterId !== current.fighterId) return;
+
+    const nextPopups: BattleDamagePopup[] = [];
+    const addPopup = (target: BattleDamagePopup['target'], amount: number) => {
+      if (amount <= 0) return;
+      nextPopups.push({
+        id: ++nextDamagePopupIdRef.current,
+        target,
+        amount,
+      });
+    };
+
+    addPopup('kaiser', previous.kaiserHp - current.kaiserHp);
+    addPopup('player', previous.playerHp - current.playerHp);
+    if (nextPopups.length === 0) return;
+
+    setDamagePopups(existing => [
+      ...existing.filter(item => !nextPopups.some(next => next.target === item.target)),
+      ...nextPopups,
+    ]);
+
+    nextPopups.forEach(popup => {
+      const timer = window.setTimeout(() => {
+        setDamagePopups(existing => existing.filter(item => item.id !== popup.id));
+        damagePopupTimersRef.current.delete(popup.id);
+      }, 1100);
+      damagePopupTimersRef.current.set(popup.id, timer);
+    });
+  }, [battle.status, battle.fighterId, battle.playerHp, battle.kaiserHp]);
+
+  useEffect(() => () => {
+    damagePopupTimersRef.current.forEach(timer => window.clearTimeout(timer));
+    damagePopupTimersRef.current.clear();
+  }, []);
 
   useEffect(() => {
     if (!battle.normalAttackCutIn || battle.fighterId !== 'short-irena') return;
@@ -947,12 +1015,6 @@ export const StellaFinalBattleScreen: React.FC<{
   const displayedPressureAttackMultiplier = battle.status !== 'READY' && battle.playerPressureTurns > 0
     ? Math.max(0, shortStats.attack - 25) / Math.max(1, shortStats.attack)
     : 1;
-  const normalAttackDamage = displayedFighterId === 'short-irena'
-    ? Math.max(1, Math.ceil(shortStats.normalAttackDamage * displayedAllMightMultiplier * displayedAllMightBaseAttackMultiplier * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedAllPowerMultiplier * displayedAllThingsMultiplier * displayedPressureAttackMultiplier) - (battle.status !== 'READY' && battle.kaiserDefenseNullTurns > 0 ? 0 : KAISER.defense))
-    : fighter.normalAttackDamage;
-  const normalAttackDamageAfterPhaseLimit = displayedFighterId === 'short-irena'
-    ? resolveShortIrenaBossDamage(battle.kaiserHp, normalAttackDamage, battle.phase).actualDamage
-    : normalAttackDamage;
   const displayedEffectiveAttack = Math.ceil(shortStats.attack * displayedAllMightMultiplier * displayedAllMightBaseAttackMultiplier * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedAllPowerMultiplier * displayedAllThingsMultiplier * displayedPressureAttackMultiplier);
   const displayedEffectiveDefense = Math.ceil(shortStats.defense * displayedAscensionMultiplier * displayedGodMightMultiplier * (battle.status !== 'READY' && battle.divineSpeedTurns > 0 ? 1.5 : 1) * displayedAllPowerMultiplier * (battle.status !== 'READY' && battle.allThingsTurns > 0 ? 2 : 1) * (battle.status !== 'READY' && battle.defenseDownTurns > 0 ? SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER : 1));
   const displayedEffectiveSpeed = Math.ceil(shortStats.speed * (battle.status === 'READY' ? 1 : battle.allMightSpeedMultiplier) * displayedAscensionMultiplier * displayedGodMightMultiplier * displayedDivineSpeedMultiplier * displayedAllPowerMultiplier * (battle.status !== 'READY' && battle.allThingsTurns > 0 ? 999 : 1) * (battle.status !== 'READY' && battle.playerPressureTurns > 0 ? Math.max(1, shortStats.speed - 25) / Math.max(1, shortStats.speed) : 1) * (battle.status !== 'READY' && battle.speedDownTurns > 0 ? SHORT_IRENA_TERMINUS_SPEED_DOWN_MULTIPLIER : 1));
@@ -970,17 +1032,6 @@ export const StellaFinalBattleScreen: React.FC<{
     STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[1],
     shortStats.defense,
   );
-  const shortIrenaCounterBaseDamage = STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[battle.phase];
-  const shortIrenaForecastEffectiveDefense = Math.max(0, shortStats.defense)
-    * (battle.ascensionTurns > 0 ? SHORT_IRENA_ASCENSION_MULTIPLIER : 1)
-    * (battle.godMightTurns > 0 ? 3 : 1)
-    * (battle.divineSpeedTurns > 0 ? 1.5 : 1)
-    * (battle.allPowerTurns > 0 ? 2 : 1)
-    * (battle.allThingsTurns > 0 ? 2 : 1)
-    * (battle.defenseDownTurns > 0 ? SHORT_IRENA_ASCENSION_DEFENSE_DOWN_MULTIPLIER : 1);
-  const shortIrenaCounterForecast = battle.kaiserActionLockTurns > 0
-    ? 0
-    : getShortIrenaCounterDamage(shortIrenaCounterBaseDamage, shortIrenaForecastEffectiveDefense);
   const authorityStage = getDatenAuthorityStage(battle.datenGauge);
   const authorityStageLabel = authorityStage === 0
     ? '0〜29ポイント：権能未解放'
@@ -1107,36 +1158,17 @@ export const StellaFinalBattleScreen: React.FC<{
               <span className="stella-final__hp-fill stella-final__hp-fill--boss" style={{ width: kaiserHpPercent + '%' }} />
             </div>
           </div>
-                        {battle.fighterId === 'stella' && isFighting && (
-                <section className="stella-final__counter-forecast stella-final__counter-forecast--stella"
-                  aria-label="EXカイザーの次の行動予告" aria-live="polite">
-                  <div className="stella-final__counter-forecast-heading">
-                    <span>敵の次の行動</span>
-                    <strong>{PHASE_NAMES[battle.phase]}</strong>
-                  </div>
-                  <div className="stella-final__counter-forecast-values">
-                    <div><span>EXカイザーの通常反撃</span><strong>{STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage[battle.phase].toLocaleString('ja-JP')} ダメージ</strong></div>
-                  </div>
-                </section>
-              )}
-                        {battle.fighterId === 'short-irena' && (
-                <section className={'stella-final__counter-forecast' + (battle.phase === 3 && (battle.finalTurnsLeft ?? 99) <= 2 ? ' stella-final__counter-forecast--urgent' : '')}
-                  aria-label="EXカイザーの次の行動予告" aria-live="polite">
-                  <div className="stella-final__counter-forecast-heading">
-                    <span>敵の行動予告</span>
-                    <strong>{battle.phase === 3 ? '第三形態・終局' : PHASE_NAMES[battle.phase]}</strong>
-                  </div>
-                  <div className="stella-final__counter-forecast-values">
-                    <div><span>通常反撃の基本値</span><strong>{shortIrenaCounterBaseDamage.toLocaleString('ja-JP')}</strong></div>
-                    <div><span>現在の防御込み目安</span><strong>{shortIrenaCounterForecast.toLocaleString('ja-JP')} ダメージ</strong></div>
-                  </div>
-                  {battle.phase === 3 && battle.finalTurnsLeft !== null && (
-                    <div className="stella-final__final-deadline" role="status">
-                      終局まで <strong>{battle.finalTurnsLeft} 手</strong>
-                    </div>
-                  )}
-                </section>
-              )}
+                        
+          {damagePopups.map(popup => (
+            <div
+              key={popup.id}
+              className={'stella-final__damage-number stella-final__damage-number--' + popup.target}
+              aria-hidden="true"
+            >
+              {popup.amount.toLocaleString('ja-JP')}
+            </div>
+          ))}
+
         </section>
 
         {battle.status === 'READY' && (
@@ -1340,7 +1372,17 @@ export const StellaFinalBattleScreen: React.FC<{
                     <div className="stella-final__daten-gauge-labels"><strong>堕天側</strong><span>{battle.alignment ? (battle.alignment === 'GOD' ? '神側の終点' : '堕天側の終点') : String(battle.datenGauge)}</span><strong>神側</strong></div>
                     <div className={'stella-final__daten-gauge-track' + (battle.alignment ? ' is-' + battle.alignment.toLowerCase() : '')} role="progressbar" aria-label="堕天ゲージ" aria-valuemin={-100} aria-valuemax={100} aria-valuenow={battle.datenGauge}>
                       <span className="stella-final__daten-gauge-center" />
+                      <span className="stella-final__daten-gauge-threshold" style={{ left: '20%' }} />
+                      <span className="stella-final__daten-gauge-threshold" style={{ left: '35%' }} />
+                      <span className="stella-final__daten-gauge-threshold" style={{ left: '65%' }} />
+                      <span className="stella-final__daten-gauge-threshold" style={{ left: '80%' }} />
                       <span className="stella-final__daten-gauge-marker" style={{ left: ((battle.datenGauge + 100) / 2) + '%' }} />
+                    </div>
+                    <div className="stella-final__daten-gauge-threshold-labels" aria-hidden="true">
+                      <span style={{ left: '20%' }}>−60</span>
+                      <span style={{ left: '35%' }}>−30</span>
+                      <span style={{ left: '65%' }}>+30</span>
+                      <span style={{ left: '80%' }}>+60</span>
                     </div>
                     <div className="stella-final__authority-stage" role="status" aria-label="権能解放段階">
                       <strong>{authorityStageLabel}</strong>
@@ -1450,7 +1492,7 @@ export const StellaFinalBattleScreen: React.FC<{
               )}
               {(battle.fighterId !== 'short-irena' || (battle.initialChoiceMade && battle.actionLockTurns === 0 && battle.finalTurnsLeft !== 0 && !battle.finisherPending && !battle.finisherRoutePending)) && isFighting && (
                 <div className="stella-final__normal-attack">
-                  <span><Swords size={17} /> 通常攻撃 <small>{battle.fighterId === 'short-irena' ? '予測 ' + normalAttackDamageAfterPhaseLimit.toLocaleString('ja-JP') : normalAttackDamage.toLocaleString('ja-JP')}ダメージ</small></span>
+                  <span><Swords size={17} /> 通常攻撃</span>
                   <button type="button" aria-label="通常攻撃" onClick={() => battle.fighterId === 'short-irena' ? takeShortIrenaAction('ATTACK') : takeAction('ATTACK')}>攻撃する</button>
                 </div>
               )}
