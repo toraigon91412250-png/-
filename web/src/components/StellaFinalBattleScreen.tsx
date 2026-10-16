@@ -1092,7 +1092,6 @@ export const StellaFinalBattleScreen: React.FC<{
   const canUseTerminus = battle.datenGauge <= -30;
   const canDisplayTerminusCooldown = isFighting
     && battle.initialChoiceMade
-    && canUseTerminus
     && battle.turn < battle.terminusReadyTurn
     && !battle.finisherPending
     && !battle.finisherRoutePending
