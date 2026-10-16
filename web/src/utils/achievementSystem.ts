@@ -48,6 +48,8 @@ export interface AchievementDefinition {
 
 export interface AchievementProgress {
   wonKaiserLevels: BattleChallengeLevel[];
+  /** Wins from eligible normal gameplay only; Developer Tools test battles are excluded. */
+  eligibleWins: number;
   currentWinStreak: number;
   bestWinStreak: number;
   quickWins: number;
@@ -111,6 +113,7 @@ export const ACHIEVEMENT_PROGRESS_STORAGE_KEY = 'duel_arena_achievement_progress
 
 export const INITIAL_ACHIEVEMENT_PROGRESS: AchievementProgress = {
   wonKaiserLevels: [],
+  eligibleWins: 0,
   currentWinStreak: 0,
   bestWinStreak: 0,
   quickWins: 0,
@@ -208,6 +211,7 @@ export function normalizeAchievementProgress(value: unknown): AchievementProgres
     : [];
   return {
     wonKaiserLevels: validLevels,
+    eligibleWins: numeric(input.eligibleWins),
     currentWinStreak: numeric(input.currentWinStreak),
     bestWinStreak: numeric(input.bestWinStreak),
     quickWins: numeric(input.quickWins),
@@ -252,6 +256,7 @@ export function recordAchievementBattle(currentValue: unknown, sample: Achieveme
   if (sample.actionsTaken.includes('COSTLY_SHOT') && !next.usedImprintIds.includes('COSTLY_SHOT')) next.usedImprintIds.push('COSTLY_SHOT');
 
   if (sample.playerWon) {
+    next.eligibleWins += 1;
     next.currentWinStreak += 1;
     next.bestWinStreak = Math.max(next.bestWinStreak, next.currentWinStreak);
     if (sample.turnNumber <= 5) next.quickWins += 1;
@@ -298,7 +303,7 @@ export function getAchievementMetricValue(metric: AchievementMetric, context: Ac
     return snapshot.kaiserUnlockedLevel >= level + 10;
   };
   switch (metric) {
-    case 'WINS': return snapshot.overallStats.wins;
+    case 'WINS': return progress.eligibleWins;
     case 'WIN_STREAK': return progress.bestWinStreak;
     case 'QUICK_WINS': return progress.quickWins;
     case 'LOW_HP_WINS': return progress.lowHpWins;
