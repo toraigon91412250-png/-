@@ -1097,8 +1097,8 @@ export const StellaFinalBattleScreen: React.FC<{
     <main className={"stella-final" + (battle.status !== 'READY' ? ' stella-final--playing' : '') + (battle.fighterId === 'short-irena' && battle.alignment ? ' stella-final--' + battle.alignment.toLowerCase() : '')} style={{ backgroundImage: 'linear-gradient(180deg, rgba(4, 6, 18, .52), rgba(4, 6, 18, .94)), url(' + JSON.stringify(battleBackground) + ')' }}>
       <div className="stella-final__ambient" aria-hidden="true" />
       <header className="stella-final__header">
-        <button type="button" className="stella-final__back" onClick={onBackHome} aria-label="ホームに戻る">
-          <ArrowLeft size={17} /> ホーム
+        <button type="button" className="stella-final__back" onClick={onBackHome} aria-label={isDeveloperPreview ? "開発者ツールに戻る" : "ホームに戻る"}>
+          <ArrowLeft size={17} /> {isDeveloperPreview ? "開発ツール" : "ホーム"}
         </button>
         <div className="stella-final__eyebrow">STELLA MODE / FINAL DUEL</div>
         {battle.status === 'READY' ? (
@@ -1546,7 +1546,7 @@ export const StellaFinalBattleScreen: React.FC<{
                 )}
                 <div className="stella-final__result-actions">
                   <button type="button" className="stella-final__start" onClick={startBattle}>もう一度挑む</button>
-                  <button type="button" className="stella-final__return" onClick={onBackHome}>ホームへ戻る</button>
+                  <button type="button" className="stella-final__return" onClick={onBackHome}>{isDeveloperPreview ? "開発者ツールへ戻る" : "ホームへ戻る"}</button>
                 </div>
               </section>
             )}
