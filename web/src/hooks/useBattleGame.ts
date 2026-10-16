@@ -131,6 +131,7 @@ export function useBattleGame(
     winnerIsPlayer: null,
     cpuDifficulty: initialDifficulty,
     cpuIntent: initialCpuIntent,
+    playerActionsTaken: [],
     usedImprints: [],
     yinYangActivatedTurn: null,
     yinYangDefenseResult: null,
@@ -336,6 +337,21 @@ export function useBattleGame(
       resultingHp = 1;
     }
 
+    const lastStandIsEligible = Boolean(
+      target.isPlayer &&
+      resultingHp <= 0 &&
+      stateRef.current.battleConfig.imprints?.includes('LAST_STAND') &&
+      !stateRef.current.usedImprints.includes('LAST_STAND')
+    );
+    if (lastStandIsEligible) {
+      resultingHp = 1;
+      updateState(prev => ({
+        ...prev,
+        usedImprints: prev.usedImprints.includes('LAST_STAND') ? prev.usedImprints : [...prev.usedImprints, 'LAST_STAND'],
+      }));
+      addLog('✧【不屈の印】致命傷を受けたが、HP1で踏みとどまった！', 'PASSIVE_TRIGGER', turn);
+    }
+
     // Wind Guard counters after a landed direct CPU hit. DoT must never trigger it.
     const windGuardIsEligible = Boolean(
       target.isPlayer &&
@@ -507,6 +523,7 @@ export function useBattleGame(
       winnerIsPlayer: null,
       cpuDifficulty: nextDifficulty,
       cpuIntent: nextCpuIntent,
+      playerActionsTaken: [],
       usedImprints: [],
       yinYangActivatedTurn: null,
       yinYangDefenseResult: null,
@@ -1884,7 +1901,7 @@ export function useBattleGame(
         }
 
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
-        const calculatedDamage = calculateUltimateDamage({
+        const baseCalculatedDamage = calculateUltimateDamage({
           attacker: actor,
           target,
           config: stateRef.current.battleConfig,
@@ -1895,6 +1912,17 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
+        const starfallTriggered = Boolean(
+          isActorPlayer &&
+          baseCalculatedDamage > 0 &&
+          appliedIrenaVariant !== 'ALL_GODS' &&
+          stateRef.current.battleConfig.imprints?.includes('STARFALL') &&
+          !stateRef.current.usedImprints.includes('STARFALL')
+        );
+        const calculatedDamage = starfallTriggered ? Math.round(baseCalculatedDamage * 1.35) : baseCalculatedDamage;
+        if (starfallTriggered) {
+          addLog('✦【星墜の印】星の力が必殺技に重なり、ダメージ×1.35！', 'PASSIVE_TRIGGER', turn);
+        }
         const executionForHit =
           isActorPlayer &&
           hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
@@ -1938,6 +1966,9 @@ export function useBattleGame(
           ...prev,
           player: isActorPlayer ? prev.player : { ...prev.player, currentHp: newTargetHp },
           enemy: isActorPlayer ? { ...prev.enemy, currentHp: newTargetHp } : prev.enemy,
+          usedImprints: starfallTriggered && !prev.usedImprints.includes('STARFALL')
+            ? [...prev.usedImprints, 'STARFALL']
+            : prev.usedImprints,
           visualEffect: {
             targetIsPlayer: !isActorPlayer,
             damage: finalDamage,
@@ -2060,6 +2091,7 @@ export function useBattleGame(
     const actionRunId = battleRunIdRef.current;
     updateState(prev => ({
       ...prev,
+      playerActionsTaken: [...prev.playerActionsTaken, playerAction],
       phase: 'EXECUTING_TURNS',
       isAnimating: true,
       visualEffect: null,
