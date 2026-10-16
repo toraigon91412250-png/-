@@ -35,7 +35,7 @@ export const AbilityUpgradePanel: React.FC<AbilityUpgradePanelProps> = ({ progre
                 : level > 0 ? `欠片 ${shards}${cost !== null ? ` / ${cost}` : ' / MAX'}` : '未解放。黒翼召喚で獲得できます'}</small>
             </span>
             <button type="button" disabled={!canUpgrade} onClick={() => onUpgrade(ability.id)}>
-              {level >= 5 ? 'MAX' : 'Lv.UP'}
+              {ability.id === 'ASTRAL_DOMINION' && level === 0 ? '実績報酬' : level >= 5 ? 'MAX' : 'Lv.UP'}
             </button>
           </div>
         );
