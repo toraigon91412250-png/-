@@ -84,6 +84,32 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
     };
   }
 
+  if (character.id === 'irena' && config.imprints?.includes('TRIUMPH')) {
+    const imprintMultiplier = 1.1;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * imprintMultiplier)),
+      attack: Math.max(1, Math.round(next.attack * imprintMultiplier)),
+      defense: Math.max(0, Math.round(next.defense * imprintMultiplier)),
+      speed: Math.max(1, Math.round(next.speed * imprintMultiplier)),
+    };
+  }
+
+  if (character.id === 'irena' && config.achievementAuthorityEnabled === true) {
+    const authorityMultiplier = 2;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * authorityMultiplier)),
+      attack: Math.max(1, Math.round(next.attack * authorityMultiplier)),
+      defense: Math.max(0, Math.round(next.defense * authorityMultiplier)),
+      speed: Math.max(1, Math.round(next.speed * authorityMultiplier)),
+      evasionRate: Math.min(0.95, (next.evasionRate ?? 0) * authorityMultiplier),
+      specialSkillDamage: Math.max(1, Math.round(next.specialSkillDamage * authorityMultiplier)),
+      ultimateSkillDamage: Math.max(1, Math.round(next.ultimateSkillDamage * authorityMultiplier)),
+      damageTakenMultiplier: Math.min(next.damageTakenMultiplier ?? 1, 0.5),
+    };
+  }
+
   return next;
 }
 
