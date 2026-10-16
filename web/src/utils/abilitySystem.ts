@@ -84,6 +84,28 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
     };
   }
 
+  const astralDominionLevel = getAbilityLevel(config, 'ASTRAL_DOMINION');
+  if (astralDominionLevel > 0 && character.id === 'irena') {
+    const statMultipliers = [1, 1.25, 1.35, 1.45, 1.6, 1.8] as const;
+    const statMultiplier = statMultipliers[astralDominionLevel] ?? 1.8;
+    const damageMultiplier = astralDominionLevel >= 5 ? 1.5 : 1;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * statMultiplier)),
+      attack: Math.max(1, Math.round(next.attack * statMultiplier)),
+      defense: Math.max(0, Math.round(next.defense * statMultiplier)),
+      speed: Math.max(1, Math.round(next.speed * statMultiplier)),
+      specialSkillDamage: Math.max(1, Math.round(next.specialSkillDamage * statMultiplier * damageMultiplier)),
+      ultimateSkillDamage: Math.max(1, Math.round(next.ultimateSkillDamage * statMultiplier * damageMultiplier)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * statMultiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * statMultiplier)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * statMultiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * statMultiplier)) } : {}),
+      ...(next.talentBaseSpecialSkillDamage !== undefined ? { talentBaseSpecialSkillDamage: Math.max(1, Math.round(next.talentBaseSpecialSkillDamage * statMultiplier * damageMultiplier)) } : {}),
+      ...(next.talentBaseUltimateSkillDamage !== undefined ? { talentBaseUltimateSkillDamage: Math.max(1, Math.round(next.talentBaseUltimateSkillDamage * statMultiplier * damageMultiplier)) } : {}),
+    };
+  }
+
   return next;
 }
 
