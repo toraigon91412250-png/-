@@ -373,7 +373,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await demonFinisher.click();
   await expect(page.getByTestId('short-irena-finisher')).toBeVisible();
   const demonFinisherImage = page.getByTestId('short-irena-finisher-image');
-  await expect(demonFinisherImage).toHaveAttribute('src', /413F5794/);
+  await expect(demonFinisherImage).toHaveAttribute('src', /IMG_1224/);
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const demonRoutePicker = page.getByRole('dialog', { name: '終焉のルート選択' });
   await expect(demonRoutePicker).toBeVisible({ timeout: 5000 });
