@@ -44,6 +44,8 @@ export interface AchievementDefinition {
   metric: AchievementMetric;
   target: number;
   reward: AchievementReward;
+  /** Hidden goals reveal their name and target only after completion. */
+  hiddenUntilUnlocked?: boolean;
 }
 
 export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
@@ -85,6 +87,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   },
   {
     id: 'hundred-battles',
+    hiddenUntilUnlocked: true,
     title: '百戦錬磨',
     description: '通算100戦を経験する。',
     category: '戦闘',
@@ -139,6 +142,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   },
   {
     id: 'ex-kaiser-defeated',
+    hiddenUntilUnlocked: true,
     title: '終局の魔帝を超えて',
     description: 'EXカイザーを撃破する。',
     category: '進行',
@@ -148,6 +152,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   },
   {
     id: 'stella-final-victory',
+    hiddenUntilUnlocked: true,
     title: '星を越える決戦',
     description: 'ステラ最終決戦のクリア記録を獲得する。',
     category: '進行',
@@ -220,6 +225,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   },
   {
     id: 'all-abilities-maxed',
+    hiddenUntilUnlocked: true,
     title: '全権能の支配者',
     description: '登録されている5種類の権能をすべて最大レベルにする。',
     category: '権能',
@@ -274,6 +280,7 @@ export const ACHIEVEMENTS: readonly AchievementDefinition[] = [
   },
   {
     id: 'twenty-five-raid-victories',
+    hiddenUntilUnlocked: true,
     title: 'レイドの伝説',
     description: 'レイドに累計25回勝利する。',
     category: 'レイド',
