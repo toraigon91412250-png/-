@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, ImprintProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, IrenaSkillProgress } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
 import { IMPRINT_DEFINITIONS } from '../data/imprints';
+import { ACHIEVEMENTS, ABSOLUTE_AUTHORITY_NAME } from '../data/achievements';
+import type { AchievementProgress } from '../utils/storage';
 
 interface DeveloperToolsScreenProps {
   abilityProgress: AbilityProgress;
@@ -27,6 +29,9 @@ interface DeveloperToolsScreenProps {
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
   onOpenExKaiserChallenge: () => void;
   onUnlockAllGameFeatures: () => boolean;
+  achievementProgress: AchievementProgress;
+  onUnlockAllAchievements: () => boolean;
+  onClaimAllAchievementRewards: () => { claimedCount: number; persisted: boolean };
   onReset: () => void;
 }
 
@@ -60,6 +65,9 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onOpenBattleSetup,
   onOpenExKaiserChallenge,
   onUnlockAllGameFeatures,
+  achievementProgress,
+  onUnlockAllAchievements,
+  onClaimAllAchievementRewards,
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
@@ -68,6 +76,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   );
   const [confirmReset, setConfirmReset] = useState(false);
   const [fullUnlockResult, setFullUnlockResult] = useState<'success' | 'failure' | null>(null);
+  const [achievementToolMessage, setAchievementToolMessage] = useState<string | null>(null);
   const ownedImprintCount = IMPRINT_DEFINITIONS.filter(imprint =>
     imprintProgress.unlockedIds.includes(imprint.id),
   ).length;
@@ -119,6 +128,60 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
             保存に失敗しました。ブラウザの保存設定を確認して、もう一度試してください。
           </div>
         ) : null}
+        <section style={{
+          marginBottom:12, padding:14, borderRadius:16, border:'1px solid rgba(196,181,253,.4)',
+          background:'linear-gradient(145deg,rgba(38,27,70,.92),rgba(15,20,35,.96))',
+        }}>
+          <div style={{ fontSize:11, fontWeight:950, color:'#D8C9FF' }}>🏆 実績・最上位権能テスト</div>
+          <div style={{ marginTop:5, color:'#AAB5CC', fontSize:10, lineHeight:1.6 }}>
+            達成条件の同期、報酬の一度きり受取、全達成報酬の検証に使用します。通常プレイの実績報酬を自動では回収しません。
+          </div>
+          <div style={{ marginTop:12, display:'flex', flexWrap:'wrap', gap:8 }}>
+            <span style={{ padding:'6px 9px', borderRadius:8, border:'1px solid #514677', background:'#191a31', color:'#E1D6FF', fontSize:10 }}>
+              達成 {achievementProgress.unlockedIds.length}/{ACHIEVEMENTS.length}
+            </span>
+            <span style={{ padding:'6px 9px', borderRadius:8, border:'1px solid #514677', background:'#191a31', color:achievementProgress.absoluteAuthorityUnlocked ? '#FFE4A5' : '#AAB5CC', fontSize:10 }}>
+              {ABSOLUTE_AUTHORITY_NAME}: {achievementProgress.absoluteAuthorityUnlocked ? '解放済み' : '未解放'}
+            </span>
+            <span style={{ padding:'6px 9px', borderRadius:8, border:'1px solid #514677', background:'#191a31', color:'#B6EBD6', fontSize:10 }}>
+              報酬受取 {achievementProgress.claimedIds.length}/{ACHIEVEMENTS.length}
+            </span>
+          </div>
+          <div style={{ marginTop:12, display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:8 }}>
+            <button type="button" onClick={() => {
+              const success = onUnlockAllAchievements();
+              setAchievementToolMessage(success
+                ? '全実績を達成済みにし、全理支配を解放しました。報酬通貨はまだ付与していません。'
+                : '実績状態の保存に失敗しました。');
+              onRefresh();
+            }} style={{
+              minHeight:42, padding:'8px 10px', borderRadius:9, border:'1px solid #8B78D8',
+              background:'#28234A', color:'#F1EAFE', fontWeight:900, fontSize:11, cursor:'pointer',
+            }}>実績を全達成・全理支配を解放</button>
+            <button type="button" onClick={() => {
+              const result = onClaimAllAchievementRewards();
+              setAchievementToolMessage(result.persisted
+                ? `未受取の実績報酬を${result.claimedCount}件回収しました。`
+                : `一部保存に失敗しました。今回回収できたのは${result.claimedCount}件です。`);
+              onRefresh();
+            }} style={{
+              minHeight:42, padding:'8px 10px', borderRadius:9, border:'1px solid #568D78',
+              background:'#16352E', color:'#C9F7E4', fontWeight:900, fontSize:11, cursor:'pointer',
+            }}>達成済みの実績報酬を全回収</button>
+            <button type="button" onClick={() => {
+              onRefresh();
+              setAchievementToolMessage('保存済みの実績条件を再計算しました。');
+            }} style={{
+              minHeight:42, padding:'8px 10px', borderRadius:9, border:'1px solid #394A66',
+              background:'#172234', color:'#D3E2FF', fontWeight:900, fontSize:11, cursor:'pointer',
+            }}>実績状態を再計算</button>
+          </div>
+          {achievementToolMessage && (
+            <div role="status" style={{ marginTop:10, padding:'9px 10px', borderRadius:8, background:'rgba(7,10,20,.68)', color:'#D8DDED', fontSize:10, lineHeight:1.6 }}>
+              {achievementToolMessage}
+            </div>
+          )}
+        </section>
         <section style={{
           padding:14, borderRadius:16, border:'1px solid #3B455A',
           background:'rgba(19,24,35,.95)',
