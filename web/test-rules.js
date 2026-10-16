@@ -251,8 +251,8 @@ assert.match(shortIrenaFinalBattleSource, /irenaAllMightIcon/,
   'Dominion Beyond Reason uses its dedicated skill artwork.');
 assert.match(shortIrenaFinalBattleSource, /stella-final__hp-phase-mark/,
   'The Kaiser HP bar marks both phase boundaries.');
-assert.match(shortIrenaFinalBattleSource, /stella-final__alignment-emblem/,
-  'The actual alignment selection buttons still show their choice crests.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__alignment-choice-icon/,
+  'The initial choice buttons still show their choice crests.');
 assert.match(shortIrenaFinalBattleSource, /pendingKaiserCounterDamage: number \| null/,
   'The initial alignment transition stores the counter hit until its reveal completes.');
 assert.match(shortIrenaFinalBattleSource, /const duration = isOpeningTransition \? 1850 : 300/,
