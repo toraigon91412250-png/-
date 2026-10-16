@@ -175,12 +175,38 @@ assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
   'The gauge does not offer an impossible move beyond the negative cap.');
 const finalBattleUiCss = await readFile(new URL('./src/components/StellaFinalBattleScreen.css', import.meta.url), 'utf8');
+assert.match(finalBattleUiCss, /stella-final__power-icon img\.stella-final__skill-art/,
+  'Custom skill art fits the small mobile ability tile.');
+assert.match(finalBattleUiCss, /stella-final__powers:has\(\.stella-final__opening-choice\)/,
+  'The opening alignment choice does not reserve an empty skill grid.');
+assert.match(finalBattleUiCss, /stella-final__powers:has\(\.stella-final__power-grid > \.stella-final__power-card:nth-child\(-n\+3\):last-child\)/,
+  'One-row command lists use content-sized height instead of a blank second row.');
+assert.match(finalBattleUiCss, /stella-final-alignment-transition/,
+  'God and fallen selection use a dedicated visual transition.');
+assert.match(finalBattleUiCss, /\.stella-final--playing\.stella-final--god/,
+  'God alignment has a distinct battlefield theme.');
+assert.match(finalBattleUiCss, /\.stella-final--playing\.stella-final--demon/,
+  'Fallen alignment has a distinct battlefield theme.');
 assert.match(finalBattleUiCss, /stella-final__damage-number--kaiser/,
   'Boss damage is displayed in a dedicated large combat number.');
 assert.match(finalBattleUiCss, /stella-final__damage-number--player/,
   'Damage taken by the player is displayed separately from boss damage.');
 assert.match(finalBattleUiCss, /rotate\(-12deg\)/,
   'Combat damage numbers use the requested angled style.');
+
+const finalBattleConfigSource = await readFile(new URL('./src/data/stellaFinalBattleConfig.ts', import.meta.url), 'utf8');
+assert.match(finalBattleConfigSource, /IMG_1218\.jpeg/,
+  'The in-between Irena portrait is registered for the final battle.');
+assert.match(finalBattleConfigSource, /IMG_1228\.jpeg/,
+  'The updated divine portrait is registered for the final battle.');
+assert.match(finalBattleConfigSource, /3CBE9BD5-BD6E-4AAE-BCB3-E86ADA03C184\.png/,
+  'The updated fallen portrait is registered for the final battle.');
+const finalBattleImagePreloadSource = await readFile(new URL('./src/utils/imagePreload.ts', import.meta.url), 'utf8');
+assert.match(finalBattleImagePreloadSource, /終極殲滅アイコン IMG_1230\.jpeg/,
+  'The new skill artwork is required and preloaded before battle.');
+assert.match(finalBattleImagePreloadSource, /堕天側立ち絵更新版 3CBE9BD5/,
+  'The updated fallen portrait is included in strict image preload.');
+
 assert.match(finalBattleUiCss, /stella-final__daten-gauge-threshold-labels/,
   'The gauge exposes the intermediate authority thresholds.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \{[\s\S]*?overflow: hidden/,
@@ -193,8 +219,22 @@ assert.match(shortIrenaFinalBattleSource, /stella-final__arena-art--kaiser/,
   'The large Kaiser illustration is rendered in the active arena.');
 assert.match(shortIrenaFinalBattleSource, /stella-final__combat-heading/,
   'The battle header shows the title, phase, and current turn.');
-assert.match(shortIrenaFinalBattleSource, /<Flame size=\{30\}/,
-  'The ultimate command has a distinctive flame icon.');
+assert.match(shortIrenaFinalBattleSource, /irenaGodCrest/,
+  'The divine route uses its dedicated crest in alignment and ultimate controls.');
+assert.match(shortIrenaFinalBattleSource, /irenaDemonCrest/,
+  'The fallen route uses its dedicated crest in alignment and gauge controls.');
+assert.match(shortIrenaFinalBattleSource, /irenaDemonFinisherIcon/,
+  'The fallen ultimate command uses the dedicated End icon.');
+assert.match(shortIrenaFinalBattleSource, /irenaTerminusIcon/,
+  'Terminus Annihilation uses its dedicated skill artwork.');
+assert.match(shortIrenaFinalBattleSource, /irenaAscensionIcon/,
+  'Ascension uses its dedicated skill artwork.');
+assert.match(shortIrenaFinalBattleSource, /irenaAllMightIcon/,
+  'Dominion Beyond Reason uses its dedicated skill artwork.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__hp-phase-mark/,
+  'The Kaiser HP bar marks both phase boundaries.');
+assert.match(shortIrenaFinalBattleSource, /stella-final__alignment-emblem/,
+  'Alignment selection presents the corresponding crest transition.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__arena-art/,
   'The active arena displays large character art.');
 assert.match(finalBattleUiCss, /\.stella-final--playing \.stella-final__power-card button\{position:absolute;inset:0;/,
