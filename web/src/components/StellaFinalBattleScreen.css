@@ -1384,3 +1384,378 @@
   }
 }
 
+/* Final combat HUD clarity: prioritize available actions and actual impact. */
+.stella-final--playing .stella-final__header {
+  justify-content: space-between;
+  gap: 8px;
+}
+.stella-final--playing .stella-final__back {
+  flex: 0 0 auto;
+  min-width: 82px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+.stella-final--playing .stella-final__combat-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  align-items: center;
+  gap: 2px 8px;
+  margin-left: 0;
+  text-align: right;
+}
+.stella-final--playing .stella-final__combat-heading strong {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  font-size: clamp(12px, 3.7vw, 17px);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stella-final--playing .stella-final__combat-heading span {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  font-size: 9px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stella-final--playing .stella-final__combat-heading small {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.stella-final--playing .stella-final__powers {
+  flex: 0 1 auto;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: min(48dvh, 390px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  gap: 6px;
+}
+.stella-final--playing .stella-final__powers-heading {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
+  margin: 0 2px 1px;
+  gap: 8px;
+}
+.stella-final--playing .stella-final__powers-heading > div > span {
+  display: none;
+}
+.stella-final--playing .stella-final__powers-heading h2 {
+  margin: 0;
+  color: #e5deff;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.stella-final--playing .stella-final__turn-chip {
+  padding: 3px 6px;
+  font-size: 8px;
+}
+.stella-final--playing .stella-final__status-chips {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.stella-final--playing .stella-final__status-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.stella-final--playing .stella-final__daten-gauge {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 6px 8px 4px;
+}
+.stella-final--playing .stella-final__daten-gauge-labels {
+  margin-bottom: 4px;
+  font-size: 9px;
+}
+.stella-final--playing .stella-final__daten-gauge-track {
+  height: 11px;
+}
+.stella-final--playing .stella-final__daten-gauge-center {
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+}
+.stella-final--playing .stella-final__daten-gauge-threshold {
+  position: absolute;
+  z-index: 1;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: rgba(255,255,255,.72);
+  box-shadow: 0 0 2px rgba(0,0,0,.8);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.stella-final--playing .stella-final__daten-gauge-marker {
+  z-index: 2;
+  width: 13px;
+  height: 15px;
+}
+.stella-final--playing .stella-final__daten-gauge-threshold-labels {
+  position: relative;
+  height: 10px;
+  margin-top: 3px;
+  color: #d7d4e9;
+  font-size: 8px;
+  line-height: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.stella-final--playing .stella-final__daten-gauge-threshold-labels span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.stella-final--playing .stella-final__gauge-controls {
+  flex: 0 0 auto;
+  gap: 6px;
+  margin: 0;
+}
+.stella-final--playing .stella-final__gauge-controls button {
+  min-height: 34px;
+  font-size: 10px;
+  touch-action: manipulation;
+}
+
+.stella-final--playing .stella-final__power-grid {
+  flex: 0 0 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+  grid-template-rows: none;
+  grid-auto-rows: minmax(98px, auto);
+  align-content: start;
+  gap: 8px;
+  overflow: visible;
+}
+.stella-final--playing .stella-final__power-grid:has(> .stella-final__power-card:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+}
+.stella-final--playing .stella-final__power-card {
+  position: relative;
+  min-width: 0;
+  min-height: 98px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  justify-items: center;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 7px 38px;
+  overflow: hidden;
+  border-radius: 9px;
+}
+.stella-final--playing .stella-final__power-icon {
+  grid-row: 1;
+  width: 100%;
+  height: 27px;
+  min-height: 27px;
+}
+.stella-final--playing .stella-final__power-icon svg {
+  width: 25px;
+  height: 25px;
+}
+.stella-final--playing .stella-final__power-copy {
+  grid-row: 2;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  align-self: center;
+  text-align: center;
+}
+.stella-final--playing .stella-final__power-copy h3 {
+  color: #fff;
+  font-size: clamp(11px, 3vw, 14px);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.stella-final--playing .stella-final__power-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #d4d5ed;
+  font-size: 9px;
+  line-height: 1.2;
+}
+.stella-final--playing .stella-final__power-card button {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0 6px 5px;
+  border: 0;
+  border-radius: inherit;
+  color: transparent;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.stella-final--playing .stella-final__power-card button::before {
+  content: '発動';
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 28px;
+  border: 1px solid rgba(198,190,255,.35);
+  border-radius: 6px;
+  color: #fff;
+  background: linear-gradient(110deg, rgba(89,70,160,.96), rgba(49,40,99,.98));
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  font-size: 10px;
+  font-weight: 950;
+}
+.stella-final--playing .stella-final__power-card--rebirth button::before {
+  content: '回復';
+}
+.stella-final--playing .stella-final__power-card button:disabled::before {
+  opacity: .48;
+  filter: grayscale(.5);
+}
+.stella-final--playing .stella-final__power-card button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+  background: rgba(255,255,255,.08);
+}
+.stella-final--playing .stella-final__power-card--control .stella-final__power-copy {
+  padding: 0 0 28px;
+}
+.stella-final--playing .stella-final__control-buttons {
+  position: absolute;
+  z-index: 3;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+  top: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+}
+.stella-final--playing .stella-final__control-buttons button {
+  position: relative;
+  min-width: 0;
+  min-height: 27px;
+  padding: 3px 2px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 5px;
+  color: #fff;
+  background: rgba(30,25,67,.96);
+  font-size: 8px;
+  font-weight: 900;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+.stella-final--playing .stella-final__power-card--control > .stella-final__control-buttons ~ button {
+  display: none;
+}
+
+.stella-final--playing .stella-final__normal-attack {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 5px 7px 5px 10px;
+  gap: 8px;
+}
+.stella-final--playing .stella-final__normal-attack > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.stella-final--playing .stella-final__normal-attack > span svg {
+  width: 19px;
+  height: 19px;
+}
+.stella-final--playing .stella-final__normal-attack button {
+  min-height: 36px;
+  padding: 6px 13px;
+  font-size: 11px;
+  touch-action: manipulation;
+}
+.stella-final--playing .stella-final__battle-log {
+  flex: 0 0 auto;
+  min-height: 30px;
+  max-height: 34px;
+  padding: 5px 8px;
+}
+.stella-final--playing .stella-final__log-lines p:last-child {
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.stella-final--playing .stella-final__damage-number {
+  position: absolute;
+  z-index: 6;
+  top: 37%;
+  max-width: 84%;
+  color: #fff;
+  font-size: clamp(34px, 9.5vw, 72px);
+  font-weight: 1000;
+  font-variant-numeric: tabular-nums;
+  line-height: .95;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  transform-origin: center;
+  -webkit-text-stroke: 1.5px rgba(29, 8, 24, .9);
+  animation: stella-final-damage-pop 1100ms cubic-bezier(.15,.85,.2,1) both;
+}
+.stella-final--playing .stella-final__damage-number--kaiser {
+  right: 12%;
+  color: #fff1b9;
+  text-shadow: 0 3px 0 #5a1d31, 0 0 15px rgba(255,173,74,.78), 0 0 30px rgba(255,73,108,.44);
+}
+.stella-final--playing .stella-final__damage-number--player {
+  left: 10%;
+  color: #ff9dbd;
+  text-shadow: 0 3px 0 #4e102c, 0 0 16px rgba(255,60,125,.85), 0 0 28px rgba(255,60,125,.42);
+}
+@keyframes stella-final-damage-pop {
+  0% { opacity: 0; transform: translateY(18px) rotate(-12deg) scale(.68); }
+  14% { opacity: 1; transform: translateY(0) rotate(-12deg) scale(1.08); }
+  46% { opacity: 1; transform: translateY(-8px) rotate(-12deg) scale(1); }
+  100% { opacity: 0; transform: translateY(-44px) rotate(-12deg) scale(1.04); }
+}
+@media (max-width: 390px) {
+  .stella-final--playing .stella-final__damage-number {
+    top: 39%;
+    font-size: clamp(32px, 10vw, 48px);
+  }
+  .stella-final--playing .stella-final__power-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 138px), 1fr));
+  }
+  .stella-final--playing .stella-final__power-grid:has(> .stella-final__power-card:only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stella-final--playing .stella-final__damage-number {
+    animation: none;
+  }
+}
+
