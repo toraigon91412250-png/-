@@ -3,11 +3,12 @@ import { AbilityId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, I
 import { IRENA, STELLA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
+import { AchievementScreen } from './components/AchievementScreen';
 import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, unlockAchievementUltimateAuthority } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -24,11 +25,13 @@ import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
-import { applyIrenaTalentModifiers, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
+import { applyIrenaTalentModifiers, getIrenaLevel, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
+import { ACHIEVEMENT_DEFINITIONS, buildAchievementBoard } from './utils/achievementSystem';
+import type { AchievementProgress } from './utils/achievementSystem';
 import type { StellaModeProgress } from './utils/storage';
 
-type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'DEV_TOOLS';
+type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'ACHIEVEMENTS' | 'DEV_TOOLS';
 type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER';
 
 // These screens already have their own transition or combat presentation.
@@ -76,6 +79,42 @@ export const App: React.FC = () => {
   const [isStellaWarping, setIsStellaWarping] = useState(false);
   const [stellaRewardSaveError, setStellaRewardSaveError] = useState(false);
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
+  const [achievementProgress, setAchievementProgress] = useState<AchievementProgress>(() => loadAchievementProgress());
+  const [achievementMessage, setAchievementMessage] = useState<string | null>(null);
+
+  const achievementBoard = buildAchievementBoard({
+    progress: achievementProgress,
+    snapshot: {
+      overallStats,
+      abilityProgress,
+      skillProgress,
+      imprintProgress,
+      recruitmentProgress,
+      raidRewardProgress,
+      kaiserUnlockedLevel: kaiserChallengeProgress.unlockedLevel,
+      kaiser100RewardClaimed: stellaModeProgress.kaiser100RewardClaimed,
+      exKaiserDefeated: stellaModeProgress.exKaiserDefeated,
+      finalBattleCleared: stellaModeProgress.finalBattleCleared,
+      developerModeEnabled: stellaModeProgress.developerModeEnabled === true,
+      talentLevel: getIrenaLevel(irenaTalentProgress.experience),
+    },
+  });
+  const achievementCompletedCount = achievementBoard.filter(item => item.complete).length;
+  const achievementClaimedCount = achievementBoard.filter(item => item.claimed).length;
+  const achievementCompletionKey = achievementBoard.filter(item => item.complete).map(item => item.id).join('|');
+
+  useEffect(() => {
+    const alreadyCompleted = new Set(achievementProgress.completedIds);
+    const missingCompletedIds = achievementBoard.filter(item => item.complete && !alreadyCompleted.has(item.id)).map(item => item.id);
+    if (missingCompletedIds.length > 0) {
+      const nextProgress = syncAchievementCompletion(missingCompletedIds);
+      if (nextProgress) setAchievementProgress(nextProgress);
+    }
+    const ultimateUnlock = unlockAchievementUltimateAuthority();
+    if (ultimateUnlock.persisted && ultimateUnlock.progress.levels.ASTRAL_DOMINION !== abilityProgress.levels.ASTRAL_DOMINION) {
+      setAbilityProgress(ultimateUnlock.progress);
+    }
+  }, [achievementCompletionKey, achievementProgress.completedIds.length, abilityProgress.levels.ASTRAL_DOMINION]);
 
   const handleScreenTransitionComplete = React.useCallback(() => {
     setIsScreenTransitioning(false);
@@ -154,6 +193,23 @@ export const App: React.FC = () => {
     setAbilityProgress(loadAbilityProgress());
     setAvailableStatPoints(loadStatPoints());
     setIrenaTalentProgress(loadIrenaTalentProgress());
+    if (battleSetupReturnScreen !== 'DEV_TOOLS') {
+      const achievementOutcome = recordAchievementBattleProgress({
+        playerWon,
+        kaiserLevel: completedLevel,
+        challengeMode: battleState.battleConfig.kaiserChallengeMode ?? 'NORMAL',
+        turnNumber: battleState.turnNumber,
+        playerHp: battleState.player.currentHp,
+        playerMaxHp: battleState.player.character.maxHp,
+        actionsTaken: battleState.playerActionsTaken ?? [],
+        abilities: battleState.battleConfig.abilities,
+        equippedImprints: battleState.battleConfig.imprints ?? [],
+        usedImprints: battleState.usedImprints,
+        logLines: battleState.logs.map(log => log.text),
+        difficulty: battleState.cpuDifficulty,
+      });
+      if (achievementOutcome) setAchievementProgress(achievementOutcome);
+    }
 
     const nextChallengeProgress = isDeveloperOnlyExTest
       ? loadKaiserChallengeProgress()
@@ -176,6 +232,7 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
+    setAchievementProgress(loadAchievementProgress());
     const currentStatPoints = loadStatPoints();
     setAvailableStatPoints(currentStatPoints);
     setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
@@ -502,6 +559,48 @@ export const App: React.FC = () => {
     return outcome.results;
   };
 
+  const handleClaimAchievementReward = (id: string) => {
+    const result = claimAchievementReward(id);
+    if (!result.persisted) {
+      setAchievementMessage('報酬の保存に失敗しました。保存容量・ブラウザ設定を確認してください。');
+      return;
+    }
+    setAchievementProgress(result.progress);
+    if (!result.claimed) {
+      setAchievementMessage('この実績は未達成か、報酬をすでに受け取っています。');
+      return;
+    }
+    const rewardName = achievementBoard.find(item => item.id === id)?.rewardLabel ?? '報酬';
+    setAchievementMessage('報酬を受け取りました：' + rewardName);
+    const currentStatPoints = loadStatPoints();
+    setAvailableStatPoints(currentStatPoints);
+    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints }));
+    setRecruitmentProgress(loadRecruitmentProgress());
+    setRaidRewardProgress(loadRaidRewardProgress());
+    setSkillProgress(loadSkillProgress());
+  };
+
+  const handleMarkAllAchievementsComplete = () => {
+    const next = markAllAchievementsCompleteForDeveloper();
+    if (!next) {
+      setAchievementMessage('実績状態を保存できませんでした。');
+      return;
+    }
+    setAchievementProgress(next);
+    setAchievementMessage('開発テスト用に全実績を達成扱いにしました。最強権能の解放条件を確認できます。');
+  };
+
+  const handleResetAchievementProgress = () => {
+    const next = resetAchievementProgressForDeveloper();
+    if (!next) {
+      setAchievementMessage('実績状態を初期化できませんでした。');
+      return;
+    }
+    setAchievementProgress(next);
+    setAbilityProgress(setAbilityForDeveloper('ASTRAL_DOMINION', 0, 0));
+    setAchievementMessage('実績の進捗・受取履歴と最強権能を初期化しました。');
+  };
+
   const handleUpgradeAbility = (abilityId: AbilityId) => {
     const next = upgradeAbility(abilityId);
     if (!next) return;
@@ -597,6 +696,8 @@ export const App: React.FC = () => {
     setRaidItemMessage(null);
     setAvailableStatPoints(loadStatPoints());
     setStellaModeProgress(loadStellaModeProgress());
+    setAchievementProgress(loadAchievementProgress());
+    setAchievementMessage(null);
     setStellaRewardSaveError(false);
     setBattleSetupMode('NORMAL');
     setBattleSetup({
@@ -633,6 +734,10 @@ export const App: React.FC = () => {
           raidRewardProgress={raidRewardProgress}
           recruitmentProgress={recruitmentProgress}
           onOpenDeveloperTools={handleOpenDeveloperTools}
+          onOpenAchievements={() => { setAchievementMessage(null); refreshProgress(); navigateToScreen('ACHIEVEMENTS'); }}
+          achievementCompletedCount={achievementCompletedCount}
+          achievementTotalCount={ACHIEVEMENT_DEFINITIONS.length}
+          astralDominionUnlocked={abilityProgress.levels.ASTRAL_DOMINION > 0}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           availableStatPoints={availableStatPoints}
           abilityProgress={abilityProgress}
@@ -772,6 +877,16 @@ export const App: React.FC = () => {
             setBattleSetupMode('NORMAL');
           }}
         />
+      ) : screen === 'ACHIEVEMENTS' ? (
+        <AchievementScreen
+          items={achievementBoard}
+          completedCount={achievementCompletedCount}
+          claimedCount={achievementClaimedCount}
+          astralDominionUnlocked={abilityProgress.levels.ASTRAL_DOMINION > 0}
+          message={achievementMessage}
+          onClaimReward={handleClaimAchievementReward}
+          onBack={() => { setAchievementMessage(null); setScreen('SELECT'); }}
+        />
       ) : screen === 'RAID_PROTOTYPE' ? (
         <RaidGame
           onBack={() => navigateToScreen(raidReturnScreen)}
@@ -810,6 +925,11 @@ export const App: React.FC = () => {
           onOpenBattleSetup={config => handleOpenBattleSetup(config, 'DEV_TOOLS', true, 'DEVELOPER')}
           onOpenExKaiserChallenge={() => handleStartExKaiser('DEV_TOOLS', true)}
           onUnlockAllGameFeatures={handleUnlockAllGameFeatures}
+          achievementCompletedCount={achievementCompletedCount}
+          achievementClaimedCount={achievementClaimedCount}
+          achievementTotalCount={ACHIEVEMENT_DEFINITIONS.length}
+          onMarkAllAchievementsComplete={handleMarkAllAchievementsComplete}
+          onResetAchievementProgress={handleResetAchievementProgress}
           onReset={handleDeveloperReset}
         />
       )}
