@@ -1693,7 +1693,7 @@ export const StellaFinalBattleScreen: React.FC<{
               )}
               {(battle.fighterId !== 'short-irena' || (battle.initialChoiceMade && battle.actionLockTurns === 0 && battle.finalTurnsLeft !== 0 && !battle.finisherPending && !battle.finisherRoutePending)) && isFighting && (
                 <div className="stella-final__normal-attack">
-                  <span><Swords size={17} /> 通常攻撃</span>
+                  <span><Swords size={17} /> 通常攻撃{battle.fighterId === 'stella' && <small>{fighter.normalAttackDamage.toLocaleString('ja-JP')} ダメージ</small>}</span>
                   <button type="button" aria-label="通常攻撃" onClick={() => battle.fighterId === 'short-irena' ? takeShortIrenaAction('ATTACK') : takeAction('ATTACK')}>攻撃する</button>
                 </div>
               )}
