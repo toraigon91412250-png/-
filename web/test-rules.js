@@ -175,14 +175,14 @@ assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge < 100 && \(/,
 assert.match(shortIrenaFinalBattleSource, /battle\.datenGauge > -100 && \(/,
   'The gauge does not offer an impossible move beyond the negative cap.');
 const developerToolsSource = await readFile(new URL('./src/components/DeveloperToolsScreen.tsx', import.meta.url), 'utf8');
-assert.match(developerToolsSource, /いれーな最終決戦をすぐ開始/,
-  'Developer Tools expose a clearly named Irena final-battle shortcut.');
+assert.match(developerToolsSource, /全機能開放/,
+  'Developer Tools expose a clearly named full-game unlock button.');
 assert.ok(
-  developerToolsSource.indexOf('いれーな最終決戦をすぐ開始') < developerToolsSource.indexOf('⚔️ 対戦テスト'),
-  'The direct final-battle shortcut appears before the generic battle setup on mobile.',
+  developerToolsSource.indexOf('全機能開放') < developerToolsSource.indexOf('⚔️ 対戦テスト'),
+  'The full-game unlock action appears before the generic battle setup on mobile.',
 );
-assert.match(developerToolsSource, /onClick=\{onOpenStellaFinalBattle\}/,
-  'The final battle developer shortcut is wired to its route callback.');
+assert.doesNotMatch(developerToolsSource, /いれーな最終決戦をすぐ開始|onOpenStellaFinalBattle/,
+  'Developer Tools no longer wire a single-button jump into the final battle.');
 const screenTransitionLoaderSource = await readFile(new URL('./src/components/ScreenTransitionLoader.tsx', import.meta.url), 'utf8');
 assert.match(screenTransitionLoaderSource, /MINIMUM_TRANSITION_TIME_MS = 450;/,
   'Ordinary screen transitions have a 450ms visual minimum.');
@@ -191,14 +191,12 @@ assert.match(screenTransitionLoaderSource, /!minimumTimeElapsed \|\| !extraWorkR
 assert.doesNotMatch(screenTransitionLoaderSource, /artworkReady|preloadedArtwork/,
   'Decorative loading artwork is not allowed to block normal navigation.');
 const appDeveloperRouteSource = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
-assert.match(appDeveloperRouteSource, /const handleOpenDeveloperFinalBattle = \(\) =>/,
-  'App owns the developer-only final-battle route.');
-assert.match(appDeveloperRouteSource, /onOpenStellaFinalBattle=\{handleOpenDeveloperFinalBattle\}/,
-  'App wires the developer route into the developer tools screen.');
+assert.doesNotMatch(appDeveloperRouteSource, /handleOpenDeveloperFinalBattle|onOpenStellaFinalBattle=\{handleOpenDeveloperFinalBattle\}|isDeveloperFinalBattlePreview/,
+  'The obsolete developer-only final-battle shortcut is removed.');
 assert.match(appDeveloperRouteSource, /if \(!progress\.isUnlocked \|\| !progress\.exKaiserDefeated\) return;/,
   'Normal final-battle progression remains gated.');
-assert.match(appDeveloperRouteSource, /isDeveloperPreview=\{isDeveloperFinalBattlePreview\}/,
-  'The final battle knows when it was opened from Developer Tools.');
+assert.match(appDeveloperRouteSource, /isDeveloperPreview=\{false\}/,
+  'The final battle now opens only through the normal progression route.');
 assert.match(shortIrenaFinalBattleSource, /if \(isDeveloperPreview \|\| battle\.status !== 'VICTORY'/,
   'Developer final-battle previews do not claim permanent victory rewards.');
 assert.match(shortIrenaFinalBattleSource, /開発者テスト：この勝利では通常の解放状況・初回クリア報酬を変更しない。/,
