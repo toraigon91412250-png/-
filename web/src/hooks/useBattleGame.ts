@@ -25,7 +25,7 @@ import { CpuAi } from '../utils/ai';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
 import { getEquippedResonanceAbilities } from '../utils/resonanceSystem';
-import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
+import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getHighestTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
@@ -2555,10 +2555,7 @@ export function useBattleGame(
       const equippedResonances = getEquippedResonanceAbilities(stateRef.current.battleConfig);
       const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
       const hpRatio = nextPlayer.currentHp / playerBaseHp;
-      const erosionRate = equippedResonances.reduce(
-        (sum, equipped) => sum + getTurnErosionRate(equipped.id, equipped.level, hpRatio),
-        0,
-      );
+      const erosionRate = getHighestTurnErosionRate(equippedResonances, hpRatio);
       if (erosionRate > 0) {
         const erosion = calculateErosionResult(nextEnemy, nextPlayer, erosionRate);
         nextEnemy = erosion.enemy;
