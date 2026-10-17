@@ -960,6 +960,35 @@ export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityP
   });
 }
 
+export function setResonanceAbilityForDeveloper(id: ResonanceAbilityId, level: number): AbilityProgress {
+  const current = loadAbilityProgress();
+  const resonance = loadResonanceProgress();
+  const normalizedLevel = Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(Number.isFinite(level) ? level : 0)));
+  const craftedRecipes = normalizedLevel > 0
+    ? Array.from(new Set([...resonance.craftedRecipes, id]))
+    : resonance.craftedRecipes.filter(recipeId => recipeId !== id);
+
+  return persistAbilityProgress({
+    ...current,
+    resonance: {
+      ...resonance,
+      unlocked: resonance.unlocked || normalizedLevel > 0,
+      levels: { ...resonance.levels, [id]: normalizedLevel },
+      craftedRecipes,
+    },
+  });
+}
+
+export function setResonanceShardsForDeveloper(amount: number): AbilityProgress {
+  const current = loadAbilityProgress();
+  const resonance = loadResonanceProgress();
+  const shards = Number.isFinite(amount) ? Math.max(0, Math.floor(amount)) : 0;
+  return persistAbilityProgress({
+    ...current,
+    resonance: { ...resonance, shards },
+  });
+}
+
 export function addAbilityShardsForDeveloper(abilityId: AbilityId, amount: number): AbilityProgress {
   return addAbilityShards(abilityId, amount);
 }
@@ -1463,6 +1492,16 @@ export function unlockAllGameFeaturesForDeveloper(): {
 } {
   const currentStellaProgress = loadStellaModeProgress();
   const currentAbilities = loadAbilityProgress();
+  const currentResonance = loadResonanceProgress();
+  const nextResonance = normalizeResonanceProgress({
+    ...currentResonance,
+    unlocked: true,
+    shards: Math.max(9999, currentResonance.shards),
+    levels: Object.fromEntries(
+      RESONANCE_DEFINITIONS.map(definition => [definition.id, MAX_ABILITY_LEVEL]),
+    ) as Record<ResonanceAbilityId, number>,
+    craftedRecipes: RESONANCE_DEFINITIONS.map(definition => definition.id),
+  });
   const currentRecruitment = loadRecruitmentProgress();
   const currentSkills = loadSkillProgress();
   const currentImprints = loadImprintProgress();
@@ -1480,6 +1519,7 @@ export function unlockAllGameFeaturesForDeveloper(): {
     allGameFeaturesUnlocked: true,
   };
   const nextAbilities = normalizeAbilityProgress({
+    resonance: nextResonance,
     levels: {
       ABYSS: MAX_ABILITY_LEVEL,
       FALLEN: MAX_ABILITY_LEVEL,
