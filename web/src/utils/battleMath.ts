@@ -116,16 +116,6 @@ function applyFallenExecution(
   return damage;
 }
 
-function applyResonanceDefenseIgnore(target: BattleFighter, ignore: number): BattleFighter {
-  return {
-    ...target,
-    character: {
-      ...target.character,
-      defense: Math.max(0, Math.round(target.character.defense * (1 - Math.min(.95, Math.max(0, ignore))))),
-    },
-  };
-}
-
 function getResonanceExecutions(context: DamageContext, allowFeatherOnly = false) {
   if (!context.attacker.isPlayer || !context.resonanceJudgmentReadyIds?.length) return [];
   const ready = new Set(context.resonanceJudgmentReadyIds);
