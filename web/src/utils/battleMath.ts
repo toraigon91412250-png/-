@@ -17,7 +17,9 @@ import {
   getJudgmentDefenseIgnore,
   getAchievementBadgeDamageMultiplier,
   hasAbility,
+  getEquippedResonanceAbility,
 } from './abilitySystem';
+import { getResonanceExecutionStats, getResonanceFeatherMultiplier } from './resonanceSystem';
 
 export interface DamagePreviewResolution {
   /** Damage the target will actually lose from current HP. */
@@ -68,6 +70,7 @@ export interface DamageContext {
   turn: number;
   isActingFirst: boolean;
   judgmentReady?: boolean;
+  resonanceJudgmentMarks?: number;
   specialSkillId?: IrenaSpecialSkillId;
   ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE';
   alreadyPrepared?: boolean;
@@ -93,9 +96,11 @@ function applyFallenExecution(
   config: BattleSetupConfig,
   baseAttackerMaxHp: number,
 ): number {
+  const resonance = getEquippedResonanceAbility(config);
+  const resonanceFallen = resonance && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id);
   if (
     attacker.isPlayer &&
-    hasAbility(config, 'FALLEN') &&
+    (hasAbility(config, 'FALLEN') || resonanceFallen) &&
     target.currentHp > 0 &&
     attacker.currentHp > 1 &&
     attacker.currentHp <= baseAttackerMaxHp * 0.05
@@ -105,12 +110,62 @@ function applyFallenExecution(
   return damage;
 }
 
+function applyResonanceDefenseIgnore(target: BattleFighter, ignore: number): BattleFighter {
+  return {
+    ...target,
+    character: {
+      ...target.character,
+      defense: Math.max(0, Math.round(target.character.defense * (1 - Math.min(.95, Math.max(0, ignore))))),
+    },
+  };
+}
+
+function getResonanceExecution(context: DamageContext, allowFeatherOnly = false) {
+  if (!context.attacker.isPlayer || !context.judgmentReady) return null;
+  const resonance = getEquippedResonanceAbility(context.config);
+  if (!resonance) return null;
+  if (resonance.id === 'JUDGMENT_WING') {
+    return allowFeatherOnly && context.attacker.character.id === 'irena'
+      ? getResonanceExecutionStats(resonance.id, resonance.level)
+      : null;
+  }
+  return getResonanceExecutionStats(resonance.id, resonance.level);
+}
+
+function applyResonanceExecutionDamage(
+  damage: number,
+  target: BattleFighter,
+  attacker: BattleFighter,
+  context: DamageContext,
+): number {
+  const resonance = getEquippedResonanceAbility(context.config);
+  if (!resonance) return damage;
+  const stats = getResonanceExecution(resonance.id === 'JUDGMENT_WING' ? context : context, true);
+  if (!stats) return damage;
+  let multiplier = stats.multiplier;
+  if (resonance.id === 'ABYSS_JUDGMENT') {
+    const overflow = Math.max(0, (context.resonanceJudgmentMarks ?? 0) - stats.threshold);
+    multiplier += Math.min(stats.overflowMultiplierCap ?? 0, overflow * (stats.overflowMultiplierPerMark ?? 0));
+  }
+  if (stats.lowHpBonuses) {
+    const baseMaxHp = Math.max(1, context.baseAttackerMaxHp ?? attacker.resonanceBaseStats?.maxHp ?? attacker.character.maxHp);
+    const hpRatio = attacker.currentHp / baseMaxHp;
+    const lowHpBonus = hpRatio <= .10 ? stats.lowHpBonuses[2]
+      : hpRatio <= .25 ? stats.lowHpBonuses[1]
+        : hpRatio <= .50 ? stats.lowHpBonuses[0] : 0;
+    multiplier *= 1 + lowHpBonus;
+  }
+  return Math.round(damage * multiplier) + Math.round(target.currentHp * stats.currentHpBonus);
+}
 export function calculateNormalAttackDamage(context: DamageContext, critical = false): number {
   const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   let { attacker, target } = prepareFighters(context);
   const judgmentLevel = context.attacker.isPlayer ? getAbilityLevel(context.config, 'JUDGMENT') : 0;
   const judgmentActive = Boolean(context.judgmentReady && judgmentLevel > 0);
-  const damageTarget = judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
+  const resonanceExecution = getResonanceExecution(context);
+  const damageTarget = resonanceExecution
+    ? applyResonanceDefenseIgnore(target, getEquippedResonanceAbility(context.config) ? resonanceExecution.defenseIgnore : 0)
+    : judgmentActive ? applyJudgmentDefense(target, judgmentLevel) : target;
 
   let damage = Math.max(
     GAME_BALANCE.MIN_NORMAL_DAMAGE,
@@ -132,6 +187,11 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
   if (judgmentActive) {
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel))
       + Math.round(target.currentHp * GAME_BALANCE.JUDGMENT_MAX_HP_BONUS);
+  } else if (resonanceExecution) {
+    damage = applyResonanceExecutionDamage(damage, target, attacker, {
+      ...context,
+      resonanceJudgmentMarks: context.resonanceJudgmentMarks,
+    });
   }
 
   if (
@@ -170,7 +230,17 @@ export function calculateSpecialDamage(context: DamageContext): number {
     if (attacker.isBuffed) {
       damage += attacker.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
     }
-
+    const resonance = getEquippedResonanceAbility(context.config);
+    const featherMultiplier = attacker.isPlayer && resonance
+      ? getResonanceFeatherMultiplier(
+          resonance.id,
+          resonance.level,
+          (attacker.resonanceKingWingStackExpiresAtTurns ?? []).filter(expiresAt => expiresAt >= context.turn).length,
+        )
+      : null;
+    if (featherMultiplier !== null) damage = Math.round(damage * featherMultiplier);
+    const execution = getResonanceExecution(context, true);
+    if (execution) damage = applyResonanceExecutionDamage(damage, target, attacker, context);
     damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'SPECIAL') : 1));
     return Math.max(0, applyFallenExecution(
       damage,
@@ -196,8 +266,13 @@ export function calculateSpecialDamage(context: DamageContext): number {
 
   const judgmentLevel = attacker.isPlayer ? getAbilityLevel(context.config, 'JUDGMENT') : 0;
   const judgmentActive = Boolean(context.judgmentReady && judgmentLevel > 0);
+  const resonance = getEquippedResonanceAbility(context.config);
+  const resonanceExecution = isIrenaSpecial ? getResonanceExecution(context, true) : null;
   if (judgmentActive) {
     damage += Math.round(target.character.defense * getJudgmentDefenseIgnore(judgmentLevel));
+  } else if (resonanceExecution && resonance) {
+    const defenseReducedTarget = applyResonanceDefenseIgnore(target, resonanceExecution.defenseIgnore);
+    damage = Math.max(0, damage + getEffectiveDefense(target) - getEffectiveDefense(defenseReducedTarget));
   }
 
   if (isIrenaSpecial && getAbilityLevel(context.config, 'BLACK_WING') >= 5) {
@@ -237,11 +312,22 @@ export function calculateSpecialDamage(context: DamageContext): number {
     damage = resolveFeatherSplitDamage(damage, featherSplitMode, attacker.lastFeatherSplitMode).damage;
   }
 
-  // Feather Resonance describes the final direct Feather damage, not its
-  // pre-defense stat. Apply it after defense, skill-path bonuses, and imprint
-  // mode multipliers so the actual hit matches the percentage shown on the board.
+  // Resonance feather values replace (rather than stack with) the ingredient's
+  // x5 multiplier, and are applied to final feather damage after the other shot effects.
   if (attacker.isPlayer && isIrenaSpecial) {
     damage = Math.round(damage * (attacker.character.talentSpecialDamageMultiplier ?? 1));
+    const featherMultiplier = resonance
+      ? getResonanceFeatherMultiplier(
+          resonance.id,
+          resonance.level,
+          (attacker.resonanceKingWingStackExpiresAtTurns ?? []).filter(expiresAt => expiresAt >= context.turn).length,
+        )
+      : null;
+    if (featherMultiplier !== null) damage = Math.round(damage * featherMultiplier);
+  }
+
+  if (resonanceExecution) {
+    damage = applyResonanceExecutionDamage(damage, target, attacker, context);
   }
 
   damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'SPECIAL') : 1));
@@ -311,13 +397,16 @@ export function calculateUltimateDamage(context: DamageContext): number {
 
   const judgmentLevel = attacker.isPlayer ? getAbilityLevel(context.config, 'JUDGMENT') : 0;
   const judgmentActive = Boolean(context.judgmentReady && judgmentLevel > 0);
+  const resonanceExecution = getResonanceExecution(context);
   if (judgmentActive) {
     const damageTarget = applyJudgmentDefense(target, judgmentLevel);
-    damage += Math.max(
-      0,
-      getEffectiveDefense(target) - getEffectiveDefense(damageTarget),
-    );
+    damage += Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(damageTarget));
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel));
+  } else if (resonanceExecution) {
+    const resonance = getEquippedResonanceAbility(context.config);
+    const defenseReducedTarget = applyResonanceDefenseIgnore(target, resonanceExecution.defenseIgnore);
+    damage += Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(defenseReducedTarget));
+    damage = applyResonanceExecutionDamage(damage, target, attacker, context);
   }
 
   damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'ULTIMATE') : 1));
