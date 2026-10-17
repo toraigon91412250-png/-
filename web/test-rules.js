@@ -34,6 +34,15 @@ const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import(
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, buildAchievementBadgeProgress, completeAchievementIds, getAchievementMetricValue, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
+const { RESONANCE_DEFINITIONS, RESONANCE_UPGRADE_COSTS } = await import('./src/data/resonanceAbilities.ts');
+const {
+  getFallenGodRevivalHpFraction,
+  getFallenGodStatMultiplier,
+  getResonanceFeatherMultiplier,
+  getResonanceExecutionStats,
+  getTurnErosionRate,
+  getFeatherErosionRate,
+} = await import('./src/utils/resonanceSystem.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 
@@ -42,6 +51,64 @@ assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
 assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 440, 2: 640, 3: 880 });
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
+
+const expectedResonanceRecipes = [
+  ['FALLEN_GOD', ['FALLEN', 'FALLEN_KING']],
+  ['FALLEN_WING', ['FALLEN', 'BLACK_WING']],
+  ['FALLEN_JUDGMENT', ['FALLEN', 'JUDGMENT']],
+  ['ABYSS_FALLEN', ['FALLEN', 'ABYSS']],
+  ['KING_WING', ['FALLEN_KING', 'BLACK_WING']],
+  ['KING_JUDGMENT', ['FALLEN_KING', 'JUDGMENT']],
+  ['ABYSS_KING', ['FALLEN_KING', 'ABYSS']],
+  ['JUDGMENT_WING', ['BLACK_WING', 'JUDGMENT']],
+  ['ABYSS_WING', ['BLACK_WING', 'ABYSS']],
+  ['ABYSS_JUDGMENT', ['ABYSS', 'JUDGMENT']],
+];
+assert.strictEqual(RESONANCE_DEFINITIONS.length, 10, 'Exactly ten resonance powers must be registered.');
+assert.deepStrictEqual(RESONANCE_UPGRADE_COSTS, [0, 40, 80, 120, 160]);
+assert.deepStrictEqual(
+  RESONANCE_DEFINITIONS.map(definition => [definition.id, [...definition.ingredients].sort()]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))),
+  expectedResonanceRecipes.map(([id, ingredients]) => [id, [...ingredients].sort()]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))),
+  'Every order-independent recipe must use exactly the requested base powers.',
+);
+assert.strictEqual(new Set(RESONANCE_DEFINITIONS.map(definition => [...definition.ingredients].sort().join('+'))).size, 10,
+  'No two resonance recipes may share the same unordered ingredient pair.');
+assert.ok(RESONANCE_DEFINITIONS.every(definition => definition.levelDescriptions.length === 5 && definition.levelDescriptions.every(Boolean)),
+  'Every resonance power must describe levels 1 through 5.');
+assert.ok(RESONANCE_DEFINITIONS.every(definition => !definition.ingredients.includes('ASTRAL_DOMINION')),
+  'The achievement authority cannot be a resonance ingredient.');
+assert.deepStrictEqual(
+  [0, 1, 2, 3, 4, 5, 6].map(index => getFallenGodRevivalHpFraction(5, index)),
+  [.5, .25, .05, 0, 0, 0, 0],
+  'Fallen God Lv5 must have exactly the specified seven death-save stages.',
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getFallenGodStatMultiplier(level, 3)),
+  [2.5, 2.9, 3.3, 3.65, 4],
+  'Fallen God HP1 multipliers must match the five-level table.',
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getResonanceFeatherMultiplier('JUDGMENT_WING', level)),
+  [6, 8, 10, 12, 15],
+  'Judgment Wing must replace Black Wing’s x5 multiplier with the requested final values.',
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getTurnErosionRate('ABYSS_JUDGMENT', level, 1)),
+  [6, 8, 10, 12, 15],
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getFeatherErosionRate('ABYSS_WING', level)),
+  [5, 7, 9, 12, 15],
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getResonanceExecutionStats('ABYSS_JUDGMENT', level).threshold),
+  [20, 16, 12, 9, 6],
+);
+assert.deepStrictEqual(
+  [1, 2, 3, 4, 5].map(level => getResonanceExecutionStats('ABYSS_JUDGMENT', level).overflowMultiplierCap),
+  [.5, .75, 1, 1.5, 2],
+);
+console.log('✓ Ten resonance recipes, forbidden ingredient, all-level descriptions, fusion cost, revival, feather, erosion, and execution tables verified.');
 
 assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
 assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,
