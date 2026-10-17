@@ -2258,16 +2258,17 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         if (judgmentActive) {
-          const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
-          const execution = resonance ? getResonanceExecutionStats(resonance.id, resonance.level) : null;
           addLog(
-            execution && !judgmentReadyRef.current
-              ? `⚖️【共鳴断罪執行】必殺技に断罪が宿った！ 基本倍率×${execution.multiplier}`
-              : `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
+            `⚖️【断罪執行】必殺技に断罪が発動。ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}。`,
             'PASSIVE_TRIGGER',
             turn,
           );
         }
+        resonanceExecutionIds.forEach(id => {
+          const resonance = activeResonancesForUltimate.find(item => item.id === id);
+          const execution = resonance ? getResonanceExecutionStats(id, resonance.level) : null;
+          if (execution) addLog(`⚖️【${id === 'ABYSS_JUDGMENT' ? '深淵断罪' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%。`, 'PASSIVE_TRIGGER', turn);
+        });
 
         const activeResonancesForUltimate = getEquippedResonanceAbilities(stateRef.current.battleConfig);
         const resonanceFallenExecution = activeResonancesForUltimate.some(resonance =>
