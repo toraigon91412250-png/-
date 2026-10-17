@@ -998,6 +998,7 @@ export function resetProgressForDeveloper(): {
   const abilityProgress = persistAbilityProgress({
     levels: { ...INITIAL_ABILITY_PROGRESS.levels },
     shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+    resonance: createInitialResonanceProgress(),
   });
   const recruitmentProgress = persistRecruitmentProgress({
     tickets: 10,
