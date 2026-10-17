@@ -140,7 +140,7 @@ function applyResonanceExecutionDamage(
 ): number {
   const resonance = getEquippedResonanceAbility(context.config);
   if (!resonance) return damage;
-  const stats = getResonanceExecution(resonance.id === 'JUDGMENT_WING' ? context : context, true);
+  const stats = getResonanceExecution(context, true);
   if (!stats) return damage;
   let multiplier = stats.multiplier;
   if (resonance.id === 'ABYSS_JUDGMENT') {
@@ -403,7 +403,6 @@ export function calculateUltimateDamage(context: DamageContext): number {
     damage += Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(damageTarget));
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel));
   } else if (resonanceExecution) {
-    const resonance = getEquippedResonanceAbility(context.config);
     const defenseReducedTarget = applyResonanceDefenseIgnore(target, resonanceExecution.defenseIgnore);
     damage += Math.max(0, getEffectiveDefense(target) - getEffectiveDefense(defenseReducedTarget));
     damage = applyResonanceExecutionDamage(damage, target, attacker, context);
