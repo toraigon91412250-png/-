@@ -7,6 +7,7 @@ import {
 } from '../data/recruitment';
 import { AbilityId, AbilityProgress, RecruitmentProgress } from '../types/game';
 import AbilityUpgradePanel from './AbilityUpgradePanel';
+import { RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
 
 interface Props {
   progress: RecruitmentProgress;
@@ -34,7 +35,11 @@ const getRewardKindLabel = (reward: RecruitmentRewardDef): string => {
   return '特殊技';
 };
 
-const getShardLabel = (reward: RecruitmentRewardDef): string => {
+const getShardLabel = (reward: RecruitmentRewardDef, currentAbilityProgress?: AbilityProgress): string => {
+  if (reward.abilityId && currentAbilityProgress?.levels[reward.abilityId] >= 5 &&
+    RESONANCE_DEFINITIONS.some(definition => definition.ingredients.includes(reward.abilityId!))) {
+    return '共鳴片';
+  }
   if (reward.kind === 'SKILL_SHARD') return '技強化の欠片';
   if (reward.kind === 'SPECIAL_SKILL') return '技強化の欠片';
   const abilityNames: Record<string, string> = {
@@ -641,7 +646,7 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
 
             <div style={{ marginTop:12, display:'flex', justifyContent:'center', gap:7, flexWrap:'wrap' }}>
               {lastResult.shardGain > 0 && (
-                <span style={pillStyle}>+{lastResult.shardGain} {getShardLabel(lastResult.reward)}</span>
+                <span style={pillStyle}>+{lastResult.shardGain} {getShardLabel(lastResult.reward, abilityProgress)}</span>
               )}
             </div>
 
@@ -679,8 +684,10 @@ export const RecruitmentScreen: React.FC<Props> = ({ progress, abilityProgress, 
                     {draw.shardGain > 0 && (
                       <div style={{ marginTop:2, fontSize:8, color:'#FFE082' }}>
                         +{draw.shardGain} {draw.reward.kind === 'ABILITY_SHARD' && draw.reward.abilityId && abilityProgress.levels[draw.reward.abilityId] >= 5
-                          ? '技強化の欠片（MAX交換）'
-                          : getShardLabel(draw.reward)}
+                          ? RESONANCE_DEFINITIONS.some(definition => definition.ingredients.includes(draw.reward.abilityId!))
+                            ? '共鳴片（MAX変換）'
+                            : '技強化の欠片（MAX交換）'
+                          : getShardLabel(draw.reward, abilityProgress)}
                       </div>
                     )}
                   </div>
