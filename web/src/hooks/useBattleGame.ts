@@ -2362,7 +2362,7 @@ export function useBattleGame(
     if (suppressProgressionRewards) addLog('🧪【実験場】本編の報酬・戦績・実績は保存されません。', 'SYSTEM', stateRef.current.turnNumber);
     if (!saveOutcome.persisted) {
       addLog(
-        '⚠️ 保存に失敗しました。今回の報酬は記録されていません。ブラウザの保存容量・保存設定を確認してください。'
+        '⚠️ 保存に失敗しました。今回の報酬は記録されていません。ブラウザの保存容量・保存設定を確認してください。',
         'SYSTEM',
         stateRef.current.turnNumber,
       );
