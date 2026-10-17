@@ -9,6 +9,12 @@ import { RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
 import {
   ASCENT_RELICS,
   createAscentCombatState,
+  createBossForgeState,
+  getBossForgeIntent,
+  resolveBossForgeTurn,
+  type BossForgeAction,
+  type BossForgePattern,
+  type BossForgeState,
   createObservatoryState,
   createResonanceTrialState,
   getAscentRelicChoices,
@@ -31,7 +37,7 @@ import {
 } from '../utils/experimentPrototypes';
 import './ExperimentPrototypeShowcase.css';
 
-type PrototypeId = 'ASCENT' | 'OBSERVATORY' | 'COMPILER';
+type PrototypeId = 'ASCENT' | 'OBSERVATORY' | 'COMPILER' | 'BOSSFORGE';
 interface Props { onViewChange: (isPlayingPrototype: boolean) => void; }
 
 const PROTOTYPE_CARDS: readonly {
@@ -74,6 +80,16 @@ const PROTOTYPE_CARDS: readonly {
     question: '新しい権能・共鳴の相性を本編に入れる前に触って決められるか？',
     accent: 'gold',
   },
+  {
+    id: 'BOSSFORGE',
+    number: '04',
+    title: '皇帝行動工房',
+    tagline: 'BOSS DESIGN / TUNE & PLAY',
+    description: '皇帝の最大HP・攻撃圧力・3手の行動列を自分で設計。その場で戦って、強すぎる/弱すぎるボスがどんな手触りになるか確かめられる。',
+    loop: 'ボスを設計 → 行動列を編む → 試験戦闘 → 条件を調整して再戦',
+    question: '本編に入れる前にボスの圧力と読み合いを自分で調整できるか？',
+    accent: 'rose',
+  },
 ];
 
 function PrototypeHeader({ number, eyebrow, title, onBack }: { number: string; eyebrow: string; title: string; onBack: () => void }) {
@@ -104,6 +120,7 @@ export const ExperimentPrototypeShowcase: React.FC<Props> = ({ onViewChange }) =
   if (active === 'ASCENT') return <AscentPrototype onBack={backToCatalog} />;
   if (active === 'OBSERVATORY') return <ObservatoryPrototype onBack={backToCatalog} />;
   if (active === 'COMPILER') return <ResonanceCompilerPrototype onBack={backToCatalog} />;
+  if (active === 'BOSSFORGE') return <BossForgePrototype onBack={backToCatalog} />;
 
   return (
     <section className="epx-catalog" aria-labelledby="epx-catalog-title">
@@ -411,6 +428,85 @@ function ResonanceCompilerPrototype({ onBack }: { onBack: () => void }) {
         <div className="epx-analysis"><div className="epx-analysis-gauge"><strong>{analysis.score}</strong><span>/ 100</span></div><div><small>SYNERGY HYPOTHESIS</small><h3>{selectedOptions.length === 2 ? analysis.title : '2つ選んで相性を解析'}</h3><b>{selectedOptions.length === 2 ? analysis.style : 'LOADOUT INCOMPLETE'}</b><p>{selectedOptions.length === 2 ? analysis.description : '権能カードを2つ選ぶと、構成の仮説評価が表示される。'}</p></div></div>
         <button className="epx-primary epx-build-launch" disabled={selectedIds.length !== 2 || selectedIds[0] === selectedIds[1]} onClick={startTrial} type="button"><FlaskConical size={18} /> この構成で仮想戦闘 <ChevronRight size={18} /></button>
       </div>
+    </section>
+  );
+}
+
+
+const BOSS_PATTERN_OPTIONS: readonly { id: BossForgePattern; name: string; short: string; explanation: string }[] = [
+  { id: 'CRUSH', name: '重撃', short: 'CRUSH', explanation: '通常より大きなダメージ。防御か回避が必要。' },
+  { id: 'FEINT', name: '牽制', short: 'FEINT', explanation: '低めのダメージ。攻撃を続ける小さな窓。' },
+  { id: 'RECOVER', name: '再構成', short: 'RECOVER', explanation: '皇帝が回復。隙を突いて大きく削る。' },
+  { id: 'NOVA', name: '全域崩壊', short: 'NOVA', explanation: '最大圧力の一撃。防御で軽減、回避で無傷。' },
+  { id: 'GUARD', name: '防御衝撃', short: 'GUARD', explanation: '皇帝が攻撃を受け流す。大技のタイミングをずらす。' },
+];
+
+function BossForgePrototype({ onBack }: { onBack: () => void }) {
+  const [bossHp, setBossHp] = useState(180);
+  const [pressure, setPressure] = useState(20);
+  const [pattern, setPattern] = useState<BossForgePattern[]>(['CRUSH', 'FEINT', 'RECOVER']);
+  const [state, setState] = useState<BossForgeState | null>(null);
+  const intent = state ? getBossForgeIntent(state) : null;
+  const done = state !== null && state.status !== 'ACTIVE';
+  const act = (action: BossForgeAction) => setState(previous => previous ? resolveBossForgeTurn(previous, action) : previous);
+  const start = () => setState(createBossForgeState({ bossMaxHp: bossHp, attackPressure: pressure, pattern }));
+  const cyclePattern = (slot: number, next: BossForgePattern) => setPattern(previous => previous.map((value, index) => index === slot ? next : value));
+  const resetFight = () => setState(previous => previous ? createBossForgeState(previous.config) : null);
+  const intentInfo = BOSS_PATTERN_OPTIONS.find(option => option.id === intent);
+  const grade = state?.status === 'VICTORY' ? (state.playerHp >= 65 ? 'S' : state.playerHp >= 35 ? 'A' : 'B')
+    : state?.status === 'DEFEAT' ? (state.bossHp / Math.max(1, state.bossMaxHp) <= .25 ? 'B' : state.bossHp / Math.max(1, state.bossMaxHp) <= .55 ? 'C' : 'D') : null;
+
+  return (
+    <section className="epx-game">
+      <PrototypeHeader number="04" eyebrow="BOSS DESIGN / TUNE & PLAY" title="皇帝行動工房" onBack={onBack} />
+      {!state ? <>
+        <div className="epx-game-hero epx-hero-rose">
+          <span>ENCOUNTER DESIGNER / LOCAL ONLY</span>
+          <h3>強いボスを作るだけじゃない。面白いボスを作れ。</h3>
+          <p>最大HP・攻撃圧力・3ターンの行動列を調整して、その場で実戦。数値だけ上げた理不尽ボスと、読み合いが成立する強敵の差を体験する。保存も本編反映もなし。</p>
+        </div>
+        <div className="epx-forge-config">
+          <div className="epx-step-heading"><small>STEP 01 / DURABILITY</small><h3>皇帝の最大HP</h3><p>長期戦を狙うか、短い高圧戦を狙うか。</p></div>
+          <div className="epx-forge-choice-row">
+            {[120, 180, 260].map(value => <button key={value} type="button" className={bossHp === value ? 'is-selected' : ''} aria-pressed={bossHp === value} onClick={() => setBossHp(value)}><strong>{value}</strong><small>{value === 120 ? '短期決戦' : value === 180 ? '標準' : '長期戦'}</small></button>)}
+          </div>
+          <div className="epx-step-heading epx-step-heading-spaced"><small>STEP 02 / THREAT</small><h3>基本攻撃圧力</h3><p>各攻撃の基準値。行動パターンによって追加補正が入る。</p></div>
+          <div className="epx-forge-choice-row epx-forge-pressure">
+            {[12, 20, 28].map(value => <button key={value} type="button" className={pressure === value ? 'is-selected' : ''} aria-pressed={pressure === value} onClick={() => setPressure(value)}><strong>{value}</strong><small>{value === 12 ? '調査向け' : value === 20 ? '標準圧力' : '高圧試験'}</small></button>)}
+          </div>
+          <div className="epx-step-heading epx-step-heading-spaced"><small>STEP 03 / TELEGRAPH SEQUENCE</small><h3>3手の行動列を設計</h3><p>ボスの行動は選んだ順にループする。回復の隙をどう突くか、ノヴァをどこで迎えるかを試そう。</p></div>
+          <div className="epx-forge-sequence">
+            {pattern.map((selected, slot) => (
+              <div className="epx-forge-slot" key={slot}>
+                <div className="epx-forge-slot-heading"><span>TURN {slot + 1}</span><strong>{BOSS_PATTERN_OPTIONS.find(option => option.id === selected)?.name}</strong></div>
+                <div className="epx-forge-option-grid">
+                  {BOSS_PATTERN_OPTIONS.map(option => <button key={option.id} title={option.explanation} type="button" className={selected === option.id ? 'is-selected' : ''} aria-pressed={selected === option.id} onClick={() => cyclePattern(slot, option.id)}>{option.short}</button>)}
+                </div>
+                <p>{BOSS_PATTERN_OPTIONS.find(option => option.id === selected)?.explanation}</p>
+              </div>
+            ))}
+          </div>
+          <button className="epx-primary epx-forge-start" type="button" onClick={start}><Hammer size={18} /> この皇帝と戦う <ChevronRight size={18} /></button>
+        </div>
+        <div className="epx-prototype-principle"><ShieldCheck size={16} /><p><strong>設計の評価軸：</strong>HPと攻撃力だけでなく、回復・防御・重撃の順序に意味があるか。繰り返し遊んで「強いけど納得できる」行動列を探す。</p></div>
+      </> : <>
+        <div className="epx-compiled-build epx-forge-live"><div><small>DESIGNED ENCOUNTER / TURN {state.turn}</small><h3>虚空皇帝・可変設計型</h3><span>HP {state.bossMaxHp} · 圧力 {state.config.attackPressure} · 行動列 {state.config.pattern.map(type => BOSS_PATTERN_OPTIONS.find(option => option.id === type)?.name).join(' → ')}</span></div><strong>{state.score}<small> LOCAL SCORE</small></strong></div>
+        <div className="epx-combat-arena">
+          <div className="epx-enemy-top"><div><small>PLAYER HP / {state.playerHp} · ENERGY / {state.energy}</small><h3>虚空皇帝・可変設計型</h3></div><span className={'epx-intent ' + (intent === 'RECOVER' ? 'epx-intent-recover' : '')}><Eye size={15}/>{intentInfo?.name} / {intentInfo?.short}</span></div>
+          <Meter label="BOSS HP" value={state.bossHp} max={state.bossMaxHp} tone="red" />
+          <Meter label="YOUR HP" value={state.playerHp} max={state.playerMaxHp} tone="cyan" />
+          {intentInfo && <div className="epx-turn-tip"><strong>{intentInfo.name}の予告：</strong>{intentInfo.explanation}</div>}
+          {!done ? <div className="epx-action-grid">
+            <button type="button" onClick={() => act('STRIKE')}><Swords size={18}/><strong>通常攻撃</strong><span>連撃補正・+1ゲージ</span></button>
+            <button type="button" onClick={() => act('GUARD')}><Shield size={18}/><strong>防御</strong><span>次の被害を65%軽減</span></button>
+            <button type="button" onClick={() => act('EVADE')}><Footprints size={18}/><strong>回避</strong><span>成功すれば+1ゲージ</span></button>
+            <button type="button" onClick={() => act('CHARGE')}><Zap size={18}/><strong>蓄力</strong><span>+2ゲージ</span></button>
+            <button type="button" disabled={state.energy < 3} onClick={() => act('BURST')}><Sparkles size={18}/><strong>共鳴解放</strong><span>3ゲージ・大ダメージ</span></button>
+          </div> : <div className={'epx-finish-mini ' + (state.status === 'VICTORY' ? 'epx-finish-win' : 'epx-finish-loss')}><small>TEST REPORT / NOT SAVED</small><h3>{state.status === 'VICTORY' ? '皇帝の設計を突破' : '試験失敗・設計は有効だったか？'}</h3><div className="epx-grade">{grade}</div><p>スコア {state.score} · 残HP {state.playerHp} · 皇帝残HP {state.bossHp}</p><div className="epx-end-actions"><button type="button" className="epx-primary" onClick={resetFight}><RotateCcw size={16}/> 同じ設計で再試験</button><button type="button" className="epx-secondary" onClick={() => setState(null)}>設計を調整</button></div></div>}
+          <LogPanel logs={state.logs}/>
+        </div>
+        <div className="epx-no-save"><ShieldCheck size={15}/>この戦闘は実験限定。設定・スコア・勝敗は本編へ保存されない。</div>
+      </>}
     </section>
   );
 }
