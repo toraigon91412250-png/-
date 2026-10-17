@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Activity, ArrowLeft, ChevronRight, Compass, Crown, Eye, FlaskConical, Gauge,
+  Activity, ArrowLeft, ChevronRight, Compass, Crown, Eye, FlaskConical,
   Heart, Layers, RotateCcw, Shield, ShieldCheck, Sparkles, Swords, Target,
   Trophy, Zap, Crosshair, Footprints, Hammer, CheckCircle2,
 } from 'lucide-react';
@@ -11,7 +11,6 @@ import {
   createAscentCombatState,
   createObservatoryState,
   createResonanceTrialState,
-  getAscentIntent,
   getAscentRelicChoices,
   getAscentRouteChoices,
   getObservatoryIntent,
