@@ -1,6 +1,6 @@
 import { AbilityId, BattleAbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility, ResonanceAbilityId } from '../types/game';
 import { RESONANCE_DEFINITIONS, isResonanceAbilityId, isRegularAbilityId } from '../data/resonanceAbilities';
-import { getFallenDynamicMultiplier, getFallenGodStatMultiplier, getKingZoneValues } from './resonanceSystem';
+import { getFallenDynamicMultiplier, getKingZoneValues } from './resonanceSystem';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
 
