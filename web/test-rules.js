@@ -34,7 +34,7 @@ const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import(
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, buildAchievementBadgeProgress, completeAchievementIds, getAchievementMetricValue, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
-const { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS, RESONANCE_UPGRADE_COSTS } = await import('./src/data/resonanceAbilities.ts');
+const { CRAFTABLE_RESONANCE_ABILITY_IDS, getResonanceCraftEligibility, RESONANCE_DEFINITIONS, RESONANCE_UPGRADE_COSTS } = await import('./src/data/resonanceAbilities.ts');
 const {
   getFallenGodRevivalHpFraction,
   getFallenGodStatMultiplier,
@@ -69,6 +69,11 @@ assert.strictEqual(RESONANCE_DEFINITIONS.length, 10, 'Exactly ten resonance powe
 assert.deepStrictEqual(CRAFTABLE_RESONANCE_ABILITY_IDS, [
   'FALLEN_GOD', 'FALLEN_WING', 'ABYSS_KING', 'JUDGMENT_WING', 'ABYSS_JUDGMENT',
 ], 'Only the five selected resonance powers should be craftable through normal progression.');
+assert.deepStrictEqual(
+  [...new Set(RESONANCE_DEFINITIONS.filter(definition => CRAFTABLE_RESONANCE_ABILITY_IDS.includes(definition.id)).flatMap(definition => definition.ingredients))].sort(),
+  ['ABYSS', 'BLACK_WING', 'FALLEN', 'FALLEN_KING', 'JUDGMENT'],
+  'The five normal recipes must form a source-sharing choice set from five original powers.',
+);
 assert.deepStrictEqual(RESONANCE_UPGRADE_COSTS, [0, 40, 80, 120, 160]);
 assert.deepStrictEqual(
   RESONANCE_DEFINITIONS.map(definition => [definition.id, [...definition.ingredients].sort()]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))),
@@ -1927,6 +1932,10 @@ try {
     'Developer controls must be able to remove an injected resonance level for testing.');
   assert.ok(!loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'),
     'Resetting a resonance test level to zero must clear its injected crafted state.');
+  assert.strictEqual(loadAbilityProgress().levels.FALLEN, 0,
+    'Removing a resonance test injection must not silently restore its consumed source ability.');
+  assert.strictEqual(loadAbilityProgress().levels.BLACK_WING, 0,
+    'Removing a resonance test injection must not restore its second consumed source ability.');
   const simulatedDeveloperFusionSources = {
     ...abilityProgressForFullUnlock,
     levels: { ...abilityProgressForFullUnlock.levels, FALLEN: 5, BLACK_WING: 5 },
@@ -1992,13 +2001,25 @@ try {
   const appSourceForFullUnlock = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
   assert.match(appSourceForFullUnlock, /currentStellaProgress\.allGameFeaturesUnlocked === true/,
     'Normal battle setup must use the saved flag to open all Kaiser levels.');
+  assert.match(appSourceForFullUnlock, /const handleDeveloperSetResonanceAbility[\s\S]*?abilities: prev\.abilities\.filter\(ability => \(\s*ability\.id in next\.levels/,
+    'Developer resonance injection must remove consumed original powers from the pending battle loadout.');
+  assert.match(appSourceForFullUnlock, /const handleUnlockAllGameFeatures[\s\S]*?abilities: prev\.abilities\.filter\(ability => \(\s*ability\.id in nextAbilities\.levels/,
+    'Full unlock must remove all base powers from a previously configured battle loadout.');
   assert.match(developerToolsSourceForFullUnlock, /権能共鳴テスト/);
   assert.match(developerToolsSourceForFullUnlock, /onSetResonanceAbility/);
   assert.match(developerToolsSourceForFullUnlock, /素材の元権能2種と欠片を消費/,
     'Developer Tools must explain that injecting a resonance power consumes its source powers.');
+  assert.match(developerToolsSourceForFullUnlock, /L0にしても元権能は戻りません/,
+    'Developer Tools must warn that removing an injected resonance does not restore source powers.');
+  assert.match(developerToolsSourceForFullUnlock, /ability\.ingredients\.includes\(value as AbilityId\)/,
+    'The Developer Tools battle preset must discard source powers consumed by a newly injected resonance.');
   const resonanceScreenSourceForCrafting = await readFile(new URL('./src/components/ResonanceScreen.tsx', import.meta.url), 'utf8');
   assert.match(resonanceScreenSourceForCrafting, /CRAFTABLE_RESONANCE_ABILITY_IDS/);
   assert.match(resonanceScreenSourceForCrafting, /合成対象外/);
+  assert.match(resonanceScreenSourceForCrafting, /合成は不可逆の選択/);
+  assert.match(resonanceScreenSourceForCrafting, /素材が重ならない組み合わせを選んで最大2種まで/);
+  assert.match(resonanceScreenSourceForCrafting, /通常プレイでは取り消せません/);
+  assert.match(resonanceScreenSourceForCrafting, /消費済み/);
   const battleSetupSourceForResonance = await readFile(new URL('./src/components/BattleSetupScreen.tsx', import.meta.url), 'utf8');
   assert.match(battleSetupSourceForResonance,
     /RESONANCE_DEFINITIONS\s*\.filter\(ability => resonanceProgress\.unlocked && \(resonanceProgress\.levels\[ability\.id\] \?\? 0\) > 0\)/,
@@ -3074,6 +3095,22 @@ assert.strictEqual(fusedGod.progress.shards.FALLEN_KING, 0);
 assert.strictEqual(fusedGod.resonance.levels.FALLEN_GOD, 1, 'Fused authorities start at Lv.1.');
 assert.strictEqual(fusedGod.resonance.shards, 38, 'Source shards must convert 1:1 in addition to the existing resonance shards.');
 assert.ok(fusedGod.resonance.craftedRecipes.includes('FALLEN_GOD'));
+const unavailableAfterGodFusion = getResonanceCraftEligibility('FALLEN_WING', loadAbilityProgress(), loadResonanceProgress());
+assert.strictEqual(unavailableAfterGodFusion.canCombine, false);
+assert.strictEqual(unavailableAfterGodFusion.reason, 'SOURCE_CONSUMED',
+  'A recipe sharing a base power with a completed fusion must clearly report its consumed source.');
+assert.strictEqual(unavailableAfterGodFusion.sourceAbilityId, 'FALLEN');
+assert.strictEqual(unavailableAfterGodFusion.consumedBy, 'FALLEN_GOD');
+assert.strictEqual(getResonanceCraftEligibility('ABYSS_JUDGMENT', loadAbilityProgress(), loadResonanceProgress()).canCombine, true,
+  'A recipe whose two ingredients remain owned must still be available after an unrelated fusion.');
+const blockedFusionAttempt = combineResonanceAbility('FALLEN_WING');
+assert.strictEqual(blockedFusionAttempt.success, false);
+assert.match(blockedFusionAttempt.message, /堕天.*堕天の神.*消費済み/,
+  'Attempting a recipe with a consumed source must explain why it cannot be crafted.');
+assert.strictEqual(blockedFusionAttempt.progress.levels.BLACK_WING, 5,
+  'A failed fusion must not consume the other still-owned ingredient.');
+assert.strictEqual(blockedFusionAttempt.progress.shards.BLACK_WING, 20,
+  'A failed fusion must not consume the other source fragments.');
 assert.strictEqual(combineResonanceAbility('FALLEN_GOD').success, false, 'A recipe may only be crafted once.');
 addAbilityShards('BLACK_WING', 3);
 assert.strictEqual(loadResonanceProgress().shards, 41, 'Additional shards for an already-maxed source authority convert 1:1.');
