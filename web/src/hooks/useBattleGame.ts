@@ -1911,9 +1911,12 @@ export function useBattleGame(
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
+        const resonanceFallenExecution = activeResonancesForSpecial.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -2217,6 +2220,10 @@ export function useBattleGame(
         }
 
         const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('ULTIMATE') : [];
+        const activeResonancesForUltimate = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonancesForUltimate.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         const baseCalculatedDamage = calculateUltimateDamage({
           attacker: actor,
@@ -2244,7 +2251,7 @@ export function useBattleGame(
         }
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -2268,10 +2275,6 @@ export function useBattleGame(
           if (execution) addLog(`⚖️【${id === 'ABYSS_JUDGMENT' ? '深淵断罪' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%。`, 'PASSIVE_TRIGGER', turn);
         });
 
-        const activeResonancesForUltimate = getEquippedResonanceAbilities(stateRef.current.battleConfig);
-        const resonanceFallenExecution = activeResonancesForUltimate.some(resonance =>
-          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
-        );
         const fallenExecution =
           isActorPlayer &&
           (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
