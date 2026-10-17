@@ -1440,7 +1440,31 @@ try {
   assert.strictEqual(getResonanceExecutionStats('ABYSS_JUDGMENT', 5).threshold, 6);
   assert.strictEqual(getResonanceExecutionStats('ABYSS_JUDGMENT', 5).overflowMultiplierCap, 2);
   assert.strictEqual(getResonanceExecutionStats('KING_JUDGMENT', 5).defenseIgnore, 0.9);
-  console.log('✓ Ten resonance recipes and the core level-value tables are verified.');
+
+  const fallenOverlapFighter = createInitialFighter(IRENA, true);
+  const fallenBaseStats = fallenOverlapFighter.resonanceBaseStats;
+  fallenOverlapFighter.currentHp = Math.max(1, Math.round(fallenBaseStats.maxHp * 0.05));
+  const fallenOverlapResult = applyDynamicAbilityModifiers(fallenOverlapFighter, {
+    kaiserLevel: 10,
+    abilities: [
+      { id: 'FALLEN_WING', level: 5 },
+      { id: 'FALLEN_JUDGMENT', level: 5 },
+    ],
+    imprints: [],
+  }, 1);
+  assert.strictEqual(
+    fallenOverlapResult.character.attack,
+    Math.round(fallenBaseStats.attack * 6.6),
+    'Two fused abilities sharing FALLEN must use the strongest inherited low-HP multiplier once, not multiply both effects.',
+  );
+
+  const resonanceBattleHookSource = await readFile(new URL('./src/hooks/useBattleGame.ts', import.meta.url), 'utf8');
+  assert.match(
+    resonanceBattleHookSource,
+    /isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ'/,
+    'King Zone direct-hit mitigation and King Judgment stacks must not treat Star Eclipse ticks as direct attacks.',
+  );
+  console.log('✓ Ten resonance recipes, core level-value tables, overlapping inherited effects, and DoT hit classification are verified.');
 
   storageValues.clear();
   storageValues.set('duel_arena_ability_progress', JSON.stringify({
