@@ -1,0 +1,92 @@
+name: Deploy Experiment Prototype Preview
+
+on:
+  push:
+    branches: [experiment/prototype-showcase]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Serialize preview publishing with production without cancelling live deploys.
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main game
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: main-source
+
+      - name: Checkout experiment branch
+        uses: actions/checkout@v6
+        with:
+          ref: experiment/prototype-showcase
+          path: preview-source
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.22.2
+          cache: npm
+          cache-dependency-path: main-source/web/package-lock.json
+
+      - name: Install main dependencies
+        working-directory: main-source/web
+        run: npm ci
+
+      - name: Test main game
+        working-directory: main-source/web
+        run: npm test
+
+      - name: Build unchanged main site
+        working-directory: main-source/web
+        env:
+          VITE_BASE_PATH: /-/
+        run: npm run build
+
+      - name: Install preview dependencies
+        working-directory: preview-source/web
+        run: npm ci
+
+      - name: Test prototype branch
+        working-directory: preview-source/web
+        run: npm test
+
+      - name: Build prototype preview under /prototype
+        working-directory: preview-source/web
+        env:
+          VITE_BASE_PATH: /-/prototype/
+        run: npm run build
+
+      - name: Combine main site and isolated preview
+        run: |
+          mkdir -p main-source/web/dist/prototype
+          cp -R preview-source/web/dist/. main-source/web/dist/prototype/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload combined Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: main-source/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages-preview
+      url: ${{ steps.deployment.outputs.page_url }}prototype/
+    steps:
+      - name: Deploy isolated prototype preview
+        id: deployment
+        uses: actions/deploy-pages@v5
+        with:
+          environment_name: github-pages-preview

@@ -6,6 +6,7 @@ import {RESONANCE_DEFINITIONS} from '../data/resonanceAbilities';
 import {BATTLE_CHALLENGE_LEVELS} from '../types/game';
 import {EXPERIMENT_TRIALS,getExperimentGrade,type ExperimentTrial} from '../utils/experimentLab';
 import './ExperimentLabScreen.css';
+import { ExperimentPrototypeShowcase } from './ExperimentPrototypeShowcase';
 interface Props{abilityProgress:AbilityProgress;resonanceProgress:ResonanceProgress;currentConfig:BattleSetupConfig;lastRun:BattleUiState|null;onBack:()=>void;onStartTrial:(level:BattleChallengeLevel,difficulty:CpuDifficulty)=>void;}
 const fmt=(v:number)=>Math.max(0,Math.round(v)).toLocaleString('ja-JP');
 function gradeRun(s:BattleUiState){return getExperimentGrade(s.winnerIsPlayer===true,s.player.currentHp/Math.max(1,s.player.character.maxHp),s.enemy.currentHp/Math.max(1,s.enemy.character.maxHp));}
@@ -15,12 +16,15 @@ const TrialCard:React.FC<{trial:ExperimentTrial;onStart:()=>void}>=({trial,onSta
  <footer><small>推奨：{trial.recommendedFor}</small><button onClick={onStart} type="button">試験条件を組む <ChevronRight size={16}/></button></footer></article>;
 export const ExperimentLabScreen:React.FC<Props>=({abilityProgress,resonanceProgress,currentConfig,lastRun,onBack,onStartTrial})=>{
  const [level,setLevel]=useState<BattleChallengeLevel>(50),[difficulty,setDifficulty]=useState<CpuDifficulty>('EXPERT');
+ const [prototypeActive,setPrototypeActive]=useState(false);
  const base=useMemo(()=>ABILITY_DEFINITIONS.filter(x=>(abilityProgress.levels[x.id]??0)>0),[abilityProgress]);
  const fused=useMemo(()=>RESONANCE_DEFINITIONS.filter(x=>(resonanceProgress.levels[x.id]??0)>0),[resonanceProgress]);
  const equipped=currentConfig.abilities.map(x=>{const d=ABILITY_DEFINITIONS.find(y=>y.id===x.id)??RESONANCE_DEFINITIONS.find(y=>y.id===x.id);return d?d.name+' Lv.'+x.level:x.id+' Lv.'+x.level;});
  const latestGrade=lastRun?.phase==='BATTLE_FINISHED'?gradeRun(lastRun):null;
  return <main className="experiment-lab"><div className="experiment-lab__inner">
  <header className="experiment-lab__header"><button className="lab-back" onClick={onBack} type="button"><ArrowLeft size={16}/> ホームへ戻る</button><div className="lab-brand"><span><FlaskConical size={23}/></span><div><small>TACTICAL LABORATORY / 00</small><h1>実験場</h1></div></div><b className="lab-safe"><ShieldCheck size={14}/> NO REWARDS · NO RISK</b></header>
+ <ExperimentPrototypeShowcase onViewChange={setPrototypeActive} />
+ {!prototypeActive && <>
  <section className="lab-hero"><div className="lab-orbit"/><div><p><Activity size={14}/> COMBAT SIMULATION / REAL ENGINE</p><h2>負けてもいい。<br/><em>ここで全部、試せ。</em></h2><p className="lab-hero-summary">本編と同じ戦闘エンジンで権能・ステータス・刻印の編成を検証。勝敗は戦績、実績、解放条件、通貨へ反映されない。</p><div className="lab-stats"><span><Swords size={14}/> 敵Lv.10〜100</span><span><Gauge size={14}/> CPU 2段階</span><span><Gem size={14}/> 所持データのみ</span></div></div><div className="lab-emblem"><div/><div/><FlaskConical size={58}/><small>FIELD TEST</small></div></section>
  {lastRun?.phase==='BATTLE_FINISHED'&&latestGrade&&<section className="lab-last"><Trophy size={21}/><div><small>LAST TEST / 直近の実験</small><b>{lastRun.winnerIsPlayer?'試験成功':'試験終了'} · カイザー Lv.{lastRun.battleConfig.kaiserLevel}</b><span>{lastRun.cpuDifficulty} CPU · {lastRun.turnNumber}ターン</span></div><strong>{latestGrade}</strong><small>本編記録なし</small></section>}
  <section className="lab-section"><header><div><small>READY-MADE TESTS</small><h2>試験プロトコル</h2></div><span>目的に合わせて選ぶ</span></header><div className="lab-trials">{EXPERIMENT_TRIALS.map(t=><TrialCard key={t.id} trial={t} onStart={()=>onStartTrial(t.kaiserLevel,t.difficulty)}/>)}</div></section>
@@ -32,6 +36,7 @@ export const ExperimentLabScreen:React.FC<Props>=({abilityProgress,resonanceProg
  {!base.length&&!fused.length&&<p>権能を獲得すると、所持能力がここに表示されます。</p>}</div>
  <aside><ShieldCheck size={17}/><p><b>セーブ保護：</b>戦闘結果、報酬、Lv.50共鳴解放、Lv.100報酬、実績進行、素材消費を無効化。評価はその場限り。</p></aside></section>
  <footer className="lab-footer"><span><Sparkles size={14}/> TEST BOLDLY. KEEP YOUR SAVE SAFE.</span><span>戦績にも通貨にも影響しない、自由な戦術検証室。</span></footer>
+ </>}
  </div></main>;
 };
 interface ReportProps{state:BattleUiState;onBackToLab:()=>void;onRetry:()=>void;onAdjust:()=>void;}

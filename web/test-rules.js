@@ -47,6 +47,7 @@ const {
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
+const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, createBossForgeState, createKaiserReversalState, getBossForgeIntent, getKaiserReversalIntent, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn, resolveBossForgeTurn, resolveKaiserReversalTurn } = await import('./src/utils/experimentPrototypes.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -3224,5 +3225,120 @@ try {
     else storageValues.set(key, value);
   }
 }
+
+// Playable prototype rules: route variation, readable counterplay, and loadout-analysis regressions.
+assert.deepStrictEqual(getAscentRouteChoices(5, 2).map(node => node.type), ['BOSS']);
+assert.strictEqual(getAscentRouteChoices(2, 0).some(node => node.type === 'ELITE'), true);
+const ascentFloorThree = getAscentRouteChoices(3, 1);
+assert.strictEqual(ascentFloorThree.find(node => node.type === 'COMBAT')?.title, '王域の番人',
+  'Route labels should prefer the correct floor-specific combat encounter.');
+assert.strictEqual(ascentFloorThree.find(node => node.type === 'ELITE')?.title, '精鋭・王翼兵',
+  'Route labels should prefer the correct floor-specific elite encounter.');
+assert.strictEqual(getAscentRouteChoices(4, 0).find(node => node.type === 'ELITE')?.title, '精鋭・深淵騎士',
+  'The final approach should use its own elite encounter label.');
+assert.notDeepStrictEqual(
+  getAscentRouteChoices(1, 0).map(node => node.type),
+  getAscentRouteChoices(1, 1).map(node => node.type),
+  'Fresh runs must offer different meaningful route choices.',
+);
+assert.deepStrictEqual(getAscentRelicChoices(['IRON_FEATHER', 'VOID_HEART'], 2).map(relic => relic.id).filter(id => ['IRON_FEATHER', 'VOID_HEART'].includes(id)), []);
+assert.ok(ASCENT_RELICS.length >= 6, 'Ascent must offer enough relics to create different run builds.');
+const ascentBase = createAscentCombatState({ floor: 1, nodeType: 'COMBAT', playerHp: 100, playerMaxHp: 100, energy: 0, score: 0, relicIds: [] });
+assert.strictEqual(ascentBase.intent, getAscentIntent(1));
+const namedEliteAscent = createAscentCombatState({
+  floor: 3, nodeType: 'ELITE', enemyName: '精鋭・王翼兵',
+  playerHp: 100, playerMaxHp: 100, energy: 0, score: 0, relicIds: [],
+});
+assert.strictEqual(namedEliteAscent.enemyName, '精鋭・王翼兵',
+  'A chosen floor-specific route name must carry into its actual combat screen.');
+const ascentGuarded = resolveAscentTurn(ascentBase, 'GUARD');
+const ascentCharged = resolveAscentTurn(ascentBase, 'CHARGE');
+assert.ok(ascentGuarded.playerHp > ascentCharged.playerHp, 'Guarding a telegraphed heavy attack must reduce damage.');
+const ascentFinished = { ...ascentBase, status: 'VICTORY' };
+assert.strictEqual(resolveAscentTurn(ascentFinished, 'STRIKE'), ascentFinished, 'Finished fights ignore additional actions.');
+const observatoryStart = createObservatoryState();
+assert.strictEqual(getObservatoryIntent(1, 180, 180).dangerLanes.includes(1), true);
+const observatoryDodge = resolveObservatoryTurn(observatoryStart, 'DODGE', 0);
+assert.strictEqual(observatoryDodge.playerHp, 100, 'Moving to a safe lane avoids the marked line attack.');
+assert.strictEqual(observatoryDodge.playerLane, 0, 'Only the explicit dodge action changes the actual lane.');
+assert.ok(observatoryDodge.score >= 12);
+const observatoryStrikeFromCurrentLane = resolveObservatoryTurn(observatoryStart, 'STRIKE', 0);
+assert.strictEqual(observatoryStrikeFromCurrentLane.playerLane, 1, 'Choosing a destination does not reposition the fighter for free.');
+assert.strictEqual(observatoryStrikeFromCurrentLane.playerHp, 81, 'Attacking from the dangerous current lane still takes the forecasted damage.');
+const coreTargetState = { ...observatoryStart, turn: 2 };
+assert.strictEqual(getObservatoryIntent(2, 180, 180).kind, 'CORE');
+const observatoryGuard = resolveObservatoryTurn(coreTargetState, 'GUARD', 1);
+assert.strictEqual(observatoryGuard.coreHp, 100, 'Guarding stops a core-targeted attack.');
+const observatoryIntercept = resolveObservatoryTurn(coreTargetState, 'INTERCEPT', 1);
+assert.strictEqual(observatoryIntercept.coreHp, 100, 'Interception stops a core-targeted attack.');
+assert.strictEqual(observatoryIntercept.bossHp, 168);
+assert.strictEqual(getResonanceIntent(3), 'EXPOSED');
+const exactSynergy = getResonancePrototypeAnalysis('ABYSS', 'JUDGMENT');
+assert.strictEqual(exactSynergy.score, 95);
+assert.strictEqual(getResonancePrototypeAnalysis('JUDGMENT', 'ABYSS').title, exactSynergy.title, 'Build analysis must be order-independent.');
+const compilerStart = createResonanceTrialState();
+const compilerGuard = resolveResonanceTrialTurn(compilerStart, 'GUARD', exactSynergy, 'BURST');
+assert.strictEqual(compilerGuard.playerHp, 96, 'A resonance build’s defensive synergy must affect actual guarded damage.');
+const compilerCharge = resolveResonanceTrialTurn(compilerStart, 'CHARGE', exactSynergy, 'BURST');
+assert.strictEqual(compilerCharge.energy, 2);
+assert.strictEqual(compilerCharge.playerHp, 81);
+const compilerBurstState = { ...compilerCharge, energy: 3, turn: 3 };
+const compilerBurst = resolveResonanceTrialTurn(compilerBurstState, 'BURST', exactSynergy, 'BURST');
+assert.ok(compilerBurst.enemyHp < compilerBurstState.enemyHp, 'A charged build resolves its burst action.');
+assert.strictEqual(compilerBurst.energy, 0);
+const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
+assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房', '反転決戦'].every(name => prototypeScreenSource.includes(name)));
+assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'Five playable concepts should be visible in the catalog.');
+assert.ok(prototypeScreenSource.includes('number="05"'), 'The fifth prototype, Kaiser reversal, must remain available in the gallery.');
+const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
+assert.strictEqual(forgeStart.bossHp, 120);
+assert.strictEqual(getBossForgeIntent(forgeStart), 'CRUSH');
+const forgeStrike = resolveBossForgeTurn(forgeStart, 'STRIKE');
+const forgeGuard = resolveBossForgeTurn(forgeStart, 'GUARD');
+assert.strictEqual(forgeStrike.playerHp, 84, 'A custom heavy-attack pattern punishes an unguarded strike.');
+assert.strictEqual(forgeGuard.playerHp, 94, 'Guard meaningfully reduces the custom pressure value.');
+assert.strictEqual(forgeGuard.energy, 2);
+const forgeRecoverState = { ...forgeStart, bossHp: 50, turn: 2 };
+assert.strictEqual(getBossForgeIntent(forgeRecoverState), 'RECOVER');
+const forgeRecover = resolveBossForgeTurn(forgeRecoverState, 'STRIKE');
+assert.strictEqual(forgeRecover.bossHp, 36, 'The boss takes the opening hit, then regains a bounded amount of HP.');
+const forgeBurstState = { ...forgeStart, energy: 3 };
+const forgeBurst = resolveBossForgeTurn(forgeBurstState, 'BURST');
+assert.ok(forgeBurst.bossHp < forgeBurstState.bossHp);
+assert.strictEqual(forgeBurst.energy, 0);
+assert.strictEqual(getBossForgeIntent({ ...forgeStart, turn: 4 }), 'CRUSH', 'Custom pattern order loops predictably.');
+const clampedForge = createBossForgeState({ bossMaxHp: 999, attackPressure: 99, pattern: ['CRUSH', 'FEINT', 'NOVA', 'GUARD', 'RECOVER'] });
+assert.strictEqual(clampedForge.bossMaxHp, 400, 'Boss design HP has a safe supported range.');
+assert.strictEqual(clampedForge.config.attackPressure, 40, 'Boss design pressure has a safe supported range.');
+assert.strictEqual(clampedForge.config.pattern.length, 4, 'Boss behavior sequences are bounded to four editable slots.');
+const forgeFinished = { ...forgeStart, status: 'VICTORY' };
+assert.strictEqual(resolveBossForgeTurn(forgeFinished, 'STRIKE'), forgeFinished, 'Finished custom boss fights ignore additional input.');
+const reversalFortress = createKaiserReversalState('FORTRESS');
+assert.strictEqual(reversalFortress.kaiserHp, 210);
+assert.strictEqual(reversalFortress.armorPlates, 3);
+assert.strictEqual(reversalFortress.energy, 1);
+const reversalExecutioner = createKaiserReversalState('EXECUTIONER');
+assert.strictEqual(reversalExecutioner.kaiserHp, 160);
+assert.strictEqual(reversalExecutioner.armorPlates, 1);
+assert.strictEqual(reversalExecutioner.energy, 2);
+assert.strictEqual(getKaiserReversalIntent(1, 140, 140), 'COUNTER');
+const reversalStrike = resolveKaiserReversalTurn(reversalFortress, 'STRIKE');
+assert.strictEqual(reversalStrike.irenaHp, 120);
+assert.strictEqual(reversalStrike.kaiserHp, 184, 'Counter telegraph punishes a direct Kaiser attack.');
+assert.strictEqual(reversalStrike.armorPlates, 2, 'One armor plate absorbs a single hit.');
+const reversalGuard = resolveKaiserReversalTurn(reversalFortress, 'GUARD');
+assert.strictEqual(reversalGuard.kaiserHp, 208, 'Guard and armor reduce incoming counter damage.');
+const reversalRebuild = resolveKaiserReversalTurn({ ...reversalFortress, armorPlates: 0 }, 'REBUILD');
+assert.strictEqual(reversalRebuild.kaiserHp, 186, 'Armor repair leaves the Kaiser exposed for its current turn.');
+assert.strictEqual(reversalRebuild.armorPlates, 1, 'Armor is restored after Irena responds, not before her hit.');
+const reversalExposed = resolveKaiserReversalTurn({ ...reversalFortress, turn: 3 }, 'STRIKE');
+assert.strictEqual(reversalExposed.irenaHp, 108, 'Irena’s exposed window increases Kaiser damage.');
+assert.strictEqual(reversalExposed.kaiserHp, 210, 'Irena does not attack during the exposed window.');
+assert.strictEqual(getKaiserReversalIntent(4, 49, 140), 'LAST_STAND');
+const reversalFinished = { ...reversalFortress, status: 'VICTORY' };
+assert.strictEqual(resolveKaiserReversalTurn(reversalFinished, 'STRIKE'), reversalFinished, 'Finished reversal matches ignore extra inputs.');
+console.log('✓ Kaiser reversal: build trade-offs, counter telegraph, armor consumption/rebuild, exposed damage window, and final retaliation verified.');
+
+console.log('✓ Experiment prototypes: seeded roguelite runs, telegraph counterplay, resonance buildcraft, configurable boss balance, and side-swap duel verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
