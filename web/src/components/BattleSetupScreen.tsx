@@ -832,8 +832,6 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                 </button>
               );
             })}
-          </div>
-
             {RESONANCE_DEFINITIONS.map(ability => {
               const level = resonanceProgress.levels[ability.id] ?? 0;
               const selected = selectedAbilities.includes(ability.id);
