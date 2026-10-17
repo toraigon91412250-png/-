@@ -32,7 +32,7 @@ export const ASCENT_RELICS: readonly AscentRelic[] = [
   { id: 'EXECUTION_MARK', name: '終局の刻印', symbol: '刻', description: '敵HPが30%以下なら通常攻撃 +8', attackBonus: 0, burstBonus: 0, guardReduction: 0, maxHpBonus: 0, healOnAcquire: 0 },
 ];
 
-export function getAscentRouteChoices(floor: number): AscentRouteNode[] {
+export function getAscentRouteChoices(floor: number, seed = 0): AscentRouteNode[] {
   if (floor >= 5) {
     return [{ id: 'boss-5', type: 'BOSS', title: '虚空皇帝', risk: '最終試験', reward: '踏破評価' }];
   }
@@ -58,13 +58,26 @@ export function getAscentRouteChoices(floor: number): AscentRouteNode[] {
       { id: 'f4-forge', type: 'FORGE', title: '最終鍛造所', risk: '安全', reward: '最終遺物を選択' },
     ],
   };
-  return (routeByFloor[floor] ?? routeByFloor[1]).map(node => ({ ...node }));
+  const routeVariants: Record<number, AscentNodeType[][]> = {
+    1: [['COMBAT', 'SHRINE', 'FORGE'], ['COMBAT', 'SHRINE', 'ELITE'], ['COMBAT', 'FORGE', 'ELITE']],
+    2: [['COMBAT', 'ELITE', 'FORGE'], ['COMBAT', 'SHRINE', 'ELITE'], ['COMBAT', 'FORGE', 'SHRINE']],
+    3: [['COMBAT', 'SHRINE', 'ELITE'], ['COMBAT', 'FORGE', 'ELITE'], ['SHRINE', 'FORGE', 'ELITE']],
+    4: [['ELITE', 'SHRINE', 'FORGE'], ['ELITE', 'COMBAT', 'FORGE'], ['SHRINE', 'COMBAT', 'FORGE']],
+  };
+  const availableTemplates = Object.values(routeByFloor).flat();
+  const variants = routeVariants[floor] ?? routeVariants[1];
+  const chosenTypes = variants[Math.abs(Math.floor(seed + floor - 1)) % variants.length];
+  return chosenTypes.map((type, index) => {
+    const template = availableTemplates.find(node => node.type === type);
+    if (!template) throw new Error('Missing experiment route template: ' + type);
+    return { ...template, id: 'f' + floor + '-' + type.toLowerCase() + '-' + index };
+  });
 }
 
-export function getAscentRelicChoices(ownedRelicIds: readonly string[], floor: number): AscentRelic[] {
+export function getAscentRelicChoices(ownedRelicIds: readonly string[], floor: number, seed = 0): AscentRelic[] {
   const available = ASCENT_RELICS.filter(relic => !ownedRelicIds.includes(relic.id));
   if (available.length <= 3) return available.slice(0, 3);
-  const offset = Math.max(0, floor - 1) % available.length;
+  const offset = (Math.max(0, floor - 1) + Math.abs(Math.floor(seed)) * 2) % available.length;
   return [0, 1, 2].map(index => available[(offset + index) % available.length]);
 }
 
@@ -105,7 +118,7 @@ export function createAscentCombatState(input: {
 }): AscentCombatState {
   const isBoss = input.nodeType === 'BOSS';
   const isElite = input.nodeType === 'ELITE';
-  const enemyMaxHp = isBoss ? 250 : 66 + input.floor * 17 + (isElite ? 34 : 0);
+  const enemyMaxHp = isBoss ? 170 : 48 + input.floor * 12 + (isElite ? 26 : 0);
   const relics = ASCENT_RELICS.filter(relic => input.relicIds.includes(relic.id));
   return {
     playerHp: Math.max(0, Math.min(input.playerMaxHp, input.playerHp)),
@@ -121,7 +134,7 @@ export function createAscentCombatState(input: {
     intent: getAscentIntent(1),
     attackBonus: relics.reduce((sum, relic) => sum + relic.attackBonus, 0),
     burstBonus: relics.reduce((sum, relic) => sum + relic.burstBonus, 0),
-    guardReduction: Math.min(0.8, 0.45 + relics.reduce((sum, relic) => sum + relic.guardReduction, 0)),
+    guardReduction: Math.min(0.82, 0.55 + relics.reduce((sum, relic) => sum + relic.guardReduction, 0)),
     lowHpBonus: input.relicIds.includes('EXECUTION_MARK') ? 8 : 0,
     combo: 0,
     score: input.score,
@@ -175,13 +188,13 @@ export function resolveAscentTurn(state: AscentCombatState, action: AscentAction
     return { ...state, playerHp, energy, enemyHp, combo, score: score + Math.max(0, playerHp), status: 'VICTORY', logs: logs.slice(-6), turn: state.turn + 1, intent: getAscentIntent(state.turn + 1) };
   }
 
-  const enemyPhaseBonus = state.isBoss && state.enemyHp / state.enemyMaxHp < 0.5 ? 8 : state.isElite ? 4 : 0;
+  const enemyPhaseBonus = state.isBoss && state.enemyHp / state.enemyMaxHp < 0.5 ? 6 : state.isElite ? 3 : 0;
   if (state.intent === 'RECOVER') {
     const heal = state.isBoss ? 8 : 6;
     enemyHp = Math.min(state.enemyMaxHp, enemyHp + heal);
     logs.push(`敵は隙を作りHPを${Math.min(heal, state.enemyMaxHp - Math.max(0, state.enemyHp - damage))}回復。`);
   } else {
-    const baseIncoming = (state.intent === 'HEAVY' ? 19 : 12) + state.floor * 2 + enemyPhaseBonus;
+    const baseIncoming = (state.intent === 'HEAVY' ? 13 : 8) + state.floor * 2 + enemyPhaseBonus;
     const incoming = guarding ? Math.max(1, Math.round(baseIncoming * (1 - state.guardReduction))) : baseIncoming;
     playerHp = Math.max(0, playerHp - incoming);
     logs.push(`敵の攻撃！ ${incoming}ダメージ。`);
