@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, ImprintProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, IrenaSkillProgress } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
+import { isRegularAbilityId } from '../data/resonanceAbilities';
 import { IMPRINT_DEFINITIONS } from '../data/imprints';
 
 interface DeveloperToolsScreenProps {
@@ -74,7 +75,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
   const [selectedIds, setSelectedIds] = useState<AbilityId[]>(
-    battleSetup.abilities.map(ability => ability.id).slice(0, 2),
+    battleSetup.abilities.map(ability => ability.id).filter(isRegularAbilityId).slice(0, 2),
   );
   const [confirmReset, setConfirmReset] = useState(false);
   const [fullUnlockResult, setFullUnlockResult] = useState<'success' | 'failure' | null>(null);

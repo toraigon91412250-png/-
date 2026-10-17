@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { AbilityId, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
+import { AbilityId, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId, ResonanceAbilityId } from './types/game';
 import { IRENA, STELLA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
 import { AchievementScreen } from './components/AchievementScreen';
 import { GrowthHubScreen } from './components/GrowthHubScreen';
+import { isRegularAbilityId } from './data/resonanceAbilities';
+import { ResonanceScreen } from './components/ResonanceScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -31,7 +33,7 @@ import { ACHIEVEMENT_DEFINITIONS, buildAchievementBadgeProgress, buildAchievemen
 import type { AchievementProgress } from './utils/achievementSystem';
 import type { StellaModeProgress } from './utils/storage';
 
-type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'ACHIEVEMENTS' | 'DEV_TOOLS';
+type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'RESONANCE' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'ACHIEVEMENTS' | 'DEV_TOOLS';
 type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER';
 
 // These screens already have their own transition or combat presentation.
@@ -52,6 +54,8 @@ export const App: React.FC = () => {
   const [skillProgress, setSkillProgress] = useState(() => loadSkillProgress());
   const [recruitmentProgress, setRecruitmentProgress] = useState(() => loadRecruitmentProgress());
   const [abilityProgress, setAbilityProgress] = useState(() => loadAbilityProgress());
+  const [resonanceProgress, setResonanceProgress] = useState(() => loadResonanceProgress());
+  const [resonanceMessage, setResonanceMessage] = useState<string | null>(null);
   const [kaiserChallengeProgress, setKaiserChallengeProgress] = useState(() => loadKaiserChallengeProgress());
   const [irenaTalentProgress, setIrenaTalentProgress] = useState(() => loadIrenaTalentProgress());
   const [irenaTalentMessage, setIrenaTalentMessage] = useState<string | null>(null);
@@ -178,6 +182,19 @@ export const App: React.FC = () => {
       && battleSetupReturnScreen === 'DEV_TOOLS'
       && (!currentStellaProgress.kaiser100RewardClaimed || !currentStellaProgress.stellaModeUnlocked);
 
+    if (
+      completedLevel === 50 &&
+      playerWon &&
+      (battleState.battleConfig.kaiserChallengeMode ?? 'NORMAL') === 'NORMAL' &&
+      battleSetupReturnScreen !== 'DEV_TOOLS'
+    ) {
+      const unlock = unlockAbilityResonance();
+      setResonanceProgress(unlock.progress);
+      setResonanceMessage(unlock.persisted
+        ? '通常カイザーLv.50撃破を確認。権能共鳴が解放されました。'
+        : '解放状態を保存できませんでした。ブラウザの保存設定を確認してください。');
+    }
+
     if (completedLevel === 100 && playerWon && !isDeveloperOnlyExTest) {
       const result = battleState.battleConfig.kaiserChallengeMode === 'EX'
         ? recordExKaiserVictory()
@@ -205,7 +222,7 @@ export const App: React.FC = () => {
         playerHp: battleState.player.currentHp,
         playerMaxHp: battleState.player.character.maxHp,
         actionsTaken: battleState.playerActionsTaken ?? [],
-        abilities: battleState.battleConfig.abilities,
+        abilities: battleState.battleConfig.abilities.filter(ability => isRegularAbilityId(ability.id)).map(ability => ({ id: ability.id as AbilityId, level: ability.level })),
         equippedImprints: battleState.battleConfig.imprints ?? [],
         usedImprints: battleState.usedImprints,
         logLines: battleState.logs.map(log => log.text),
@@ -235,6 +252,7 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
+    setResonanceProgress(loadResonanceProgress());
     const nextAchievementProgress = loadAchievementProgress();
     setAchievementProgress(nextAchievementProgress);
     const nextEquippedBadge = buildAchievementBadgeProgress(nextAchievementProgress).find(badge => badge.id === nextAchievementProgress.equippedBadgeId && badge.tier > 0);
@@ -658,7 +676,49 @@ export const App: React.FC = () => {
       ...prev,
       abilities: prev.abilities.map(ability => ({
         ...ability,
-        level: next.levels[ability.id],
+        level: ability.id in next.levels
+          ? next.levels[ability.id as AbilityId]
+          : next.resonance?.levels[ability.id as ResonanceAbilityId] ?? ability.level,
+      })),
+    }));
+  };
+
+  const handleOpenResonance = () => {
+    setAbilityProgress(loadAbilityProgress());
+    setResonanceProgress(loadResonanceProgress());
+    setResonanceMessage(null);
+    setScreen('RESONANCE');
+  };
+
+  const handleCombineResonance = (id: ResonanceAbilityId) => {
+    const result = combineResonanceAbility(id);
+    setAbilityProgress(result.progress);
+    setResonanceProgress(result.resonance);
+    setResonanceMessage(result.message);
+    if (!result.success) return;
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.filter(ability => (
+        ability.id in result.progress.levels
+          ? result.progress.levels[ability.id as AbilityId] > 0
+          : (result.resonance.levels[ability.id as ResonanceAbilityId] ?? 0) > 0
+      )),
+    }));
+  };
+
+  const handleUpgradeResonance = (id: ResonanceAbilityId) => {
+    const result = upgradeResonanceAbility(id);
+    setAbilityProgress(result.progress);
+    setResonanceProgress(result.resonance);
+    setResonanceMessage(result.message);
+    if (!result.success) return;
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.map(ability => ({
+        ...ability,
+        level: ability.id in result.progress.levels
+          ? result.progress.levels[ability.id as AbilityId]
+          : result.resonance.levels[ability.id as ResonanceAbilityId] ?? ability.level,
       })),
     }));
   };
@@ -817,9 +877,24 @@ export const App: React.FC = () => {
           onUpgradeSkill={handleUpgradeSkill}
           onChooseSkillPath={handleChooseSkillPath}
           onUpgradeAbility={handleUpgradeAbility}
+          onOpenResonance={handleOpenResonance}
           onOpenRecruitment={() => handleOpenRecruitment('GROWTH_HUB')}
           onOpenImprints={() => handleOpenImprints('GROWTH_HUB')}
           onUseRaidCoreFragment={handleUseRaidCoreFragment}
+        />
+      ) : screen === 'RESONANCE' ? (
+        <ResonanceScreen
+          abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
+          message={resonanceMessage}
+          onCombine={handleCombineResonance}
+          onUpgrade={handleUpgradeResonance}
+          onBack={() => {
+            setAbilityProgress(loadAbilityProgress());
+            setResonanceProgress(loadResonanceProgress());
+            setResonanceMessage(null);
+            setScreen('GROWTH_HUB');
+          }}
         />
       ) : screen === 'IRENA_TALENTS' ? (
         <IrenaTalentBoard
@@ -882,6 +957,7 @@ export const App: React.FC = () => {
             setBattleSetup(prev => ({ ...prev, playerCharacterId }));
           }}
           abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
           imprintProgress={imprintProgress}
           achievementBadges={achievementBadgeProgress}
           equippedAchievementBadgeId={equippedAchievementBadge?.id ?? null}

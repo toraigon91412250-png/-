@@ -1,9 +1,14 @@
-import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, ResonanceAbilityId, ResonanceProgress, RuinSkillPath } from '../types/game';
+import { RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
+
+const RESONANCE_SOURCE_ABILITY_IDS: ReadonlySet<AbilityId> = new Set(
+  RESONANCE_DEFINITIONS.flatMap(definition => [...definition.ingredients]),
+);
 import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
 import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
 import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle, type AchievementBattleSample, type AchievementProgress } from './achievementSystem';
@@ -656,6 +661,148 @@ function createEmptyAbilityShards(): Record<AbilityId, number> {
   };
 }
 
+export function createInitialResonanceProgress(): ResonanceProgress {
+  return {
+    unlocked: false,
+    shards: 0,
+    levels: Object.fromEntries(RESONANCE_DEFINITIONS.map(definition => [definition.id, 0])) as Record<ResonanceAbilityId, number>,
+    craftedRecipes: [],
+  };
+}
+
+export function normalizeResonanceProgress(parsed: Partial<ResonanceProgress> | null | undefined): ResonanceProgress {
+  const initial = createInitialResonanceProgress();
+  const rawLevels = (parsed as { levels?: Record<string, unknown> } | null | undefined)?.levels;
+  const levels = { ...initial.levels };
+  RESONANCE_DEFINITIONS.forEach(definition => {
+    const raw = Number(rawLevels?.[definition.id]);
+    levels[definition.id] = Number.isFinite(raw) ? Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(raw))) : 0;
+  });
+  const crafted = Array.isArray(parsed?.craftedRecipes)
+    ? parsed.craftedRecipes.filter((id): id is ResonanceAbilityId => isResonanceAbilityId(String(id)))
+    : [];
+  return {
+    unlocked: parsed?.unlocked === true,
+    shards: Number.isFinite(Number(parsed?.shards)) ? Math.max(0, Math.floor(Number(parsed?.shards))) : 0,
+    levels,
+    craftedRecipes: Array.from(new Set(crafted)),
+  };
+}
+
+export function loadResonanceProgress(): ResonanceProgress {
+  try {
+    const raw = localStorage.getItem(ABILITY_PROGRESS_KEY);
+    if (!raw) return createInitialResonanceProgress();
+    const parsed = JSON.parse(raw) as { resonance?: Partial<ResonanceProgress> };
+    return normalizeResonanceProgress(parsed.resonance);
+  } catch {
+    return createInitialResonanceProgress();
+  }
+}
+
+export function persistResonanceProgress(progress: ResonanceProgress): ResonanceProgress {
+  const current = loadAbilityProgress();
+  const saved = persistAbilityProgress({ ...current, resonance: normalizeResonanceProgress(progress) });
+  return normalizeResonanceProgress(saved.resonance);
+}
+
+export function unlockAbilityResonance(): { progress: ResonanceProgress; persisted: boolean } {
+  const current = loadResonanceProgress();
+  if (current.unlocked) return { progress: current, persisted: true };
+  const result = persistResonanceProgress({ ...current, unlocked: true });
+  return { progress: result, persisted: result.unlocked };
+}
+
+export type ResonanceCombineResult = {
+  success: boolean;
+  message: string;
+  progress: AbilityProgress;
+  resonance: ResonanceProgress;
+};
+
+export function combineResonanceAbility(id: ResonanceAbilityId): ResonanceCombineResult {
+  const current = loadAbilityProgress();
+  const resonance = loadResonanceProgress();
+  const recipe = RESONANCE_DEFINITIONS.find(definition => definition.id === id);
+  const failure = (message: string): ResonanceCombineResult => ({ success: false, message, progress: current, resonance });
+  if (!recipe) return failure('不明な共鳴レシピです。');
+  if (!resonance.unlocked) return failure('通常カイザーLv.50撃破で権能共鳴を解放してください。');
+  if (resonance.craftedRecipes.includes(id)) return failure('このレシピは作成済みです。二度目の合成はできません。');
+  if (resonance.levels[id] > 0) return failure('この共鳴権能はすでに所持しています。');
+  if (recipe.ingredients.some(ingredient => current.levels[ingredient] < MAX_ABILITY_LEVEL)) {
+    return failure('素材となる元権能2種類をLv.5にしてください。');
+  }
+
+  const convertedShards = recipe.ingredients.reduce((sum, ingredient) => sum + current.shards[ingredient], 0);
+  const nextResonance: ResonanceProgress = {
+    ...resonance,
+    shards: resonance.shards + convertedShards,
+    levels: { ...resonance.levels, [id]: 1 },
+    craftedRecipes: [...resonance.craftedRecipes, id],
+  };
+  const nextLevels = { ...current.levels };
+  const nextShards = { ...current.shards };
+  recipe.ingredients.forEach(ingredient => {
+    nextLevels[ingredient] = 0;
+    nextShards[ingredient] = 0;
+  });
+
+  // Fusion updates the ingredient levels, ingredient shards, converted currency,
+  // new level, and permanent recipe record with one localStorage write.
+  try {
+    const payload = { levels: nextLevels, shards: nextShards, resonance: nextResonance };
+    localStorage.setItem(ABILITY_PROGRESS_KEY, JSON.stringify(payload));
+    const verification = loadAbilityProgress();
+    const verifiedResonance = loadResonanceProgress();
+    const committed = recipe.ingredients.every(ingredient =>
+      verification.levels[ingredient] === 0 && verification.shards[ingredient] === 0,
+    )
+      && verifiedResonance.levels[id] === 1
+      && verifiedResonance.craftedRecipes.includes(id)
+      && verifiedResonance.shards === nextResonance.shards;
+    if (!committed) {
+      // A failed readback is treated as failure; attempt to restore the single-key snapshot.
+      localStorage.setItem(ABILITY_PROGRESS_KEY, JSON.stringify(current));
+      return { success: false, message: '保存の確認に失敗したため、合成を取り消しました。', progress: loadAbilityProgress(), resonance: loadResonanceProgress() };
+    }
+    return { success: true, message: `${recipe.name}を合成しました。未使用欠片 ${convertedShards} 個を共鳴片へ変換しました。`, progress: verification, resonance: verifiedResonance };
+  } catch {
+    return { success: false, message: '保存に失敗したため合成していません。ブラウザの保存容量・設定を確認してください。', progress: loadAbilityProgress(), resonance: loadResonanceProgress() };
+  }
+}
+
+export type ResonanceUpgradeResult = {
+  success: boolean;
+  message: string;
+  progress: AbilityProgress;
+  resonance: ResonanceProgress;
+};
+
+export function upgradeResonanceAbility(id: ResonanceAbilityId): ResonanceUpgradeResult {
+  const current = loadAbilityProgress();
+  const resonance = loadResonanceProgress();
+  const level = resonance.levels[id] ?? 0;
+  if (!resonance.unlocked) return { success: false, message: '権能共鳴が解放されていません。', progress: current, resonance };
+  if (level <= 0) return { success: false, message: '先にこの共鳴権能を合成してください。', progress: current, resonance };
+  if (level >= MAX_ABILITY_LEVEL) return { success: false, message: 'この共鳴権能はMAXです。', progress: current, resonance };
+  const cost = level * 40;
+  if (resonance.shards < cost) return { success: false, message: `共鳴片が不足しています（必要 ${cost} 個）。`, progress: current, resonance };
+  const nextResonance: ResonanceProgress = {
+    ...resonance,
+    shards: resonance.shards - cost,
+    levels: { ...resonance.levels, [id]: level + 1 },
+  };
+  const saved = persistAbilityProgress({ ...current, resonance: nextResonance });
+  const verified = loadResonanceProgress();
+  const success = verified.levels[id] === level + 1 && verified.shards === nextResonance.shards;
+  return {
+    success,
+    message: success ? `${RESONANCE_DEFINITIONS.find(definition => definition.id === id)?.name ?? id} Lv.${level + 1}に強化しました。` : '保存の確認に失敗しました。変更は適用されていません。',
+    progress: success ? saved : current,
+    resonance: success ? verified : resonance,
+  };
+}
+
 function normalizeAbilityProgress(
   parsed: Partial<AbilityProgress> | null | undefined,
 ): AbilityProgress {
@@ -673,7 +820,8 @@ function normalizeAbilityProgress(
       : INITIAL_ABILITY_PROGRESS.shards[id];
   });
 
-  return { levels, shards };
+  const rawResonance = (parsed as { resonance?: Partial<ResonanceProgress> } | null | undefined)?.resonance;
+  return { levels, shards, ...(rawResonance ? { resonance: normalizeResonanceProgress(rawResonance) } : {}) };
 }
 
 export function loadAbilityProgress(): AbilityProgress {
@@ -694,7 +842,14 @@ export function loadAbilityProgress(): AbilityProgress {
 }
 
 function persistAbilityProgress(progress: AbilityProgress): AbilityProgress {
-  const normalized = normalizeAbilityProgress(progress);
+  const current = loadAbilityProgress();
+  const candidate = {
+    ...progress,
+    ...((progress.resonance || current.resonance)
+      ? { resonance: progress.resonance ?? current.resonance }
+      : {}),
+  };
+  const normalized = normalizeAbilityProgress(candidate);
   try {
     localStorage.setItem(ABILITY_PROGRESS_KEY, JSON.stringify(normalized));
     return normalized;
@@ -706,11 +861,24 @@ function persistAbilityProgress(progress: AbilityProgress): AbilityProgress {
 
 export function addAbilityShards(abilityId: AbilityId, amount: number): AbilityProgress {
   const current = loadAbilityProgress();
+  const safeAmount = Math.max(0, Math.floor(amount));
+  if (safeAmount === 0) return current;
+  if (
+    current.levels[abilityId] >= MAX_ABILITY_LEVEL &&
+    RESONANCE_SOURCE_ABILITY_IDS.has(abilityId)
+  ) {
+    const resonance = loadResonanceProgress();
+    return persistAbilityProgress({
+      ...current,
+      resonance: { ...resonance, shards: resonance.shards + safeAmount },
+    });
+  }
   return persistAbilityProgress({
+    ...current,
     levels: { ...current.levels },
     shards: {
       ...current.shards,
-      [abilityId]: current.shards[abilityId] + Math.max(0, Math.floor(amount)),
+      [abilityId]: current.shards[abilityId] + safeAmount,
     },
   });
 }
@@ -837,6 +1005,7 @@ export function resetProgressForDeveloper(): {
   const abilityProgress = persistAbilityProgress({
     levels: { ...INITIAL_ABILITY_PROGRESS.levels },
     shards: { ...INITIAL_ABILITY_PROGRESS.shards },
+    resonance: createInitialResonanceProgress(),
   });
   const recruitmentProgress = persistRecruitmentProgress({
     tickets: 10,
@@ -1125,14 +1294,37 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
   let abilityProgress = loadAbilityProgress();
   let skillProgress = loadSkillProgress();
 
-  const addAbilityReward = (abilityId: AbilityId, amount: number) => {
+  const addResonanceShardReward = (amount: number) => {
+    const safeAmount = Math.max(0, Math.floor(amount));
+    if (safeAmount <= 0) return;
+    const resonance = normalizeResonanceProgress(abilityProgress.resonance);
     abilityProgress = {
-      levels: {
-        ...abilityProgress.levels,
+      ...abilityProgress,
+      resonance: {
+        ...resonance,
+        shards: resonance.shards + safeAmount,
       },
+    };
+  };
+
+  const addAbilityReward = (abilityId: AbilityId, amount: number) => {
+    const safeAmount = Math.max(0, Math.floor(amount));
+    if (safeAmount <= 0) return;
+    if (
+      abilityProgress.levels[abilityId] >= MAX_ABILITY_LEVEL &&
+      RESONANCE_SOURCE_ABILITY_IDS.has(abilityId)
+    ) {
+      // Lv.5 source powers convert every extra source shard 1:1 into the
+      // shared resonance currency. Do not alter ASTRAL_DOMINION's old path.
+      addResonanceShardReward(safeAmount);
+      return;
+    }
+    abilityProgress = {
+      ...abilityProgress,
+      levels: { ...abilityProgress.levels },
       shards: {
         ...abilityProgress.shards,
-        [abilityId]: abilityProgress.shards[abilityId] + amount,
+        [abilityId]: abilityProgress.shards[abilityId] + safeAmount,
       },
     };
   };
@@ -1173,6 +1365,7 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
     if (reward.kind === 'ABILITY_CORE' && reward.abilityId) {
       if (isNew) {
         abilityProgress = {
+          ...abilityProgress,
           levels: {
             ...abilityProgress.levels,
             [reward.abilityId]: Math.max(1, abilityProgress.levels[reward.abilityId]),
@@ -1185,8 +1378,12 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
       }
     } else if (reward.kind === 'ABILITY_SHARD' && reward.abilityId) {
       const currentLevel = abilityProgress.levels[reward.abilityId];
-      if (currentLevel >= MAX_ABILITY_LEVEL) {
-        // MAX後の権能欠片は死に資源にせず、技強化の欠片へ自動交換する。
+      if (currentLevel >= MAX_ABILITY_LEVEL && RESONANCE_SOURCE_ABILITY_IDS.has(reward.abilityId)) {
+        // The five resonance source powers convert over-cap fragments at 1:1.
+        shardGain = reward.shardAmount;
+        addAbilityReward(reward.abilityId, shardGain);
+      } else if (currentLevel >= MAX_ABILITY_LEVEL) {
+        // Preserve ASTRAL_DOMINION's existing max-fragment exchange.
         const exchangedSkillShards = Math.floor(
           reward.shardAmount / MAXED_ABILITY_SHARD_EXCHANGE_RATE,
         );

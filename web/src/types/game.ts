@@ -149,6 +149,19 @@ export interface BattleFighter {
   isEvading: boolean;
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];
+  /** Resonance runtime values remain battle-scoped and are absent from legacy fighters. */
+  resonanceBaseStats?: { maxHp: number; attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
+  resonanceStatBuff?: { multiplier: number; expiresAtTurn: number; stage: number };
+  resonanceGodObservedHpStage?: number;
+  resonanceRevivalCount?: number;
+  resonanceKingWingStackExpiresAtTurns?: number[];
+  resonanceJudgmentMarks?: number;
+  resonanceJudgmentReady?: boolean;
+  resonanceKingZoneStacks?: number;
+  resonanceKingZoneThreshold?: number;
+  resonanceWeakness?: { attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
+  resonanceWeaknessStages?: { attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
+  resonanceKingWingStacks?: number;
   /** Kaiser-only armor/phase state. Undefined on older or non-Kaiser fighter objects. */
   kaiserArmorCurrent?: number;
   kaiserArmorMax?: number;
@@ -244,6 +257,8 @@ export type BattleChallengeLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 
 export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT' | 'ASTRAL_DOMINION';
+export type ResonanceAbilityId = 'FALLEN_GOD' | 'FALLEN_WING' | 'FALLEN_JUDGMENT' | 'ABYSS_FALLEN' | 'KING_WING' | 'KING_JUDGMENT' | 'ABYSS_KING' | 'JUDGMENT_WING' | 'ABYSS_WING' | 'ABYSS_JUDGMENT';
+export type BattleAbilityId = AbilityId | ResonanceAbilityId;
 
 export type AchievementBadgeId = 'A' | 'B' | 'C';
 export type AchievementBadgeTier = 0 | 1 | 2 | 3;
@@ -255,13 +270,22 @@ export interface ImprintProgress {
   equippedIds: ImprintId[];
 }
 
+export interface ResonanceProgress {
+  unlocked: boolean;
+  shards: number;
+  levels: Record<ResonanceAbilityId, number>;
+  craftedRecipes: ResonanceAbilityId[];
+}
+
 export interface AbilityProgress {
   levels: Record<AbilityId, number>;
   shards: Record<AbilityId, number>;
+  /** Stored alongside normal progression under the same localStorage key for atomic fusion saves. */
+  resonance?: ResonanceProgress;
 }
 
 export interface EquippedAbility {
-  id: AbilityId;
+  id: BattleAbilityId;
   level: number;
 }
 

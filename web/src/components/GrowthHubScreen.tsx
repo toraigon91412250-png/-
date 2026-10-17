@@ -41,6 +41,7 @@ interface GrowthHubScreenProps {
   onUpgradeSkill: (skillId: IrenaSkillId) => void;
   onChooseSkillPath: (skillId: IrenaSkillId, path: FeatherSkillPath | RuinSkillPath) => void;
   onUpgradeAbility: (abilityId: AbilityId) => void;
+  onOpenResonance: () => void;
   onOpenRecruitment: () => void;
   onOpenImprints: () => void;
   onUseRaidCoreFragment: () => void;
@@ -59,6 +60,7 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
   onUpgradeSkill,
   onChooseSkillPath,
   onUpgradeAbility,
+  onOpenResonance,
   onOpenRecruitment,
   onOpenImprints,
   onUseRaidCoreFragment,
@@ -159,6 +161,10 @@ export const GrowthHubScreen: React.FC<GrowthHubScreenProps> = ({
             <span>欠片でレベルアップ</span>
           </div>
           <AbilityUpgradePanel progress={abilityProgress} onUpgrade={onUpgradeAbility} />
+          <button className="growth-hub__secondary-action" type="button" onClick={onOpenResonance}>
+            <span><Sparkles size={18} /> 権能共鳴 · 10種の共鳴権能</span>
+            <ChevronRight size={18} />
+          </button>
           <button className="growth-hub__secondary-action" type="button" onClick={onOpenRecruitment}>
             <span><Crown size={18} /> 黒翼召喚で権能・欠片を集める</span>
             <ArrowUpRight size={18} />

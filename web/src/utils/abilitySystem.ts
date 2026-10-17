@@ -1,6 +1,9 @@
-import { AbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility } from '../types/game';
+import { AbilityId, BattleAbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility, ResonanceAbilityId } from '../types/game';
+import { RESONANCE_DEFINITIONS, isResonanceAbilityId, isRegularAbilityId } from '../data/resonanceAbilities';
+import { getEquippedResonanceAbilities, getFallenDynamicMultiplier, getKingZoneValues } from './resonanceSystem';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
+import { KAISER_PHASE_TWO_DAMAGE_MULTIPLIER, KAISER_PHASE_TWO_SPEED_MULTIPLIER } from './kaiserChallenge';
 
 export function applyPassiveDamageReduction(target: BattleFighter, incomingDamage: number, isDirectHit = true): number {
   const safeDamage = Math.max(0, Math.floor(incomingDamage));
@@ -9,7 +12,29 @@ export function applyPassiveDamageReduction(target: BattleFighter, incomingDamag
   return Math.max(1, Math.floor(safeDamage * Math.max(0, multiplier)));
 }
 
+export function getResonanceAbilityLevel(config: BattleSetupConfig, id: ResonanceAbilityId): number {
+  return Math.min(
+    MAX_ABILITY_LEVEL,
+    Math.max(0, config.abilities.find(ability => ability.id === id)?.level ?? 0),
+  );
+}
+
+export function getEquippedResonanceAbility(config: BattleSetupConfig): { id: ResonanceAbilityId; level: number } | null {
+  const ability = config.abilities.find(candidate => isResonanceAbilityId(candidate.id) && candidate.level > 0);
+  return ability && isResonanceAbilityId(ability.id)
+    ? { id: ability.id, level: Math.min(MAX_ABILITY_LEVEL, Math.max(1, Math.floor(ability.level))) }
+    : null;
+}
+
 export function getAbilityLevel(config: BattleSetupConfig, id: AbilityId): number {
+  // A fused authority inherits its ingredients. If an old loadout still contains
+  // a consumed ingredient ID, suppress it rather than applying its passive twice.
+  const inherited = config.abilities.some(ability =>
+    isResonanceAbilityId(ability.id) &&
+    ability.level > 0 &&
+    RESONANCE_DEFINITIONS.find(definition => definition.id === ability.id)?.ingredients.includes(id),
+  );
+  if (inherited) return 0;
   return Math.min(
     MAX_ABILITY_LEVEL,
     Math.max(0, config.abilities.find(ability => ability.id === id)?.level ?? 0),
@@ -100,6 +125,73 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
     };
   }
 
+  const fallenWingLevel = getResonanceAbilityLevel(config, 'FALLEN_WING');
+  const kingWingLevel = getResonanceAbilityLevel(config, 'KING_WING');
+  const abyssWingLevel = getResonanceAbilityLevel(config, 'ABYSS_WING');
+  const judgmentWingLevel = getResonanceAbilityLevel(config, 'JUDGMENT_WING');
+  const inheritedKingDurability = Math.max(
+    getResonanceAbilityLevel(config, 'FALLEN_GOD'),
+    getResonanceAbilityLevel(config, 'KING_JUDGMENT'),
+    getResonanceAbilityLevel(config, 'ABYSS_KING'),
+  );
+
+  if (character.id === 'irena' && fallenWingLevel > 0) {
+    const multiplier = 1 + fallenWingLevel * 0.04;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
+      attack: Math.max(1, Math.round(next.attack * multiplier)),
+      defense: Math.max(0, Math.round(next.defense * multiplier)),
+      speed: Math.max(1, Math.round(next.speed * multiplier)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * multiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * multiplier)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * multiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * multiplier)) } : {}),
+    };
+  }
+
+  if (character.id === 'irena' && kingWingLevel > 0) {
+    const multiplier = [1.24, 1.28, 1.32, 1.36, 1.40][Math.min(5, Math.max(1, Math.floor(kingWingLevel))) - 1];
+    const blackWingStatMultiplier = 1 + kingWingLevel * 0.02;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
+      attack: Math.max(1, Math.round(next.attack * blackWingStatMultiplier)),
+      defense: Math.max(0, Math.round(next.defense * multiplier)),
+      speed: Math.max(1, Math.round(next.speed * blackWingStatMultiplier)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * multiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * blackWingStatMultiplier)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * multiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * blackWingStatMultiplier)) } : {}),
+    };
+  }
+
+  if (character.id === 'irena' && (abyssWingLevel > 0 || judgmentWingLevel > 0)) {
+    const inheritedBlackWingLevel = Math.max(abyssWingLevel, judgmentWingLevel);
+    const multiplier = 1 + inheritedBlackWingLevel * 0.02;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
+      attack: Math.max(1, Math.round(next.attack * multiplier)),
+      defense: Math.max(0, Math.round(next.defense * multiplier)),
+      speed: Math.max(1, Math.round(next.speed * multiplier)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * multiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * multiplier)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * multiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * multiplier)) } : {}),
+    };
+  }
+
+  if (character.id === 'irena' && inheritedKingDurability > 0) {
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * 1.2)),
+      defense: Math.max(0, Math.round(next.defense * 1.2)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * 1.2)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * 1.2)) } : {}),
+    };
+  }
+
   const astralDominionLevel = getAbilityLevel(config, 'ASTRAL_DOMINION');
   if (astralDominionLevel > 0 && character.id === 'irena') {
     const statMultipliers = [1, 1.25, 1.35, 1.45, 1.6, 1.8] as const;
@@ -162,7 +254,66 @@ export function applyDynamicAbilityModifiers(
 ): BattleFighter {
   const abyssLevel = getAbilityLevel(config, 'ABYSS');
   const fallenLevel = getAbilityLevel(config, 'FALLEN');
+  const resonances = getEquippedResonanceAbilities(config);
+  const resonanceBase = fighter.resonanceBaseStats;
   let character: CharacterDef = { ...fighter.character };
+
+  if (
+    character.id === 'kaiser' &&
+    resonanceBase &&
+    fighter.resonanceWeakness &&
+    resonances.some(resonance => ['ABYSS_FALLEN', 'ABYSS_KING', 'ABYSS_WING', 'ABYSS_JUDGMENT'].includes(resonance.id))
+  ) {
+    const weakness = fighter.resonanceWeakness;
+    const inPhaseTwo = (fighter.kaiserPhase ?? 1) === 2;
+    const phaseDamageMultiplier = inPhaseTwo ? KAISER_PHASE_TWO_DAMAGE_MULTIPLIER : 1;
+    const phaseSpeedMultiplier = inPhaseTwo ? KAISER_PHASE_TWO_SPEED_MULTIPLIER : 1;
+    character = {
+      ...character,
+      maxHp: resonanceBase.maxHp,
+      attack: Math.max(1, Math.round(resonanceBase.attack * phaseDamageMultiplier * (1 - Math.min(95, weakness.attack) / 100))),
+      defense: Math.max(0, Math.round(resonanceBase.defense * (1 - Math.min(95, weakness.defense) / 100))),
+      speed: Math.max(1, Math.round(resonanceBase.speed * phaseSpeedMultiplier * (1 - Math.min(95, weakness.speed) / 100))),
+      specialSkillDamage: Math.max(1, Math.round(resonanceBase.specialSkillDamage * phaseDamageMultiplier * (1 - Math.min(95, weakness.specialSkillDamage) / 100))),
+      ultimateSkillDamage: Math.max(1, Math.round(resonanceBase.ultimateSkillDamage * phaseDamageMultiplier * (1 - Math.min(95, weakness.ultimateSkillDamage) / 100))),
+    };
+  }
+
+  if (character.id === 'irena' && resonanceBase && resonances.length > 0) {
+    const hpRatio = fighter.currentHp / Math.max(1, resonanceBase.maxHp);
+    // Fused abilities can share FALLEN as an ingredient. Its inherited low-HP
+    // stat effect is a replacement, not another multiplier to multiply on top.
+    // Use the strongest applicable Fallen-stage multiplier once, while leaving
+    // independent effects such as King Zone defense scaling separate below.
+    const statMultiplier = Math.max(1, ...resonances.map(resonance => {
+      if (resonance.id === 'FALLEN_GOD') {
+        return fighter.resonanceStatBuff && turn <= fighter.resonanceStatBuff.expiresAtTurn
+          ? fighter.resonanceStatBuff.multiplier
+          : 1;
+      }
+      return getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
+    }));
+
+    if (statMultiplier > 1) {
+      character = {
+        ...character,
+        maxHp: Math.max(1, Math.round(resonanceBase.maxHp * statMultiplier)),
+        attack: Math.max(1, Math.round(resonanceBase.attack * statMultiplier)),
+        defense: Math.max(0, Math.round(resonanceBase.defense * statMultiplier)),
+        speed: Math.max(1, Math.round(resonanceBase.speed * statMultiplier)),
+      };
+    }
+  }
+
+  const kingZone = resonances.find(resonance => resonance.id === 'ABYSS_KING');
+  if (character.id === 'irena' && kingZone && resonanceBase) {
+    const values = getKingZoneValues(kingZone.level);
+    const stacks = Math.min(values.maxStacks, fighter.resonanceKingZoneStacks ?? 0);
+    character = {
+      ...character,
+      defense: Math.max(0, Math.round(character.defense * (1 + stacks * values.defenseBonusPerStack))),
+    };
+  }
 
   if (character.id === 'kaiser' && abyssLevel > 0) {
     const penaltyPerTurn = abyssLevel * 0.012;
@@ -270,9 +421,10 @@ export function normalizeEquippedAbilities(
 ): EquippedAbility[] {
   return abilities
     .filter(ability => Number.isFinite(ability.level) && ability.level > 0)
+    .filter(ability => isRegularAbilityId(ability.id) || isResonanceAbilityId(ability.id))
     .slice(0, 2)
     .map(ability => ({
-      id: ability.id,
+      id: ability.id as BattleAbilityId,
       level: Math.min(MAX_ABILITY_LEVEL, Math.max(1, Math.floor(ability.level))),
     }));
 }

@@ -16,6 +16,7 @@ import {
   IRENA_SUPER_FALLEN_SHOT_COOLDOWN,
   IrenaSpecialSkillId,
   PlayerBattleAction,
+  ResonanceAbilityId,
   STATUS_AILMENTS,
   LogType,
   StatusAilmentType,
@@ -23,6 +24,8 @@ import {
 import { CpuAi } from '../utils/ai';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { getEquippedResonanceAbilities } from '../utils/resonanceSystem';
+import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getHighestTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
@@ -80,6 +83,24 @@ export function createInitialFighter(
     isEvading: false,
     isPlayer,
     activeAilments: [],
+    resonanceBaseStats: {
+      maxHp: character.maxHp,
+      attack: character.attack,
+      defense: character.defense,
+      speed: character.speed,
+      specialSkillDamage: character.specialSkillDamage,
+      ultimateSkillDamage: character.ultimateSkillDamage,
+    },
+    resonanceWeakness: { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 },
+    resonanceWeaknessStages: { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 },
+    resonanceKingZoneStacks: 0,
+    resonanceKingZoneThreshold: 0,
+    resonanceRevivalCount: 0,
+    resonanceGodObservedHpStage: 0,
+    resonanceJudgmentMarks: 0,
+    resonanceJudgmentReady: false,
+    resonanceKingWingStackExpiresAtTurns: [],
+    resonanceKingWingStacks: 0,
   };
   return initializeKaiserChallengeFighter(fighter, kaiserLevel);
 }
@@ -207,6 +228,11 @@ export function useBattleGame(
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
+  const fallenGodRevivalCountRef = useRef(0);
+  const resonanceKingSurvivalCountRef = useRef<Partial<Record<ResonanceAbilityId, number>>>({});
+  const resonanceKingWingStackExpiresAtRef = useRef<number[]>([]);
+  const resonanceJudgmentMarksRef = useRef<Partial<Record<ResonanceAbilityId, number>>>({});
+  const resonanceJudgmentReadyRef = useRef<ResonanceAbilityId[]>([]);
   const lastStandUsedRef = useRef(false);
   const fallenReleaseLoggedRef = useRef(false);
   const masteryClaimedRef = useRef<Set<string>>(new Set());
@@ -319,13 +345,194 @@ export function useBattleGame(
     }
   };
 
-  const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string): number => {
+
+  const addResonanceJudgmentMarks = (
+    amount: number,
+    turn: number,
+    source: string,
+    eligibleIds: readonly ResonanceAbilityId[],
+  ) => {
+    if (amount <= 0 || eligibleIds.length === 0) return;
+    const equipped = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+    for (const resonance of equipped) {
+      if (!eligibleIds.includes(resonance.id)) continue;
+      const execution = getResonanceExecutionStats(resonance.id, resonance.level);
+      if (!execution) continue;
+      const readyIds = resonanceJudgmentReadyRef.current;
+      if (readyIds.includes(resonance.id) && resonance.id !== 'ABYSS_JUDGMENT') continue;
+
+      const marks = resonanceJudgmentMarksRef.current;
+      const previous = marks[resonance.id] ?? 0;
+      const maximum = resonance.id === 'ABYSS_JUDGMENT' ? execution.threshold * 3 : execution.threshold;
+      const next = Math.min(maximum, previous + amount);
+      resonanceJudgmentMarksRef.current = { ...marks, [resonance.id]: next };
+      if (next >= execution.threshold && !readyIds.includes(resonance.id)) {
+        resonanceJudgmentReadyRef.current = [...readyIds, resonance.id];
+        addLog(`⚖️【${resonance.id === 'JUDGMENT_WING' ? '断罪翼' : resonance.id === 'ABYSS_JUDGMENT' ? '深淵断罪' : '共鳴断罪'}】蓄積完了（${next}/${execution.threshold}）。次の対象攻撃で執行！`, 'PASSIVE_TRIGGER', turn);
+      } else {
+        addLog(`⚖️【${resonance.id}・蓄積】${next}/${execution.threshold}（${source}）`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+  };
+
+  const getReadyResonanceExecutionIds = (
+    action: 'ATTACK' | 'SPECIAL' | 'ULTIMATE',
+    specialSkillId?: IrenaSpecialSkillId,
+  ): ResonanceAbilityId[] => {
+    const equipped = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+    return equipped
+      .filter(resonance => resonanceJudgmentReadyRef.current.includes(resonance.id))
+      .filter(resonance => {
+        const execution = getResonanceExecutionStats(resonance.id, resonance.level);
+        if (!execution) return false;
+        if (resonance.id === 'JUDGMENT_WING') {
+          return action === 'SPECIAL'
+            && (specialSkillId === undefined
+              || ['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'].includes(specialSkillId))
+            && stateRef.current.player.character.id === 'irena';
+        }
+        return resonance.id === 'FALLEN_JUDGMENT'
+          || resonance.id === 'KING_JUDGMENT'
+          || resonance.id === 'ABYSS_JUDGMENT';
+      })
+      .map(resonance => resonance.id);
+  };
+
+  const finishResonanceJudgmentExecution = (turn: number, executedIds: readonly ResonanceAbilityId[]) => {
+    if (executedIds.length === 0) return;
+    for (const id of executedIds) {
+      const resonance = getEquippedResonanceAbilities(stateRef.current.battleConfig).find(item => item.id === id);
+      const execution = resonance ? getResonanceExecutionStats(id, resonance.level) : null;
+      if (!execution) continue;
+      const marks = resonanceJudgmentMarksRef.current[id] ?? 0;
+      const readyIds = resonanceJudgmentReadyRef.current;
+      if (id === 'ABYSS_JUDGMENT') {
+        const remaining = Math.max(0, marks - execution.threshold);
+        resonanceJudgmentMarksRef.current = { ...resonanceJudgmentMarksRef.current, [id]: remaining };
+        resonanceJudgmentReadyRef.current = remaining >= execution.threshold
+          ? readyIds
+          : readyIds.filter(readyId => readyId !== id);
+        addLog(`⚖️【深淵断罪】執行。蓄積を${execution.threshold}消費、残り${remaining}。`, 'PASSIVE_TRIGGER', turn);
+      } else {
+        resonanceJudgmentMarksRef.current = { ...resonanceJudgmentMarksRef.current, [id]: 0 };
+        resonanceJudgmentReadyRef.current = readyIds.filter(readyId => readyId !== id);
+        addLog(`⚖️【${id === 'JUDGMENT_WING' ? '断罪翼' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}】執行完了。蓄積をリセットした。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+  };
+
+  const calculateErosionResult = (
+    enemy: BattleFighter,
+    player: BattleFighter,
+    amount: number,
+  ): { enemy: BattleFighter; player: BattleFighter; judgmentMarksGained: number; kingZoneStacksGained: number } => {
+    if (amount <= 0) return { enemy, player, judgmentMarksGained: 0, kingZoneStacksGained: 0 };
+    const fields: WeaknessKey[] = ['attack', 'defense', 'speed', 'specialSkillDamage', 'ultimateSkillDamage'];
+    const previous = enemy.resonanceWeakness ?? { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 };
+    const oldStages = enemy.resonanceWeaknessStages ?? { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 };
+    const weakness = { ...previous };
+    const stages = { ...oldStages };
+    let judgmentMarksGained = 0;
+    for (const field of fields) {
+      weakness[field] = Math.min(95, previous[field] + amount);
+      const crossedStage = Math.min(9, Math.floor(weakness[field] / 10));
+      if (getEquippedResonanceAbilities(stateRef.current.battleConfig).some(resonance => resonance.id === 'ABYSS_JUDGMENT')) {
+        judgmentMarksGained += Math.max(0, crossedStage - oldStages[field]);
+      }
+      stages[field] = Math.max(oldStages[field], crossedStage);
+    }
+
+    let nextPlayer = player;
+    let kingZoneStacksGained = 0;
+    const resonance = getEquippedResonanceAbilities(stateRef.current.battleConfig).find(item => item.id === 'ABYSS_KING');
+    if (resonance) {
+      const zone = getKingZoneValues(resonance.level);
+      const greatestWeakness = Math.max(weakness.attack, weakness.defense, weakness.speed);
+      const oldThreshold = player.resonanceKingZoneThreshold ?? 0;
+      const nextThreshold = Math.max(oldThreshold, Math.min(9, Math.floor(greatestWeakness / 10)));
+      const nextStacks = Math.min(zone.maxStacks, (player.resonanceKingZoneStacks ?? 0) + Math.max(0, nextThreshold - oldThreshold));
+      kingZoneStacksGained = Math.max(0, nextStacks - (player.resonanceKingZoneStacks ?? 0));
+      nextPlayer = {
+        ...player,
+        resonanceKingZoneThreshold: nextThreshold,
+        resonanceKingZoneStacks: nextStacks,
+      };
+    }
+    return {
+      enemy: { ...enemy, resonanceWeakness: weakness, resonanceWeaknessStages: stages },
+      player: nextPlayer,
+      judgmentMarksGained,
+      kingZoneStacksGained,
+    };
+  };
+
+  const applyResonanceErosion = (amount: number, turn: number, source: string) => {
+    if (amount <= 0) return;
+    const result = calculateErosionResult(stateRef.current.enemy, stateRef.current.player, amount);
+    updateState(prev => ({
+      ...prev,
+      enemy: { ...prev.enemy, resonanceWeakness: result.enemy.resonanceWeakness, resonanceWeaknessStages: result.enemy.resonanceWeaknessStages },
+      player: { ...prev.player, resonanceKingZoneThreshold: result.player.resonanceKingZoneThreshold, resonanceKingZoneStacks: result.player.resonanceKingZoneStacks },
+    }));
+    addLog(`🌑【共鳴侵食：${source}】敵5項目に+${amount}%侵食（攻撃${result.enemy.resonanceWeakness?.attack ?? 0}% / 防御${result.enemy.resonanceWeakness?.defense ?? 0}% / 速度${result.enemy.resonanceWeakness?.speed ?? 0}% / 特殊技${result.enemy.resonanceWeakness?.specialSkillDamage ?? 0}% / 必殺技${result.enemy.resonanceWeakness?.ultimateSkillDamage ?? 0}%）。`, 'PASSIVE_TRIGGER', turn);
+    if (result.kingZoneStacksGained > 0) {
+      addLog(`👑【王域】新たな弱体化段階を検出。王域+${result.kingZoneStacksGained}（現在${result.player.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', turn);
+    }
+    if (result.judgmentMarksGained > 0) addResonanceJudgmentMarks(result.judgmentMarksGained, turn, '新規弱体化段階', ['ABYSS_JUDGMENT']);
+  };
+
+  const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string, isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ'): number => {
     const safeDamage = Math.max(0, Math.floor(damage));
     const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
+    const equippedResonances = target.isPlayer ? getEquippedResonanceAbilities(stateRef.current.battleConfig) : [];
+    const fallenGod = equippedResonances.find(item => item.id === 'FALLEN_GOD');
     const fallenKingLevel = getAbilityLevel(stateRef.current.battleConfig, 'FALLEN_KING');
     let resultingHp = Math.max(0, target.currentHp - safeDamage);
+    let resonanceSurvived = false;
+
+    if (target.isPlayer && lethal && fallenGod) {
+      const fraction = getFallenGodRevivalHpFraction(fallenGod.level, fallenGodRevivalCountRef.current);
+      if (fraction !== null) {
+        fallenGodRevivalCountRef.current += 1;
+        resultingHp = fraction > 0
+          ? Math.max(1, Math.round((target.resonanceBaseStats?.maxHp ?? target.character.maxHp) * fraction))
+          : 1;
+        resonanceSurvived = true;
+        addLog(`♛【堕天の神・復活】第${fallenGodRevivalCountRef.current}段階！ HPを${fraction > 0 ? `${Math.round(fraction * 100)}%` : '1'}に設定して致命傷を拒絶した。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+
+    if (target.isPlayer && lethal && !resonanceSurvived) {
+      const kingResonance = equippedResonances.find(item =>
+        (item.id === 'KING_WING' || item.id === 'KING_JUDGMENT' || item.id === 'ABYSS_KING')
+        && (resonanceKingSurvivalCountRef.current[item.id] ?? 0) < getResonanceSurvivalLimit(item.id, item.level),
+      );
+      if (kingResonance) {
+        const used = (resonanceKingSurvivalCountRef.current[kingResonance.id] ?? 0) + 1;
+        resonanceKingSurvivalCountRef.current = { ...resonanceKingSurvivalCountRef.current, [kingResonance.id]: used };
+        resultingHp = 1;
+        resonanceSurvived = true;
+        addLog(`👑【${kingResonance.id === 'KING_WING' ? '王の翼' : kingResonance.id === 'KING_JUDGMENT' ? '王権断罪' : '深淵王'}】致死ダメージを拒絶！（${used}/${getResonanceSurvivalLimit(kingResonance.id, kingResonance.level)}回）HP1で耐えた。`, 'PASSIVE_TRIGGER', turn);
+        if (kingResonance.id === 'KING_WING') {
+          const stackRules = getKingWingStackValues(kingResonance.level);
+          const activeStacks = resonanceKingWingStackExpiresAtRef.current.filter(expiresAt => expiresAt >= turn);
+          if (activeStacks.length < stackRules.maxStacks) activeStacks.push(turn + 1);
+          resonanceKingWingStackExpiresAtRef.current = activeStacks;
+          updateState(prev => ({
+            ...prev,
+            player: {
+              ...prev.player,
+              resonanceKingWingStacks: activeStacks.length,
+              resonanceKingWingStackExpiresAtTurns: activeStacks,
+            },
+          }));
+          addLog(`🪶【王の羽】致命傷を耐え、羽弾強化を獲得（${activeStacks.length}/${stackRules.maxStacks}スタック、2ターン）。`, 'PASSIVE_TRIGGER', turn);
+        }
+      }
+    }
 
     if (
+      !resonanceSurvived &&
       target.isPlayer &&
       fallenKingLevel >= 5 &&
       lethal &&
@@ -340,6 +547,33 @@ export function useBattleGame(
       resultingHp = 1;
     }
 
+    if (target.isPlayer && resultingHp > 0 && fallenGod) {
+      const baseHp = Math.max(1, target.resonanceBaseStats?.maxHp ?? target.character.maxHp);
+      const stage = resultingHp <= 1 ? 3 : resultingHp <= baseHp * 0.25 ? 2 : resultingHp <= baseHp * 0.5 ? 1 : 0;
+      const oldStage = stateRef.current.player.resonanceGodObservedHpStage ?? 0;
+      updateState(prev => {
+        const previous = prev.player.resonanceGodObservedHpStage ?? 0;
+        const previousBuff = prev.player.resonanceStatBuff;
+        const nextBuff = stage > previous
+          ? { multiplier: getFallenGodStatMultiplier(fallenGod.level, stage), expiresAtTurn: turn + 1, stage }
+          : previousBuff;
+        return {
+          ...prev,
+          player: {
+            ...prev.player,
+            resonanceGodObservedHpStage: stage,
+            ...(stage > previous ? { resonanceStatBuff: nextBuff } : {}),
+          },
+        };
+      });
+      if (stage > oldStage) {
+        addLog(`♛【堕天の神・神格上昇】HP段階${stage}を検出。全ステータス×${getFallenGodStatMultiplier(fallenGod.level, stage)}（2ターン）。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+
+    if (target.isPlayer && isDirectHit && equippedResonances.some(item => item.id === 'KING_JUDGMENT')) {
+      addResonanceJudgmentMarks(1, turn, '被弾', ['KING_JUDGMENT']);
+    }
     const lastStandIsEligible = Boolean(
       target.isPlayer &&
       resultingHp <= 0 &&
@@ -389,8 +623,21 @@ export function useBattleGame(
     damage: number,
     turn: number,
     source: string,
-    isDirectHit = source !== '出血ダメージ',
+    isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ',
   ): { damage: number; targetHp: number; phaseChanged: boolean } => {
+    if (target.isPlayer && isDirectHit) {
+      const resonance = getEquippedResonanceAbilities(stateRef.current.battleConfig).find(item => item.id === 'ABYSS_KING');
+      if (resonance) {
+        const zone = getKingZoneValues(resonance.level);
+        const stacks = Math.min(zone.maxStacks, target.resonanceKingZoneStacks ?? 0);
+        const reduction = Math.min(0.95, stacks * zone.directDamageReductionPerStack);
+        if (reduction > 0) {
+          const beforeZone = Math.max(0, Math.floor(damage));
+          damage = Math.max(0, Math.floor(beforeZone * (1 - reduction)));
+          addLog(`👑【王域】直接攻撃を${Math.round(reduction * 100)}%軽減（${beforeZone} → ${damage}）。`, 'PASSIVE_TRIGGER', turn);
+        }
+      }
+    }
     const damageBeforePassive = Math.max(0, Math.floor(damage));
     damage = applyPassiveDamageReduction(target, damage, isDirectHit);
     if (damage < damageBeforePassive) {
@@ -443,7 +690,7 @@ export function useBattleGame(
     }
     return {
       damage: Math.max(0, Math.floor(damage)),
-      targetHp: resolveIncomingDamage(target, damage, turn, source),
+      targetHp: resolveIncomingDamage(target, damage, turn, source, isDirectHit),
       phaseChanged: false,
     };
   };
@@ -504,6 +751,11 @@ export function useBattleGame(
     judgmentMarksRef.current = 0;
     judgmentReadyRef.current = false;
     fallenKingSurvivalCountRef.current = 0;
+    fallenGodRevivalCountRef.current = 0;
+    resonanceKingSurvivalCountRef.current = {};
+    resonanceKingWingStackExpiresAtRef.current = [];
+    resonanceJudgmentMarksRef.current = {};
+    resonanceJudgmentReadyRef.current = [];
     lastStandUsedRef.current = false;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
@@ -1117,7 +1369,9 @@ export function useBattleGame(
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
+        const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('ATTACK') : [];
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const anyExecutionActive = judgmentActive || resonanceExecutionIds.length > 0;
         const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
         const calculatedDamage = calculateNormalAttackDamage(
           {
@@ -1127,14 +1381,18 @@ export function useBattleGame(
             turn,
             isActingFirst,
             judgmentReady: judgmentActive,
+            resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
+            resonanceJudgmentReadyIds: resonanceExecutionIds,
             alreadyPrepared: true,
             baseAttackerMaxHp: baseActorMaxHp,
           },
           isCritical,
         );
+        const attackResonances = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+        const resonanceFallenExecution = attackResonances.some(resonance => ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id));
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1165,12 +1423,13 @@ export function useBattleGame(
           );
         }
 
-        if (judgmentActive) {
-          addLog(
-            `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
-            'PASSIVE_TRIGGER',
-            turn,
-          );
+        if (anyExecutionActive) {
+          if (judgmentActive) addLog(`⚖️【断罪執行】通常攻撃に断罪が発動。ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}。`, 'PASSIVE_TRIGGER', turn);
+          resonanceExecutionIds.forEach(id => {
+            const resonance = attackResonances.find(item => item.id === id);
+            const execution = resonance ? getResonanceExecutionStats(id, resonance.level) : null;
+            if (execution) addLog(`⚖️【${id === 'ABYSS_JUDGMENT' ? '深淵断罪' : id === 'JUDGMENT_WING' ? '断罪翼' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%。`, 'PASSIVE_TRIGGER', turn);
+          });
         }
 
         if (isCritical) {
@@ -1196,14 +1455,7 @@ export function useBattleGame(
           );
         }
 
-        const fallenExecution =
-          isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
-          target.currentHp > 0 &&
-          actor.currentHp > 1 &&
-          actor.currentHp <= baseActorMaxHp * 0.05;
-
-        if (fallenExecution) {
+        if (executionForHit) {
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
@@ -1236,8 +1488,18 @@ export function useBattleGame(
           judgmentMarksRef.current = 0;
           updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
-        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
-          addJudgmentMarks(isCritical ? 2 : 1, turn);
+        }
+        finishResonanceJudgmentExecution(turn, resonanceExecutionIds);
+        if (isActorPlayer) {
+          if (!resonanceExecutionIds.includes('FALLEN_JUDGMENT')) {
+            addResonanceJudgmentMarks(isCritical ? 2 : 1, turn, '通常攻撃命中', ['FALLEN_JUDGMENT']);
+          }
+          if (!resonanceExecutionIds.includes('KING_JUDGMENT')) {
+            addResonanceJudgmentMarks(1, turn, '通常攻撃命中', ['KING_JUDGMENT']);
+          }
+          if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+            addJudgmentMarks(isCritical ? 2 : 1, turn);
+          }
         }
 
         // A successful Irena normal hit builds Feather power with diminishing random gains.
@@ -1291,6 +1553,7 @@ export function useBattleGame(
       }
 
       case 'SPECIAL': {
+        const activeResonancesForSpecial = getEquippedResonanceAbilities(stateRef.current.battleConfig);
         const isSuperFallenShot =
           isActorPlayer &&
           actor.character.id === 'irena' &&
@@ -1356,12 +1619,17 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
+          const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('SPECIAL', 'SUPER_FALLEN_SHOT') : [];
+          const judgmentActive = isActorPlayer && judgmentReadyRef.current;
           let finalDamage = calculateSpecialDamage({
             attacker: actor,
             target,
             config: stateRef.current.battleConfig,
             turn,
             isActingFirst,
+            judgmentReady: judgmentActive,
+            resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
+            resonanceJudgmentReadyIds: resonanceExecutionIds,
             specialSkillId: 'SUPER_FALLEN_SHOT',
             alreadyPrepared: true,
             baseAttackerMaxHp: baseActorMaxHp,
@@ -1418,9 +1686,13 @@ export function useBattleGame(
           }));
           if (isEvaded) return true;
 
+          const activeResonancesForShot = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+          const resonanceFallenExecution = activeResonancesForShot.some(resonance =>
+            ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+          );
           const executionForHit =
             isActorPlayer &&
-            hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+            (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
             target.currentHp > 0 &&
             actor.currentHp > 1 &&
             actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1447,6 +1719,24 @@ export function useBattleGame(
                 }
               : prev.visualEffect,
           }));
+
+          if (judgmentActive) {
+            judgmentReadyRef.current = false;
+            judgmentMarksRef.current = 0;
+            updateState(prev => ({ ...prev, judgmentReady: false }));
+          }
+          finishResonanceJudgmentExecution(turn, resonanceExecutionIds);
+          if (isActorPlayer) {
+            if (!resonanceExecutionIds.includes('FALLEN_JUDGMENT')) addResonanceJudgmentMarks(2, turn, '超堕天撃命中', ['FALLEN_JUDGMENT']);
+            if (!resonanceExecutionIds.includes('KING_JUDGMENT')) addResonanceJudgmentMarks(1, turn, '超堕天撃命中', ['KING_JUDGMENT']);
+            if (!resonanceExecutionIds.includes('JUDGMENT_WING')) addResonanceJudgmentMarks(1, turn, '超堕天撃命中', ['JUDGMENT_WING']);
+            if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) addJudgmentMarks(2, turn);
+          }
+          if (isActorPlayer && !isEvaded) {
+            const immediateErosion = getEquippedResonanceAbilities(stateRef.current.battleConfig)
+              .reduce((sum, resonance) => sum + getFeatherErosionRate(resonance.id, resonance.level), 0);
+            if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '超堕天撃命中');
+          }
 
           if (newTargetHp <= 0) return false;
           return true;
@@ -1607,6 +1897,7 @@ export function useBattleGame(
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
+        const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('SPECIAL', specialSkillId ?? 'FEATHER') : [];
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         const calculatedDamage = calculateSpecialDamage({
           attacker: actor,
@@ -1615,13 +1906,18 @@ export function useBattleGame(
           turn,
           isActingFirst,
           judgmentReady: judgmentActive,
+          resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
+          resonanceJudgmentReadyIds: resonanceExecutionIds,
           specialSkillId: specialSkillId ?? 'FEATHER',
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
         });
+        const resonanceFallenExecution = activeResonancesForSpecial.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1680,7 +1976,7 @@ export function useBattleGame(
 
         const fallenExecution =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1760,8 +2056,18 @@ export function useBattleGame(
           judgmentMarksRef.current = 0;
           updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
-        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
-          addJudgmentMarks(2, turn);
+        }
+        finishResonanceJudgmentExecution(turn, resonanceExecutionIds);
+        if (isActorPlayer) {
+          if (!resonanceExecutionIds.includes('FALLEN_JUDGMENT')) addResonanceJudgmentMarks(2, turn, '特殊技命中', ['FALLEN_JUDGMENT']);
+          if (!resonanceExecutionIds.includes('KING_JUDGMENT')) addResonanceJudgmentMarks(1, turn, '特殊技命中', ['KING_JUDGMENT']);
+          if (isIrenaSpecial && !resonanceExecutionIds.includes('JUDGMENT_WING')) addResonanceJudgmentMarks(1, turn, '羽弾命中', ['JUDGMENT_WING']);
+          if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) addJudgmentMarks(2, turn);
+        }
+        if (isActorPlayer && isIrenaSpecial) {
+          const immediateErosion = getEquippedResonanceAbilities(stateRef.current.battleConfig)
+            .reduce((sum, resonance) => sum + getFeatherErosionRate(resonance.id, resonance.level), 0);
+          if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '羽弾命中');
         }
 
         if (newTargetHp <= 0 || postSpecialTargetHp <= 0) return false;
@@ -1911,6 +2217,11 @@ export function useBattleGame(
           }
         }
 
+        const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('ULTIMATE') : [];
+        const activeResonancesForUltimate = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonancesForUltimate.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const judgmentActive = isActorPlayer && judgmentReadyRef.current;
         const baseCalculatedDamage = calculateUltimateDamage({
           attacker: actor,
@@ -1919,6 +2230,8 @@ export function useBattleGame(
           turn,
           isActingFirst,
           judgmentReady: judgmentActive,
+          resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
+          resonanceJudgmentReadyIds: resonanceExecutionIds,
           ultimateVariant: appliedIrenaVariant,
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
@@ -1936,7 +2249,7 @@ export function useBattleGame(
         }
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1949,15 +2262,20 @@ export function useBattleGame(
           : 0;
         if (judgmentActive) {
           addLog(
-            `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
+            `⚖️【断罪執行】必殺技に断罪が発動。ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}。`,
             'PASSIVE_TRIGGER',
             turn,
           );
         }
+        resonanceExecutionIds.forEach(id => {
+          const resonance = activeResonancesForUltimate.find(item => item.id === id);
+          const execution = resonance ? getResonanceExecutionStats(id, resonance.level) : null;
+          if (execution) addLog(`⚖️【${id === 'ABYSS_JUDGMENT' ? '深淵断罪' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%。`, 'PASSIVE_TRIGGER', turn);
+        });
 
         const fallenExecution =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -2004,8 +2322,12 @@ export function useBattleGame(
           judgmentMarksRef.current = 0;
           updateState(prev => ({ ...prev, judgmentReady: false }));
           addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
-        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
-          addJudgmentMarks(3, turn);
+        }
+        finishResonanceJudgmentExecution(turn, resonanceExecutionIds);
+        if (isActorPlayer) {
+          if (!resonanceExecutionIds.includes('FALLEN_JUDGMENT')) addResonanceJudgmentMarks(3, turn, '必殺技命中', ['FALLEN_JUDGMENT']);
+          if (!resonanceExecutionIds.includes('KING_JUDGMENT')) addResonanceJudgmentMarks(1, turn, '必殺技命中', ['KING_JUDGMENT']);
+          if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) addJudgmentMarks(3, turn);
         }
 
         if (newTargetHp <= 0) return false;
@@ -2201,7 +2523,7 @@ export function useBattleGame(
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
       yinYangDefensePendingRef.current = false;
 
-      const nextPlayer = {
+      let nextPlayer: BattleFighter = {
         ...stateRef.current.player,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
@@ -2215,7 +2537,29 @@ export function useBattleGame(
         featherPierceCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherPierceCooldownRemaining ?? 0) - 1),
         featherRapidCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherRapidCooldownRemaining ?? 0) - 1),
       };
-      const nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      let nextEnemy: BattleFighter = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      const equippedResonances = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+      const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
+      const hpRatio = nextPlayer.currentHp / playerBaseHp;
+      const erosionRate = getHighestTurnErosionRate(equippedResonances, hpRatio);
+      if (erosionRate > 0) {
+        const erosion = calculateErosionResult(nextEnemy, nextPlayer, erosionRate);
+        nextEnemy = erosion.enemy;
+        nextPlayer = erosion.player;
+        addLog(`🌑【共鳴侵食：ターン経過】敵5項目をさらに${erosionRate}%弱体化（上限95%）。`, 'PASSIVE_TRIGGER', currentTurn);
+        if (erosion.kingZoneStacksGained > 0) {
+          addLog(`👑【王域】弱体化段階を突破。王域+${erosion.kingZoneStacksGained}（現在${nextPlayer.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', currentTurn);
+        }
+        if (erosion.judgmentMarksGained > 0) addResonanceJudgmentMarks(erosion.judgmentMarksGained, currentTurn, '新規弱体化段階', ['ABYSS_JUDGMENT']);
+      }
+
+      const remainingKingWingStacks = resonanceKingWingStackExpiresAtRef.current.filter(expiresAt => expiresAt > currentTurn);
+      resonanceKingWingStackExpiresAtRef.current = remainingKingWingStacks;
+      nextPlayer = {
+        ...nextPlayer,
+        resonanceKingWingStacks: remainingKingWingStacks.length,
+        resonanceKingWingStackExpiresAtTurns: remainingKingWingStacks,
+      };
       if (
         (enemyBeforeArmorTick.kaiserArmorBrokenTurns ?? 0) > 0 &&
         (nextEnemy.kaiserArmorBrokenTurns ?? 0) === 0
