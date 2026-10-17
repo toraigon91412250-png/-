@@ -123,3 +123,16 @@
 .epx-forge-live{border-color:#a5577a66;background:radial-gradient(ellipse at 100% 0%,#72294755,transparent 21rem),#171725}
 .epx-forge-live>strong{border-color:#f7b2cd;color:#ffdce8}
 @media(max-width:700px){.epx-forge-sequence{grid-template-columns:1fr}.epx-forge-slot p{min-height:0}.epx-forge-choice-row button{min-height:68px;padding:8px 4px}.epx-forge-choice-row button strong{font-size:17px}}
+
+/* Fifth prototype: reverse the usual player role without touching normal combat. */
+.epx-card-red{--epx-accent:#ff9ca5;--epx-edge:#7f3c4e;background:radial-gradient(ellipse at 90% 0%,#83223e70,transparent 19rem),linear-gradient(145deg,#2a1823,#111522)}
+.epx-hero-red{border-color:#89445b;background:radial-gradient(ellipse at 95% 0%,#8d234952,transparent 24rem),linear-gradient(120deg,#321923,#151a29)}
+.epx-reversal-build{border-color:#ab556c66;background:radial-gradient(ellipse at 100% 0%,#76223c55,transparent 21rem),#171725}
+.epx-reversal-build>strong{border-color:#f7a8b9;color:#ffdbe2}
+.epx-reversal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.epx-reversal-stats>div{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:10px;border:1px solid #b17b8928;border-radius:9px;background:#150e1a}
+.epx-reversal-stats svg{color:#f7a8b9}
+.epx-reversal-stats span{color:#a89aa9;font-size:8px}
+.epx-reversal-stats strong{width:100%;color:#fff0f4;font-size:13px}
+.epx-reversal-stats strong small{color:#b89ca8;font-size:8px}
+@media(max-width:700px){.epx-reversal-stats{grid-template-columns:1fr 1fr}.epx-reversal-stats>div:last-child{grid-column:1/-1}}

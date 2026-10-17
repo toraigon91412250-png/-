@@ -47,7 +47,7 @@ const {
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
-const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, createBossForgeState, getBossForgeIntent, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn, resolveBossForgeTurn } = await import('./src/utils/experimentPrototypes.ts');
+const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, createBossForgeState, createKaiserReversalState, getBossForgeIntent, getKaiserReversalIntent, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn, resolveBossForgeTurn, resolveKaiserReversalTurn } = await import('./src/utils/experimentPrototypes.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -3274,7 +3274,8 @@ const compilerBurst = resolveResonanceTrialTurn(compilerBurstState, 'BURST', exa
 assert.ok(compilerBurst.enemyHp < compilerBurstState.enemyHp, 'A charged build resolves its burst action.');
 assert.strictEqual(compilerBurst.energy, 0);
 const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
-assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房'].every(name => prototypeScreenSource.includes(name)));
+assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房', '反転決戦'].every(name => prototypeScreenSource.includes(name)));
+assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'Five playable concepts should be visible in the catalog.');
 assert.ok(prototypeScreenSource.includes('4 PROTOTYPES'), 'The gallery count must match the displayed prototype set.');
 const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
 assert.strictEqual(forgeStart.bossHp, 120);
@@ -3299,6 +3300,32 @@ assert.strictEqual(clampedForge.config.attackPressure, 40, 'Boss design pressure
 assert.strictEqual(clampedForge.config.pattern.length, 4, 'Boss behavior sequences are bounded to four editable slots.');
 const forgeFinished = { ...forgeStart, status: 'VICTORY' };
 assert.strictEqual(resolveBossForgeTurn(forgeFinished, 'STRIKE'), forgeFinished, 'Finished custom boss fights ignore additional input.');
-console.log('✓ Experiment prototypes: seeded roguelite runs, telegraph counterplay, resonance buildcraft, and configurable boss balance verified.');
+const reversalFortress = createKaiserReversalState('FORTRESS');
+assert.strictEqual(reversalFortress.kaiserHp, 210);
+assert.strictEqual(reversalFortress.armorPlates, 3);
+assert.strictEqual(reversalFortress.energy, 1);
+const reversalExecutioner = createKaiserReversalState('EXECUTIONER');
+assert.strictEqual(reversalExecutioner.kaiserHp, 160);
+assert.strictEqual(reversalExecutioner.armorPlates, 1);
+assert.strictEqual(reversalExecutioner.energy, 2);
+assert.strictEqual(getKaiserReversalIntent(1, 140, 140), 'COUNTER');
+const reversalStrike = resolveKaiserReversalTurn(reversalFortress, 'STRIKE');
+assert.strictEqual(reversalStrike.irenaHp, 120);
+assert.strictEqual(reversalStrike.kaiserHp, 184, 'Counter telegraph punishes a direct Kaiser attack.');
+assert.strictEqual(reversalStrike.armorPlates, 2, 'One armor plate absorbs a single hit.');
+const reversalGuard = resolveKaiserReversalTurn(reversalFortress, 'GUARD');
+assert.strictEqual(reversalGuard.kaiserHp, 208, 'Guard and armor reduce incoming counter damage.');
+const reversalRebuild = resolveKaiserReversalTurn({ ...reversalFortress, armorPlates: 0 }, 'REBUILD');
+assert.strictEqual(reversalRebuild.kaiserHp, 186, 'Armor repair leaves the Kaiser exposed for its current turn.');
+assert.strictEqual(reversalRebuild.armorPlates, 1, 'Armor is restored after Irena responds, not before her hit.');
+const reversalExposed = resolveKaiserReversalTurn({ ...reversalFortress, turn: 3 }, 'STRIKE');
+assert.strictEqual(reversalExposed.irenaHp, 108, 'Irena’s exposed window increases Kaiser damage.');
+assert.strictEqual(reversalExposed.kaiserHp, 210, 'Irena does not attack during the exposed window.');
+assert.strictEqual(getKaiserReversalIntent(4, 49, 140), 'LAST_STAND');
+const reversalFinished = { ...reversalFortress, status: 'VICTORY' };
+assert.strictEqual(resolveKaiserReversalTurn(reversalFinished, 'STRIKE'), reversalFinished, 'Finished reversal matches ignore extra inputs.');
+console.log('✓ Kaiser reversal: build trade-offs, counter telegraph, armor consumption/rebuild, exposed damage window, and final retaliation verified.');
+
+console.log('✓ Experiment prototypes: seeded roguelite runs, telegraph counterplay, resonance buildcraft, configurable boss balance, and side-swap duel verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
