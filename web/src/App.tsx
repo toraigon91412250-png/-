@@ -222,7 +222,7 @@ export const App: React.FC = () => {
         playerHp: battleState.player.currentHp,
         playerMaxHp: battleState.player.character.maxHp,
         actionsTaken: battleState.playerActionsTaken ?? [],
-        abilities: battleState.battleConfig.abilities.filter(ability => isRegularAbilityId(ability.id)),
+        abilities: battleState.battleConfig.abilities.filter(ability => isRegularAbilityId(ability.id)).map(ability => ({ id: ability.id as AbilityId, level: ability.level })),
         equippedImprints: battleState.battleConfig.imprints ?? [],
         usedImprints: battleState.usedImprints,
         logLines: battleState.logs.map(log => log.text),
