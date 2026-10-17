@@ -24,8 +24,8 @@ import {
 import { CpuAi } from '../utils/ai';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
-import { getEquippedResonanceAbility } from '../utils/abilitySystem';
-import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getEquippedResonanceAbilities, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
+import { getEquippedResonanceAbilities } from '../utils/resonanceSystem';
+import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
@@ -625,8 +625,8 @@ export function useBattleGame(
     isDirectHit = source !== '出血ダメージ',
   ): { damage: number; targetHp: number; phaseChanged: boolean } => {
     if (target.isPlayer && isDirectHit) {
-      const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
-      if (resonance?.id === 'ABYSS_KING') {
+      const resonance = getEquippedResonanceAbilities(stateRef.current.battleConfig).find(item => item.id === 'ABYSS_KING');
+      if (resonance) {
         const zone = getKingZoneValues(resonance.level);
         const stacks = Math.min(zone.maxStacks, target.resonanceKingZoneStacks ?? 0);
         const reduction = Math.min(0.95, stacks * zone.directDamageReductionPerStack);
@@ -2535,20 +2535,22 @@ export function useBattleGame(
         featherRapidCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherRapidCooldownRemaining ?? 0) - 1),
       };
       let nextEnemy: BattleFighter = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
-      const equippedResonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
-      if (equippedResonance) {
-        const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
-        const erosionRate = getTurnErosionRate(equippedResonance.id, equippedResonance.level, nextPlayer.currentHp / playerBaseHp);
-        if (erosionRate > 0) {
-          const erosion = calculateErosionResult(nextEnemy, nextPlayer, erosionRate);
-          nextEnemy = erosion.enemy;
-          nextPlayer = erosion.player;
-          addLog(`🌑【共鳴侵食：ターン経過】敵5項目をさらに${erosionRate}%弱体化（上限95%）。`, 'PASSIVE_TRIGGER', currentTurn);
-          if (erosion.kingZoneStacksGained > 0) {
-            addLog(`👑【王域】弱体化段階を突破。王域+${erosion.kingZoneStacksGained}（現在${nextPlayer.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', currentTurn);
-          }
-          if (erosion.judgmentMarksGained > 0) addResonanceJudgmentMarks(erosion.judgmentMarksGained, currentTurn, '新規弱体化段階', ['ABYSS_JUDGMENT']);
+      const equippedResonances = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+      const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
+      const hpRatio = nextPlayer.currentHp / playerBaseHp;
+      const erosionRate = equippedResonances.reduce(
+        (sum, equipped) => sum + getTurnErosionRate(equipped.id, equipped.level, hpRatio),
+        0,
+      );
+      if (erosionRate > 0) {
+        const erosion = calculateErosionResult(nextEnemy, nextPlayer, erosionRate);
+        nextEnemy = erosion.enemy;
+        nextPlayer = erosion.player;
+        addLog(`🌑【共鳴侵食：ターン経過】敵5項目をさらに${erosionRate}%弱体化（上限95%）。`, 'PASSIVE_TRIGGER', currentTurn);
+        if (erosion.kingZoneStacksGained > 0) {
+          addLog(`👑【王域】弱体化段階を突破。王域+${erosion.kingZoneStacksGained}（現在${nextPlayer.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', currentTurn);
         }
+        if (erosion.judgmentMarksGained > 0) addResonanceJudgmentMarks(erosion.judgmentMarksGained, currentTurn, '新規弱体化段階', ['ABYSS_JUDGMENT']);
       }
 
       const remainingKingWingStacks = resonanceKingWingStackExpiresAtRef.current.filter(expiresAt => expiresAt > currentTurn);
