@@ -657,7 +657,22 @@ export function useBattleGame(
         isDirectHit,
         source,
       );
-      updateState(prev => ({ ...prev, enemy: outcome.fighter }));
+      const enemyAfterHit: BattleFighter = outcome.phaseChanged
+        ? {
+            ...outcome.fighter,
+            // Keep the phase-two baseline separate from resonance erosion so
+            // recalculating weakened stats cannot erase the phase bonuses.
+            resonanceBaseStats: {
+              maxHp: outcome.fighter.character.maxHp,
+              attack: outcome.fighter.character.attack,
+              defense: outcome.fighter.character.defense,
+              speed: outcome.fighter.character.speed,
+              specialSkillDamage: outcome.fighter.character.specialSkillDamage,
+              ultimateSkillDamage: outcome.fighter.character.ultimateSkillDamage,
+            },
+          }
+        : outcome.fighter;
+      updateState(prev => ({ ...prev, enemy: enemyAfterHit }));
       if (outcome.armorWasActive) {
         addLog(
           outcome.phaseChanged
