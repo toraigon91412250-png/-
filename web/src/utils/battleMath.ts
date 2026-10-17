@@ -102,7 +102,7 @@ function applyFallenExecution(
   config: BattleSetupConfig,
   baseAttackerMaxHp: number,
 ): number {
-  const resonance = getEquippedResonanceAbility(config);
+  const resonance = getEquippedResonanceAbilities(config).find(ability => ability.id === 'FALLEN_WING' || ability.id === 'FALLEN_JUDGMENT' || ability.id === 'ABYSS_FALLEN' || ability.id === 'FALLEN_GOD');
   const resonanceFallen = resonance && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id);
   if (
     attacker.isPlayer &&
