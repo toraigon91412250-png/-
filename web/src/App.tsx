@@ -1000,7 +1000,11 @@ export const App: React.FC = () => {
           resonanceProgress={resonanceProgress}
           currentConfig={battleSetup}
           lastRun={lastExperimentState}
-          onBack={() => { setBattleSetupMode('NORMAL'); setScreen('SELECT'); }}
+          onBack={() => {
+            setBattleSetupMode('NORMAL');
+            setBattleSetupReturnScreen('SELECT');
+            setScreen('SELECT');
+          }}
           onStartTrial={(level, trialDifficulty) => {
             setDifficulty(trialDifficulty);
             handleOpenBattleSetup({ ...battleSetup, kaiserLevel: level, suppressProgressionRewards: true }, 'EXPERIMENT_LAB', true, 'LAB');
