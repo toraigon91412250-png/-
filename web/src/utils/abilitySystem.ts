@@ -20,6 +20,22 @@ export function hasAbility(config: BattleSetupConfig, id: AbilityId): boolean {
   return getAbilityLevel(config, id) > 0;
 }
 
+export type AchievementBadgeDamageKind = 'NORMAL' | 'SPECIAL' | 'ULTIMATE';
+
+export function getAchievementBadgeDamageMultiplier(
+  config: BattleSetupConfig,
+  kind: AchievementBadgeDamageKind,
+): number {
+  const tier = Math.min(3, Math.max(0, Math.floor(config.achievementBadgeLevel ?? 0)));
+  if (tier === 0) return 1;
+  if (config.achievementBadgeId === 'A') return ([1, 1.05, 1.09, 1.12] as const)[tier];
+  if (config.achievementBadgeId === 'B') {
+    if (kind === 'SPECIAL') return ([1, 1.08, 1.12, 1.15] as const)[tier];
+    if (kind === 'ULTIMATE') return ([1, 1, 1.08, 1.12] as const)[tier];
+  }
+  return 1;
+}
+
 export function getKaiserLevelMultiplier(level: BattleChallengeLevel): number {
   // Lv10 is the baseline. Growth is intentionally capped at 2x by Lv100
   // so higher difficulty comes from a manageable stat increase rather than runaway values.
@@ -103,6 +119,36 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
       ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * statMultiplier)) } : {}),
       ...(next.talentBaseSpecialSkillDamage !== undefined ? { talentBaseSpecialSkillDamage: Math.max(1, Math.round(next.talentBaseSpecialSkillDamage * statMultiplier * damageMultiplier)) } : {}),
       ...(next.talentBaseUltimateSkillDamage !== undefined ? { talentBaseUltimateSkillDamage: Math.max(1, Math.round(next.talentBaseUltimateSkillDamage * statMultiplier * damageMultiplier)) } : {}),
+    };
+  }
+
+  const badgeLevel = Math.min(3, Math.max(0, Math.floor(config.achievementBadgeLevel ?? 0)));
+  if (config.achievementBadgeId === 'C' && badgeLevel > 0) {
+    const hpMultiplier = badgeLevel === 1 ? 1.05 : 1.07;
+    const attackMultiplier = badgeLevel >= 3 ? 1.07 : 1;
+    const defenseMultiplier = badgeLevel >= 2 ? 1.07 : 1;
+    const speedMultiplier = badgeLevel >= 3 ? 1.07 : 1;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * hpMultiplier)),
+      attack: Math.max(1, Math.round(next.attack * attackMultiplier)),
+      defense: Math.max(0, Math.round(next.defense * defenseMultiplier)),
+      speed: Math.max(1, Math.round(next.speed * speedMultiplier)),
+      ...(badgeLevel >= 3
+        ? { damageTakenMultiplier: (next.damageTakenMultiplier ?? 1) * 0.95 }
+        : {}),
+      ...(next.talentBaseMaxHp !== undefined
+        ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * hpMultiplier)) }
+        : {}),
+      ...(next.talentBaseAttack !== undefined
+        ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * attackMultiplier)) }
+        : {}),
+      ...(next.talentBaseDefense !== undefined
+        ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * defenseMultiplier)) }
+        : {}),
+      ...(next.talentBaseSpeed !== undefined
+        ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * speedMultiplier)) }
+        : {}),
     };
   }
 
