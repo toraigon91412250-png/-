@@ -496,13 +496,13 @@ export interface BossForgeState {
   logs: string[];
 }
 export function getBossForgeIntent(state: BossForgeState): BossForgePattern {
-  const sequence = state.config.pattern.length ? state.config.pattern : ['CRUSH'];
+  const sequence: BossForgePattern[] = state.config.pattern.length ? state.config.pattern : ['CRUSH'];
   return sequence[(Math.max(1, state.turn) - 1) % sequence.length];
 }
 export function createBossForgeState(config: BossForgeConfig): BossForgeState {
   const bossMaxHp = Math.max(60, Math.min(400, Math.round(config.bossMaxHp)));
   const attackPressure = Math.max(6, Math.min(40, Math.round(config.attackPressure)));
-  const pattern = (config.pattern.length ? config.pattern : ['CRUSH']).slice(0, 4);
+  const pattern: BossForgePattern[] = (config.pattern.length ? config.pattern : ['CRUSH']).slice(0, 4);
   return {
     bossHp: bossMaxHp,
     bossMaxHp,
