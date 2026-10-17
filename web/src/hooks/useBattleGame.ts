@@ -1591,12 +1591,18 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
+          const judgmentLevel = isActorPlayer ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT') : 0;
+          const judgmentActive = isActorPlayer && (
+            judgmentReadyRef.current || isResonanceExecutionReady('SPECIAL', 'SUPER_FALLEN_SHOT')
+          );
           let finalDamage = calculateSpecialDamage({
             attacker: actor,
             target,
             config: stateRef.current.battleConfig,
             turn,
             isActingFirst,
+            judgmentReady: judgmentActive,
+            resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
             specialSkillId: 'SUPER_FALLEN_SHOT',
             alreadyPrepared: true,
             baseAttackerMaxHp: baseActorMaxHp,
@@ -1653,9 +1659,12 @@ export function useBattleGame(
           }));
           if (isEvaded) return true;
 
+          const activeResonanceForShot = getEquippedResonanceAbility(stateRef.current.battleConfig);
+          const resonanceFallenExecution = activeResonanceForShot
+            && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForShot.id);
           const executionForHit =
             isActorPlayer &&
-            hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+            (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
             target.currentHp > 0 &&
             actor.currentHp > 1 &&
             actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1682,6 +1691,28 @@ export function useBattleGame(
                 }
               : prev.visualEffect,
           }));
+
+          if (judgmentActive) {
+            if (judgmentReadyRef.current) {
+              judgmentReadyRef.current = false;
+              judgmentMarksRef.current = 0;
+              updateState(prev => ({ ...prev, judgmentReady: false }));
+            } else {
+              finishResonanceJudgmentExecution(turn);
+            }
+          } else if (isActorPlayer && activeResonanceForShot?.id === 'FALLEN_JUDGMENT') {
+            addResonanceJudgmentMarks(2, turn, '超堕天撃命中');
+          } else if (isActorPlayer && activeResonanceForShot?.id === 'KING_JUDGMENT') {
+            addResonanceJudgmentMarks(1, turn, '超堕天撃命中');
+          } else if (isActorPlayer && activeResonanceForShot?.id === 'JUDGMENT_WING') {
+            addResonanceJudgmentMarks(1, turn, '超堕天撃命中');
+          } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+            addJudgmentMarks(2, turn);
+          }
+          if (isActorPlayer && activeResonanceForShot) {
+            const immediateErosion = getFeatherErosionRate(activeResonanceForShot.id, activeResonanceForShot.level);
+            if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '超堕天撃命中');
+          }
 
           if (newTargetHp <= 0) return false;
           return true;
