@@ -1339,7 +1339,7 @@ export function useBattleGame(
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
-        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const judgmentActive = isActorPlayer && (judgmentReadyRef.current || isResonanceExecutionReady('ATTACK'));
         const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
         const calculatedDamage = calculateNormalAttackDamage(
           {
@@ -1349,6 +1349,7 @@ export function useBattleGame(
             turn,
             isActingFirst,
             judgmentReady: judgmentActive,
+            resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
             alreadyPrepared: true,
             baseAttackerMaxHp: baseActorMaxHp,
           },
@@ -1388,8 +1389,12 @@ export function useBattleGame(
         }
 
         if (judgmentActive) {
+          const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+          const execution = resonance ? getResonanceExecutionStats(resonance.id, resonance.level) : null;
           addLog(
-            `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
+            execution && !judgmentReadyRef.current
+              ? `⚖️【${resonance?.id === 'ABYSS_JUDGMENT' ? '深淵断罪' : resonance?.id === 'JUDGMENT_WING' ? '断罪翼' : '共鳴断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%`
+              : `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
             'PASSIVE_TRIGGER',
             turn,
           );
@@ -1454,10 +1459,18 @@ export function useBattleGame(
         updateState(prev => ({ ...prev, visualEffect: null }));
 
         if (judgmentActive) {
-          judgmentReadyRef.current = false;
-          judgmentMarksRef.current = 0;
-          updateState(prev => ({ ...prev, judgmentReady: false }));
-          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          if (judgmentReadyRef.current) {
+            judgmentReadyRef.current = false;
+            judgmentMarksRef.current = 0;
+            updateState(prev => ({ ...prev, judgmentReady: false }));
+            addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          } else {
+            finishResonanceJudgmentExecution(turn);
+          }
+        } else if (isActorPlayer && getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'FALLEN_JUDGMENT') {
+          addResonanceJudgmentMarks(isCritical ? 2 : 1, turn, '通常攻撃命中');
+        } else if (isActorPlayer && getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'KING_JUDGMENT') {
+          addResonanceJudgmentMarks(1, turn, '通常攻撃命中');
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(isCritical ? 2 : 1, turn);
         }
