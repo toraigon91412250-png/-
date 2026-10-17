@@ -96,6 +96,8 @@ export function useBattleGame(
     playerCharacterId: initialBattleConfig.playerCharacterId ?? initialPlayerChar.id,
     abilities: normalizeEquippedAbilities(initialBattleConfig.abilities),
     imprints: normalizeEquippedImprints(initialBattleConfig.imprints),
+    achievementBadgeId: initialBattleConfig.achievementBadgeId ?? null,
+    achievementBadgeLevel: initialBattleConfig.achievementBadgeLevel ?? 0,
     statPointTotal: Math.max(0, Math.floor(initialBattleConfig.statPointTotal ?? 12)),
     statAllocation: normalizeStatAllocation(
       initialBattleConfig.statAllocation,
@@ -477,6 +479,11 @@ export function useBattleGame(
       imprints: normalizeEquippedImprints(
         battleConfigOverride?.imprints ?? stateRef.current.battleConfig.imprints,
       ),
+      achievementBadgeId: battleConfigOverride?.achievementBadgeId !== undefined
+        ? battleConfigOverride.achievementBadgeId
+        : stateRef.current.battleConfig.achievementBadgeId ?? null,
+      achievementBadgeLevel: battleConfigOverride?.achievementBadgeLevel
+        ?? (battleConfigOverride?.achievementBadgeId === null ? 0 : stateRef.current.battleConfig.achievementBadgeLevel ?? 0),
       statPointTotal: nextStatPointTotal,
       statAllocation: normalizeStatAllocation(
         battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
