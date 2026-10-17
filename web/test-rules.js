@@ -47,6 +47,7 @@ const {
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
+const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn } = await import('./src/utils/experimentPrototypes.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -3224,5 +3225,50 @@ try {
     else storageValues.set(key, value);
   }
 }
+
+// Playable prototype rules: route variation, readable counterplay, and loadout-analysis regressions.
+assert.deepStrictEqual(getAscentRouteChoices(5, 2).map(node => node.type), ['BOSS']);
+assert.strictEqual(getAscentRouteChoices(2, 0).some(node => node.type === 'ELITE'), true);
+assert.notDeepStrictEqual(
+  getAscentRouteChoices(1, 0).map(node => node.type),
+  getAscentRouteChoices(1, 1).map(node => node.type),
+  'Fresh runs must offer different meaningful route choices.',
+);
+assert.deepStrictEqual(getAscentRelicChoices(['IRON_FEATHER', 'VOID_HEART'], 2).map(relic => relic.id).filter(id => ['IRON_FEATHER', 'VOID_HEART'].includes(id)), []);
+assert.ok(ASCENT_RELICS.length >= 6, 'Ascent must offer enough relics to create different run builds.');
+const ascentBase = createAscentCombatState({ floor: 1, nodeType: 'COMBAT', playerHp: 100, playerMaxHp: 100, energy: 0, score: 0, relicIds: [] });
+assert.strictEqual(ascentBase.intent, getAscentIntent(1));
+const ascentGuarded = resolveAscentTurn(ascentBase, 'GUARD');
+const ascentCharged = resolveAscentTurn(ascentBase, 'CHARGE');
+assert.ok(ascentGuarded.playerHp > ascentCharged.playerHp, 'Guarding a telegraphed heavy attack must reduce damage.');
+const ascentFinished = { ...ascentBase, status: 'VICTORY' };
+assert.strictEqual(resolveAscentTurn(ascentFinished, 'STRIKE'), ascentFinished, 'Finished fights ignore additional actions.');
+const observatoryStart = createObservatoryState();
+assert.strictEqual(getObservatoryIntent(1, 180, 180).dangerLanes.includes(1), true);
+const observatoryDodge = resolveObservatoryTurn(observatoryStart, 'DODGE', 0);
+assert.strictEqual(observatoryDodge.playerHp, 100, 'Moving to a safe lane avoids the marked line attack.');
+assert.ok(observatoryDodge.score >= 12);
+const coreTargetState = { ...observatoryStart, turn: 2 };
+assert.strictEqual(getObservatoryIntent(2, 180, 180).kind, 'CORE');
+const observatoryGuard = resolveObservatoryTurn(coreTargetState, 'GUARD', 1);
+assert.strictEqual(observatoryGuard.coreHp, 100, 'Guarding stops a core-targeted attack.');
+const observatoryIntercept = resolveObservatoryTurn(coreTargetState, 'INTERCEPT', 1);
+assert.strictEqual(observatoryIntercept.coreHp, 100, 'Interception stops a core-targeted attack.');
+assert.strictEqual(observatoryIntercept.bossHp, 168);
+assert.strictEqual(getResonanceIntent(3), 'EXPOSED');
+const exactSynergy = getResonancePrototypeAnalysis('ABYSS', 'JUDGMENT');
+assert.strictEqual(exactSynergy.score, 95);
+assert.strictEqual(getResonancePrototypeAnalysis('JUDGMENT', 'ABYSS').title, exactSynergy.title, 'Build analysis must be order-independent.');
+const compilerStart = createResonanceTrialState();
+const compilerCharge = resolveResonanceTrialTurn(compilerStart, 'CHARGE', exactSynergy, 'BURST');
+assert.strictEqual(compilerCharge.energy, 2);
+assert.strictEqual(compilerCharge.playerHp, 81);
+const compilerBurstState = { ...compilerCharge, energy: 3, turn: 3 };
+const compilerBurst = resolveResonanceTrialTurn(compilerBurstState, 'BURST', exactSynergy, 'BURST');
+assert.ok(compilerBurst.enemyHp < compilerBurstState.enemyHp, 'A charged build resolves its burst action.');
+assert.strictEqual(compilerBurst.energy, 0);
+const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
+assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ'].every(name => prototypeScreenSource.includes(name)));
+console.log('✓ Experiment prototypes: seeded routes, relic builds, telegraph counterplay, synergy analysis, and sandbox combat verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
