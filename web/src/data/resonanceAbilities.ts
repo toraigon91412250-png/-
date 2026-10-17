@@ -154,6 +154,15 @@ export const RESONANCE_DEFINITIONS: readonly ResonanceDefinition[] = [
   },
 ];
 
+/** The five resonance recipes available through normal progression. All ten remain usable via developer unlocks. */
+export const CRAFTABLE_RESONANCE_ABILITY_IDS: readonly ResonanceAbilityId[] = [
+  'FALLEN_GOD',
+  'FALLEN_WING',
+  'ABYSS_KING',
+  'JUDGMENT_WING',
+  'ABYSS_JUDGMENT',
+];
+
 const ABILITY_IDS = new Set<AbilityId>(['ABYSS', 'FALLEN', 'BLACK_WING', 'FALLEN_KING', 'JUDGMENT', 'ASTRAL_DOMINION']);
 const RESONANCE_IDS = new Set<string>(RESONANCE_DEFINITIONS.map(definition => definition.id));
 
