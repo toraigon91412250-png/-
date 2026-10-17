@@ -1988,9 +1988,6 @@ export function useBattleGame(
         // Apply 100% Status Ailment upon hit or convert the bleed into Blood Tear's burst.
         const statusOutcome = applySpecialStatusAilment(actor, !isActorPlayer, turn);
 
-        const resonanceFallenExecution = activeResonancesForSpecial.some(resonance =>
-          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
-        );
         const fallenExecution =
           isActorPlayer &&
           (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
