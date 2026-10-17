@@ -494,3 +494,10 @@
   .home-dashboard__achievement-entry-copy h2 { font-size: 14px; }
   .home-dashboard__achievement-entry-action { flex: 1 0 100%; min-height: 40px; }
 }
+
+
+.home-dashboard__mode-card--lab{border-color:rgba(110,231,220,.24);background:radial-gradient(ellipse at 87% 8%,rgba(56,189,174,.12),transparent 50%),linear-gradient(145deg,rgba(14,39,47,.98),rgba(12,21,34,.99))}
+.home-dashboard__mode-card--lab::before{background:rgba(45,212,191,.16)}
+.home-dashboard__mode-card--lab .home-dashboard__mode-art{border-color:rgba(110,231,220,.33);background:rgba(45,212,191,.11);color:#99F6E4}
+.home-dashboard__mode-card--lab .home-dashboard__mode-copy small{color:#8DE9DB}
+.home-dashboard__mode-card--lab .home-dashboard__mode-meta{color:#99F6E4;border-color:rgba(110,231,220,.18)}

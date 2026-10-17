@@ -46,6 +46,7 @@ const {
 } = await import('./src/utils/resonanceSystem.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
+const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -127,6 +128,25 @@ assert.deepStrictEqual(
   [.5, .75, 1, 1.5, 2],
 );
 console.log('✓ Ten resonance recipes, forbidden ingredient, all-level descriptions, fusion cost, revival, feather, erosion, and execution tables verified.');
+assert.deepStrictEqual(EXPERIMENT_TRIALS.map(t => [t.id,t.kaiserLevel,t.difficulty]), [
+ ['CALIBRATION',10,'NORMAL'],['RESONANCE_STRESS',50,'EXPERT'],['LIMIT_BREAK',100,'EXPERT']
+]);
+assert.strictEqual(getExperimentGrade(true,.8,0),'S');
+assert.strictEqual(getExperimentGrade(true,.5,0),'A');
+assert.strictEqual(getExperimentGrade(true,.1,0),'B');
+assert.strictEqual(getExperimentGrade(false,.1,.15),'B');
+assert.strictEqual(getExperimentGrade(false,.1,.4),'C');
+assert.strictEqual(getExperimentGrade(false,.1,.75),'D');
+assert.strictEqual(getExperimentGrade(true,4,-1),'S','Grade calculations clamp HP ratios.');
+assert.strictEqual(shouldPersistBattleResult(false),true);
+assert.strictEqual(shouldPersistBattleResult(true),false,'Sandbox result writer is disabled.');
+assert.strictEqual(shouldRecordBattleProgress('SELECT'),true);
+assert.strictEqual(shouldRecordBattleProgress('EXPERIMENT_LAB'),false,'Sandbox progression handlers are disabled.');
+const labAppSource = await readFile(new URL('./src/App.tsx', import.meta.url),'utf8');
+const labEngineSource = await readFile(new URL('./src/hooks/useBattleGame.ts', import.meta.url),'utf8');
+assert.ok(labAppSource.includes('if (!shouldRecordBattleProgress(battleSetupReturnScreen))'));
+assert.ok(labEngineSource.includes('shouldPersistBattleResult(suppressProgressionRewards)'));
+console.log('✓ Experiment presets, score boundaries, and both persistence guards verified.');
 
 assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
 assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,

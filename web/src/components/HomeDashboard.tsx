@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChevronRight,
   Crown,
+  FlaskConical,
   Gem,
   Shield,
   Swords,
@@ -32,6 +33,7 @@ interface HomeDashboardProps {
   onOpenGrowth: () => void;
   onOpenGacha: () => void;
   onOpenRaid: () => void;
+  onOpenExperimentLab: () => void;
   unlockedKaiserLevel: BattleChallengeLevel;
   availableStatPoints: number;
   skillProgress: IrenaSkillProgress;
@@ -63,6 +65,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onOpenGrowth,
   onOpenGacha,
   onOpenRaid,
+  onOpenExperimentLab,
   unlockedKaiserLevel,
   availableStatPoints,
   skillProgress,
@@ -243,12 +246,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             </button>
             <button className="home-dashboard__mode-card home-dashboard__mode-card--raid" type="button" onClick={onOpenRaid} aria-label="深淵レイドを開く">
               <span className="home-dashboard__mode-art" aria-hidden="true"><Gem size={28} /></span>
-              <span className="home-dashboard__mode-copy">
-                <small>HIGH-LEVEL CONTENT</small>
-                <strong>深淵レイド</strong>
-                <span>勝利報酬で刻印チケットや核片を獲得。</span>
-              </span>
+              <span className="home-dashboard__mode-copy"><small>HIGH-LEVEL CONTENT</small><strong>深淵レイド</strong><span>勝利報酬で刻印チケットや核片を獲得。</span></span>
               <span className="home-dashboard__mode-meta"><span><Gem size={14} /> 核片 {raidRewardProgress.coreFragments} 個</span><ChevronRight size={18} /></span>
+            </button>
+            <button className="home-dashboard__mode-card home-dashboard__mode-card--lab" type="button" onClick={onOpenExperimentLab} aria-label="実験場を開く">
+              <span className="home-dashboard__mode-art" aria-hidden="true"><FlaskConical size={28} /></span>
+              <span className="home-dashboard__mode-copy"><small>TACTICAL LAB / SANDBOX</small><strong>実験場</strong><span>本編と同じ戦闘で編成を検証。勝っても負けても本編への影響なし。</span></span>
+              <span className="home-dashboard__mode-meta"><span>全Lv.試験可能・報酬なし</span><ChevronRight size={18} /></span>
             </button>
             {stellaModeUnlocked && (
               <button

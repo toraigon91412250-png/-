@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AbilityId, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId, ResonanceAbilityId } from './types/game';
+import { AbilityId, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, BattleUiState, CpuDifficulty, ImprintId, ResonanceAbilityId } from './types/game';
 import { IRENA, STELLA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -12,6 +12,7 @@ import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
 import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, setResonanceAbilityForDeveloper, setResonanceShardsForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
+import { ExperimentLabScreen, ExperimentReportScreen } from './components/ExperimentLabScreen';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
 import { BattleSetupScreen } from './components/BattleSetupScreen';
@@ -25,6 +26,7 @@ import { StellaWarpTransition } from './components/StellaWarpTransition';
 import { StellaFinalBattleScreen } from './components/StellaFinalBattleScreen';
 import type { MainTab } from './components/BottomNavigation';
 import { normalizeStatAllocation } from './utils/statBuild';
+import { shouldRecordBattleProgress, type BattleReturnDestination } from './utils/experimentLab';
 import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePreload';
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
 import { applyIrenaTalentModifiers, getIrenaLevel, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
@@ -33,14 +35,16 @@ import { ACHIEVEMENT_DEFINITIONS, buildAchievementBadgeProgress, buildAchievemen
 import type { AchievementProgress } from './utils/achievementSystem';
 import type { StellaModeProgress } from './utils/storage';
 
-type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'RESONANCE' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'ACHIEVEMENTS' | 'DEV_TOOLS';
-type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER';
+type AppScreen = 'SELECT' | 'GROWTH_HUB' | 'RESONANCE' | 'GACHA_HUB' | 'BATTLE_SETUP' | 'BATTLE' | 'STELLA_FINAL' | 'RAID_PROTOTYPE' | 'EXPERIMENT_LAB' | 'EXPERIMENT_REPORT' | 'RECRUITMENT' | 'IMPRINTS' | 'IMPRINT_GACHA' | 'IRENA_TALENTS' | 'ACHIEVEMENTS' | 'DEV_TOOLS';
+type BattleSetupMode = 'NORMAL' | 'EX_KAISER' | 'STELLA' | 'DEVELOPER' | 'LAB';
 
 // These screens already have their own transition or combat presentation.
 const SCREENS_WITH_EXISTING_TRANSITIONS: ReadonlySet<AppScreen> = new Set([
   'BATTLE_SETUP',
   'BATTLE',
   'RAID_PROTOTYPE',
+  'EXPERIMENT_LAB',
+  'EXPERIMENT_REPORT',
   'DEV_TOOLS',
 ]);
 
@@ -65,7 +69,8 @@ export const App: React.FC = () => {
   const [raidItemMessage, setRaidItemMessage] = useState<string | null>(null);
   const [imprintMessage, setImprintMessage] = useState<string | null>(null);
   const [imprintGachaMessage, setImprintGachaMessage] = useState<string | null>(null);
-  const [battleSetupReturnScreen, setBattleSetupReturnScreen] = useState<'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS'>('SELECT');
+  const [battleSetupReturnScreen, setBattleSetupReturnScreen] = useState<BattleReturnDestination>('SELECT');
+  const [lastExperimentState, setLastExperimentState] = useState<BattleUiState | null>(null);
   const [talentReturnScreen, setTalentReturnScreen] = useState<'SELECT' | 'GROWTH_HUB'>('SELECT');
   const [imprintReturnScreen, setImprintReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
   const [recruitmentReturnScreen, setRecruitmentReturnScreen] = useState<'GACHA_HUB' | 'GROWTH_HUB'>('GACHA_HUB');
@@ -174,6 +179,11 @@ export const App: React.FC = () => {
 
     const completedLevel = battleState.battleConfig.kaiserLevel;
     const playerWon = battleState.winnerIsPlayer === true;
+    if (!shouldRecordBattleProgress(battleSetupReturnScreen)) {
+      setLastExperimentState(battleState);
+      setScreen('EXPERIMENT_REPORT');
+      return;
+    }
     const currentStellaProgress = loadStellaModeProgress();
     // EX battles launched directly from Developer Tools are combat-only tests until normal unlocks exist.
     // Do not create an artificial save-error message or advance the normal Kaiser challenge track.
@@ -288,7 +298,7 @@ export const App: React.FC = () => {
 
   const handleOpenBattleSetup = (
     prefill?: BattleSetupConfig,
-    returnTo: 'SELECT' | 'GROWTH_HUB' | 'DEV_TOOLS' = 'SELECT',
+    returnTo: BattleReturnDestination = 'SELECT',
     allowAllKaiserLevels = false,
     mode: BattleSetupMode = returnTo === 'DEV_TOOLS' ? 'DEVELOPER' : 'NORMAL',
   ) => {
@@ -547,6 +557,7 @@ export const App: React.FC = () => {
       ...config,
       playerCharacterId: safePlayerCharacterId,
       kaiserChallengeMode: battleSetupMode === 'EX_KAISER' ? 'EX' : 'NORMAL',
+      suppressProgressionRewards: battleSetupMode === 'LAB' || battleSetupReturnScreen === 'EXPERIMENT_LAB',
       imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
       achievementBadgeId: selectedBadge?.id ?? null,
       achievementBadgeLevel: selectedBadge?.tier ?? 0,
@@ -724,6 +735,12 @@ export const App: React.FC = () => {
   };
 
   const handleBackToSelect = () => {
+    if (battleSetupReturnScreen === 'EXPERIMENT_LAB') {
+      cancelBattle();
+      setBattleSetupMode('LAB');
+      setScreen('EXPERIMENT_LAB');
+      return;
+    }
     const wasStellaMode = battleSetupMode === 'STELLA';
     const wasExKaiser = battleSetupMode === 'EX_KAISER';
     cancelBattle();
@@ -873,6 +890,7 @@ export const App: React.FC = () => {
             setRaidReturnScreen('SELECT');
             setScreen('RAID_PROTOTYPE');
           }}
+          onOpenExperimentLab={() => { refreshProgress(); setScreen('EXPERIMENT_LAB'); }}
           skillProgress={skillProgress}
           raidRewardProgress={raidRewardProgress}
           recruitmentProgress={recruitmentProgress}
@@ -976,11 +994,30 @@ export const App: React.FC = () => {
             navigateToScreen('GACHA_HUB');
           }}
         />
+      ) : screen === 'EXPERIMENT_LAB' ? (
+        <ExperimentLabScreen
+          abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
+          currentConfig={battleSetup}
+          lastRun={lastExperimentState}
+          onBack={() => { setBattleSetupMode('NORMAL'); setScreen('SELECT'); }}
+          onStartTrial={(level, trialDifficulty) => {
+            setDifficulty(trialDifficulty);
+            handleOpenBattleSetup({ ...battleSetup, kaiserLevel: level, suppressProgressionRewards: true }, 'EXPERIMENT_LAB', true, 'LAB');
+          }}
+        />
+      ) : screen === 'EXPERIMENT_REPORT' ? (
+        <ExperimentReportScreen
+          state={lastExperimentState ?? battleState}
+          onBackToLab={() => { setBattleSetupMode('LAB'); setScreen('EXPERIMENT_LAB'); }}
+          onRetry={() => handleStartBattle(battleSetup)}
+          onAdjust={() => handleOpenBattleSetup(battleSetup, 'EXPERIMENT_LAB', true, 'LAB')}
+        />
       ) : screen === 'BATTLE_SETUP' ? (
         <BattleSetupScreen
           playerCharacters={battleSetupMode === 'STELLA'
             ? [STELLA]
-            : battleSetupMode === 'DEVELOPER'
+            : battleSetupMode === 'DEVELOPER' || battleSetupMode === 'LAB'
               ? PLAYER_CHARACTERS.filter(character => character.id !== STELLA.id || stellaModeProgress.stellaModeUnlocked)
               : [IRENA]}
           selectedPlayerCharacterId={battleSetupMode === 'STELLA'
@@ -1025,8 +1062,8 @@ export const App: React.FC = () => {
           onBackToSelect={handleBackToSelect}
           onRestart={() => restartBattle(getPlayerCharacterForBattle(battleSetup.playerCharacterId), getBattleCpuOpponent(), difficulty, battleSetup)}
           skillProgress={skillProgress}
-          onUpgradeSkill={handleUpgradeSkill}
-          onChooseSkillPath={handleChooseSkillPath}
+          onUpgradeSkill={battleSetupReturnScreen === 'EXPERIMENT_LAB' ? () => undefined : handleUpgradeSkill}
+          onChooseSkillPath={battleSetupReturnScreen === 'EXPERIMENT_LAB' ? () => undefined : handleChooseSkillPath}
           onToggleSound={toggleSound}
           onToggleSpeed={toggleSpeed}
         />
