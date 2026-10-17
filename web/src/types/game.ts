@@ -311,6 +311,8 @@ export interface BattleSetupConfig {
   // Optional for backwards compatibility with older saved/config objects.
   statAllocation?: StatAllocation;
   statPointTotal?: number;
+  /** Internal sandbox-session flag: skip permanent battle rewards and results. */
+  suppressProgressionRewards?: boolean;
 }
 
 export type IrenaSkillId = 'FEATHER' | 'RUIN';

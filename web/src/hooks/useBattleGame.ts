@@ -29,6 +29,7 @@ import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatM
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
+import { shouldPersistBattleResult } from '../utils/experimentLab';
 import {
   advanceKaiserChallengeRound,
   initializeKaiserChallengeFighter,
@@ -124,6 +125,7 @@ export function useBattleGame(
       initialBattleConfig.statAllocation,
       initialBattleConfig.statPointTotal ?? 12,
     ),
+    suppressProgressionRewards: initialBattleConfig.suppressProgressionRewards === true,
   };
 
   const [state, setState] = useState<BattleUiState>(() => {
@@ -736,6 +738,9 @@ export function useBattleGame(
         battleConfigOverride?.statAllocation ?? stateRef.current.battleConfig.statAllocation,
         nextStatPointTotal,
       ),
+      suppressProgressionRewards: battleConfigOverride?.suppressProgressionRewards
+        ?? stateRef.current.battleConfig.suppressProgressionRewards
+        ?? false,
     };
     const prepared = createBattleCharacters(baseP, baseE, nextConfig);
     const nextPlayer = createInitialFighter(prepared.player, true);
@@ -2340,10 +2345,13 @@ export function useBattleGame(
 
   const finalizeBattle = (winnerIsPlayer: boolean) => {
     yinYangDefensePendingRef.current = false;
-    const masteryBonus = battleMasteryRewardRef.current;
+    const suppressProgressionRewards = stateRef.current.battleConfig.suppressProgressionRewards === true;
+    const masteryBonus = suppressProgressionRewards ? 0 : battleMasteryRewardRef.current;
     const playerCharacterId = stateRef.current.player.character.id;
-    const reward = playerCharacterId === 'irena' ? getBattleReward(winnerIsPlayer, masteryBonus) : 0;
-    const saveOutcome = saveBattleResult(winnerIsPlayer, masteryBonus, playerCharacterId);
+    const reward = !suppressProgressionRewards && playerCharacterId === 'irena' ? getBattleReward(winnerIsPlayer, masteryBonus) : 0;
+    const saveOutcome = shouldPersistBattleResult(suppressProgressionRewards)
+      ? saveBattleResult(winnerIsPlayer, masteryBonus, playerCharacterId)
+      : { persisted: true };
     if (winnerIsPlayer) {
       soundManager.playVictory();
       addLog('👑 あなたの勝利です！ おめでとうございます！', 'VICTORY', stateRef.current.turnNumber);
@@ -2351,6 +2359,7 @@ export function useBattleGame(
       soundManager.playDefeat();
       addLog('💀 敗北しました... 再挑戦してみましょう！', 'DEFEAT', stateRef.current.turnNumber);
     }
+    if (suppressProgressionRewards) addLog('🧪【実験場】本編の報酬・戦績・実績は保存されません。', 'SYSTEM', stateRef.current.turnNumber);
     if (!saveOutcome.persisted) {
       addLog(
         '⚠️ 保存に失敗しました。今回の報酬は記録されていません。ブラウザの保存容量・保存設定を確認してください。',
