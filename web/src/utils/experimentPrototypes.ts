@@ -588,3 +588,112 @@ export function resolveBossForgeTurn(state: BossForgeState, action: BossForgeAct
   if (status === 'DEFEAT') logs.push('HPが尽きた。HP・圧力・行動列を調整して再試験しよう。');
   return { ...state, bossHp, playerHp, energy, combo, score, status, turn: state.turn + 1, logs: logs.slice(-7) };
 }
+
+
+/** Reversal-mode combat: the player controls Kaiser. All progress is local to this prototype. */
+export type KaiserReversalBuild = 'FORTRESS' | 'EXECUTIONER';
+export type KaiserReversalIntent = 'COUNTER' | 'FEINT' | 'EXPOSED' | 'LAST_STAND';
+export type KaiserReversalAction = 'STRIKE' | 'GUARD' | 'REBUILD' | 'CHARGE' | 'BURST';
+export interface KaiserReversalState {
+  kaiserHp: number;
+  kaiserMaxHp: number;
+  armorPlates: number;
+  energy: number;
+  irenaHp: number;
+  irenaMaxHp: number;
+  turn: number;
+  combo: number;
+  score: number;
+  build: KaiserReversalBuild;
+  status: PrototypeStatus;
+  logs: string[];
+}
+export function getKaiserReversalIntent(turn: number, irenaHp: number, irenaMaxHp: number): KaiserReversalIntent {
+  if (irenaHp / Math.max(1, irenaMaxHp) <= 0.35 && turn % 4 === 0) return 'LAST_STAND';
+  return (['COUNTER', 'FEINT', 'EXPOSED'] as const)[Math.max(0, turn - 1) % 3];
+}
+export function createKaiserReversalState(build: KaiserReversalBuild): KaiserReversalState {
+  const fortress = build === 'FORTRESS';
+  return {
+    kaiserHp: fortress ? 210 : 160,
+    kaiserMaxHp: fortress ? 210 : 160,
+    armorPlates: fortress ? 3 : 1,
+    energy: fortress ? 1 : 2,
+    irenaHp: 140,
+    irenaMaxHp: 140,
+    turn: 1,
+    combo: 0,
+    score: 0,
+    build,
+    status: 'ACTIVE',
+    logs: [fortress ? '装甲要塞型を起動。耐久を使って攻撃機会を作れ。' : '終局兵器型を起動。初期ゲージを活かし、短期決戦を狙え。'],
+  };
+}
+export function resolveKaiserReversalTurn(state: KaiserReversalState, action: KaiserReversalAction): KaiserReversalState {
+  if (state.status !== 'ACTIVE') return state;
+  const intent = getKaiserReversalIntent(state.turn, state.irenaHp, state.irenaMaxHp);
+  let kaiserHp = state.kaiserHp;
+  let armorPlates = state.armorPlates;
+  let energy = state.energy;
+  let irenaHp = state.irenaHp;
+  let combo = state.combo;
+  let score = state.score;
+  let guarding = false;
+  const logs = [...state.logs];
+  let damage = 0;
+
+  if (action === 'STRIKE') {
+    damage = 20 + combo * 3 + (intent === 'EXPOSED' ? 12 : 0);
+    combo += 1;
+    energy = Math.min(3, energy + 1);
+    score += damage;
+    logs.push('皇帝の斬撃。イレーナに' + damage + 'ダメージ。');
+  } else if (action === 'GUARD') {
+    guarding = true;
+    energy = Math.min(3, energy + 1);
+    combo = 0;
+    score += 3;
+    logs.push('王域防御。受け流してエネルギーを得る。');
+  } else if (action === 'REBUILD') {
+    armorPlates = Math.min(3, armorPlates + 1);
+    combo = 0;
+    score += 2;
+    logs.push('装甲を再構築。装甲板+' + (armorPlates > state.armorPlates ? 1 : 0) + '。');
+  } else if (action === 'CHARGE') {
+    energy = Math.min(3, energy + 2);
+    combo = 0;
+    logs.push('皇帝のエネルギーを2蓄積。');
+  } else if (energy >= 3) {
+    damage = 46 + combo * 2 + (intent === 'EXPOSED' ? 18 : 0);
+    energy = 0;
+    combo = 0;
+    score += damage + 12;
+    logs.push('終局砲撃。イレーナに' + damage + 'ダメージ。');
+  } else {
+    logs.push('ゲージ不足。共鳴解放には3ゲージ必要。');
+  }
+
+  irenaHp = Math.max(0, irenaHp - damage);
+  if (irenaHp <= 0) {
+    logs.push('イレーナを撃破。皇帝側の反転試験クリア。');
+    return { ...state, irenaHp, kaiserHp, armorPlates, energy, combo, score: score + kaiserHp + armorPlates * 6, status: 'VICTORY', turn: state.turn + 1, logs: logs.slice(-7) };
+  }
+
+  let incoming = intent === 'COUNTER' ? 24 + (action === 'STRIKE' || action === 'BURST' ? 8 : 0)
+    : intent === 'FEINT' ? (action === 'REBUILD' ? 17 : 12)
+    : intent === 'LAST_STAND' ? 34
+    : 0;
+  if (guarding) incoming = Math.round(incoming * 0.35);
+  if (incoming > 0 && armorPlates > 0) {
+    incoming = Math.max(0, incoming - 6);
+    armorPlates -= 1;
+    logs.push('装甲板が攻撃を受け止めた。残り' + armorPlates + '枚。');
+  }
+  kaiserHp = Math.max(0, kaiserHp - incoming);
+  if (incoming > 0) logs.push('イレーナの' + (intent === 'COUNTER' ? '迎撃' : intent === 'FEINT' ? '牽制' : '最終反撃') + '。皇帝に' + incoming + 'ダメージ。');
+  if (intent === 'EXPOSED') logs.push('イレーナの隙。攻撃を重ねる好機だった。');
+
+  const status: PrototypeStatus = kaiserHp <= 0 ? 'DEFEAT' : 'ACTIVE';
+  if (status === 'DEFEAT') logs.push('皇帝が撃破された。装甲型か火力型を変えて再戦しよう。');
+  return { ...state, kaiserHp, armorPlates, energy, irenaHp, combo, score, status, turn: state.turn + 1, logs: logs.slice(-7) };
+}
