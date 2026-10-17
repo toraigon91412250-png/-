@@ -2063,7 +2063,7 @@ export function useBattleGame(
           if (isIrenaSpecial && !resonanceExecutionIds.includes('JUDGMENT_WING')) addResonanceJudgmentMarks(1, turn, '羽弾命中', ['JUDGMENT_WING']);
           if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) addJudgmentMarks(2, turn);
         }
-        if (isActorPlayer && isIrenaSpecial && !isEvaded) {
+        if (isActorPlayer && isIrenaSpecial) {
           const immediateErosion = getEquippedResonanceAbilities(stateRef.current.battleConfig)
             .reduce((sum, resonance) => sum + getFeatherErosionRate(resonance.id, resonance.level), 0);
           if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '羽弾命中');
