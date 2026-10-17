@@ -454,13 +454,54 @@ export function useBattleGame(
     if (result.judgmentMarksGained > 0) addResonanceJudgmentMarks(result.judgmentMarksGained, turn, '新規弱体化段階');
   };
 
-  const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string): number => {
+  const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string, isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ'): number => {
     const safeDamage = Math.max(0, Math.floor(damage));
     const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
+    const resonance = target.isPlayer ? getEquippedResonanceAbility(stateRef.current.battleConfig) : null;
     const fallenKingLevel = getAbilityLevel(stateRef.current.battleConfig, 'FALLEN_KING');
     let resultingHp = Math.max(0, target.currentHp - safeDamage);
+    let resonanceSurvived = false;
+
+    if (target.isPlayer && lethal && resonance?.id === 'FALLEN_GOD') {
+      const fraction = getFallenGodRevivalHpFraction(resonance.level, fallenGodRevivalCountRef.current);
+      if (fraction !== null) {
+        fallenGodRevivalCountRef.current += 1;
+        resultingHp = fraction > 0
+          ? Math.max(1, Math.round((target.resonanceBaseStats?.maxHp ?? target.character.maxHp) * fraction))
+          : 1;
+        resonanceSurvived = true;
+        addLog(`♛【堕天の神・復活】第${fallenGodRevivalCountRef.current}段階！ HPを${fraction > 0 ? `${Math.round(fraction * 100)}%` : '1'}に設定して致命傷を拒絶した。`, 'PASSIVE_TRIGGER', turn);
+      }
+    } else if (
+      target.isPlayer &&
+      lethal &&
+      resonance &&
+      (resonance.id === 'KING_WING' || resonance.id === 'KING_JUDGMENT' || resonance.id === 'ABYSS_KING') &&
+      resonanceKingSurvivalCountRef.current < getResonanceSurvivalLimit(resonance.id, resonance.level)
+    ) {
+      resonanceKingSurvivalCountRef.current += 1;
+      resultingHp = 1;
+      resonanceSurvived = true;
+      addLog(`👑【${resonance.id === 'KING_WING' ? '王の翼' : resonance.id === 'KING_JUDGMENT' ? '王権断罪' : '深淵王'}】致死ダメージを拒絶！（${resonanceKingSurvivalCountRef.current}/${getResonanceSurvivalLimit(resonance.id, resonance.level)}回）HP1で耐えた。`, 'PASSIVE_TRIGGER', turn);
+      if (resonance.id === 'KING_WING') {
+        const stackRules = getKingWingStackValues(resonance.level);
+        const activeStacks = resonanceKingWingStackExpiresAtRef.current.filter(expiresAt => expiresAt >= turn);
+        if (activeStacks.length < stackRules.maxStacks) activeStacks.push(turn + 1);
+        resonanceKingWingStackExpiresAtRef.current = activeStacks;
+        updateState(prev => ({
+          ...prev,
+          player: {
+            ...prev.player,
+            resonanceKingWingStacks: activeStacks.length,
+            resonanceKingWingStackExpiresAtTurns: activeStacks,
+          },
+        }));
+        addLog(`🪶【王の羽】致命傷を耐え、羽弾強化を獲得（${activeStacks.length}/${stackRules.maxStacks}スタック、2ターン）。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
 
     if (
+      !resonanceSurvived &&
       target.isPlayer &&
       fallenKingLevel >= 5 &&
       lethal &&
@@ -475,6 +516,34 @@ export function useBattleGame(
       resultingHp = 1;
     }
 
+    if (target.isPlayer && resonance?.id === 'FALLEN_GOD') {
+      const baseHp = Math.max(1, target.resonanceBaseStats?.maxHp ?? target.character.maxHp);
+      const stage = resultingHp <= 1 ? 3 : resultingHp <= baseHp * 0.25 ? 2 : resultingHp <= baseHp * 0.5 ? 1 : 0;
+      updateState(prev => {
+        const previous = prev.player.resonanceGodObservedHpStage ?? 0;
+        const previousBuff = prev.player.resonanceStatBuff;
+        const nextBuff = stage > previous
+          ? { multiplier: getFallenGodStatMultiplier(resonance.level, stage), expiresAtTurn: turn + 1, stage }
+          : previousBuff;
+        return {
+          ...prev,
+          player: {
+            ...prev.player,
+            resonanceGodObservedHpStage: stage,
+            ...(stage > previous ? { resonanceStatBuff: nextBuff } : {}),
+          },
+        };
+      });
+      const oldStage = stateRef.current.player.resonanceGodObservedHpStage ?? 0;
+      if (stage > oldStage) {
+        addLog(`♛【堕天の神・神格上昇】HP段階${stage}を検出。全ステータス×${getFallenGodStatMultiplier(resonance.level, stage)}（2ターン）。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+
+    if (target.isPlayer && isDirectHit && safeDamage > 0) {
+      const readyForIncomingMark = getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'KING_JUDGMENT';
+      if (readyForIncomingMark) addResonanceJudgmentMarks(1, turn, '被弾');
+    }
     const lastStandIsEligible = Boolean(
       target.isPlayer &&
       resultingHp <= 0 &&
