@@ -41,6 +41,7 @@ const {
   getResonanceFeatherMultiplier,
   getResonanceExecutionStats,
   getTurnErosionRate,
+  getHighestTurnErosionRate,
   getFeatherErosionRate,
 } = await import('./src/utils/resonanceSystem.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
@@ -95,6 +96,15 @@ assert.deepStrictEqual(
 assert.deepStrictEqual(
   [1, 2, 3, 4, 5].map(level => getTurnErosionRate('ABYSS_JUDGMENT', level, 1)),
   [6, 8, 10, 12, 15],
+);
+assert.strictEqual(
+  getHighestTurnErosionRate([
+    { id: 'ABYSS_FALLEN', level: 5 },
+    { id: 'ABYSS_WING', level: 5 },
+    { id: 'ABYSS_JUDGMENT', level: 5 },
+  ], 0.06),
+  45,
+  'Fused powers that replace the same inherited Abyss turn erosion must not stack that effect repeatedly.',
 );
 assert.deepStrictEqual(
   [1, 2, 3, 4, 5].map(level => getFeatherErosionRate('ABYSS_WING', level)),
