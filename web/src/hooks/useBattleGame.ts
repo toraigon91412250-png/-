@@ -387,7 +387,8 @@ export function useBattleGame(
         if (!execution) return false;
         if (resonance.id === 'JUDGMENT_WING') {
           return action === 'SPECIAL'
-            && specialSkillId !== undefined
+            && (specialSkillId === undefined
+              || ['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'].includes(specialSkillId))
             && stateRef.current.player.character.id === 'irena';
         }
         return resonance.id === 'FALLEN_JUDGMENT'
