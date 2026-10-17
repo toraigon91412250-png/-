@@ -235,15 +235,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span className="home-dashboard__section-note">行き先を選ぶ</span>
           </div>
           <div className="home-dashboard__mode-grid">
-            <button className="home-dashboard__mode-card home-dashboard__mode-card--summon" type="button" onClick={onOpenGacha} aria-label="黒翼召喚を開く">
-              <span className="home-dashboard__mode-art" aria-hidden="true"><Crown size={28} /></span>
-              <span className="home-dashboard__mode-copy">
-                <small>POWER UP</small>
-                <strong>黒翼召喚</strong>
-                <span>新たな権能と強化用の欠片を集める。</span>
-              </span>
-              <span className="home-dashboard__mode-meta"><span><Ticket size={14} /> チケット {recruitmentProgress.tickets} 枚</span><ChevronRight size={18} /></span>
-            </button>
+
             <button className="home-dashboard__mode-card home-dashboard__mode-card--raid" type="button" onClick={onOpenRaid} aria-label="深淵レイドを開く">
               <span className="home-dashboard__mode-art" aria-hidden="true"><Gem size={28} /></span>
               <span className="home-dashboard__mode-copy"><small>HIGH-LEVEL CONTENT</small><strong>深淵レイド</strong><span>勝利報酬で刻印チケットや核片を獲得。</span></span>
@@ -253,6 +245,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <span className="home-dashboard__mode-art" aria-hidden="true"><FlaskConical size={28} /></span>
               <span className="home-dashboard__mode-copy"><small>TACTICAL LAB / SANDBOX</small><strong>実験場</strong><span>本編と同じ戦闘で編成を検証。勝っても負けても本編への影響なし。</span></span>
               <span className="home-dashboard__mode-meta"><span>全Lv.試験可能・報酬なし</span><ChevronRight size={18} /></span>
+            </button>
+            <button className="home-dashboard__mode-card home-dashboard__mode-card--summon" type="button" onClick={onOpenGacha} aria-label="黒翼召喚を開く">
+              <span className="home-dashboard__mode-art" aria-hidden="true"><Crown size={28} /></span>
+              <span className="home-dashboard__mode-copy">
+                <small>POWER UP</small>
+                <strong>黒翼召喚</strong>
+                <span>新たな権能と強化用の欠片を集める。</span>
+              </span>
+              <span className="home-dashboard__mode-meta"><span><Ticket size={14} /> チケット {recruitmentProgress.tickets} 枚</span><ChevronRight size={18} /></span>
             </button>
             {stellaModeUnlocked && (
               <button
