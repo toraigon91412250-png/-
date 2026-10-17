@@ -592,19 +592,10 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority, loadAbilityProgress, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority, loadAbilityProgress, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility, addAbilityShards } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
-const { RESONANCE_DEFINITIONS } = await import('./src/data/resonanceAbilities.ts');
-const {
-  getFallenGodRevivalHpFraction,
-  getFallenGodStatMultiplier,
-  getResonanceExecutionStats,
-  getResonanceFeatherMultiplier,
-  getTurnErosionRate,
-  getFeatherErosionRate,
-  getKingZoneValues,
-} = await import('./src/utils/resonanceSystem.ts');
+const { getKingZoneValues } = await import('./src/utils/resonanceSystem.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 const {
@@ -2887,14 +2878,6 @@ if (priorImprintProgress === undefined) storageValues.delete(IMPRINT_PROGRESS_ST
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, priorImprintProgress);
 console.log('✓ Named build saves validate progression, persist, rename, overwrite, and delete without touching progression keys.');
 
-const {
-  loadAbilityProgress,
-  loadResonanceProgress,
-  unlockAbilityResonance,
-  combineResonanceAbility,
-  upgradeResonanceAbility,
-  addAbilityShards,
-} = await import('./src/utils/storage.ts');
 const savedAbilityStateBeforeResonanceTests = storageValues.get(abilityKeyForSaveTest);
 const resonanceTestLevels = {
   ABYSS: 5, FALLEN: 5, BLACK_WING: 5, FALLEN_KING: 5, JUDGMENT: 5, ASTRAL_DOMINION: 5,
