@@ -97,3 +97,29 @@
 @media(prefers-reduced-motion:reduce){.epx-prototype-card,.epx-meter-fill{transition:none}}
 
 .epx-lane-target{outline:1px dashed #9beee2;outline-offset:2px;box-shadow:inset 0 0 0 1px #9beee22b}
+
+/* Fourth prototype: a configurable boss-design workbench. */
+.epx-card-rose{--epx-accent:#f7a7bd;--epx-edge:#754257;background:radial-gradient(ellipse at 90% 0%,#82344d75,transparent 19rem),linear-gradient(145deg,#291925,#111522)}
+.epx-hero-rose{border-color:#88506a;background:radial-gradient(ellipse at 95% 0%,#9f42664f,transparent 24rem),linear-gradient(120deg,#321a2b,#151a29)}
+.epx-hero-rose>span{color:#f9a8d4}
+.epx-forge-config{margin-top:14px;padding:16px;border:1px solid #a67b9b2b;border-radius:15px;background:linear-gradient(145deg,#1c1c2e,#101624)}
+.epx-forge-choice-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.epx-forge-choice-row button{display:flex;align-items:center;flex-direction:column;gap:5px;min-height:76px;padding:10px;border:1px solid #a7b2c326;border-radius:10px;background:#0a1421;color:#94aac0;cursor:pointer}
+.epx-forge-choice-row button strong{color:#f2f7ff;font-size:19px;font-weight:1000}
+.epx-forge-choice-row button small{font-size:9px;color:#879bb0}
+.epx-forge-choice-row button.is-selected{border-color:#f0a1bf;background:linear-gradient(145deg,#492239,#1b1b2a);box-shadow:inset 0 0 0 1px #f0a1bf28}
+.epx-forge-choice-row button.is-selected strong{color:#ffe0ec}
+.epx-forge-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.epx-forge-slot{min-width:0;padding:11px;border:1px solid #a77b9b2b;border-radius:11px;background:#0a1321}
+.epx-forge-slot-heading{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+.epx-forge-slot-heading span{color:#8498af;font-size:8px;font-weight:1000;letter-spacing:.1em}
+.epx-forge-slot-heading strong{color:#ffc4d8;font-size:10px}
+.epx-forge-option-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.epx-forge-option-grid button{min-width:0;min-height:31px;padding:5px 2px;border:1px solid #94a8bd24;border-radius:6px;background:#172234;color:#90a6bc;font-size:8px;font-weight:900;cursor:pointer}
+.epx-forge-option-grid button:last-child{grid-column:1/-1}
+.epx-forge-option-grid button.is-selected{border-color:#ee9cbd;background:#57213c;color:#ffe2ee}
+.epx-forge-slot p{min-height:44px;margin:8px 0 0;color:#91a4ba;font-size:8px;line-height:1.65}
+.epx-forge-start{width:100%;margin-top:14px;background:linear-gradient(110deg,#ffc7d9,#ec8fb3);border-color:#ffbad4;color:#351323}
+.epx-forge-live{border-color:#a5577a66;background:radial-gradient(ellipse at 100% 0%,#72294755,transparent 21rem),#171725}
+.epx-forge-live>strong{border-color:#f7b2cd;color:#ffdce8}
+@media(max-width:700px){.epx-forge-sequence{grid-template-columns:1fr}.epx-forge-slot p{min-height:0}.epx-forge-choice-row button{min-height:68px;padding:8px 4px}.epx-forge-choice-row button strong{font-size:17px}}

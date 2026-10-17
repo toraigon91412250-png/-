@@ -47,7 +47,7 @@ const {
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
-const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn } = await import('./src/utils/experimentPrototypes.ts');
+const { ASCENT_RELICS, createAscentCombatState, createObservatoryState, createResonanceTrialState, createBossForgeState, getBossForgeIntent, getAscentIntent, getAscentRelicChoices, getAscentRouteChoices, getObservatoryIntent, getResonanceIntent, getResonancePrototypeAnalysis, resolveAscentTurn, resolveObservatoryTurn, resolveResonanceTrialTurn, resolveBossForgeTurn } = await import('./src/utils/experimentPrototypes.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -3272,7 +3272,26 @@ const compilerBurst = resolveResonanceTrialTurn(compilerBurstState, 'BURST', exa
 assert.ok(compilerBurst.enemyHp < compilerBurstState.enemyHp, 'A charged build resolves its burst action.');
 assert.strictEqual(compilerBurst.energy, 0);
 const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
-assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ'].every(name => prototypeScreenSource.includes(name)));
-console.log('✓ Experiment prototypes: seeded routes, relic builds, telegraph counterplay, synergy analysis, and sandbox combat verified.');
+assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房'].every(name => prototypeScreenSource.includes(name)));
+const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
+assert.strictEqual(forgeStart.bossHp, 120);
+assert.strictEqual(getBossForgeIntent(forgeStart), 'CRUSH');
+const forgeStrike = resolveBossForgeTurn(forgeStart, 'STRIKE');
+const forgeGuard = resolveBossForgeTurn(forgeStart, 'GUARD');
+assert.strictEqual(forgeStrike.playerHp, 84, 'A custom heavy-attack pattern punishes an unguarded strike.');
+assert.strictEqual(forgeGuard.playerHp, 94, 'Guard meaningfully reduces the custom pressure value.');
+assert.strictEqual(forgeGuard.energy, 2);
+const forgeRecoverState = { ...forgeStart, bossHp: 50, turn: 2 };
+assert.strictEqual(getBossForgeIntent(forgeRecoverState), 'RECOVER');
+const forgeRecover = resolveBossForgeTurn(forgeRecoverState, 'STRIKE');
+assert.strictEqual(forgeRecover.bossHp, 36, 'The boss takes the opening hit, then regains a bounded amount of HP.');
+const forgeBurstState = { ...forgeStart, energy: 3 };
+const forgeBurst = resolveBossForgeTurn(forgeBurstState, 'BURST');
+assert.ok(forgeBurst.bossHp < forgeBurstState.bossHp);
+assert.strictEqual(forgeBurst.energy, 0);
+assert.strictEqual(getBossForgeIntent({ ...forgeStart, turn: 4 }), 'CRUSH', 'Custom pattern order loops predictably.');
+const forgeFinished = { ...forgeStart, status: 'VICTORY' };
+assert.strictEqual(resolveBossForgeTurn(forgeFinished, 'STRIKE'), forgeFinished, 'Finished custom boss fights ignore additional input.');
+console.log('✓ Experiment prototypes: seeded roguelite runs, telegraph counterplay, resonance buildcraft, and configurable boss balance verified.');
 
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
