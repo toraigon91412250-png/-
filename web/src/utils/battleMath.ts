@@ -15,6 +15,7 @@ import {
   getAbilityLevel,
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
+  getAchievementBadgeDamageMultiplier,
   hasAbility,
 } from './abilitySystem';
 
@@ -143,6 +144,7 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
     damage = Math.max(0, damage - GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION);
   }
 
+  damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'NORMAL') : 1));
   return Math.max(0, applyFallenExecution(
     damage,
     attacker,
@@ -169,6 +171,7 @@ export function calculateSpecialDamage(context: DamageContext): number {
       damage += attacker.buffDamageBonus || GAME_BALANCE.BUFF_DAMAGE_BONUS;
     }
 
+    damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'SPECIAL') : 1));
     return Math.max(0, applyFallenExecution(
       damage,
       attacker,
@@ -241,6 +244,7 @@ export function calculateSpecialDamage(context: DamageContext): number {
     damage = Math.round(damage * (attacker.character.talentSpecialDamageMultiplier ?? 1));
   }
 
+  damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'SPECIAL') : 1));
   return Math.max(0, applyFallenExecution(
     damage,
     attacker,
@@ -316,6 +320,7 @@ export function calculateUltimateDamage(context: DamageContext): number {
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel));
   }
 
+  damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'ULTIMATE') : 1));
   return Math.max(0, applyFallenExecution(
     damage,
     attacker,
