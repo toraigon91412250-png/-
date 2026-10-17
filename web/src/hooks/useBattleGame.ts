@@ -1423,9 +1423,12 @@ export function useBattleGame(
           );
         }
 
+        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonanceForSpecial
+          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForSpecial.id);
         const fallenExecution =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1873,7 +1876,7 @@ export function useBattleGame(
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
-        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const judgmentActive = isActorPlayer && (judgmentReadyRef.current || isResonanceExecutionReady('SPECIAL', specialSkillId ?? 'FEATHER'));
         const calculatedDamage = calculateSpecialDamage({
           attacker: actor,
           target,
@@ -1881,6 +1884,7 @@ export function useBattleGame(
           turn,
           isActingFirst,
           judgmentReady: judgmentActive,
+          resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
           specialSkillId: specialSkillId ?? 'FEATHER',
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
@@ -2022,12 +2026,26 @@ export function useBattleGame(
         }
 
         if (judgmentActive) {
-          judgmentReadyRef.current = false;
-          judgmentMarksRef.current = 0;
-          updateState(prev => ({ ...prev, judgmentReady: false }));
-          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          if (judgmentReadyRef.current) {
+            judgmentReadyRef.current = false;
+            judgmentMarksRef.current = 0;
+            updateState(prev => ({ ...prev, judgmentReady: false }));
+            addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          } else {
+            finishResonanceJudgmentExecution(turn);
+          }
+        } else if (isActorPlayer && activeResonanceForSpecial?.id === 'FALLEN_JUDGMENT') {
+          addResonanceJudgmentMarks(2, turn, '特殊技命中');
+        } else if (isActorPlayer && activeResonanceForSpecial?.id === 'KING_JUDGMENT') {
+          addResonanceJudgmentMarks(1, turn, '特殊技命中');
+        } else if (isActorPlayer && activeResonanceForSpecial?.id === 'JUDGMENT_WING') {
+          addResonanceJudgmentMarks(1, turn, '羽弾命中');
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(2, turn);
+        }
+        if (isActorPlayer && isIrenaSpecial && activeResonanceForSpecial) {
+          const immediateErosion = getFeatherErosionRate(activeResonanceForSpecial.id, activeResonanceForSpecial.level);
+          if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '羽弾命中');
         }
 
         if (newTargetHp <= 0 || postSpecialTargetHp <= 0) return false;
