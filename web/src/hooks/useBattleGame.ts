@@ -1552,7 +1552,7 @@ export function useBattleGame(
       }
 
       case 'SPECIAL': {
-        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
+        const activeResonancesForSpecial = getEquippedResonanceAbilities(stateRef.current.battleConfig);
         const isSuperFallenShot =
           isActorPlayer &&
           actor.character.id === 'irena' &&
@@ -1685,9 +1685,10 @@ export function useBattleGame(
           }));
           if (isEvaded) return true;
 
-          const activeResonanceForShot = getEquippedResonanceAbility(stateRef.current.battleConfig);
-          const resonanceFallenExecution = activeResonanceForShot
-            && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForShot.id);
+          const activeResonancesForShot = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+          const resonanceFallenExecution = activeResonancesForShot.some(resonance =>
+            ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+          );
           const executionForHit =
             isActorPlayer &&
             (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
@@ -1970,8 +1971,9 @@ export function useBattleGame(
         // Apply 100% Status Ailment upon hit or convert the bleed into Blood Tear's burst.
         const statusOutcome = applySpecialStatusAilment(actor, !isActorPlayer, turn);
 
-        const resonanceFallenExecution = activeResonanceForSpecial
-          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForSpecial.id);
+        const resonanceFallenExecution = activeResonancesForSpecial.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const fallenExecution =
           isActorPlayer &&
           (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
@@ -2267,9 +2269,10 @@ export function useBattleGame(
           );
         }
 
-        const activeResonanceForUltimate = getEquippedResonanceAbility(stateRef.current.battleConfig);
-        const resonanceFallenExecution = activeResonanceForUltimate
-          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForUltimate.id);
+        const activeResonancesForUltimate = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonancesForUltimate.some(resonance =>
+          ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id),
+        );
         const fallenExecution =
           isActorPlayer &&
           (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
