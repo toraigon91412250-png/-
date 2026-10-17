@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, LockKeyhole, Sparkles, X } from 'lucide-react';
+import { ArrowLeft, Check, LockKeyhole, X } from 'lucide-react';
 import type { AbilityProgress, ResonanceAbilityId, ResonanceProgress } from '../types/game';
 import { RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
