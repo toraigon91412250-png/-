@@ -2887,4 +2887,63 @@ if (priorImprintProgress === undefined) storageValues.delete(IMPRINT_PROGRESS_ST
 else storageValues.set(IMPRINT_PROGRESS_STORAGE_KEY, priorImprintProgress);
 console.log('✓ Named build saves validate progression, persist, rename, overwrite, and delete without touching progression keys.');
 
+const {
+  loadAbilityProgress,
+  loadResonanceProgress,
+  unlockAbilityResonance,
+  combineResonanceAbility,
+  upgradeResonanceAbility,
+  addAbilityShards,
+} = await import('./src/utils/storage.ts');
+const savedAbilityStateBeforeResonanceTests = storageValues.get(abilityKeyForSaveTest);
+const resonanceTestLevels = {
+  ABYSS: 5, FALLEN: 5, BLACK_WING: 5, FALLEN_KING: 5, JUDGMENT: 5, ASTRAL_DOMINION: 5,
+};
+const resonanceTestShards = {
+  ABYSS: 2, FALLEN: 12, BLACK_WING: 20, FALLEN_KING: 19, JUDGMENT: 8, ASTRAL_DOMINION: 100,
+};
+storageValues.set(abilityKeyForSaveTest, JSON.stringify({
+  levels: resonanceTestLevels,
+  shards: resonanceTestShards,
+  resonance: { unlocked: false, shards: 7, levels: {}, craftedRecipes: [] },
+}));
+assert.strictEqual(unlockAbilityResonance().progress.unlocked, true);
+assert.strictEqual(loadResonanceProgress().unlocked, true, 'Resonance unlock must persist across reloads.');
+const fusedGod = combineResonanceAbility('FALLEN_GOD');
+assert.strictEqual(fusedGod.success, true);
+assert.strictEqual(fusedGod.progress.levels.FALLEN, 0);
+assert.strictEqual(fusedGod.progress.shards.FALLEN, 0);
+assert.strictEqual(fusedGod.progress.levels.FALLEN_KING, 0);
+assert.strictEqual(fusedGod.progress.shards.FALLEN_KING, 0);
+assert.strictEqual(fusedGod.resonance.levels.FALLEN_GOD, 1, 'Fused authorities start at Lv.1.');
+assert.strictEqual(fusedGod.resonance.shards, 38, 'Source shards must convert 1:1 in addition to the existing resonance shards.');
+assert.ok(fusedGod.resonance.craftedRecipes.includes('FALLEN_GOD'));
+assert.strictEqual(combineResonanceAbility('FALLEN_GOD').success, false, 'A recipe may only be crafted once.');
+addAbilityShards('BLACK_WING', 3);
+assert.strictEqual(loadResonanceProgress().shards, 41, 'Additional shards for an already-maxed source authority convert 1:1.');
+const upgradedGod = upgradeResonanceAbility('FALLEN_GOD');
+assert.strictEqual(upgradedGod.success, true);
+assert.strictEqual(upgradedGod.resonance.levels.FALLEN_GOD, 2);
+assert.strictEqual(upgradedGod.resonance.shards, 1, 'Lv.1 to Lv.2 must cost exactly 40 resonance shards.');
+
+const beforeFailedFusion = {
+  levels: { ...loadAbilityProgress().levels, FALLEN: 5, BLACK_WING: 5 },
+  shards: { ...loadAbilityProgress().shards, FALLEN: 8, BLACK_WING: 9 },
+  resonance: { ...loadResonanceProgress(), levels: { ...loadResonanceProgress().levels, FALLEN_WING: 0 } },
+};
+storageValues.set(abilityKeyForSaveTest, JSON.stringify(beforeFailedFusion));
+const setItemBeforeFusionFailure = globalThis.localStorage.setItem;
+globalThis.localStorage.setItem = (key, value) => {
+  if (key === abilityKeyForSaveTest) throw new Error('simulated resonance fusion storage failure');
+  storageValues.set(key, String(value));
+};
+const failedResonanceFusion = combineResonanceAbility('FALLEN_WING');
+assert.strictEqual(failedResonanceFusion.success, false, 'Failed fusion persistence must report failure.');
+assert.deepStrictEqual(JSON.parse(storageValues.get(abilityKeyForSaveTest)), beforeFailedFusion,
+  'Failed fusion must not partially consume source authorities or save a recipe.');
+globalThis.localStorage.setItem = setItemBeforeFusionFailure;
+if (savedAbilityStateBeforeResonanceTests === undefined) storageValues.delete(abilityKeyForSaveTest);
+else storageValues.set(abilityKeyForSaveTest, savedAbilityStateBeforeResonanceTests);
+console.log('✓ Resonance unlock persistence, one-time atomic fusion, 1:1 shard conversion, Lv.1 grant, upgrade cost, and write-failure rollback verified.');
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
