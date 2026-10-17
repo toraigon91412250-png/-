@@ -3023,4 +3023,70 @@ if (savedAbilityStateBeforeResonanceTests === undefined) storageValues.delete(ab
 else storageValues.set(abilityKeyForSaveTest, savedAbilityStateBeforeResonanceTests);
 console.log('✓ Resonance unlock persistence, one-time atomic fusion, 1:1 shard conversion, Lv.1 grant, upgrade cost, and write-failure rollback verified.');
 
+const recruitmentAbilityKeyForResonanceTest = 'duel_arena_ability_progress';
+const recruitmentKeyForResonanceTest = 'duel_arena_recruitment_progress';
+const skillKeyForResonanceTest = 'duel_arena_irena_skill_progress';
+const previousRecruitmentResonanceState = new Map([
+  [recruitmentAbilityKeyForResonanceTest, storageValues.get(recruitmentAbilityKeyForResonanceTest)],
+  [recruitmentKeyForResonanceTest, storageValues.get(recruitmentKeyForResonanceTest)],
+  [skillKeyForResonanceTest, storageValues.get(skillKeyForResonanceTest)],
+]);
+const originalRandomForResonanceRecruitment = Math.random;
+try {
+  storageValues.set(recruitmentAbilityKeyForResonanceTest, JSON.stringify({
+    levels: { ABYSS: 5, FALLEN: 5, BLACK_WING: 5, FALLEN_KING: 5, JUDGMENT: 5, ASTRAL_DOMINION: 5 },
+    shards: { ABYSS: 11, FALLEN: 12, BLACK_WING: 13, FALLEN_KING: 14, JUDGMENT: 15, ASTRAL_DOMINION: 16 },
+    resonance: { unlocked: true, shards: 7, levels: {}, craftedRecipes: [] },
+  }));
+  storageValues.set(recruitmentKeyForResonanceTest, JSON.stringify({
+    tickets: 10,
+    totalPulls: 0,
+    collectedIds: RECRUITMENT_REWARDS.map(reward => reward.id),
+    lastResults: [],
+  }));
+  const skillShardsBeforeResonanceRecruitment = loadSkillProgress().shards;
+  let resonanceRandomCall = 0;
+  Math.random = () => {
+    const call = resonanceRandomCall++;
+    if (call === 0) return 0;
+    if (call === 1) return 0.99;
+    return 0.75;
+  };
+  const resonanceRecruitment = performRecruitment(10);
+  assert.ok(resonanceRecruitment, 'A funded 10-pull should complete.');
+  assert.strictEqual(resonanceRecruitment.results[0].reward.kind, 'ABILITY_CORE');
+  assert.strictEqual(resonanceRecruitment.results[1].reward.kind, 'ABILITY_CORE');
+  assert.ok(resonanceRecruitment.results.slice(2).every(draw => draw.reward.kind === 'ABILITY_SHARD' && draw.reward.abilityId === 'ABYSS'));
+  const postRecruitmentAbilityProgress = loadAbilityProgress();
+  const postRecruitmentResonance = loadResonanceProgress();
+  assert.strictEqual(postRecruitmentResonance.shards, 627,
+    'Duplicate maxed source cores and eight source-shard pulls must convert 1:1 to shared resonance shards.');
+  assert.strictEqual(postRecruitmentResonance.unlocked, true,
+    'Recruitment writes must retain the existing resonance unlock state.');
+  assert.deepStrictEqual(postRecruitmentResonance.craftedRecipes, [],
+    'Recruitment writes must retain the permanent recipe-record field.');
+  assert.deepStrictEqual(
+    postRecruitmentAbilityProgress.shards,
+    { ABYSS: 11, FALLEN: 12, BLACK_WING: 13, FALLEN_KING: 14, JUDGMENT: 15, ASTRAL_DOMINION: 16 },
+    'Maxed source-power rewards must not be added to the consumed source-fragment balances.',
+  );
+  assert.strictEqual(loadSkillProgress().shards, skillShardsBeforeResonanceRecruitment,
+    'Maxed eligible source fragments must not be diverted to the old skill-fragment exchange.');
+
+  const resonanceShardsBeforeAstralReward = loadResonanceProgress().shards;
+  const astralShardsBefore = loadAbilityProgress().shards.ASTRAL_DOMINION;
+  addAbilityShards('ASTRAL_DOMINION', 3);
+  assert.strictEqual(loadResonanceProgress().shards, resonanceShardsBeforeAstralReward,
+    'ASTRAL_DOMINION remains outside resonance-currency conversion.');
+  assert.strictEqual(loadAbilityProgress().shards.ASTRAL_DOMINION, astralShardsBefore + 3,
+    'Existing ASTRAL_DOMINION shard handling must remain unchanged.');
+  console.log('✓ Recruitment conversion preserves resonance saves, routes maxed source rewards 1:1 to resonance shards, and leaves ASTRAL_DOMINION unchanged.');
+} finally {
+  Math.random = originalRandomForResonanceRecruitment;
+  for (const [key, value] of previousRecruitmentResonanceState) {
+    if (value === undefined) storageValues.delete(key);
+    else storageValues.set(key, value);
+  }
+}
+
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
