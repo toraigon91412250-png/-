@@ -1732,7 +1732,6 @@ export function useBattleGame(
         }
 
         const isIrenaSpecial = actor.character.id === 'irena';
-        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
         const featherSplitMode =
           isActorPlayer &&
           isIrenaSpecial &&
