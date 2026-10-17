@@ -1787,9 +1787,28 @@ try {
       ...loadStellaModeProgress(),
       developerModeEnabled: true,
     }));
+    storageValues.set('duel_arena_ability_progress', JSON.stringify({
+      levels: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0, ASTRAL_DOMINION: 0 },
+      shards: { ABYSS: 0, FALLEN: 0, BLACK_WING: 0, FALLEN_KING: 0, JUDGMENT: 0, ASTRAL_DOMINION: 0 },
+      resonance: {
+        unlocked: true,
+        shards: 75,
+        levels: { FALLEN_WING: 3 },
+        craftedRecipes: ['FALLEN_WING'],
+      },
+    }));
     resetProgressForDeveloper();
     assert.notStrictEqual(loadStellaModeProgress().developerModeEnabled, true,
       'The in-game progression reset must disable persistent developer mode.');
+    const resetResonance = loadResonanceProgress();
+    assert.strictEqual(resetResonance.unlocked, false,
+      'The full progression reset must clear the resonance unlock.');
+    assert.strictEqual(resetResonance.shards, 0,
+      'The full progression reset must clear resonance shards.');
+    assert.strictEqual(resetResonance.levels.FALLEN_WING, 0,
+      'The full progression reset must clear resonance levels.');
+    assert.deepStrictEqual(resetResonance.craftedRecipes, [],
+      'The full progression reset must clear permanent recipe records as part of a full account reset.');
   } finally {
     storageValues.clear();
     for (const [key, value] of storageBeforeDeveloperResetTest) storageValues.set(key, value);
