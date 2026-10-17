@@ -1,5 +1,5 @@
 import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, ResonanceAbilityId, ResonanceProgress, RuinSkillPath } from '../types/game';
-import { CRAFTABLE_RESONANCE_ABILITY_IDS, getResonanceCraftEligibility, RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
+import { getResonanceCraftEligibility, RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { ABILITY_DEFINITIONS, MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
