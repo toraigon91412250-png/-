@@ -148,7 +148,7 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
   }
 
   if (character.id === 'irena' && kingWingLevel > 0) {
-    const multiplier = 1 + kingWingLevel * 0.04;
+    const multiplier = [1.24, 1.28, 1.32, 1.36, 1.40][Math.min(5, Math.max(1, Math.floor(kingWingLevel))) - 1];
     next = {
       ...next,
       maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
