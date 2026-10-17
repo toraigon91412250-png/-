@@ -1,6 +1,8 @@
 import type {
   AbilityId,
   AbilityProgress,
+  AchievementBadgeId,
+  AchievementBadgeTier,
   BattleChallengeLevel,
   CpuDifficulty,
   ImprintId,
@@ -65,6 +67,7 @@ export interface AchievementProgress {
   usedImprintIds: ImprintId[];
   completedIds: string[];
   claimedRewardIds: string[];
+  equippedBadgeId: AchievementBadgeId | null;
 }
 
 export interface AchievementBattleSample {
@@ -129,6 +132,7 @@ export const INITIAL_ACHIEVEMENT_PROGRESS: AchievementProgress = {
   usedImprintIds: [],
   completedIds: [],
   claimedRewardIds: [],
+  equippedBadgeId: null,
 };
 
 const A = (
@@ -190,6 +194,101 @@ export const ACHIEVEMENT_DEFINITIONS: readonly AchievementDefinition[] = [
   A('imprint-completionist', 'COLLECTION', '刻印を使いこなす者', '10種類すべての刻印を戦闘で実際に発動する。', 'IMPRINTS_USED_ALL', IMPRINT_DEFINITIONS.length, 'IMPRINT_TICKETS', 10, true),
 ];
 
+export interface AchievementBadgeDefinition {
+  id: AchievementBadgeId;
+  name: string;
+  typeLabel: string;
+  description: string;
+  achievementIds: readonly string[];
+  tierEffects: readonly [string, string, string];
+}
+
+export interface AchievementBadgeProgress extends AchievementBadgeDefinition {
+  completedAchievementCount: number;
+  tier: AchievementBadgeTier;
+  nextTierTarget: number | null;
+  equipped: boolean;
+}
+
+export const ACHIEVEMENT_BADGE_DEFINITIONS: readonly AchievementBadgeDefinition[] = [
+  {
+    id: 'A',
+    name: '火力の徽章',
+    typeLabel: '火力型',
+    description: '攻撃全般のダメージを高める。',
+    achievementIds: [
+      'first-victory', 'ten-victories', 'fifty-victories', 'quick-victory',
+      'special-veteran', 'ultimate-veteran', 'kaiser-10', 'kaiser-30',
+      'kaiser-50', 'kaiser-70', 'kaiser-90', 'kaiser-100',
+    ],
+    tierEffects: ['与ダメージ +5%', '与ダメージ +9%', '与ダメージ +12%'],
+  },
+  {
+    id: 'B',
+    name: '技巧の徽章',
+    typeLabel: 'スキル型',
+    description: '特殊技と必殺技を重点的に強化する。',
+    achievementIds: [
+      'five-win-streak', 'empty-loadout', 'basic-technique', 'expert-win',
+      'three-authorities', 'all-authorities', 'first-max-authority', 'all-max-authorities',
+      'talent-master', 'skill-master', 'starfall', 'imprint-completionist',
+    ],
+    tierEffects: ['特殊技 +8%', '特殊技 +12%、必殺技 +8%', '特殊技 +15%、必殺技 +12%'],
+  },
+  {
+    id: 'C',
+    name: '均衡の徽章',
+    typeLabel: 'バランス型',
+    description: '最大HP・防御力を伸ばし、最終段階では総合能力も高める。',
+    achievementIds: [
+      'last-breath', 'unadorned-win', 'ex-kaiser', 'stella-final',
+      'first-ten-pulls', 'fifty-pulls', 'complete-recruitment', 'five-imprints',
+      'all-imprints', 'full-imprint-loadout', 'raid-veteran', 'last-stand',
+    ],
+    tierEffects: ['最大HP +5%', '最大HP・防御力 +7%', '全ステータス +7%、直接被ダメージ -5%'],
+  },
+];
+
+function isAchievementBadgeId(value: unknown): value is AchievementBadgeId {
+  return value === 'A' || value === 'B' || value === 'C';
+}
+
+function getAchievementBadgeTierForCount(count: number): AchievementBadgeTier {
+  if (count >= 8) return 3;
+  if (count >= 5) return 2;
+  if (count >= 3) return 1;
+  return 0;
+}
+
+export function getAchievementBadgeTier(
+  badgeId: AchievementBadgeId,
+  progressValue: unknown,
+): AchievementBadgeTier {
+  const progress = normalizeAchievementProgress(progressValue);
+  const definition = ACHIEVEMENT_BADGE_DEFINITIONS.find(item => item.id === badgeId);
+  if (!definition) return 0;
+  const completed = new Set(progress.completedIds);
+  const count = definition.achievementIds.filter(id => completed.has(id)).length;
+  return getAchievementBadgeTierForCount(count);
+}
+
+export function buildAchievementBadgeProgress(value: unknown): AchievementBadgeProgress[] {
+  const progress = normalizeAchievementProgress(value);
+  const completed = new Set(progress.completedIds);
+  return ACHIEVEMENT_BADGE_DEFINITIONS.map(definition => {
+    const completedAchievementCount = definition.achievementIds.filter(id => completed.has(id)).length;
+    const tier = getAchievementBadgeTierForCount(completedAchievementCount);
+    const nextTierTarget = tier === 0 ? 3 : tier === 1 ? 5 : tier === 2 ? 8 : null;
+    return {
+      ...definition,
+      completedAchievementCount,
+      tier,
+      nextTierTarget,
+      equipped: progress.equippedBadgeId === definition.id && tier > 0,
+    };
+  });
+}
+
 export function normalizeAchievementProgress(value: unknown): AchievementProgress {
   const input = value && typeof value === 'object' ? value as Partial<AchievementProgress> : {};
   const numeric = (x: unknown) => Number.isFinite(Number(x)) ? Math.max(0, Math.floor(Number(x))) : 0;
@@ -227,6 +326,7 @@ export function normalizeAchievementProgress(value: unknown): AchievementProgres
     usedImprintIds: validImprints,
     completedIds: safeIds(input.completedIds),
     claimedRewardIds: safeIds(input.claimedRewardIds),
+    equippedBadgeId: isAchievementBadgeId(input.equippedBadgeId) ? input.equippedBadgeId : null,
   };
 }
 
