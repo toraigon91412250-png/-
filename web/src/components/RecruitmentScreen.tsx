@@ -36,7 +36,7 @@ const getRewardKindLabel = (reward: RecruitmentRewardDef): string => {
 };
 
 const getShardLabel = (reward: RecruitmentRewardDef, currentAbilityProgress?: AbilityProgress): string => {
-  if (reward.abilityId && currentAbilityProgress?.levels[reward.abilityId] >= 5 &&
+  if (reward.abilityId && (currentAbilityProgress?.levels[reward.abilityId] ?? 0) >= 5 &&
     RESONANCE_DEFINITIONS.some(definition => definition.ingredients.includes(reward.abilityId!))) {
     return '共鳴片';
   }
