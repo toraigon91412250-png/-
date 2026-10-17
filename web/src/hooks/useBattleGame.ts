@@ -1721,6 +1721,7 @@ export function useBattleGame(
         }
 
         const isIrenaSpecial = actor.character.id === 'irena';
+        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
         const featherSplitMode =
           isActorPlayer &&
           isIrenaSpecial &&
@@ -1947,9 +1948,11 @@ export function useBattleGame(
         // Apply 100% Status Ailment upon hit or convert the bleed into Blood Tear's burst.
         const statusOutcome = applySpecialStatusAilment(actor, !isActorPlayer, turn);
 
+        const resonanceFallenExecution = activeResonanceForSpecial
+          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForSpecial.id);
         const fallenExecution =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -2500,7 +2503,7 @@ export function useBattleGame(
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
       yinYangDefensePendingRef.current = false;
 
-      let nextPlayer = {
+      let nextPlayer: BattleFighter = {
         ...stateRef.current.player,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
@@ -2514,7 +2517,7 @@ export function useBattleGame(
         featherPierceCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherPierceCooldownRemaining ?? 0) - 1),
         featherRapidCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherRapidCooldownRemaining ?? 0) - 1),
       };
-      let nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      let nextEnemy: BattleFighter = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
       const equippedResonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
       if (equippedResonance) {
         const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
