@@ -27,6 +27,11 @@ interface DeveloperToolsScreenProps {
   onOpenBattleSetup: (config?: BattleSetupConfig) => void;
   onOpenExKaiserChallenge: () => void;
   onUnlockAllGameFeatures: () => boolean;
+  achievementCompletedCount: number;
+  achievementClaimedCount: number;
+  achievementTotalCount: number;
+  onMarkAllAchievementsComplete: () => void;
+  onResetAchievementProgress: () => void;
   onReset: () => void;
 }
 
@@ -60,6 +65,11 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onOpenBattleSetup,
   onOpenExKaiserChallenge,
   onUnlockAllGameFeatures,
+  achievementCompletedCount,
+  achievementClaimedCount,
+  achievementTotalCount,
+  onMarkAllAchievementsComplete,
+  onResetAchievementProgress,
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
@@ -333,6 +343,26 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           <div style={{ marginTop:10, padding:'9px 10px', borderRadius:9, background:'#0E151A', border:'1px solid #293740', color:'#7C8A93', fontSize:9 }}>
             戦績: {overallStats.totalBattles}戦 / {overallStats.wins}勝 / {overallStats.losses}敗
           </div>
+        </section>
+
+        <section style={{ marginTop:12, padding:14, borderRadius:16, border:'1px solid #7055A9', background:'rgba(23,18,39,.96)' }}>
+          <div style={{ fontSize:11, fontWeight:950, color:'#D5C4FF' }}>🏆 実績テスト</div>
+          <div style={{ marginTop:5, color:'#B4A9CC', fontSize:10, lineHeight:1.6 }}>
+            達成 {achievementCompletedCount}/{achievementTotalCount} · 報酬受取 {achievementClaimedCount}/{achievementTotalCount}
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:10 }}>
+            <button type="button" onClick={() => { onMarkAllAchievementsComplete(); onRefresh(); }} style={{
+              minHeight:42, padding:'8px', borderRadius:9, border:'1px solid #9879D5',
+              background:'linear-gradient(135deg,#4C3278,#35264F)', color:'#F1E8FF', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>全実績を達成扱い</button>
+            <button type="button" onClick={() => { onResetAchievementProgress(); onRefresh(); }} style={{
+              minHeight:42, padding:'8px', borderRadius:9, border:'1px solid #594C6C',
+              background:'#1B1725', color:'#C8BDD8', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>実績だけ初期化</button>
+          </div>
+          <p style={{ margin:'8px 0 0', color:'#8D83A2', fontSize:9, lineHeight:1.55 }}>
+            テスト専用。全達成扱いにすると最強権能「天星覇権」の解放条件も満たします。実績報酬の受取履歴とは別に、ゲーム全体のリセットで初期状態へ戻せます。
+          </p>
         </section>
 
         <section style={{

@@ -65,9 +65,9 @@ export const STELLA_FINAL_BATTLE_IMAGES = {
  * separately and never writes back to the normal character roster.
  */
 export const STELLA_FINAL_BATTLE_TUNING: StellaFinalBattleTuning = {
-  bossMaxHp: 15000,
+  bossMaxHp: 30000,
   meteorDamage: 5000,
-  phaseCounterDamage: { 1: 220, 2: 320, 3: 440 },
+  phaseCounterDamage: { 1: 440, 2: 640, 3: 880 },
   fighters: {
     stella: {
       id: 'stella',

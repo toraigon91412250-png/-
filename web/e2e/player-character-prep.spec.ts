@@ -145,20 +145,27 @@ test('Stella final duel uses the player-favored balance tuning in actual combat'
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   const attack = page.getByRole('button', { name: '通常攻撃' });
   await expect(playerHp).toHaveAttribute('aria-valuemax', '5000');
-  await expect(bossHp).toHaveAttribute('aria-valuemax', '15000');
+  await expect(bossHp).toHaveAttribute('aria-valuemax', '30000');
   await expect(page.locator('.stella-final__normal-attack')).toContainText('2,000');
-  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 15,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
+  await expect(page.getByText(/戦闘データ：EXカイザー最大HP 30,000／天象支配 5,000ダメージ（1回）。/)).toBeVisible();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '13000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4780');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '28000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
   await expect(page.getByText('使用回数に応じて最大HPの100%・50%・25%分を回復（HP上限まで）。')).toBeVisible();
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '11000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4560');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '26000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '4120');
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '9000');
-  await expect(playerHp).toHaveAttribute('aria-valuenow', '4240');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '24000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3680');
+  await expect(page.locator('.stella-final__phase')).toContainText('01');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '22000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '3240');
+  await attack.click();
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
+  await expect(playerHp).toHaveAttribute('aria-valuenow', '2600');
   await expect(page.locator('.stella-final__phase')).toContainText('02');
 });
 
@@ -355,7 +362,7 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   const gauge = page.getByRole('progressbar', { name: '堕天ゲージ' });
   const bossHp = page.getByRole('progressbar', { name: 'EXカイザーのHP' });
   await expect(gauge).toHaveAttribute('aria-valuenow', '0');
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '15000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '30000');
   await expect(page.getByRole('button', { name: '通常攻撃' })).toBeDisabled();
   await expect(page.getByRole('button', { name: '神化を選択' })).toBeVisible();
   await expect(page.getByRole('button', { name: '堕天を選択' })).toBeVisible();
@@ -380,10 +387,10 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect.poll(() => demonFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const demonRoutePicker = page.getByRole('dialog', { name: '終焉のルート選択' });
   await expect(demonRoutePicker).toBeVisible({ timeout: 5000 });
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await demonRoutePicker.getByRole('button', { name: /崩壊/ }).click();
   await expect(demonRoutePicker).toBeHidden();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000', 'The selected route must not add a follow-up attack.');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000', 'The selected route must not add a follow-up attack.');
   await expect(page.getByRole('status').filter({ hasText: '崩壊：EXカイザーの防御0／残り 3 ターン' })).toBeVisible();
   await expect(page.locator('.stella-final__log-lines')).toContainText('終焉の分岐「崩壊」');
 
@@ -410,10 +417,10 @@ test('final-duel Irena uses the reversible gauge, existing ultimate multipliers,
   await expect.poll(() => godFinisherImage.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const godRoutePicker = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(godRoutePicker).toBeVisible({ timeout: 5000 });
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await godRoutePicker.getByRole('button', { name: /神威/ }).click();
   await expect(godRoutePicker).toBeHidden();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000', 'Route application does not trigger a follow-up attack.');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000', 'Route application does not trigger a follow-up attack.');
   await expect(page.getByRole('status').filter({ hasText: '神威：攻撃・防御・速度3倍／残り 2 ターン' })).toBeVisible();
   await expect(page.locator('.stella-final__log-lines')).toContainText('創世の分岐「神威」');
   await expect(godFinisher).toBeDisabled();
@@ -457,13 +464,13 @@ test('the remaining divine/demonic routes apply their distinct effects without f
   await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
   const godRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(godRoutes).toBeVisible();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await godRoutes.getByRole('button', { name: /静寂/ }).click();
   await expect(page.getByRole('status').filter({ hasText: '静寂：EXカイザーの通常反撃停止／残り 1 ターン' })).toBeVisible();
   const hpBeforeSilencedCounter = await playerHp.getAttribute('aria-valuenow');
   await page.getByRole('button', { name: '通常攻撃' }).click();
   await expect(playerHp).toHaveAttribute('aria-valuenow', hpBeforeSilencedCounter!);
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '7300');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '17480');
   await expect(page.locator('.stella-final__log-lines')).toContainText('静寂によりカイザーの通常反撃を停止');
 
   // GOD / 再臨: set the existing authority cooldown state back to its ready turn.
@@ -472,7 +479,7 @@ test('the remaining divine/demonic routes apply their distinct effects without f
   const rebirthRoutes = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(rebirthRoutes).toBeVisible();
   await rebirthRoutes.getByRole('button', { name: /再臨/ }).click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await expect(page.locator('.stella-final__log-lines')).toContainText('再使用可能にした');
   
   // DEMON / 断絶: immunity is applied for ten turns. The current engine has no Kaiser buff source.
@@ -573,12 +580,12 @@ test('a previously used endpoint ultimate cannot soft-lock the final-turn judgme
   await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
   const routes = page.getByRole('dialog', { name: '創世のルート選択' });
   await expect(routes).toBeVisible();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await routes.getByRole('button', { name: /静寂/ }).click();
 
   // The first attack consumes 静寂. Keep fighting until phase three starts its deadline.
   const attack = page.getByRole('button', { name: '通常攻撃' });
-  while (Number(await bossHp.getAttribute('aria-valuenow')) > 5000) await attack.click();
+  while (Number(await bossHp.getAttribute('aria-valuenow')) > 10000) await attack.click();
   await expect(page.locator('.stella-final__timer')).toHaveAttribute('aria-label', '最終形態 残り8ターン');
 
   // This endpoint's finisher has already been spent, so the remaining timer cannot be bypassed.
@@ -760,7 +767,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   // Put the gauge at -60 without locking the route. The recoil turn must be consumed first.
   await terminus.click();
   await expect(pass).toBeVisible();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '25000');
   await pass.click();
   await moveFinalIrenaGaugeTo(page, 45);
 
@@ -777,8 +784,8 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
 
   await attack.click();
   // Ordinary attacks stop at the next form gate; the dedicated ultimate can pierce forms.
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '5000');
-  await expect(page.locator('.stella-final__phase')).toContainText('03');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
+  await expect(page.locator('.stella-final__phase')).toContainText('02');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華：攻撃・防御・速度3倍／残り 1 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   await expect(ascension).toBeDisabled();
@@ -786,7 +793,7 @@ test('絶界昇華 triples effective stats and blocks all authorities for its fu
   await expect(controlDemon).toBeDisabled();
 
   await attack.click();
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '1');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
   await expect(page.getByRole('status').filter({ hasText: '絶界昇華の反動：防御50%低下／残り 3 ターン' })).toBeVisible();
   await expect(terminus).toBeDisabled();
   // The expiry recoil locks abilities until the required PASS action is consumed.
@@ -925,9 +932,9 @@ test('divine-stage authorities enforce gauge gates, change real combat stats, an
   await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍／残り 1 ターン' })).toBeVisible();
   await page.getByRole('button', { name: '神側の究極必殺技 創世' }).click();
   await expect(page.getByRole('dialog', { name: '創世のルート選択' })).toBeVisible({ timeout: 5000 });
-  await expect(bossHp).toHaveAttribute('aria-valuenow', '10000');
+  await expect(bossHp).toHaveAttribute('aria-valuenow', '20000');
   await expect(page.locator('.stella-final__log-lines')).toContainText('威力28,800');
-  await expect(page.locator('.stella-final__log-lines')).toContainText('実ダメージ5,000');
+  await expect(page.locator('.stella-final__log-lines')).toContainText('実ダメージ10,000');
   await expect(page.getByRole('status').filter({ hasText: '全能降臨：攻撃・防御・速度2倍' })).toHaveCount(0);
 });
 

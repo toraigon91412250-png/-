@@ -243,9 +243,12 @@ export type CpuDifficulty = 'NORMAL' | 'EXPERT';
 export type BattleChallengeLevel = 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
 export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
-export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT';
+export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT' | 'ASTRAL_DOMINION';
 
-export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT' | 'FEATHER_SPLIT';
+export type AchievementBadgeId = 'A' | 'B' | 'C';
+export type AchievementBadgeTier = 0 | 1 | 2 | 3;
+
+export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT' | 'FEATHER_SPLIT' | 'LAST_STAND' | 'STARFALL';
 
 export interface ImprintProgress {
   unlockedIds: ImprintId[];
@@ -278,6 +281,9 @@ export interface BattleSetupConfig {
   abilities: EquippedAbility[];
   /** Imprints are persisted separately and snapshotted into each battle config. */
   imprints?: ImprintId[];
+  /** Achievement-earned badge selected for this battle; absent legacy fields mean no badge. */
+  achievementBadgeId?: AchievementBadgeId | null;
+  achievementBadgeLevel?: AchievementBadgeTier;
   // Optional for backwards compatibility with older saved/config objects.
   statAllocation?: StatAllocation;
   statPointTotal?: number;
@@ -312,6 +318,8 @@ export interface BattleUiState {
   winnerIsPlayer: boolean | null;
   cpuDifficulty: CpuDifficulty;
   cpuIntent: BattleAction;
+  /** Actions accepted from the player this battle; used for mastery achievement requirements. */
+  playerActionsTaken: PlayerBattleAction[];
   /** Once-per-battle imprint activations; reset on every new battle. */
   usedImprints: ImprintId[];
   /** Last Yin-Yang action and its confirmed one-hit mitigation, retained for readable battle feedback. */

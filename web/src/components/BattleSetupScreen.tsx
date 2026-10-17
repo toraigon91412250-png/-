@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
+import { AbilityId, AbilityProgress, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
 import { BuildSavePanel } from './BuildSavePanel';
 import { validateBuildSnapshot, type BuildValidationContext, type SavedBuildSnapshot } from '../utils/buildSaveSystem';
+import type { AchievementBadgeProgress } from '../utils/achievementSystem';
 import { createStatPreset, getAbilityBuildHint, getAbilityBuildMatchPercent, getRemainingStatPoints, getSpentStatPoints, normalizeStatAllocation, STAT_ALLOCATION_KEYS, STAT_BUILD_POINT_VALUES, StatAllocationKey, StatPresetId } from '../utils/statBuild';
 
 interface BattleSetupScreenProps {
@@ -15,6 +16,10 @@ interface BattleSetupScreenProps {
   onSelectPlayerCharacter: (characterId: string) => void;
   abilityProgress: AbilityProgress;
   imprintProgress: ImprintProgress;
+  achievementBadges: AchievementBadgeProgress[];
+  equippedAchievementBadgeId: AchievementBadgeId | null;
+  achievementBadgeMessage: string | null;
+  onSelectAchievementBadge: (id: AchievementBadgeId | null) => void;
   onApplySavedBuild: (config: BattleSetupConfig) => { success: boolean; message?: string };
   selectedDifficulty: CpuDifficulty;
   onSelectDifficulty: (difficulty: CpuDifficulty) => void;
@@ -33,6 +38,10 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   onSelectPlayerCharacter,
   abilityProgress,
   imprintProgress,
+  achievementBadges,
+  equippedAchievementBadgeId,
+  achievementBadgeMessage,
+  onSelectAchievementBadge,
   onApplySavedBuild,
   selectedDifficulty,
   onSelectDifficulty,
@@ -114,6 +123,8 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       statAllocation: validation.snapshot.statAllocation,
       statPointTotal: availableStatPoints,
       imprints: getCompatibleImprints(validation.snapshot.imprintIds),
+      achievementBadgeId: equippedAchievementBadgeId,
+      achievementBadgeLevel: achievementBadges.find(badge => badge.id === equippedAchievementBadgeId)?.tier ?? 0,
     };
     const result = onApplySavedBuild(config);
     if (!result.success) return result.message ?? 'ビルドを反映できませんでした。';
@@ -124,6 +135,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   };
 
   const startBattle = () => {
+    const equippedBadge = achievementBadges.find(badge => badge.id === equippedAchievementBadgeId && badge.tier > 0);
     onStartBattle({
       kaiserLevel: selectedLevel,
       playerCharacterId: selectedPlayerCharacterId,
@@ -134,6 +146,8 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
       statPointTotal: availableStatPoints,
       imprints: getCompatibleImprints(imprintProgress.equippedIds),
+      achievementBadgeId: equippedBadge?.id ?? null,
+      achievementBadgeLevel: equippedBadge?.tier ?? 0,
     });
   };
 
@@ -305,6 +319,78 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           context={buildValidationContext}
           onLoad={applySavedBuild}
         />
+
+        <section aria-label="実績バッジ選択" style={{
+          marginTop: '14px',
+          padding: '14px',
+          borderRadius: '16px',
+          border: '1px solid #5C4A76',
+          background: 'linear-gradient(135deg, rgba(31,24,45,.96), rgba(14,17,29,.96))',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+            <div>
+              <div style={{ fontSize: '10px', color: '#C5A9F5', fontWeight: 900, letterSpacing: '.14em' }}>ACHIEVEMENT BADGE</div>
+              <div style={{ marginTop: 4, fontSize: '20px', fontWeight: 950 }}>実績バッジ</div>
+            </div>
+            <div style={{ fontSize: '10px', color: '#A99ABE' }}>装備枠 1 / 1</div>
+          </div>
+          <p style={{ margin: '7px 0 0', fontSize: '10px', lineHeight: 1.55, color: '#A49AB7' }}>
+            各系統の実績を3・5・8個達成すると進化。装備できるのは1種類だけで、権能2枠・刻印3枠とは別枠です。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 7, marginTop: 11 }}>
+            {achievementBadges.map(badge => {
+              const selected = badge.id === equippedAchievementBadgeId && badge.tier > 0;
+              const locked = badge.tier === 0;
+              const color = badge.id === 'A' ? '#FFB5A8' : badge.id === 'B' ? '#D1B6FF' : '#A9E9CE';
+              return (
+                <button
+                  key={badge.id}
+                  type="button"
+                  disabled={locked}
+                  aria-pressed={selected}
+                  onClick={() => onSelectAchievementBadge(badge.id)}
+                  style={{
+                    minWidth: 0,
+                    minHeight: 126,
+                    padding: '9px 7px',
+                    borderRadius: 10,
+                    border: selected ? `1.5px solid ${color}` : '1px solid #353146',
+                    background: selected ? 'rgba(75,57,100,.55)' : 'rgba(12,15,25,.92)',
+                    color: '#F5F1FF',
+                    textAlign: 'left',
+                    opacity: locked ? 0.56 : 1,
+                    cursor: locked ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <div style={{ fontSize: 10, color, fontWeight: 950 }}>{badge.typeLabel}</div>
+                  <div style={{ marginTop: 4, fontSize: 12, fontWeight: 950, overflowWrap: 'anywhere' }}>{badge.name}</div>
+                  <div style={{ marginTop: 5, fontSize: 9, color: '#AAA3BE' }}>
+                    {badge.tier > 0 ? `第${badge.tier}段階` : '未獲得'} · {badge.completedAchievementCount}/12
+                  </div>
+                  <div style={{ marginTop: 5, fontSize: 9, lineHeight: 1.45, color: selected ? color : '#B9B1CD' }}>
+                    {badge.tier > 0 ? badge.tierEffects[badge.tier - 1] : '関連実績を3個達成で獲得'}
+                  </div>
+                  {selected && <div style={{ marginTop: 5, fontSize: 9, fontWeight: 950, color }}>✓ 装備中</div>}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            aria-pressed={!achievementBadges.some(badge => badge.id === equippedAchievementBadgeId && badge.tier > 0)}
+            onClick={() => onSelectAchievementBadge(null)}
+            style={{
+              width: '100%', minHeight: 36, marginTop: 8, borderRadius: 8,
+              border: '1px solid #3A4051', background: 'rgba(14,17,27,.95)',
+              color: '#C5C9D8', fontSize: 10, fontWeight: 900, cursor: 'pointer',
+            }}
+          >バッジを装備しない</button>
+          {achievementBadgeMessage && (
+            <p role="status" style={{ margin: '8px 0 0', fontSize: 10, lineHeight: 1.5, color: '#CDB8F6' }}>
+              {achievementBadgeMessage}
+            </p>
+          )}
+        </section>
 
         <section style={{
           marginTop: '14px',

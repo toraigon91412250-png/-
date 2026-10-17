@@ -101,6 +101,10 @@ const ABILITY_STAT_HINTS: Record<
     stats: ['attack', 'speed'],
     label: 'ATK / SPD配分と相性が良い',
   },
+  ASTRAL_DOMINION: {
+    stats: ['maxHp', 'attack', 'defense', 'speed'],
+    label: '全ステータスを強化する実績コンプリート権能',
+  },
 };
 
 export type StatPresetId = 'BALANCED' | 'OFFENSE' | 'DEFENSE' | 'SPEED';

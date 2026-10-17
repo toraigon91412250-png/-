@@ -94,6 +94,26 @@ export const IMPRINT_DEFINITIONS: readonly ImprintDefinition[] = [
     effect: '穿羽：与ダメージ×1.30、クールタイム3。連羽：与ダメージ×0.70、クールタイム2。前回と異なるモードで羽弾を使用すると、その攻撃に交互ボーナス+15%。出血など羽弾本来の追加効果は両モードで発動する。',
     usageLimit: 'モードごとにクールタイムを独立管理。交互ボーナスは1回の攻撃にのみ適用し、重複しない。',
   },
+  {
+    id: 'LAST_STAND',
+    name: '不屈の印',
+    symbol: '✧',
+    category: '生存突破',
+    description: '致命傷を一度だけ耐え、決死の反撃につなげる。',
+    trigger: '装備中、いれーなのHPが0以下になる致命傷を受けたとき。',
+    effect: 'HPを1残して致命傷を一度だけ防ぐ。堕天王の生存効果が先に発動した場合は消費しない。',
+    usageLimit: '1戦につき1回。戦闘を再開すると再び使用可能。',
+  },
+  {
+    id: 'STARFALL',
+    name: '星墜の印',
+    symbol: '✦',
+    category: '必殺増幅',
+    description: '星の力を一度だけ必殺技に重ね、決定打を強化する。',
+    trigger: '装備中、いれーながダメージを与える必殺技を使うと自動発動。',
+    effect: '最初の有効な必殺技のダメージを1.35倍にする。ダメージを与えない全能神化は対象外。',
+    usageLimit: '1戦につき1回。戦闘を再開すると再び使用可能。',
+  },
 ] as const;
 
 export function isImprintId(value: unknown): value is ImprintId {

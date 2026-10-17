@@ -11,6 +11,7 @@ import {
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
   getJudgmentThreshold,
+  getAchievementBadgeDamageMultiplier,
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateHitDamagePreview, calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from './src/utils/battleMath.ts';
@@ -31,12 +32,82 @@ register(
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
+const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, buildAchievementBadgeProgress, completeAchievementIds, getAchievementMetricValue, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
+const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
+const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
+const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 
-// Keep the final duel player-favored: strengthen Stella while modestly easing EX Kaiser.
-assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 15000);
-assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 220, 2: 320, 3: 440 });
+// Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
+assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
+assert.deepStrictEqual(STELLA_FINAL_BATTLE_TUNING.phaseCounterDamage, { 1: 440, 2: 640, 3: 880 });
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.fighters.stella.normalAttackDamage, 2000);
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.meteorDamage, 5000);
+
+assert.strictEqual(ABILITY_DEFINITIONS.some(ability => ability.id === 'ASTRAL_DOMINION'), true);
+assert.strictEqual(RECRUITMENT_REWARDS.some(reward => reward.abilityId === 'ASTRAL_DOMINION'), false,
+  'The ultimate achievement authority must not leak into the regular summon pool.');
+const astralMaxLevelIrena = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10,
+  abilities: [{ id: 'ASTRAL_DOMINION', level: 5 }],
+  imprints: [],
+});
+assert.strictEqual(astralMaxLevelIrena.maxHp, Math.round(IRENA.maxHp * 1.8));
+assert.strictEqual(astralMaxLevelIrena.attack, Math.round(IRENA.attack * 1.8));
+assert.strictEqual(astralMaxLevelIrena.defense, Math.round(IRENA.defense * 1.8));
+assert.strictEqual(astralMaxLevelIrena.speed, Math.round(IRENA.speed * 1.8));
+assert.strictEqual(astralMaxLevelIrena.specialSkillDamage, Math.round(IRENA.specialSkillDamage * 1.8 * 1.5));
+assert.strictEqual(astralMaxLevelIrena.ultimateSkillDamage, Math.round(IRENA.ultimateSkillDamage * 1.8 * 1.5));
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.length, 10);
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'LAST_STAND'), true);
+assert.strictEqual(ACHIEVEMENT_IMPRINT_DEFINITIONS.some(imprint => imprint.id === 'STARFALL'), true);
+assert.strictEqual(new Set(ACHIEVEMENT_DEFINITIONS.map(achievement => achievement.id)).size, ACHIEVEMENT_DEFINITIONS.length,
+  'Achievement IDs must stay unique so rewards cannot collide.');
+assert.ok(ACHIEVEMENT_DEFINITIONS.length >= 30, 'The achievement archive should contain long-term and high-difficulty goals.');
+const cleanVictorySample = {
+  playerWon: true,
+  kaiserLevel: 10,
+  challengeMode: 'NORMAL',
+  turnNumber: 4,
+  playerHp: 100,
+  playerMaxHp: 100,
+  actionsTaken: ['ATTACK'],
+  abilities: [],
+  equippedImprints: [],
+  usedImprints: [],
+  logLines: [],
+  difficulty: 'NORMAL',
+};
+const firstAchievementWin = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, cleanVictorySample);
+assert.strictEqual(firstAchievementWin.currentWinStreak, 1);
+assert.strictEqual(firstAchievementWin.quickWins, 1);
+assert.strictEqual(firstAchievementWin.noAbilityWins, 1);
+assert.strictEqual(firstAchievementWin.noSpecialUltimateWins, 1);
+assert.strictEqual(firstAchievementWin.noImprintWins, 1);
+assert.ok(firstAchievementWin.wonKaiserLevels.includes(10));
+const afterLoss = recordAchievementBattle(firstAchievementWin, { ...cleanVictorySample, playerWon: false, turnNumber: 12 });
+assert.strictEqual(afterLoss.currentWinStreak, 0, 'A defeat must break the active achievement win streak.');
+assert.strictEqual(afterLoss.bestWinStreak, 1, 'The best streak must remain after a defeat.');
+const allAchievementIdsForDev = markAllAchievementsForDeveloper(INITIAL_ACHIEVEMENT_PROGRESS);
+assert.strictEqual(allAchievementIdsForDev.completedIds.length, ACHIEVEMENT_DEFINITIONS.length);
+assert.strictEqual(normalizeAchievementProgress({ claimedRewardIds: ['unknown-id'] }).claimedRewardIds.length, 0,
+  'Unknown achievement IDs cannot create claimable rewards.');
+assert.strictEqual(ACHIEVEMENT_BADGE_DEFINITIONS.length, 3, 'There must be exactly three achievement badges.');
+assert.deepStrictEqual(ACHIEVEMENT_BADGE_DEFINITIONS.map(badge => badge.achievementIds.length), [12, 12, 12]);
+const assignedBadgeAchievementIds = ACHIEVEMENT_BADGE_DEFINITIONS.flatMap(badge => badge.achievementIds);
+assert.strictEqual(new Set(assignedBadgeAchievementIds).size, 36, 'Each existing achievement must belong to exactly one badge.');
+assert.deepStrictEqual(
+  [...assignedBadgeAchievementIds].sort(),
+  ACHIEVEMENT_DEFINITIONS.map(achievement => achievement.id).sort(),
+  'Badge branches must cover all existing achievements without adding or omitting any.',
+);
+const badgeTierOne = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(0, 3));
+const badgeTierTwo = completeAchievementIds(badgeTierOne, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(3, 5));
+const badgeTierThree = completeAchievementIds(badgeTierTwo, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(5, 8));
+assert.strictEqual(getAchievementBadgeTier('A', INITIAL_ACHIEVEMENT_PROGRESS), 0);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierOne).find(badge => badge.id === 'A').tier, 1);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierTwo).find(badge => badge.id === 'A').tier, 2);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierThree).find(badge => badge.id === 'A').tier, 3);
+assert.strictEqual(getAchievementBadgeTier('A', badgeTierThree), 3);
 
 // The final-form deadline is fixed to 8–10 turns and is independent of
 // allocated/effective speed, including extreme speed multipliers.
@@ -382,7 +453,8 @@ assert.strictEqual(getShortIrenaCombatStats().attack, IRENA.attack);
 assert.strictEqual(getShortIrenaCombatStats().normalAttackDamage, IRENA.attack * 8);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).attack, IRENA.attack + 150 * 12);
 assert.strictEqual(getShortIrenaCombatStats({ attack: 150 }).remainingPoints, 0);
-assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp);
+assert.ok(getShortIrenaCombatStats({ attack: 150 }).normalAttackDamage > STELLA_FINAL_BATTLE_TUNING.bossMaxHp / 2,
+  'The maximum offensive build should still exceed the original 15,000-HP final-duel baseline.');
 assert.strictEqual(shiftDatenGauge(0, -60), -60, 'Existing large gauge adjustments must retain their requested movement.');
 assert.strictEqual(shiftDatenGauge(30, -15), 15, 'A reverse move from +30 must stop at +15.');
 assert.strictEqual(shiftDatenGauge(-30, 15), -15, 'A reverse move from -30 must stop at -15.');
@@ -453,7 +525,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
@@ -865,6 +937,59 @@ const criticalDamage = calculateNormalAttackDamage({
 
 assert.strictEqual(normalDamage, 180);
 assert.strictEqual(criticalDamage, 280);
+const fireBadgeNormalDamage = calculateNormalAttackDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'A', achievementBadgeLevel: 1 },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(fireBadgeNormalDamage, Math.round(normalDamage * 1.05),
+  'Fire badge tier I must increase player direct damage by exactly 5%.');
+assert.strictEqual(getAchievementBadgeDamageMultiplier({ ...config, achievementBadgeId: 'B', achievementBadgeLevel: 1 }, 'NORMAL'), 1,
+  'Skill badge must not increase normal attack damage.');
+const baseSpecialBadgeDamage = calculateSpecialDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config,
+  turn: 1,
+  isActingFirst: true,
+});
+const skillBadgeSpecialDamage = calculateSpecialDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'B', achievementBadgeLevel: 3 },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(skillBadgeSpecialDamage, Math.round(baseSpecialBadgeDamage * 1.15),
+  'Skill badge tier III must increase special damage by exactly 15%.');
+assert.strictEqual(calculateUltimateDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'B', achievementBadgeLevel: 3 },
+  turn: 1,
+  isActingFirst: true,
+  ultimateVariant: 'OMNIPOTENCE',
+}), 1680, 'Skill badge tier III must increase ultimate damage by 12%.');
+const balancedBadgeTierOne = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 1,
+});
+const balancedBadgeTierTwo = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 2,
+});
+const balancedBadgeTierThree = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 3,
+});
+assert.strictEqual(balancedBadgeTierOne.maxHp, Math.round(IRENA.maxHp * 1.05));
+assert.strictEqual(balancedBadgeTierTwo.maxHp, Math.round(IRENA.maxHp * 1.07));
+assert.strictEqual(balancedBadgeTierTwo.defense, Math.round(IRENA.defense * 1.07));
+assert.strictEqual(balancedBadgeTierThree.attack, Math.round(IRENA.attack * 1.07));
+assert.strictEqual(balancedBadgeTierThree.speed, Math.round(IRENA.speed * 1.07));
+assert.strictEqual(balancedBadgeTierThree.damageTakenMultiplier, (IRENA.damageTakenMultiplier ?? 1) * 0.95);
+assert.strictEqual(applyPassiveDamageReduction({ character: balancedBadgeTierThree }, 100, true), 95);
+assert.strictEqual(applyPassiveDamageReduction({ character: balancedBadgeTierThree }, 100, false), 100,
+  'Balanced badge reduction must apply only to direct hits.');
 const attackTalentFighter = createInitialFighter(attackTalentBuild, true);
 assert.strictEqual(calculateNormalAttackDamage({
   attacker: attackTalentFighter,
@@ -1216,6 +1341,85 @@ globalThis.localStorage = {
   removeItem: key => storageValues.delete(key),
   clear: () => storageValues.clear(),
 };
+
+const storageBeforeAchievementRewardTest = new Map(storageValues);
+try {
+  storageValues.clear();
+  storageValues.set('duel_arena_battle_stats', JSON.stringify({ totalBattles: 35, wins: 12, losses: 23 }));
+  const migratedLegacyWins = loadAchievementProgress();
+  assert.strictEqual(migratedLegacyWins.eligibleWins, 12,
+    'Existing non-developer save wins should seed achievement progress once.');
+  assert.ok(storageValues.has('duel_arena_achievement_progress'),
+    'The legacy achievement baseline should be persisted so it cannot be recalculated later.');
+
+  storageValues.clear();
+  storageValues.set('duel_arena_battle_stats', JSON.stringify({ totalBattles: 35, wins: 12, losses: 23 }));
+  storageValues.set(STELLA_MODE_PROGRESS_KEY, JSON.stringify({ developerModeEnabled: true }));
+  const migratedDeveloperWins = loadAchievementProgress();
+  assert.strictEqual(migratedDeveloperWins.eligibleWins, 0,
+    'Existing win totals must not be imported while Developer Tools mode is active.');
+
+  storageValues.clear();
+  storageValues.set('duel_arena_stat_points', '12');
+  const eligibleWinSample = {
+    playerWon: true,
+    kaiserLevel: 10,
+    challengeMode: 'NORMAL',
+    turnNumber: 3,
+    playerHp: 5,
+    playerMaxHp: 100,
+    actionsTaken: [],
+    abilities: [],
+    equippedImprints: [],
+    usedImprints: [],
+    logLines: [],
+    difficulty: 'NORMAL',
+  };
+  const trackedWins = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, eligibleWinSample);
+  assert.strictEqual(trackedWins.eligibleWins, 1,
+    'Eligible gameplay wins must increment the achievement-specific count.');
+  const imprintActivationSample = {
+    ...eligibleWinSample,
+    playerWon: false,
+    actionsTaken: ['SPECIAL'],
+    equippedImprints: ['FEATHER_SPLIT'],
+    logLines: ACHIEVEMENT_IMPRINT_DEFINITIONS
+      .filter(imprint => imprint.id !== 'FEATHER_SPLIT')
+      .map(imprint => '【刻印発動：' + imprint.name + '】効果が発生した。'),
+  };
+  const trackedImprints = recordAchievementBattle(INITIAL_ACHIEVEMENT_PROGRESS, imprintActivationSample);
+  assert.strictEqual(trackedImprints.usedImprintIds.length, ACHIEVEMENT_IMPRINT_DEFINITIONS.length,
+    'All ten imprint triggers, including prefixed logs and the first Feather Split use, must count.');
+  assert.strictEqual(getAchievementMetricValue('WINS', {
+    progress: trackedWins,
+    snapshot: {
+      overallStats: { totalBattles: 100, wins: 99, losses: 1 },
+      abilityProgress: { levels: {} },
+    },
+  }), 1, 'Developer/test wins in general statistics must not affect achievement win counts.');
+
+  const eligibleForFirstReward = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ['first-victory']);
+  assert.ok(persistAchievementProgress(eligibleForFirstReward));
+  const firstClaim = claimAchievementReward('first-victory');
+  assert.strictEqual(firstClaim.claimed, true, 'A completed achievement grants its reward the first time.');
+  assert.strictEqual(loadStatPoints(), 17, 'The first achievement reward adds exactly five stat points.');
+  const duplicateClaim = claimAchievementReward('first-victory');
+  assert.strictEqual(duplicateClaim.claimed, false, 'A duplicate claim cannot grant the same reward twice.');
+  assert.strictEqual(loadStatPoints(), 17, 'A duplicate claim must not change the resource balance.');
+
+  const incompleteAchievements = loadAchievementProgress();
+  assert.strictEqual(unlockAchievementUltimateAuthority().progress.levels.ASTRAL_DOMINION, 0,
+    'The unique authority stays locked before full achievement completion.');
+  const allAchievements = completeAchievementIds(incompleteAchievements, ACHIEVEMENT_DEFINITIONS.map(item => item.id));
+  assert.ok(persistAchievementProgress(allAchievements));
+  const unlockedAuthority = unlockAchievementUltimateAuthority();
+  assert.strictEqual(unlockedAuthority.persisted, true);
+  assert.strictEqual(unlockedAuthority.progress.levels.ASTRAL_DOMINION, 5,
+    'Full completion unlocks the unique authority at max level.');
+} finally {
+  storageValues.clear();
+  for (const [key, value] of storageBeforeAchievementRewardTest) storageValues.set(key, value);
+}
 
 assert.strictEqual(loadStatPoints(), 12, 'A missing stat-points key must use the initial 12 points.');
 assert.strictEqual(addStatPoints(2), 14, 'A first win from a fresh save must add 2 points to the initial 12.');

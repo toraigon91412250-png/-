@@ -1,4 +1,4 @@
-import { AbilityId, AbilityProgress, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
@@ -6,6 +6,7 @@ import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
 import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
 import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
+import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle, type AchievementBattleSample, type AchievementProgress } from './achievementSystem';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -621,6 +622,7 @@ const INITIAL_ABILITY_PROGRESS: AbilityProgress = {
     BLACK_WING: 0,
     FALLEN_KING: 0,
     JUDGMENT: 0,
+    ASTRAL_DOMINION: 0,
   },
   shards: {
     ABYSS: 0,
@@ -628,6 +630,7 @@ const INITIAL_ABILITY_PROGRESS: AbilityProgress = {
     BLACK_WING: 0,
     FALLEN_KING: 0,
     JUDGMENT: 0,
+    ASTRAL_DOMINION: 0,
   },
 };
 
@@ -638,6 +641,7 @@ function createEmptyAbilityLevels(): Record<AbilityId, number> {
     BLACK_WING: 0,
     FALLEN_KING: 0,
     JUDGMENT: 0,
+    ASTRAL_DOMINION: 0,
   };
 }
 
@@ -648,6 +652,7 @@ function createEmptyAbilityShards(): Record<AbilityId, number> {
     BLACK_WING: 0,
     FALLEN_KING: 0,
     JUDGMENT: 0,
+    ASTRAL_DOMINION: 0,
   };
 }
 
@@ -764,6 +769,7 @@ export function setAbilityForDeveloper(abilityId: AbilityId, level: number, shar
 }
 
 export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityProgress {
+  const current = loadAbilityProgress();
   const normalizedLevel = Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(level)));
   const normalizedShards = Math.max(0, Math.floor(shards));
   return persistAbilityProgress({
@@ -773,6 +779,7 @@ export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityP
       BLACK_WING: normalizedLevel,
       FALLEN_KING: normalizedLevel,
       JUDGMENT: normalizedLevel,
+      ASTRAL_DOMINION: current.levels.ASTRAL_DOMINION,
     },
     shards: {
       ABYSS: normalizedShards,
@@ -780,6 +787,7 @@ export function setAllAbilitiesForDeveloper(level: number, shards = 0): AbilityP
       BLACK_WING: normalizedShards,
       FALLEN_KING: normalizedShards,
       JUDGMENT: normalizedShards,
+      ASTRAL_DOMINION: current.shards.ASTRAL_DOMINION,
     },
   });
 }
@@ -844,6 +852,7 @@ export function resetProgressForDeveloper(): {
   try {
     // Clear developer mode first, without letting this write block the other reset operations.
     localStorage.setItem(STELLA_MODE_PROGRESS_KEY, JSON.stringify(INITIAL_STELLA_MODE_PROGRESS));
+    localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify(INITIAL_ACHIEVEMENT_PROGRESS));
   } catch {
     // Keep attempting the remaining reset writes if this key cannot be saved.
   }
@@ -1280,6 +1289,7 @@ export function unlockAllGameFeaturesForDeveloper(): {
       BLACK_WING: MAX_ABILITY_LEVEL,
       FALLEN_KING: MAX_ABILITY_LEVEL,
       JUDGMENT: MAX_ABILITY_LEVEL,
+      ASTRAL_DOMINION: MAX_ABILITY_LEVEL,
     },
     shards: {
       ABYSS: Math.max(9999, currentAbilities.shards.ABYSS),
@@ -1287,6 +1297,7 @@ export function unlockAllGameFeaturesForDeveloper(): {
       BLACK_WING: Math.max(9999, currentAbilities.shards.BLACK_WING),
       FALLEN_KING: Math.max(9999, currentAbilities.shards.FALLEN_KING),
       JUDGMENT: Math.max(9999, currentAbilities.shards.JUDGMENT),
+      ASTRAL_DOMINION: Math.max(9999, currentAbilities.shards.ASTRAL_DOMINION),
     },
   });
   const nextRecruitment = normalizeRecruitmentProgress({
@@ -1337,3 +1348,158 @@ export function unlockAllGameFeaturesForDeveloper(): {
   };
 }
 
+
+
+export function loadAchievementProgress(): AchievementProgress {
+  try {
+    const raw = localStorage.getItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY);
+    const saved = raw ? JSON.parse(raw) as unknown : null;
+    const savedRecord = saved && typeof saved === 'object'
+      ? saved as Record<string, unknown>
+      : null;
+    if (savedRecord && Object.prototype.hasOwnProperty.call(savedRecord, 'eligibleWins')) {
+      return normalizeAchievementProgress(saved);
+    }
+
+    // Migrate legacy win totals once. Existing Developer Tools sessions may have
+    // polluted general statistics with test battles, so never import that total
+    // when persistent developer mode is active.
+    const legacyWins = loadStellaModeProgress().developerModeEnabled === true
+      ? 0
+      : loadOverallStats().wins;
+    const migrated = normalizeAchievementProgress({
+      ...(savedRecord ?? INITIAL_ACHIEVEMENT_PROGRESS),
+      eligibleWins: legacyWins,
+    });
+    try {
+      localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify(migrated));
+    } catch {
+      // Keep the in-memory migration usable even when persistence is blocked.
+    }
+    return migrated;
+  } catch {
+    return normalizeAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
+  }
+}
+
+export function persistAchievementProgress(value: AchievementProgress): AchievementProgress | null {
+  const normalized = normalizeAchievementProgress(value);
+  try {
+    localStorage.setItem(ACHIEVEMENT_PROGRESS_STORAGE_KEY, JSON.stringify(normalized));
+    return normalized;
+  } catch {
+    return null;
+  }
+}
+
+export function recordAchievementBattleProgress(sample: AchievementBattleSample): AchievementProgress | null {
+  return persistAchievementProgress(recordAchievementBattle(loadAchievementProgress(), sample));
+}
+
+export function setEquippedAchievementBadge(id: AchievementBadgeId | null): AchievementProgress | null {
+  const current = loadAchievementProgress();
+  if (id !== null && getAchievementBadgeTier(id, current) === 0) return null;
+  return persistAchievementProgress({ ...current, equippedBadgeId: id });
+}
+
+export function syncAchievementCompletion(ids: readonly string[]): AchievementProgress | null {
+  return persistAchievementProgress(completeAchievementIds(loadAchievementProgress(), ids));
+}
+
+export function markAllAchievementsCompleteForDeveloper(): AchievementProgress | null {
+  return persistAchievementProgress(markAllAchievementsForDeveloper(loadAchievementProgress()));
+}
+
+export function resetAchievementProgressForDeveloper(): AchievementProgress | null {
+  const currentAbilities = loadAbilityProgress();
+  const nextAbilities = normalizeAbilityProgress({
+    levels: { ...currentAbilities.levels, ASTRAL_DOMINION: 0 },
+    shards: { ...currentAbilities.shards, ASTRAL_DOMINION: 0 },
+  });
+  const nextAchievements = normalizeAchievementProgress(INITIAL_ACHIEVEMENT_PROGRESS);
+  const persisted = persistStorageTransaction([
+    { key: ACHIEVEMENT_PROGRESS_STORAGE_KEY, value: JSON.stringify(nextAchievements) },
+    { key: ABILITY_PROGRESS_KEY, value: JSON.stringify(nextAbilities) },
+  ]);
+  return persisted ? nextAchievements : null;
+}
+
+export function unlockAchievementUltimateAuthority(): { progress: AbilityProgress; persisted: boolean } {
+  const achievementProgress = loadAchievementProgress();
+  const allComplete = achievementProgress.completedIds.length >= ACHIEVEMENT_DEFINITIONS.length;
+  const current = loadAbilityProgress();
+  if (!allComplete || current.levels.ASTRAL_DOMINION >= MAX_ABILITY_LEVEL) {
+    return { progress: current, persisted: true };
+  }
+  const next = normalizeAbilityProgress({
+    levels: { ...current.levels, ASTRAL_DOMINION: MAX_ABILITY_LEVEL },
+    shards: { ...current.shards },
+  });
+  const persisted = persistStorageTransaction([
+    { key: ABILITY_PROGRESS_KEY, value: JSON.stringify(next) },
+  ]);
+  return { progress: persisted ? next : current, persisted };
+}
+
+export interface AchievementRewardClaimResult {
+  progress: AchievementProgress;
+  persisted: boolean;
+  claimed: boolean;
+}
+
+export function claimAchievementReward(id: string): AchievementRewardClaimResult {
+  const current = loadAchievementProgress();
+  const definition = ACHIEVEMENT_DEFINITIONS.find(item => item.id === id);
+  if (!definition || !current.completedIds.includes(id) || current.claimedRewardIds.includes(id)) {
+    return { progress: current, persisted: true, claimed: false };
+  }
+
+  const nextAchievement = normalizeAchievementProgress({
+    ...current,
+    claimedRewardIds: [...current.claimedRewardIds, id],
+  });
+  const reward = definition.reward;
+  let rewardWrite: StorageWrite | null = null;
+
+  switch (reward.kind) {
+    case 'STAT_POINTS':
+      rewardWrite = { key: STAT_POINTS_KEY, value: String(loadBaseStatPoints() + reward.amount) };
+      break;
+    case 'RECRUITMENT_TICKETS': {
+      const next = normalizeRecruitmentProgress({
+        ...loadRecruitmentProgress(),
+        tickets: loadRecruitmentProgress().tickets + reward.amount,
+      });
+      rewardWrite = { key: RECRUITMENT_KEY, value: JSON.stringify(next) };
+      break;
+    }
+    case 'IMPRINT_TICKETS':
+    case 'CORE_FRAGMENTS': {
+      const raid = loadRaidRewardProgress();
+      const next = normalizeRaidRewardProgress({
+        ...raid,
+        ...(reward.kind === 'IMPRINT_TICKETS' ? { imprintTickets: raid.imprintTickets + reward.amount } : {}),
+        ...(reward.kind === 'CORE_FRAGMENTS' ? { coreFragments: raid.coreFragments + reward.amount } : {}),
+      });
+      rewardWrite = { key: RAID_REWARD_PROGRESS_KEY, value: JSON.stringify(next) };
+      break;
+    }
+    case 'SKILL_SHARDS': {
+      const skill = loadSkillProgress();
+      const next = normalizeSkillProgress({ ...skill, shards: skill.shards + reward.amount });
+      rewardWrite = { key: SKILL_PROGRESS_KEY, value: JSON.stringify(next) };
+      break;
+    }
+  }
+
+  const writes: StorageWrite[] = [
+    { key: ACHIEVEMENT_PROGRESS_STORAGE_KEY, value: JSON.stringify(nextAchievement) },
+  ];
+  if (rewardWrite) writes.push(rewardWrite);
+  const persisted = persistStorageTransaction(writes);
+  return {
+    progress: persisted ? nextAchievement : current,
+    persisted,
+    claimed: persisted,
+  };
+}
