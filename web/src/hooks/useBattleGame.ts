@@ -23,6 +23,8 @@ import {
 import { CpuAi } from '../utils/ai';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
+import { getEquippedResonanceAbility, getResonanceAbilityLevel } from '../utils/abilitySystem';
+import { getEquippedResonance, getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
@@ -80,6 +82,24 @@ export function createInitialFighter(
     isEvading: false,
     isPlayer,
     activeAilments: [],
+    resonanceBaseStats: {
+      maxHp: character.maxHp,
+      attack: character.attack,
+      defense: character.defense,
+      speed: character.speed,
+      specialSkillDamage: character.specialSkillDamage,
+      ultimateSkillDamage: character.ultimateSkillDamage,
+    },
+    resonanceWeakness: { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 },
+    resonanceWeaknessStages: { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 },
+    resonanceKingZoneStacks: 0,
+    resonanceKingZoneThreshold: 0,
+    resonanceRevivalCount: 0,
+    resonanceGodObservedHpStage: 0,
+    resonanceJudgmentMarks: 0,
+    resonanceJudgmentReady: false,
+    resonanceKingWingStackExpiresAtTurns: [],
+    resonanceKingWingStacks: 0,
   };
   return initializeKaiserChallengeFighter(fighter, kaiserLevel);
 }
@@ -207,6 +227,11 @@ export function useBattleGame(
   const judgmentMarksRef = useRef(0);
   const judgmentReadyRef = useRef(false);
   const fallenKingSurvivalCountRef = useRef(0);
+  const fallenGodRevivalCountRef = useRef(0);
+  const resonanceKingSurvivalCountRef = useRef(0);
+  const resonanceKingWingStackExpiresAtRef = useRef<number[]>([]);
+  const resonanceJudgmentMarksRef = useRef(0);
+  const resonanceJudgmentReadyRef = useRef(false);
   const lastStandUsedRef = useRef(false);
   const fallenReleaseLoggedRef = useRef(false);
   const masteryClaimedRef = useRef<Set<string>>(new Set());
@@ -504,6 +529,11 @@ export function useBattleGame(
     judgmentMarksRef.current = 0;
     judgmentReadyRef.current = false;
     fallenKingSurvivalCountRef.current = 0;
+    fallenGodRevivalCountRef.current = 0;
+    resonanceKingSurvivalCountRef.current = 0;
+    resonanceKingWingStackExpiresAtRef.current = [];
+    resonanceJudgmentMarksRef.current = 0;
+    resonanceJudgmentReadyRef.current = false;
     lastStandUsedRef.current = false;
     fallenReleaseLoggedRef.current = false;
     nextLogId.current = 1;
