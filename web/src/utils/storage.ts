@@ -863,7 +863,10 @@ export function addAbilityShards(abilityId: AbilityId, amount: number): AbilityP
   const current = loadAbilityProgress();
   const safeAmount = Math.max(0, Math.floor(amount));
   if (safeAmount === 0) return current;
-  if (current.levels[abilityId] >= MAX_ABILITY_LEVEL) {
+  if (
+    current.levels[abilityId] >= MAX_ABILITY_LEVEL &&
+    RESONANCE_SOURCE_ABILITY_IDS.has(abilityId)
+  ) {
     const resonance = loadResonanceProgress();
     return persistAbilityProgress({
       ...current,
