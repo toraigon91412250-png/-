@@ -144,6 +144,7 @@ function BookIcon() {
 type AscentStep = 'CLASS' | 'ROUTE' | 'COMBAT' | 'REWARD' | 'RESULT';
 interface AscentRun {
   step: AscentStep;
+  seed: number;
   floor: number;
   hp: number;
   maxHp: number;
@@ -158,7 +159,7 @@ interface AscentRun {
 }
 
 const EMPTY_ASCENT: AscentRun = {
-  step: 'CLASS', floor: 1, hp: 100, maxHp: 100, energy: 0, score: 0,
+  step: 'CLASS', seed: 0, floor: 1, hp: 100, maxHp: 100, energy: 0, score: 0,
   relicIds: [], startStyle: '', combat: null, nodeType: null, cleared: false, log: '初期プロトコルを選び、5階層の踏破を開始する。',
 };
 
@@ -167,7 +168,7 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
   const start = (style: string, relicId: string) => {
     const relic = ASCENT_RELICS.find(item => item.id === relicId);
     const maxHp = 100 + (relic?.maxHpBonus ?? 0);
-    setRun({ ...EMPTY_ASCENT, step: 'ROUTE', hp: maxHp, maxHp, energy: relicId === 'LAST_SPARK' ? 1 : 0, relicIds: [relicId], startStyle: style, log: style + 'プロトコル起動。最初のルートを選択せよ。' });
+    setRun({ ...EMPTY_ASCENT, step: 'ROUTE', seed: Math.floor(Math.random() * 3), hp: maxHp, maxHp, energy: relicId === 'LAST_SPARK' ? 1 : 0, relicIds: [relicId], startStyle: style, log: style + 'プロトコル起動。今回のルートが生成された。' });
   };
   const chooseNode = (nodeType: AscentNodeType) => {
     if (nodeType === 'SHRINE') {
@@ -223,7 +224,7 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
   const ascentIntentText: Record<string, string> = {
     HEAVY: '重撃 / 大ダメージ', SWEEP: '薙ぎ払い / 標準ダメージ', RECOVER: '再構成 / 敵が回復',
   };
-  const relicChoices = useMemo(() => getAscentRelicChoices(run.relicIds, run.floor), [run.relicIds, run.floor]);
+  const relicChoices = useMemo(() => getAscentRelicChoices(run.relicIds, run.floor, run.seed), [run.relicIds, run.floor, run.seed]);
 
   return (
     <section className="epx-game">
@@ -244,7 +245,7 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
       </div>}
       {run.step === 'ROUTE' && <>
         <div className="epx-step-heading"><small>CHOOSE YOUR PATH / FLOOR {run.floor}</small><h3>{run.floor === 5 ? '最後の扉が開いた' : '次の一歩を選べ'}</h3><p>{run.floor === 5 ? '回復や買い物はここまで。虚空皇帝との最終戦へ。' : '安全な道はHPを守る。危険な道は強い遺物を得る。'}</p></div>
-        <div className="epx-route-grid">{getAscentRouteChoices(run.floor).map(node => (
+        <div className="epx-route-grid">{getAscentRouteChoices(run.floor, run.seed).map(node => (
           <button className={'epx-route epx-route-' + node.type.toLowerCase()} type="button" key={node.id} onClick={() => chooseNode(node.type)}>
             <span>{node.type === 'SHRINE' ? <Heart size={20} /> : node.type === 'FORGE' ? <Hammer size={20} /> : node.type === 'BOSS' ? <Crown size={20} /> : node.type === 'ELITE' ? <Target size={20} /> : <Swords size={20} />}</span>
             <small>{node.type === 'BOSS' ? 'FINAL BOSS' : node.type === 'ELITE' ? 'HIGH RISK' : node.type}</small><strong>{node.title}</strong><p>{node.reward}</p><em>{node.risk}</em>

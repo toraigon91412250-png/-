@@ -3241,7 +3241,7 @@ assert.strictEqual(ascentBase.intent, getAscentIntent(1));
 const ascentGuarded = resolveAscentTurn(ascentBase, 'GUARD');
 const ascentCharged = resolveAscentTurn(ascentBase, 'CHARGE');
 assert.ok(ascentGuarded.playerHp > ascentCharged.playerHp, 'Guarding a telegraphed heavy attack must reduce damage.');
-const ascentFinished = { ...ascentBase, status: 'VICTORY' };
+const ascentFinished = { ...ascentBase, status: 'VICTORY' as const };
 assert.strictEqual(resolveAscentTurn(ascentFinished, 'STRIKE'), ascentFinished, 'Finished fights ignore additional actions.');
 const observatoryStart = createObservatoryState();
 assert.strictEqual(getObservatoryIntent(1, 180, 180).dangerLanes.includes(1), true);
