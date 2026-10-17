@@ -12,17 +12,17 @@ export interface ResonanceExecutionStats {
   overflowMultiplierCap?: number;
 }
 
+export function getEquippedResonanceAbilities(config: BattleSetupConfig): { id: ResonanceAbilityId; level: number }[] {
+  return config.abilities
+    .filter(item => typeof item.id === 'string' && item.id in RESONANCE_THRESHOLDS && item.level > 0)
+    .map(item => ({
+      id: item.id as ResonanceAbilityId,
+      level: Math.min(5, Math.max(1, Math.floor(item.level))),
+    }));
+}
+
 export function getEquippedResonance(config: BattleSetupConfig): { id: ResonanceAbilityId; level: number } | null {
-  const equipped = config.abilities.find(item =>
-    typeof item.id === 'string' &&
-    item.id in RESONANCE_THRESHOLDS &&
-    item.level > 0,
-  );
-  if (!equipped || !(equipped.id in RESONANCE_THRESHOLDS)) return null;
-  return {
-    id: equipped.id as ResonanceAbilityId,
-    level: Math.min(5, Math.max(1, Math.floor(equipped.level))),
-  };
+  return getEquippedResonanceAbilities(config)[0] ?? null;
 }
 
 const RESONANCE_THRESHOLDS: Record<ResonanceAbilityId, true> = {
