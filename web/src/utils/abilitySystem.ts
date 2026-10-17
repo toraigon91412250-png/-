@@ -127,6 +127,7 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
   const fallenWingLevel = getResonanceAbilityLevel(config, 'FALLEN_WING');
   const kingWingLevel = getResonanceAbilityLevel(config, 'KING_WING');
   const inheritedKingDurability = Math.max(
+    getResonanceAbilityLevel(config, 'FALLEN_GOD'),
     getResonanceAbilityLevel(config, 'KING_JUDGMENT'),
     getResonanceAbilityLevel(config, 'ABYSS_KING'),
   );
