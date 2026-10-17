@@ -289,10 +289,14 @@ function RelicCard({ relic, onChoose }: { relic: AscentRelic; onChoose: () => vo
 
 function ObservatoryPrototype({ onBack }: { onBack: () => void }) {
   const [state, setState] = useState<ObservatoryState>(() => createObservatoryState());
+  const [targetLane, setTargetLane] = useState(1);
   const intent = getObservatoryIntent(state.turn, state.bossHp, state.bossMaxHp);
-  const act = (action: ObservatoryAction) => setState(prev => resolveObservatoryTurn(prev, action, prev.playerLane));
-  const selectLane = (lane: number) => setState(prev => ({ ...prev, playerLane: lane }));
-  const reset = () => setState(createObservatoryState());
+  const act = (action: ObservatoryAction) => {
+    setState(prev => resolveObservatoryTurn(prev, action, targetLane));
+    setTargetLane(action === 'DODGE' ? targetLane : state.playerLane);
+  };
+  const selectLane = (lane: number) => setTargetLane(lane);
+  const reset = () => { setState(createObservatoryState()); setTargetLane(1); };
   const finished = state.status !== 'ACTIVE';
   const laneName = ['左', '中央', '右'];
 
@@ -306,9 +310,9 @@ function ObservatoryPrototype({ onBack }: { onBack: () => void }) {
         <div className="epx-lanes" role="group" aria-label="移動先レーンを選択">
           {[0, 1, 2].map(lane => {
             const danger = intent.dangerLanes.includes(lane);
-            return <button type="button" key={lane} onClick={() => selectLane(lane)} className={'epx-lane' + (state.playerLane === lane ? ' epx-lane-selected' : '') + (danger ? ' epx-lane-danger' : '')} aria-pressed={state.playerLane === lane}>
+            return <button type="button" key={lane} onClick={() => selectLane(lane)} className={'epx-lane' + (state.playerLane === lane ? ' epx-lane-selected' : '') + (targetLane === lane ? ' epx-lane-target' : '') + (danger ? ' epx-lane-danger' : '')} aria-pressed={targetLane === lane}>
               <small>{laneName[lane]}レーン</small>{danger ? <Crosshair size={21} /> : <span className="epx-lane-safe-mark">SAFE</span>}
-              <strong>{state.playerLane === lane ? 'いれーな' : '移動可能'}</strong>{danger && <em>攻撃予告</em>}
+              <strong>{state.playerLane === lane ? '現在地' : targetLane === lane ? '移動先候補' : '移動可能'}</strong>{danger && <em>攻撃予告</em>}
             </button>;
           })}
         </div>
@@ -319,14 +323,14 @@ function ObservatoryPrototype({ onBack }: { onBack: () => void }) {
           <div><Zap size={16} /><span>迎撃ゲージ</span><strong>{'◆'.repeat(state.energy)}{'◇'.repeat(Math.max(0, 3 - state.energy))}</strong></div>
         </div>
         {!finished ? <div className="epx-action-grid epx-observatory-actions">
-          <button type="button" onClick={() => act('STRIKE')}><Swords size={18} /><strong>攻撃</strong><span>皇帝にダメージ・+1ゲージ</span></button>
+          <button type="button" onClick={() => act('STRIKE')}><Swords size={18} /><strong>攻撃</strong><span>現在地から攻撃・+1ゲージ</span></button>
           <button type="button" onClick={() => act('GUARD')}><Shield size={18} /><strong>防御</strong><span>プレイヤー攻撃と核砲撃を軽減</span></button>
-          <button type="button" onClick={() => act('DODGE')}><Footprints size={18} /><strong>移動・回避</strong><span>選択したレーンで攻撃を避ける</span></button>
+          <button type="button" onClick={() => act('DODGE')}><Footprints size={18} /><strong>移動・回避</strong><span>移動先候補へ移動。1ターン消費</span></button>
           <button type="button" disabled={state.energy < 1} onClick={() => act('INTERCEPT')}><Crosshair size={18} /><strong>迎撃</strong><span>1ゲージ消費・核砲撃を止める</span></button>
         </div> : <div className={'epx-outcome ' + (state.status === 'VICTORY' ? 'epx-outcome-win' : 'epx-outcome-loss')}><Trophy size={25} /><div><small>SIMULATION COMPLETE</small><h3>{state.status === 'VICTORY' ? '拠点防衛成功' : '防衛ライン崩壊'}</h3><p>スコア {state.score} · {state.turn - 1}ターン経過</p></div><button type="button" className="epx-primary" onClick={reset}><RotateCcw size={16} /> 再試験</button></div>}
         <LogPanel logs={state.logs} />
       </div>
-      <div className="epx-prototype-principle"><Eye size={16} /><p><strong>この試作品の狙い：</strong>敵の行動を隠して理不尽にするのではなく、予告を読めば被害を抑えられる。攻撃だけでなく、防御・位置取り・迎撃にも点数が付く。</p></div>
+      <div className="epx-prototype-principle"><Eye size={16} /><p><strong>操作の要点：</strong>レーンを選ぶだけでは移動しない。攻撃や防御は現在地で行動し、移動・回避を選んだ時だけ1ターン使って移動する。敵の予告を読んで、攻めるか避けるかを決めよう。</p></div>
     </section>
   );
 }

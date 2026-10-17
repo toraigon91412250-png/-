@@ -263,7 +263,9 @@ export function createObservatoryState(): ObservatoryState {
 export function resolveObservatoryTurn(state: ObservatoryState, action: ObservatoryAction, selectedLane: number): ObservatoryState {
   if (state.status !== 'ACTIVE') return state;
   const intent = getObservatoryIntent(state.turn, state.bossHp, state.bossMaxHp);
-  const lane = Math.max(0, Math.min(2, Math.round(selectedLane)));
+  const selectedTargetLane = Math.max(0, Math.min(2, Math.round(selectedLane)));
+  // Changing the selection is free UI input; only DODGE actually changes the fighter's lane.
+  const lane = action === 'DODGE' ? selectedTargetLane : state.playerLane;
   let playerHp = state.playerHp;
   let coreHp = state.coreHp;
   let bossHp = state.bossHp;
