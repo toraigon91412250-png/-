@@ -1452,17 +1452,7 @@ export function useBattleGame(
           );
         }
 
-        const activeResonanceForAttack = getEquippedResonanceAbility(stateRef.current.battleConfig);
-        const resonanceFallenExecution = activeResonanceForAttack
-          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForAttack.id);
-        const fallenExecution =
-          isActorPlayer &&
-          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
-          target.currentHp > 0 &&
-          actor.currentHp > 1 &&
-          actor.currentHp <= baseActorMaxHp * 0.05;
-
-        if (fallenExecution) {
+        if (executionForHit) {
           addLog('🩸【堕天・終局】5%以下のいれーなが、次の攻撃に即死効果を宿した！', 'PASSIVE_TRIGGER', turn);
         }
 
