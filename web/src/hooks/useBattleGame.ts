@@ -1366,7 +1366,9 @@ export function useBattleGame(
         const judgmentLevel = isActorPlayer
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
-        const judgmentActive = isActorPlayer && (judgmentReadyRef.current || isResonanceExecutionReady('ATTACK'));
+        const resonanceExecutionIds = isActorPlayer ? getReadyResonanceExecutionIds('ATTACK') : [];
+        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const anyExecutionActive = judgmentActive || resonanceExecutionIds.length > 0;
         const isCritical = Math.random() < GAME_BALANCE.CRITICAL_RATE;
         const calculatedDamage = calculateNormalAttackDamage(
           {
@@ -1377,14 +1379,17 @@ export function useBattleGame(
             isActingFirst,
             judgmentReady: judgmentActive,
             resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
+            resonanceJudgmentReadyIds: resonanceExecutionIds,
             alreadyPrepared: true,
             baseAttackerMaxHp: baseActorMaxHp,
           },
           isCritical,
         );
+        const attackResonances = getEquippedResonanceAbilities(stateRef.current.battleConfig);
+        const resonanceFallenExecution = attackResonances.some(resonance => ['FALLEN_GOD', 'FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id));
         const executionForHit =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -1415,16 +1420,13 @@ export function useBattleGame(
           );
         }
 
-        if (judgmentActive) {
-          const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
-          const execution = resonance ? getResonanceExecutionStats(resonance.id, resonance.level) : null;
-          addLog(
-            execution && !judgmentReadyRef.current
-              ? `⚖️【${resonance?.id === 'ABYSS_JUDGMENT' ? '深淵断罪' : resonance?.id === 'JUDGMENT_WING' ? '断罪翼' : '共鳴断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%`
-              : `⚖️【断罪執行】次の一撃に断罪が下る！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)} / DEF貫通`,
-            'PASSIVE_TRIGGER',
-            turn,
-          );
+        if (anyExecutionActive) {
+          if (judgmentActive) addLog(`⚖️【断罪執行】通常攻撃に断罪が発動。ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}。`, 'PASSIVE_TRIGGER', turn);
+          resonanceExecutionIds.forEach(id => {
+            const resonance = attackResonances.find(item => item.id === id);
+            const execution = resonance ? getResonanceExecutionStats(id, resonance.level) : null;
+            if (execution) addLog(`⚖️【${id === 'ABYSS_JUDGMENT' ? '深淵断罪' : id === 'JUDGMENT_WING' ? '断罪翼' : id === 'FALLEN_JUDGMENT' ? '堕天審判' : '王権断罪'}執行】倍率×${execution.multiplier} / 防御無視${Math.round(execution.defenseIgnore * 100)}% / 現在HP追加${Math.round(execution.currentHpBonus * 100)}%。`, 'PASSIVE_TRIGGER', turn);
+          });
         }
 
         if (isCritical) {
@@ -1489,20 +1491,22 @@ export function useBattleGame(
         updateState(prev => ({ ...prev, visualEffect: null }));
 
         if (judgmentActive) {
-          if (judgmentReadyRef.current) {
-            judgmentReadyRef.current = false;
-            judgmentMarksRef.current = 0;
-            updateState(prev => ({ ...prev, judgmentReady: false }));
-            addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
-          } else {
-            finishResonanceJudgmentExecution(turn);
+          judgmentReadyRef.current = false;
+          judgmentMarksRef.current = 0;
+          updateState(prev => ({ ...prev, judgmentReady: false }));
+          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+        }
+        finishResonanceJudgmentExecution(turn, resonanceExecutionIds);
+        if (isActorPlayer) {
+          if (!resonanceExecutionIds.includes('FALLEN_JUDGMENT')) {
+            addResonanceJudgmentMarks(isCritical ? 2 : 1, turn, '通常攻撃命中', ['FALLEN_JUDGMENT']);
           }
-        } else if (isActorPlayer && getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'FALLEN_JUDGMENT') {
-          addResonanceJudgmentMarks(isCritical ? 2 : 1, turn, '通常攻撃命中');
-        } else if (isActorPlayer && getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'KING_JUDGMENT') {
-          addResonanceJudgmentMarks(1, turn, '通常攻撃命中');
-        } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
-          addJudgmentMarks(isCritical ? 2 : 1, turn);
+          if (!resonanceExecutionIds.includes('KING_JUDGMENT')) {
+            addResonanceJudgmentMarks(1, turn, '通常攻撃命中', ['KING_JUDGMENT']);
+          }
+          if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
+            addJudgmentMarks(isCritical ? 2 : 1, turn);
+          }
         }
 
         // A successful Irena normal hit builds Feather power with diminishing random gains.
