@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AbilityId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
+import { AbilityId, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleSetupConfig, CpuDifficulty, ImprintId } from './types/game';
 import { IRENA, STELLA, KAISER, CPU_CHARACTERS, PLAYER_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } from './data/characters';
 import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
@@ -8,7 +8,7 @@ import { GrowthHubScreen } from './components/GrowthHubScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, unlockAchievementUltimateAuthority } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -27,7 +27,7 @@ import { preloadBattleImages, preloadRecruitmentImages } from './utils/imagePrel
 import { getSelectableKaiserLevels, loadKaiserChallengeProgress, recordKaiserChallengeResult, resetKaiserChallengeProgress } from './utils/kaiserChallengeProgress';
 import { applyIrenaTalentModifiers, getIrenaLevel, loadIrenaTalentProgress, resetIrenaTalentRanks, spendIrenaTalentPoint } from './utils/irenaTalentSystem';
 import type { IrenaTalentId } from './utils/irenaTalentSystem';
-import { ACHIEVEMENT_DEFINITIONS, buildAchievementBoard } from './utils/achievementSystem';
+import { ACHIEVEMENT_DEFINITIONS, buildAchievementBadgeProgress, buildAchievementBoard } from './utils/achievementSystem';
 import type { AchievementProgress } from './utils/achievementSystem';
 import type { StellaModeProgress } from './utils/storage';
 
@@ -81,6 +81,7 @@ export const App: React.FC = () => {
   const [battleSetupMode, setBattleSetupMode] = useState<BattleSetupMode>('NORMAL');
   const [achievementProgress, setAchievementProgress] = useState<AchievementProgress>(() => loadAchievementProgress());
   const [achievementMessage, setAchievementMessage] = useState<string | null>(null);
+  const [achievementBadgeMessage, setAchievementBadgeMessage] = useState<string | null>(null);
 
   const achievementBoard = buildAchievementBoard({
     progress: achievementProgress,
@@ -102,6 +103,8 @@ export const App: React.FC = () => {
   const achievementCompletedCount = achievementBoard.filter(item => item.complete).length;
   const achievementClaimedCount = achievementBoard.filter(item => item.claimed).length;
   const achievementCompletionKey = achievementBoard.filter(item => item.complete).map(item => item.id).join('|');
+  const achievementBadgeProgress = buildAchievementBadgeProgress(achievementProgress);
+  const equippedAchievementBadge = achievementBadgeProgress.find(badge => badge.id === achievementProgress.equippedBadgeId && badge.tier > 0);
 
   useEffect(() => {
     const alreadyCompleted = new Set(achievementProgress.completedIds);
@@ -232,10 +235,18 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
     setRecruitmentProgress(loadRecruitmentProgress());
     setAbilityProgress(loadAbilityProgress());
-    setAchievementProgress(loadAchievementProgress());
+    const nextAchievementProgress = loadAchievementProgress();
+    setAchievementProgress(nextAchievementProgress);
+    const nextEquippedBadge = buildAchievementBadgeProgress(nextAchievementProgress).find(badge => badge.id === nextAchievementProgress.equippedBadgeId && badge.tier > 0);
     const currentStatPoints = loadStatPoints();
     setAvailableStatPoints(currentStatPoints);
-    setBattleSetup(prev => ({ ...prev, statPointTotal: currentStatPoints, imprints: currentImprintProgress.equippedIds }));
+    setBattleSetup(prev => ({
+      ...prev,
+      statPointTotal: currentStatPoints,
+      imprints: currentImprintProgress.equippedIds,
+      achievementBadgeId: nextEquippedBadge?.id ?? null,
+      achievementBadgeLevel: nextEquippedBadge?.tier ?? 0,
+    }));
   };
 
   const handleUseRaidCoreFragment = () => {
@@ -268,6 +279,10 @@ export const App: React.FC = () => {
     refreshProgress();
     const currentStatPoints = loadStatPoints();
     const currentImprintProgress = loadImprintProgress();
+    const currentAchievementProgress = loadAchievementProgress();
+    setAchievementProgress(currentAchievementProgress);
+    const currentEquippedBadge = buildAchievementBadgeProgress(currentAchievementProgress).find(badge => badge.id === currentAchievementProgress.equippedBadgeId && badge.tier > 0);
+    setAchievementBadgeMessage(null);
     const currentKaiserProgress = loadKaiserChallengeProgress();
     const currentStellaProgress = loadStellaModeProgress();
     const shouldAllowAllKaiserLevels = allowAllKaiserLevels
@@ -302,6 +317,8 @@ export const App: React.FC = () => {
         kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prefill.kaiserLevel) ? prefill.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
+        achievementBadgeId: currentEquippedBadge?.id ?? null,
+        achievementBadgeLevel: currentEquippedBadge?.tier ?? 0,
       });
     } else {
       setBattleSetup(prev => ({
@@ -313,6 +330,8 @@ export const App: React.FC = () => {
         kaiserLevel: mode === 'EX_KAISER' ? 100 : selectableKaiserLevels.includes(prev.kaiserLevel) ? prev.kaiserLevel : currentKaiserProgress.unlockedLevel,
         statPointTotal: currentStatPoints,
         imprints: currentImprintProgress.equippedIds,
+        achievementBadgeId: currentEquippedBadge?.id ?? null,
+        achievementBadgeLevel: currentEquippedBadge?.tier ?? 0,
       }));
     }
     setScreen('BATTLE_SETUP');
@@ -500,6 +519,8 @@ export const App: React.FC = () => {
     ?? KAISER;
 
   const handleStartBattle = (config: BattleSetupConfig) => {
+    const latestAchievementProgress = loadAchievementProgress();
+    const selectedBadge = buildAchievementBadgeProgress(latestAchievementProgress).find(badge => badge.id === config.achievementBadgeId && badge.tier > 0);
     const safePlayerCharacterId = config.playerCharacterId === STELLA.id
       && !loadStellaModeProgress().stellaModeUnlocked
         ? IRENA.id
@@ -509,7 +530,10 @@ export const App: React.FC = () => {
       playerCharacterId: safePlayerCharacterId,
       kaiserChallengeMode: battleSetupMode === 'EX_KAISER' ? 'EX' : 'NORMAL',
       imprints: [...(config.imprints ?? imprintProgress.equippedIds)],
+      achievementBadgeId: selectedBadge?.id ?? null,
+      achievementBadgeLevel: selectedBadge?.tier ?? 0,
     };
+    setAchievementProgress(latestAchievementProgress);
     setBattleSetup(battleConfigWithImprints);
     setCpuDifficulty(difficulty);
     const cpuOpponent = getBattleCpuOpponent();
@@ -585,6 +609,24 @@ export const App: React.FC = () => {
     setSkillProgress(loadSkillProgress());
   };
 
+  const handleSelectAchievementBadge = (id: AchievementBadgeId | null) => {
+    const next = setEquippedAchievementBadge(id);
+    if (!next) {
+      setAchievementBadgeMessage('このバッジは未獲得か、装備状態を保存できませんでした。');
+      return;
+    }
+    const nextEquippedBadge = buildAchievementBadgeProgress(next).find(badge => badge.id === id && badge.tier > 0);
+    setAchievementProgress(next);
+    setBattleSetup(prev => ({
+      ...prev,
+      achievementBadgeId: nextEquippedBadge?.id ?? null,
+      achievementBadgeLevel: nextEquippedBadge?.tier ?? 0,
+    }));
+    setAchievementBadgeMessage(id === null
+      ? '実績バッジを外しました。'
+      : `${nextEquippedBadge?.name ?? '実績バッジ'}を装備しました。`);
+  };
+
   const handleMarkAllAchievementsComplete = () => {
     const next = markAllAchievementsCompleteForDeveloper();
     if (!next) {
@@ -603,6 +645,8 @@ export const App: React.FC = () => {
     }
     setAchievementProgress(next);
     setAbilityProgress(loadAbilityProgress());
+    setBattleSetup(prev => ({ ...prev, achievementBadgeId: null, achievementBadgeLevel: 0 }));
+    setAchievementBadgeMessage(null);
     setAchievementMessage('実績の進捗・受取履歴と最強権能を初期化しました。');
   };
 
@@ -711,6 +755,8 @@ export const App: React.FC = () => {
       abilities: [],
       statAllocation: normalizeStatAllocation(),
       statPointTotal: loadStatPoints(),
+      achievementBadgeId: null,
+      achievementBadgeLevel: 0,
     });
     setScreen('SELECT');
   };
@@ -837,6 +883,10 @@ export const App: React.FC = () => {
           }}
           abilityProgress={abilityProgress}
           imprintProgress={imprintProgress}
+          achievementBadges={achievementBadgeProgress}
+          equippedAchievementBadgeId={equippedAchievementBadge?.id ?? null}
+          achievementBadgeMessage={achievementBadgeMessage}
+          onSelectAchievementBadge={handleSelectAchievementBadge}
           onApplySavedBuild={handleApplySavedBuild}
           availableStatPoints={availableStatPoints}
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
@@ -888,6 +938,7 @@ export const App: React.FC = () => {
           completedCount={achievementCompletedCount}
           claimedCount={achievementClaimedCount}
           astralDominionUnlocked={abilityProgress.levels.ASTRAL_DOMINION > 0}
+          badgeProgress={achievementBadgeProgress}
           message={achievementMessage}
           onClaimReward={handleClaimAchievementReward}
           onBack={() => { setAchievementMessage(null); setScreen('SELECT'); }}
