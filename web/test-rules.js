@@ -47,6 +47,7 @@ const {
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
 const { EXPERIMENT_TRIALS, getExperimentGrade, shouldPersistBattleResult, shouldRecordBattleProgress } = await import('./src/utils/experimentLab.ts');
+const { createAbyssRun, resolveAbyssAction, chooseAbyssReward, analyzePrototypeBuild, normalizePrototypeBossConfig, createPrototypeDuel, resolvePrototypeDuelAction, getPrototypeDuelGrade } = await import('./src/utils/experimentArcade.ts');
 
 // Final-duel tuning is isolated from the main Kaiser challenge and now uses doubled boss durability/pressure.
 assert.strictEqual(STELLA_FINAL_BATTLE_TUNING.bossMaxHp, 30000);
@@ -3225,4 +3226,53 @@ try {
   }
 }
 
+const abyssStart = createAbyssRun();
+assert.strictEqual(abyssStart.floor, 1);
+assert.strictEqual(abyssStart.hp, 100);
+assert.strictEqual(resolveAbyssAction(abyssStart, 'BURST'), abyssStart,
+  'Abyss Burst must be unavailable before full charge.');
+const abyssChargedOnce = resolveAbyssAction(abyssStart, 'CHARGE');
+assert.strictEqual(abyssChargedOnce.charge, 2);
+const abyssChargedTwice = resolveAbyssAction(abyssChargedOnce, 'CHARGE');
+assert.strictEqual(abyssChargedTwice.charge, 3);
+const abyssFirstClear = resolveAbyssAction(abyssChargedTwice, 'BURST');
+assert.strictEqual(abyssFirstClear.status, 'REWARD');
+assert.strictEqual(abyssFirstClear.floor, 1);
+const abyssNextFloor = chooseAbyssReward(abyssFirstClear, 'CHAIN_SIGIL');
+assert.strictEqual(abyssNextFloor.floor, 2);
+assert.strictEqual(abyssNextFloor.relics.CHAIN_SIGIL, 1);
+assert.strictEqual(abyssNextFloor.status, 'FIGHTING');
+assert.strictEqual(chooseAbyssReward(abyssNextFloor, 'VOID_CORE'), abyssNextFloor,
+  'Rewards cannot be selected outside reward screens.');
+const forgeAnalysis = analyzePrototypeBuild(['ABYSS', 'JUDGMENT', 'BLACK_WING']);
+assert.ok(forgeAnalysis.synergies.includes('侵食断罪'));
+assert.ok(forgeAnalysis.synergies.includes('連弾執行'));
+assert.ok(forgeAnalysis.score >= 0 && forgeAnalysis.score <= 100);
+const boundedBoss = normalizePrototypeBossConfig({
+ hp: 999, attack: -4, armor: 99, pattern: 'INVALID' , moduleIds: ['A','A','B','C','D'], name: ''
+});
+assert.strictEqual(boundedBoss.hp, 500);
+assert.strictEqual(boundedBoss.attack, 5);
+assert.strictEqual(boundedBoss.armor, 30);
+assert.strictEqual(boundedBoss.pattern, 'BALANCED');
+assert.deepStrictEqual(boundedBoss.moduleIds, ['A','B','C']);
+assert.strictEqual(boundedBoss.name, '試作カイザー');
+const duelConfig = { hp: 100, attack: 5, armor: 0, pattern: 'BALANCED', moduleIds: ['ABYSS','JUDGMENT','BLACK_WING'], name: 'test' };
+const duelStart = createPrototypeDuel(duelConfig);
+assert.strictEqual(resolvePrototypeDuelAction(duelStart, 'EXECUTE', duelConfig), duelStart,
+  'Execute must not fire without the required energy.');
+const duelCharged = resolvePrototypeDuelAction(duelStart, 'CHARGE', duelConfig);
+assert.strictEqual(duelCharged.charge, 2);
+const duelExecuted = resolvePrototypeDuelAction(duelCharged, 'EXECUTE', duelConfig);
+assert.ok(duelExecuted.enemyHp < duelCharged.enemyHp, 'Execute should spend energy and damage the test boss.');
+assert.strictEqual(duelExecuted.totalTurns, 2);
+assert.ok(['S','A','B','C','D'].includes(getPrototypeDuelGrade(duelExecuted)));
+const arcadeSource = await readFile(new URL('./src/components/ExperimentalArcade.tsx', import.meta.url), 'utf8');
+const labScreenSource = await readFile(new URL('./src/components/ExperimentLabScreen.tsx', import.meta.url), 'utf8');
+assert.ok(arcadeSource.includes('深淵踏破') && arcadeSource.includes('権能シナジー工房') && arcadeSource.includes('カイザー設計ラボ'));
+assert.ok(!arcadeSource.includes('localStorage') && !arcadeSource.includes('saveBattleResult'),
+  'Prototype arcade must not call persistent player-save APIs.');
+assert.ok(labScreenSource.includes('<ExperimentalArcade/>'),
+  'Prototype arcade must be reachable from the Experiment Lab screen.');
+console.log('✓ Experiment arcade: five-floor run transitions, reward draft, build synergies, config bounds, duel actions, grades, and save isolation verified.');
 console.log('--- ALL TEST ASSERTIONS PASSED! ---');
