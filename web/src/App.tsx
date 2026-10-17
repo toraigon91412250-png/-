@@ -179,7 +179,7 @@ export const App: React.FC = () => {
 
     const completedLevel = battleState.battleConfig.kaiserLevel;
     const playerWon = battleState.winnerIsPlayer === true;
-    if (!shouldRecordBattleProgress(battleSetupReturnScreen)) {
+    if (battleState.battleConfig.suppressProgressionRewards === true || !shouldRecordBattleProgress(battleSetupReturnScreen)) {
       setLastExperimentState(battleState);
       setScreen('EXPERIMENT_REPORT');
       return;

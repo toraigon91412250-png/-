@@ -144,7 +144,7 @@ assert.strictEqual(shouldRecordBattleProgress('SELECT'),true);
 assert.strictEqual(shouldRecordBattleProgress('EXPERIMENT_LAB'),false,'Sandbox progression handlers are disabled.');
 const labAppSource = await readFile(new URL('./src/App.tsx', import.meta.url),'utf8');
 const labEngineSource = await readFile(new URL('./src/hooks/useBattleGame.ts', import.meta.url),'utf8');
-assert.ok(labAppSource.includes('if (!shouldRecordBattleProgress(battleSetupReturnScreen))'));
+assert.ok(labAppSource.includes('battleState.battleConfig.suppressProgressionRewards === true || !shouldRecordBattleProgress(battleSetupReturnScreen)'), 'A config-level fail-safe keeps any sandbox config from entering progression handlers.');
 assert.ok(labEngineSource.includes('shouldPersistBattleResult(suppressProgressionRewards)'));
 console.log('✓ Experiment presets, score boundaries, and both persistence guards verified.');
 
