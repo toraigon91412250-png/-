@@ -5,6 +5,10 @@ import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
+
+const RESONANCE_SOURCE_ABILITY_IDS: ReadonlySet<AbilityId> = new Set(
+  RESONANCE_DEFINITIONS.flatMap(definition => [...definition.ingredients]),
+);
 import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
 import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
 import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle, type AchievementBattleSample, type AchievementProgress } from './achievementSystem';
@@ -1287,14 +1291,37 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
   let abilityProgress = loadAbilityProgress();
   let skillProgress = loadSkillProgress();
 
-  const addAbilityReward = (abilityId: AbilityId, amount: number) => {
+  const addResonanceShardReward = (amount: number) => {
+    const safeAmount = Math.max(0, Math.floor(amount));
+    if (safeAmount <= 0) return;
+    const resonance = normalizeResonanceProgress(abilityProgress.resonance);
     abilityProgress = {
-      levels: {
-        ...abilityProgress.levels,
+      ...abilityProgress,
+      resonance: {
+        ...resonance,
+        shards: resonance.shards + safeAmount,
       },
+    };
+  };
+
+  const addAbilityReward = (abilityId: AbilityId, amount: number) => {
+    const safeAmount = Math.max(0, Math.floor(amount));
+    if (safeAmount <= 0) return;
+    if (
+      abilityProgress.levels[abilityId] >= MAX_ABILITY_LEVEL &&
+      RESONANCE_SOURCE_ABILITY_IDS.has(abilityId)
+    ) {
+      // Lv.5 source powers convert every extra source shard 1:1 into the
+      // shared resonance currency. Do not alter ASTRAL_DOMINION's old path.
+      addResonanceShardReward(safeAmount);
+      return;
+    }
+    abilityProgress = {
+      ...abilityProgress,
+      levels: { ...abilityProgress.levels },
       shards: {
         ...abilityProgress.shards,
-        [abilityId]: abilityProgress.shards[abilityId] + amount,
+        [abilityId]: abilityProgress.shards[abilityId] + safeAmount,
       },
     };
   };
@@ -1335,6 +1362,7 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
     if (reward.kind === 'ABILITY_CORE' && reward.abilityId) {
       if (isNew) {
         abilityProgress = {
+          ...abilityProgress,
           levels: {
             ...abilityProgress.levels,
             [reward.abilityId]: Math.max(1, abilityProgress.levels[reward.abilityId]),
@@ -1347,8 +1375,12 @@ export function performRecruitment(pullCount = 1): { progress: RecruitmentProgre
       }
     } else if (reward.kind === 'ABILITY_SHARD' && reward.abilityId) {
       const currentLevel = abilityProgress.levels[reward.abilityId];
-      if (currentLevel >= MAX_ABILITY_LEVEL) {
-        // MAX後の権能欠片は死に資源にせず、技強化の欠片へ自動交換する。
+      if (currentLevel >= MAX_ABILITY_LEVEL && RESONANCE_SOURCE_ABILITY_IDS.has(reward.abilityId)) {
+        // The five resonance source powers convert over-cap fragments at 1:1.
+        shardGain = reward.shardAmount;
+        addAbilityReward(reward.abilityId, shardGain);
+      } else if (currentLevel >= MAX_ABILITY_LEVEL) {
+        // Preserve ASTRAL_DOMINION's existing max-fragment exchange.
         const exchangedSkillShards = Math.floor(
           reward.shardAmount / MAXED_ABILITY_SHARD_EXCHANGE_RATE,
         );
