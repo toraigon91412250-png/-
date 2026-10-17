@@ -2423,7 +2423,7 @@ export function useBattleGame(
       recentCpuActionsRef.current = [...recentCpuActionsRef.current.slice(-5), cpuAction];
       yinYangDefensePendingRef.current = false;
 
-      const nextPlayer = {
+      let nextPlayer = {
         ...stateRef.current.player,
         isEvading: false,
         specialCooldownRemaining: Math.max(0, stateRef.current.player.specialCooldownRemaining - 1),
@@ -2437,7 +2437,30 @@ export function useBattleGame(
         featherPierceCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherPierceCooldownRemaining ?? 0) - 1),
         featherRapidCooldownRemaining: Math.max(0, (stateRef.current.enemy.featherRapidCooldownRemaining ?? 0) - 1),
       };
-      const nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      let nextEnemy = advanceKaiserChallengeRound(enemyBeforeArmorTick, currentTurn);
+      const equippedResonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+      if (equippedResonance) {
+        const playerBaseHp = Math.max(1, nextPlayer.resonanceBaseStats?.maxHp ?? nextPlayer.character.maxHp);
+        const erosionRate = getTurnErosionRate(equippedResonance.id, equippedResonance.level, nextPlayer.currentHp / playerBaseHp);
+        if (erosionRate > 0) {
+          const erosion = calculateErosionResult(nextEnemy, nextPlayer, erosionRate);
+          nextEnemy = erosion.enemy;
+          nextPlayer = erosion.player;
+          addLog(`🌑【共鳴侵食：ターン経過】敵5項目をさらに${erosionRate}%弱体化（上限95%）。`, 'PASSIVE_TRIGGER', currentTurn);
+          if (erosion.kingZoneStacksGained > 0) {
+            addLog(`👑【王域】弱体化段階を突破。王域+${erosion.kingZoneStacksGained}（現在${nextPlayer.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', currentTurn);
+          }
+          if (erosion.judgmentMarksGained > 0) addResonanceJudgmentMarks(erosion.judgmentMarksGained, currentTurn, '新規弱体化段階');
+        }
+      }
+
+      const remainingKingWingStacks = resonanceKingWingStackExpiresAtRef.current.filter(expiresAt => expiresAt > currentTurn);
+      resonanceKingWingStackExpiresAtRef.current = remainingKingWingStacks;
+      nextPlayer = {
+        ...nextPlayer,
+        resonanceKingWingStacks: remainingKingWingStacks.length,
+        resonanceKingWingStackExpiresAtTurns: remainingKingWingStacks,
+      };
       if (
         (enemyBeforeArmorTick.kaiserArmorBrokenTurns ?? 0) > 0 &&
         (nextEnemy.kaiserArmorBrokenTurns ?? 0) === 0
