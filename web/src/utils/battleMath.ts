@@ -2,6 +2,7 @@ import {
   BattleFighter,
   BattleSetupConfig,
   IrenaSpecialSkillId,
+  ResonanceAbilityId,
   getEffectiveAttack,
   getEffectiveDefense,
   getIrenaSuperFallenShotMultiplier,
@@ -17,9 +18,8 @@ import {
   getJudgmentDefenseIgnore,
   getAchievementBadgeDamageMultiplier,
   hasAbility,
-  getEquippedResonanceAbility,
 } from './abilitySystem';
-import { getResonanceExecutionStats, getResonanceFeatherMultiplier } from './resonanceSystem';
+import { getEquippedResonanceAbilities, getKingWingStackValues, getResonanceExecutionStats } from './resonanceSystem';
 
 export interface DamagePreviewResolution {
   /** Damage the target will actually lose from current HP. */
@@ -70,7 +70,8 @@ export interface DamageContext {
   turn: number;
   isActingFirst: boolean;
   judgmentReady?: boolean;
-  resonanceJudgmentMarks?: number;
+  resonanceJudgmentMarks?: Partial<Record<ResonanceAbilityId, number>>;
+  resonanceJudgmentReadyIds?: ResonanceAbilityId[];
   specialSkillId?: IrenaSpecialSkillId;
   ultimateVariant?: 'ALL_GODS' | 'RUIN' | 'OMNIPOTENCE';
   alreadyPrepared?: boolean;
@@ -120,16 +121,30 @@ function applyResonanceDefenseIgnore(target: BattleFighter, ignore: number): Bat
   };
 }
 
-function getResonanceExecution(context: DamageContext, allowFeatherOnly = false) {
-  if (!context.attacker.isPlayer || !context.judgmentReady) return null;
-  const resonance = getEquippedResonanceAbility(context.config);
-  if (!resonance) return null;
-  if (resonance.id === 'JUDGMENT_WING') {
-    return allowFeatherOnly && context.attacker.character.id === 'irena'
-      ? getResonanceExecutionStats(resonance.id, resonance.level)
-      : null;
-  }
-  return getResonanceExecutionStats(resonance.id, resonance.level);
+function getResonanceExecutions(context: DamageContext, allowFeatherOnly = false) {
+  if (!context.attacker.isPlayer || !context.resonanceJudgmentReadyIds?.length) return [];
+  const ready = new Set(context.resonanceJudgmentReadyIds);
+  return getEquippedResonanceAbilities(context.config)
+    .filter(resonance => ready.has(resonance.id))
+    .filter(resonance => resonance.id !== 'JUDGMENT_WING'
+      || (allowFeatherOnly && context.attacker.character.id === 'irena'
+        && ['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'].includes(context.specialSkillId ?? '')))
+    .map(resonance => {
+      const stats = getResonanceExecutionStats(resonance.id, resonance.level);
+      return stats ? { id: resonance.id, level: resonance.level, stats } : null;
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+}
+
+function applyResonanceDefenseIgnore(target: BattleFighter, ignores: readonly number[]): BattleFighter {
+  const remainingDefense = ignores.reduce((remaining, ignore) => remaining * (1 - Math.min(.95, Math.max(0, ignore))), 1);
+  return {
+    ...target,
+    character: {
+      ...target.character,
+      defense: Math.max(0, Math.round(target.character.defense * remainingDefense)),
+    },
+  };
 }
 
 function applyResonanceExecutionDamage(
@@ -137,26 +152,55 @@ function applyResonanceExecutionDamage(
   target: BattleFighter,
   attacker: BattleFighter,
   context: DamageContext,
+  allowFeatherOnly = false,
 ): number {
-  const resonance = getEquippedResonanceAbility(context.config);
-  if (!resonance) return damage;
-  const stats = getResonanceExecution(context, true);
-  if (!stats) return damage;
-  let multiplier = stats.multiplier;
-  if (resonance.id === 'ABYSS_JUDGMENT') {
-    const overflow = Math.max(0, (context.resonanceJudgmentMarks ?? 0) - stats.threshold);
-    multiplier += Math.min(stats.overflowMultiplierCap ?? 0, overflow * (stats.overflowMultiplierPerMark ?? 0));
+  const executions = getResonanceExecutions(context, allowFeatherOnly);
+  if (!executions.length) return damage;
+  let multiplier = 1;
+  let currentHpBonus = 0;
+  const baseMaxHp = Math.max(1, context.baseAttackerMaxHp ?? attacker.resonanceBaseStats?.maxHp ?? attacker.character.maxHp);
+  const hpRatio = attacker.currentHp / baseMaxHp;
+
+  for (const execution of executions) {
+    const stats = execution.stats;
+    let currentMultiplier = stats.multiplier;
+    if (execution.id === 'ABYSS_JUDGMENT') {
+      const marks = context.resonanceJudgmentMarks?.[execution.id] ?? 0;
+      const overflow = Math.max(0, marks - stats.threshold);
+      currentMultiplier += Math.min(stats.overflowMultiplierCap ?? 0, overflow * (stats.overflowMultiplierPerMark ?? 0));
+    }
+    if (execution.id === 'FALLEN_JUDGMENT' && stats.lowHpBonuses) {
+      const lowHpBonus = hpRatio <= .10 ? stats.lowHpBonuses[2]
+        : hpRatio <= .25 ? stats.lowHpBonuses[1]
+          : hpRatio <= .50 ? stats.lowHpBonuses[0] : 0;
+      currentMultiplier *= 1 + lowHpBonus;
+    }
+    multiplier *= currentMultiplier;
+    currentHpBonus += stats.currentHpBonus;
   }
-  if (stats.lowHpBonuses) {
-    const baseMaxHp = Math.max(1, context.baseAttackerMaxHp ?? attacker.resonanceBaseStats?.maxHp ?? attacker.character.maxHp);
-    const hpRatio = attacker.currentHp / baseMaxHp;
-    const lowHpBonus = hpRatio <= .10 ? stats.lowHpBonuses[2]
-      : hpRatio <= .25 ? stats.lowHpBonuses[1]
-        : hpRatio <= .50 ? stats.lowHpBonuses[0] : 0;
-    multiplier *= 1 + lowHpBonus;
-  }
-  return Math.round(damage * multiplier) + Math.round(target.currentHp * stats.currentHpBonus);
+
+  return Math.round(damage * multiplier) + Math.round(target.currentHp * currentHpBonus);
 }
+
+function getResonanceFeatherDamageFactor(config: BattleSetupConfig, attacker: BattleFighter, turn: number): number {
+  const resonances = getEquippedResonanceAbilities(config);
+  if (!resonances.length) return 1;
+  const activeKingWingStacks = (attacker.resonanceKingWingStackExpiresAtTurns ?? []).filter(expiresAt => expiresAt >= turn).length;
+  const baseMultipliers = resonances.map(resonance => {
+    const levelIndex = Math.min(5, Math.max(1, Math.floor(resonance.level))) - 1;
+    if (resonance.id === 'FALLEN_WING') return [6, 7, 8, 9, 10][levelIndex];
+    if (resonance.id === 'JUDGMENT_WING') return [6, 8, 10, 12, 15][levelIndex];
+    if (resonance.id === 'ABYSS_WING') return [6, 7, 8, 9, 10][levelIndex];
+    if (resonance.id === 'KING_WING') return 5;
+    return 1;
+  });
+  const bestBaseMultiplier = Math.max(1, ...baseMultipliers);
+  const kingWing = resonances.find(resonance => resonance.id === 'KING_WING');
+  if (!kingWing || activeKingWingStacks <= 0) return bestBaseMultiplier;
+  const stackValues = getKingWingStackValues(kingWing.level);
+  return bestBaseMultiplier * (1 + Math.min(stackValues.maxStacks, activeKingWingStacks) * stackValues.damagePerStack);
+}
+
 export function calculateNormalAttackDamage(context: DamageContext, critical = false): number {
   const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
   let { attacker, target } = prepareFighters(context);
