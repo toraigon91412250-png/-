@@ -868,6 +868,7 @@ export const App: React.FC = () => {
           skillProgress={skillProgress}
           irenaTalentProgress={irenaTalentProgress}
           abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
           imprintProgress={imprintProgress}
           raidRewardProgress={raidRewardProgress}
           raidItemMessage={raidItemMessage}
