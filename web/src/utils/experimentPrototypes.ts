@@ -639,6 +639,7 @@ export function resolveKaiserReversalTurn(state: KaiserReversalState, action: Ka
   let combo = state.combo;
   let score = state.score;
   let guarding = false;
+  let rebuilding = false;
   const logs = [...state.logs];
   let damage = 0;
 
@@ -655,10 +656,10 @@ export function resolveKaiserReversalTurn(state: KaiserReversalState, action: Ka
     score += 3;
     logs.push('王域防御。受け流してエネルギーを得る。');
   } else if (action === 'REBUILD') {
-    armorPlates = Math.min(3, armorPlates + 1);
+    rebuilding = true;
     combo = 0;
     score += 2;
-    logs.push('装甲を再構築。装甲板+' + (armorPlates > state.armorPlates ? 1 : 0) + '。');
+    logs.push('装甲再構築を開始。今の攻撃を受けた後に装甲板を補充する。');
   } else if (action === 'CHARGE') {
     energy = Math.min(3, energy + 2);
     combo = 0;
@@ -692,6 +693,11 @@ export function resolveKaiserReversalTurn(state: KaiserReversalState, action: Ka
   kaiserHp = Math.max(0, kaiserHp - incoming);
   if (incoming > 0) logs.push('イレーナの' + (intent === 'COUNTER' ? '迎撃' : intent === 'FEINT' ? '牽制' : '最終反撃') + '。皇帝に' + incoming + 'ダメージ。');
   if (intent === 'EXPOSED') logs.push('イレーナの隙。攻撃を重ねる好機だった。');
+  if (rebuilding && kaiserHp > 0) {
+    const beforeRepair = armorPlates;
+    armorPlates = Math.min(3, armorPlates + 1);
+    logs.push(armorPlates > beforeRepair ? '攻撃を耐えた。装甲板を1枚再構築。' : '装甲は上限。再構築の効果なし。');
+  }
 
   const status: PrototypeStatus = kaiserHp <= 0 ? 'DEFEAT' : 'ACTIVE';
   if (status === 'DEFEAT') logs.push('皇帝が撃破された。装甲型か火力型を変えて再戦しよう。');
