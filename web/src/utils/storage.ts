@@ -1,4 +1,4 @@
-import { AbilityId, AbilityProgress, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
+import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, RuinSkillPath } from '../types/game';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
@@ -6,7 +6,7 @@ import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
 import { addIrenaBattleExperience, getIrenaXpForLevel, INITIAL_IRENA_TALENT_PROGRESS, IRENA_TALENT_MAX_LEVEL, IRENA_TALENT_PROGRESS_KEY, loadIrenaTalentProgress, normalizeIrenaTalentProgress } from './irenaTalentSystem';
 import { KAISER_CHALLENGE_PROGRESS_KEY } from './kaiserChallengeProgress';
-import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle, type AchievementBattleSample, type AchievementProgress } from './achievementSystem';
+import { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_PROGRESS_STORAGE_KEY, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle, type AchievementBattleSample, type AchievementProgress } from './achievementSystem';
 
 const STORAGE_KEY = 'duel_arena_battle_stats';
 const SKILL_PROGRESS_KEY = 'duel_arena_irena_skill_progress';
@@ -1394,6 +1394,12 @@ export function persistAchievementProgress(value: AchievementProgress): Achievem
 
 export function recordAchievementBattleProgress(sample: AchievementBattleSample): AchievementProgress | null {
   return persistAchievementProgress(recordAchievementBattle(loadAchievementProgress(), sample));
+}
+
+export function setEquippedAchievementBadge(id: AchievementBadgeId | null): AchievementProgress | null {
+  const current = loadAchievementProgress();
+  if (id !== null && getAchievementBadgeTier(id, current) === 0) return null;
+  return persistAchievementProgress({ ...current, equippedBadgeId: id });
 }
 
 export function syncAchievementCompletion(ids: readonly string[]): AchievementProgress | null {
