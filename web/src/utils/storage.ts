@@ -1,5 +1,5 @@
 import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, ResonanceAbilityId, ResonanceProgress, RuinSkillPath } from '../types/game';
-import { RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
+import { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
@@ -726,6 +726,7 @@ export function combineResonanceAbility(id: ResonanceAbilityId): ResonanceCombin
   const recipe = RESONANCE_DEFINITIONS.find(definition => definition.id === id);
   const failure = (message: string): ResonanceCombineResult => ({ success: false, message, progress: current, resonance });
   if (!recipe) return failure('不明な共鳴レシピです。');
+  if (!CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id)) return failure('この共鳴権能は通常合成の対象外です。');
   if (!resonance.unlocked) return failure('通常カイザーLv.50撃破で権能共鳴を解放してください。');
   if (resonance.craftedRecipes.includes(id)) return failure('このレシピは作成済みです。二度目の合成はできません。');
   if (resonance.levels[id] > 0) return failure('この共鳴権能はすでに所持しています。');
@@ -964,15 +965,34 @@ export function setResonanceAbilityForDeveloper(id: ResonanceAbilityId, level: n
   const current = loadAbilityProgress();
   const resonance = loadResonanceProgress();
   const normalizedLevel = Math.min(MAX_ABILITY_LEVEL, Math.max(0, Math.floor(Number.isFinite(level) ? level : 0)));
+  const recipe = RESONANCE_DEFINITIONS.find(definition => definition.id === id);
+  const shouldConsumeIngredients = normalizedLevel > 0 && (resonance.levels[id] ?? 0) <= 0;
+  const nextLevels = { ...current.levels };
+  const nextShards = { ...current.shards };
+  let nextResonanceShards = resonance.shards;
+
+  // Developer test injection follows fusion semantics: a newly granted resonance
+  // power consumes its two source powers and converts any leftover source shards.
+  if (shouldConsumeIngredients && recipe) {
+    recipe.ingredients.forEach(ingredient => {
+      nextResonanceShards += nextShards[ingredient];
+      nextLevels[ingredient] = 0;
+      nextShards[ingredient] = 0;
+    });
+  }
+
   const craftedRecipes = normalizedLevel > 0
     ? Array.from(new Set([...resonance.craftedRecipes, id]))
     : resonance.craftedRecipes.filter(recipeId => recipeId !== id);
 
   return persistAbilityProgress({
     ...current,
+    levels: nextLevels,
+    shards: nextShards,
     resonance: {
       ...resonance,
       unlocked: resonance.unlocked || normalizedLevel > 0,
+      shards: nextResonanceShards,
       levels: { ...resonance.levels, [id]: normalizedLevel },
       craftedRecipes,
     },
@@ -1491,7 +1511,6 @@ export function unlockAllGameFeaturesForDeveloper(): {
   persisted: boolean;
 } {
   const currentStellaProgress = loadStellaModeProgress();
-  const currentAbilities = loadAbilityProgress();
   const currentResonance = loadResonanceProgress();
   const nextResonance = normalizeResonanceProgress({
     ...currentResonance,
@@ -1521,20 +1540,20 @@ export function unlockAllGameFeaturesForDeveloper(): {
   const nextAbilities = normalizeAbilityProgress({
     resonance: nextResonance,
     levels: {
-      ABYSS: MAX_ABILITY_LEVEL,
-      FALLEN: MAX_ABILITY_LEVEL,
-      BLACK_WING: MAX_ABILITY_LEVEL,
-      FALLEN_KING: MAX_ABILITY_LEVEL,
-      JUDGMENT: MAX_ABILITY_LEVEL,
-      ASTRAL_DOMINION: MAX_ABILITY_LEVEL,
+      ABYSS: 0,
+      FALLEN: 0,
+      BLACK_WING: 0,
+      FALLEN_KING: 0,
+      JUDGMENT: 0,
+      ASTRAL_DOMINION: 0,
     },
     shards: {
-      ABYSS: Math.max(9999, currentAbilities.shards.ABYSS),
-      FALLEN: Math.max(9999, currentAbilities.shards.FALLEN),
-      BLACK_WING: Math.max(9999, currentAbilities.shards.BLACK_WING),
-      FALLEN_KING: Math.max(9999, currentAbilities.shards.FALLEN_KING),
-      JUDGMENT: Math.max(9999, currentAbilities.shards.JUDGMENT),
-      ASTRAL_DOMINION: Math.max(9999, currentAbilities.shards.ASTRAL_DOMINION),
+      ABYSS: 0,
+      FALLEN: 0,
+      BLACK_WING: 0,
+      FALLEN_KING: 0,
+      JUDGMENT: 0,
+      ASTRAL_DOMINION: 0,
     },
   });
   const nextRecruitment = normalizeRecruitmentProgress({

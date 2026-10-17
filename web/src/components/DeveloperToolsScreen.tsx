@@ -373,7 +373,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           <div style={{ fontSize:11, fontWeight:950, color:'#DCCBFF' }}>✦ 権能共鳴テスト</div>
           <div style={{ marginTop:5, color:'#A9A0C5', fontSize:9, lineHeight:1.6 }}>
             解放状態：{resonanceProgress.unlocked ? '解放済み' : '未解放'} · 所持 {RESONANCE_DEFINITIONS.filter(ability => (resonanceProgress.levels[ability.id] ?? 0) > 0).length}/10 · 共鳴片 {resonanceProgress.shards.toLocaleString('ja-JP')}
-            <br />Lv.1〜Lv.5を直接設定できます。Lv.1以上にするとテスト用に共鳴が解放され、L0でその権能のテスト状態を解除します。
+            <br />Lv.1〜Lv.5を直接設定できます。初めてLv.1以上にすると素材の元権能2種と欠片を消費します。L0でその権能のテスト状態を解除します。
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:7, marginTop:10 }}>
             <button type="button" onClick={() => { onSetResonanceShards(resonanceProgress.shards + 1000); onRefresh(); }} style={{

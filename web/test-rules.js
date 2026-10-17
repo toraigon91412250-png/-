@@ -34,7 +34,7 @@ const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import(
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
 const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, buildAchievementBadgeProgress, completeAchievementIds, getAchievementMetricValue, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
-const { RESONANCE_DEFINITIONS, RESONANCE_UPGRADE_COSTS } = await import('./src/data/resonanceAbilities.ts');
+const { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS, RESONANCE_UPGRADE_COSTS } = await import('./src/data/resonanceAbilities.ts');
 const {
   getFallenGodRevivalHpFraction,
   getFallenGodStatMultiplier,
@@ -66,6 +66,9 @@ const expectedResonanceRecipes = [
   ['ABYSS_JUDGMENT', ['ABYSS', 'JUDGMENT']],
 ];
 assert.strictEqual(RESONANCE_DEFINITIONS.length, 10, 'Exactly ten resonance powers must be registered.');
+assert.deepStrictEqual(CRAFTABLE_RESONANCE_ABILITY_IDS, [
+  'FALLEN_GOD', 'FALLEN_WING', 'ABYSS_KING', 'JUDGMENT_WING', 'ABYSS_JUDGMENT',
+], 'Only the five selected resonance powers should be craftable through normal progression.');
 assert.deepStrictEqual(RESONANCE_UPGRADE_COSTS, [0, 40, 80, 120, 160]);
 assert.deepStrictEqual(
   RESONANCE_DEFINITIONS.map(definition => [definition.id, [...definition.ingredients].sort()]).sort((a, b) => String(a[0]).localeCompare(String(b[0]))),
@@ -1882,9 +1885,9 @@ try {
   assert.deepStrictEqual(kaiserProgress, { unlockedLevel: 100 }, 'Normal Kaiser challenge progression must open through Lv.100.');
 
   const abilityProgressForFullUnlock = JSON.parse(storageValues.get('duel_arena_ability_progress'));
-  for (const id of ['ABYSS', 'FALLEN', 'BLACK_WING', 'FALLEN_KING', 'JUDGMENT']) {
-    assert.strictEqual(abilityProgressForFullUnlock.levels[id], MAX_ABILITY_LEVEL, id + ' must be max level.');
-    assert.ok(abilityProgressForFullUnlock.shards[id] >= 9999, id + ' must have enough shards to test upgrades.');
+  for (const id of ['ABYSS', 'FALLEN', 'BLACK_WING', 'FALLEN_KING', 'JUDGMENT', 'ASTRAL_DOMINION']) {
+    assert.strictEqual(abilityProgressForFullUnlock.levels[id], 0, id + ' must be consumed/locked after full unlock.');
+    assert.strictEqual(abilityProgressForFullUnlock.shards[id], 0, id + ' source shards must be consumed after full unlock.');
   }
   const resonanceProgressForFullUnlock = loadResonanceProgress();
   assert.strictEqual(resonanceProgressForFullUnlock.unlocked, true,
@@ -1924,7 +1927,29 @@ try {
     'Developer controls must be able to remove an injected resonance level for testing.');
   assert.ok(!loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'),
     'Resetting a resonance test level to zero must clear its injected crafted state.');
+  const simulatedDeveloperFusionSources = {
+    ...abilityProgressForFullUnlock,
+    levels: { ...abilityProgressForFullUnlock.levels, FALLEN: 5, BLACK_WING: 5 },
+    shards: { ...abilityProgressForFullUnlock.shards, FALLEN: 12, BLACK_WING: 20 },
+    resonance: {
+      ...abilityProgressForFullUnlock.resonance,
+      levels: { ...abilityProgressForFullUnlock.resonance.levels, FALLEN_WING: 0 },
+      craftedRecipes: abilityProgressForFullUnlock.resonance.craftedRecipes.filter(id => id !== 'FALLEN_WING'),
+    },
+  };
+  storageValues.set('duel_arena_ability_progress', JSON.stringify(simulatedDeveloperFusionSources));
   setResonanceAbilityForDeveloper('FALLEN_WING', 5);
+  const developerFusedProgress = loadAbilityProgress();
+  assert.strictEqual(developerFusedProgress.levels.FALLEN, 0,
+    'Developer Tools must consume the first source ability when granting a resonance power.');
+  assert.strictEqual(developerFusedProgress.shards.FALLEN, 0,
+    'Developer Tools must consume source shards when granting a resonance power.');
+  assert.strictEqual(developerFusedProgress.levels.BLACK_WING, 0,
+    'Developer Tools must consume the second source ability when granting a resonance power.');
+  assert.strictEqual(developerFusedProgress.shards.BLACK_WING, 0,
+    'Developer Tools must consume the second source shards when granting a resonance power.');
+  assert.strictEqual(developerFusedProgress.resonance.shards, 10031,
+    'Developer fusion must convert leftover source shards into resonance shards.');
   assert.strictEqual(loadResonanceProgress().levels.FALLEN_WING, 5);
   assert.ok(loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'));
   setResonanceShardsForDeveloper(1234);
@@ -1969,6 +1994,11 @@ try {
     'Normal battle setup must use the saved flag to open all Kaiser levels.');
   assert.match(developerToolsSourceForFullUnlock, /権能共鳴テスト/);
   assert.match(developerToolsSourceForFullUnlock, /onSetResonanceAbility/);
+  assert.match(developerToolsSourceForFullUnlock, /素材の元権能2種と欠片を消費/,
+    'Developer Tools must explain that injecting a resonance power consumes its source powers.');
+  const resonanceScreenSourceForCrafting = await readFile(new URL('./src/components/ResonanceScreen.tsx', import.meta.url), 'utf8');
+  assert.match(resonanceScreenSourceForCrafting, /CRAFTABLE_RESONANCE_ABILITY_IDS/);
+  assert.match(resonanceScreenSourceForCrafting, /合成対象外/);
   const battleSetupSourceForResonance = await readFile(new URL('./src/components/BattleSetupScreen.tsx', import.meta.url), 'utf8');
   assert.match(battleSetupSourceForResonance,
     /RESONANCE_DEFINITIONS\s*\.filter\(ability => resonanceProgress\.unlocked && \(resonanceProgress\.levels\[ability\.id\] \?\? 0\) > 0\)/,
@@ -3029,6 +3059,12 @@ storageValues.set(abilityKeyForSaveTest, JSON.stringify({
 }));
 assert.strictEqual(unlockAbilityResonance().progress.unlocked, true);
 assert.strictEqual(loadResonanceProgress().unlocked, true, 'Resonance unlock must persist across reloads.');
+for (const id of RESONANCE_DEFINITIONS.map(definition => definition.id).filter(id => !CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id))) {
+  const unavailableRecipe = combineResonanceAbility(id);
+  assert.strictEqual(unavailableRecipe.success, false, id + ' must not be craftable through normal progression.');
+}
+assert.strictEqual(loadAbilityProgress().levels.FALLEN, 5,
+  'Attempting non-craftable combinations must not consume source powers.');
 const fusedGod = combineResonanceAbility('FALLEN_GOD');
 assert.strictEqual(fusedGod.success, true);
 assert.strictEqual(fusedGod.progress.levels.FALLEN, 0);
