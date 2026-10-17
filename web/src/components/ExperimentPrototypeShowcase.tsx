@@ -64,7 +64,7 @@ const PROTOTYPE_CARDS: readonly {
     id: 'OBSERVATORY',
     number: '02',
     title: '行動観測室',
-    tagline: 'TELEGRAPH TACTICS / 8 TURNS',
+    tagline: 'TELEGRAPH TACTICS / CORE DEFENSE',
     description: '敵の攻撃範囲を先に見て、3レーンを移動。自分のHPだけでなく拠点コアも守りながら皇帝を倒す、読み合い重視の戦術パズル。',
     loop: '予告を読む → 移動 / 防御 / 迎撃 → 攻撃機会を作る',
     question: '攻撃予測を「通常戦闘には出さず、専用モードの戦術」として採用できるか？',
@@ -76,7 +76,7 @@ const PROTOTYPE_CARDS: readonly {
     title: '共鳴コンパイラ',
     tagline: 'BUILDCRAFT / VIRTUAL POWERS',
     description: '元権能と共鳴権能から2つ選び、戦闘思想を決めて仮想戦闘へ。未所持の権能も実験限定で組めるため、実装前のアイデア検証にも使える。',
-    loop: '権能を2つ選ぶ → 戦術方針を選ぶ → 5ターン戦闘で試す → 評価',
+    loop: '権能を2つ選ぶ → 戦術方針を選ぶ → 仮想戦闘で試す → 評価',
     question: '新しい権能・共鳴の相性を本編に入れる前に触って決められるか？',
     accent: 'gold',
   },
@@ -319,7 +319,7 @@ function ObservatoryPrototype({ onBack }: { onBack: () => void }) {
 
   return (
     <section className="epx-game">
-      <PrototypeHeader number="02" eyebrow="TELEGRAPH TACTICS / 8 TURNS" title="行動観測室" onBack={onBack} />
+      <PrototypeHeader number="02" eyebrow="TELEGRAPH TACTICS / CORE DEFENSE" title="行動観測室" onBack={onBack} />
       <div className="epx-observatory-intro"><div><small>THREAT FORECAST / TURN {state.turn}</small><h3>{intent.title}</h3><p>{intent.description}</p></div><div className="epx-intent-big"><Crosshair size={24} /><strong>{intent.kind === 'CORE' ? 'CORE' : intent.kind === 'NOVA' ? 'ALL' : intent.dangerLanes.map(lane => laneName[lane]).join(' + ')}</strong></div></div>
       <div className="epx-observatory-arena">
         <div className="epx-arena-top"><span><Crown size={16} /> 虚空皇帝</span><span>PHASE {state.bossHp / state.bossMaxHp <= 0.35 ? 'III' : state.bossHp / state.bossMaxHp <= 0.6 ? 'II' : 'I'}</span></div>

@@ -464,7 +464,8 @@ export function resolveResonanceTrialTurn(
   const enemyDamage = intent === 'PUNISH' ? 19 : intent === 'FEINT' ? 10 : 0;
   const mitigation = guarding ? 0.65 : 0;
   const doctrineGuard = doctrine === 'SURVIVE' ? 4 : 0;
-  const incoming = Math.max(0, Math.round(enemyDamage * (1 - mitigation)) - doctrineGuard);
+  const synergyGuard = guarding ? analysis.guardBonus : 0;
+  const incoming = Math.max(0, Math.round(enemyDamage * (1 - mitigation)) - doctrineGuard - synergyGuard);
   playerHp = Math.max(0, playerHp - incoming);
   if (incoming > 0) logs.push(`敵の圧力。HPを${incoming}失った。`);
   if (intent === 'EXPOSED') logs.push('敵の隙を確認。次の攻撃でチャンスを活かせ。');

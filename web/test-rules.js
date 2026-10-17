@@ -3264,6 +3264,8 @@ const exactSynergy = getResonancePrototypeAnalysis('ABYSS', 'JUDGMENT');
 assert.strictEqual(exactSynergy.score, 95);
 assert.strictEqual(getResonancePrototypeAnalysis('JUDGMENT', 'ABYSS').title, exactSynergy.title, 'Build analysis must be order-independent.');
 const compilerStart = createResonanceTrialState();
+const compilerGuard = resolveResonanceTrialTurn(compilerStart, 'GUARD', exactSynergy, 'BURST');
+assert.strictEqual(compilerGuard.playerHp, 96, 'A resonance build’s defensive synergy must affect actual guarded damage.');
 const compilerCharge = resolveResonanceTrialTurn(compilerStart, 'CHARGE', exactSynergy, 'BURST');
 assert.strictEqual(compilerCharge.energy, 2);
 assert.strictEqual(compilerCharge.playerHp, 81);
