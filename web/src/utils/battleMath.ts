@@ -117,7 +117,7 @@ function getResonanceExecutions(context: DamageContext, allowFeatherOnly = false
     .filter(resonance => ready.has(resonance.id))
     .filter(resonance => resonance.id !== 'JUDGMENT_WING'
       || (allowFeatherOnly && context.attacker.character.id === 'irena'
-        && ['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'].includes(context.specialSkillId ?? '')))
+        && ['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'].includes(context.specialSkillId ?? 'FEATHER')))
     .map(resonance => {
       const stats = getResonanceExecutionStats(resonance.id, resonance.level);
       return stats ? { id: resonance.id, level: resonance.level, stats } : null;
@@ -147,6 +147,7 @@ function applyResonanceExecutionDamage(
   if (!executions.length) return damage;
   let multiplier = 1;
   let currentHpBonus = 0;
+  let lowHpFinalMultiplier = 1;
   const baseMaxHp = Math.max(1, context.baseAttackerMaxHp ?? attacker.resonanceBaseStats?.maxHp ?? attacker.character.maxHp);
   const hpRatio = attacker.currentHp / baseMaxHp;
 
@@ -162,13 +163,14 @@ function applyResonanceExecutionDamage(
       const lowHpBonus = hpRatio <= .10 ? stats.lowHpBonuses[2]
         : hpRatio <= .25 ? stats.lowHpBonuses[1]
           : hpRatio <= .50 ? stats.lowHpBonuses[0] : 0;
-      currentMultiplier *= 1 + lowHpBonus;
+      lowHpFinalMultiplier *= 1 + lowHpBonus;
     }
     multiplier *= currentMultiplier;
     currentHpBonus += stats.currentHpBonus;
   }
 
-  return Math.round(damage * multiplier) + Math.round(target.currentHp * currentHpBonus);
+  const executionDamage = Math.round(damage * multiplier) + Math.round(target.currentHp * currentHpBonus);
+  return Math.round(executionDamage * lowHpFinalMultiplier);
 }
 
 function getResonanceFeatherDamageFactor(config: BattleSetupConfig, attacker: BattleFighter, turn: number): number {
