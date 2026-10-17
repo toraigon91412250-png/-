@@ -1515,6 +1515,11 @@ try {
     /isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ'/,
     'King Zone direct-hit mitigation and King Judgment stacks must not treat Star Eclipse ticks as direct attacks.',
   );
+  assert.match(
+    resonanceBattleHookSource,
+    /specialSkillId === undefined\s*\|\|\s*\['FEATHER', 'FEATHER_PIERCE', 'FEATHER_RAPID', 'SUPER_FALLEN_SHOT'\]/,
+    'Judgment Wing must treat an unspecified Irena special skill as the default Feather shot.',
+  );
   console.log('✓ Ten resonance recipes, core level-value tables, overlapping inherited effects, and DoT hit classification are verified.');
 
   storageValues.clear();
