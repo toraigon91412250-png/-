@@ -277,16 +277,18 @@ export function applyDynamicAbilityModifiers(
 
   if (character.id === 'irena' && resonanceBase && resonances.length > 0) {
     const hpRatio = fighter.currentHp / Math.max(1, resonanceBase.maxHp);
-    const statMultiplier = resonances.reduce((multiplier, resonance) => {
+    // Fused abilities can share FALLEN as an ingredient. Its inherited low-HP
+    // stat effect is a replacement, not another multiplier to multiply on top.
+    // Use the strongest applicable Fallen-stage multiplier once, while leaving
+    // independent effects such as King Zone defense scaling separate below.
+    const statMultiplier = Math.max(1, ...resonances.map(resonance => {
       if (resonance.id === 'FALLEN_GOD') {
-        return multiplier * (
-          fighter.resonanceStatBuff && turn <= fighter.resonanceStatBuff.expiresAtTurn
-            ? fighter.resonanceStatBuff.multiplier
-            : 1
-        );
+        return fighter.resonanceStatBuff && turn <= fighter.resonanceStatBuff.expiresAtTurn
+          ? fighter.resonanceStatBuff.multiplier
+          : 1;
       }
-      return multiplier * getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
-    }, 1);
+      return getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
+    }));
 
     if (statMultiplier > 1) {
       character = {
