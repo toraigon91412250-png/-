@@ -1,5 +1,6 @@
-import type { AbilityId, ImprintId, StatAllocation } from '../types/game';
+import type { BattleAbilityId, ImprintId, StatAllocation } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
+import { RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 
 export const BUILD_SAVES_STORAGE_KEY = 'duel_arena_build_saves_v1';
@@ -8,7 +9,7 @@ export const MAX_BUILD_NAME_LENGTH = 32;
 
 export interface SavedBuildSnapshot {
   statAllocation: StatAllocation;
-  abilityIds: AbilityId[];
+  abilityIds: BattleAbilityId[];
   imprintIds: ImprintId[];
 }
 
@@ -22,7 +23,7 @@ export interface SavedBuild {
 
 export interface BuildValidationContext {
   availableStatPoints: number;
-  abilityLevels: Partial<Record<AbilityId, number>>;
+  abilityLevels: Partial<Record<BattleAbilityId, number>>;
   unlockedImprintIds: readonly ImprintId[];
 }
 
@@ -34,7 +35,10 @@ export type BuildSaveOperationResult =
   | { success: true; saves: SavedBuild[] }
   | { success: false; message: string };
 
-const ABILITY_IDS = new Set<AbilityId>(ABILITY_DEFINITIONS.map(ability => ability.id));
+const ABILITY_IDS = new Set<BattleAbilityId>([
+  ...ABILITY_DEFINITIONS.map(ability => ability.id),
+  ...RESONANCE_DEFINITIONS.map(ability => ability.id),
+]);
 const KNOWN_IMPRINT_IDS = new Set<ImprintId>(IMPRINT_DEFINITIONS.map(imprint => imprint.id));
 const STAT_KEYS: readonly (keyof StatAllocation)[] = ['maxHp', 'attack', 'defense', 'speed'];
 
@@ -42,8 +46,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isAbilityId(value: unknown): value is AbilityId {
-  return typeof value === 'string' && ABILITY_IDS.has(value as AbilityId);
+function isAbilityId(value: unknown): value is BattleAbilityId {
+  return typeof value === 'string' && (ABILITY_IDS.has(value as BattleAbilityId) || isResonanceAbilityId(value));
 }
 
 function normalizeName(value: unknown): string | null {
@@ -71,7 +75,7 @@ function normalizeSnapshotShape(value: unknown): SavedBuildSnapshot | null {
 
   if (!Array.isArray(value.abilityIds) || value.abilityIds.length !== 2) return null;
   if (!value.abilityIds.every(isAbilityId)) return null;
-  const abilityIds = value.abilityIds as AbilityId[];
+  const abilityIds = value.abilityIds as BattleAbilityId[];
   if (new Set(abilityIds).size !== abilityIds.length) return null;
 
   if (!Array.isArray(value.imprintIds) || value.imprintIds.length > MAX_EQUIPPED_IMPRINTS) return null;
