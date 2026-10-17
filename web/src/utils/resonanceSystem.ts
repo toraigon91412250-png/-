@@ -154,6 +154,16 @@ export function getFeatherErosionRate(id: ResonanceAbilityId, level: number): nu
   return [5, 7, 9, 12, 15][Math.min(5, Math.max(1, Math.floor(level))) - 1];
 }
 
+/** Each fused Abyss power replaces the inherited per-turn erosion value. */
+export function getHighestTurnErosionRate(
+  resonances: readonly { id: ResonanceAbilityId; level: number }[],
+  hpRatio: number,
+): number {
+  return Math.max(0, ...resonances.map(resonance =>
+    getTurnErosionRate(resonance.id, resonance.level, hpRatio),
+  ));
+}
+
 export function getKingZoneValues(level: number): { maxStacks: number; defenseBonusPerStack: number; directDamageReductionPerStack: number } {
   const l = Math.min(5, Math.max(1, Math.floor(level))) - 1;
   return {
