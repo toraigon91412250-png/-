@@ -203,7 +203,8 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
     const maxHp = 100 + (relic?.maxHpBonus ?? 0);
     setRun({ ...EMPTY_ASCENT, step: 'ROUTE', seed: Math.floor(Math.random() * 3), hp: maxHp, maxHp, energy: relicId === 'LAST_SPARK' ? 1 : 0, relicIds: [relicId], startStyle: style, log: style + 'プロトコル起動。今回のルートが生成された。' });
   };
-  const chooseNode = (nodeType: AscentNodeType) => {
+  const chooseNode = (node: ReturnType<typeof getAscentRouteChoices>[number]) => {
+    const nodeType = node.type;
     if (nodeType === 'SHRINE') {
       setRun(prev => ({ ...prev, hp: Math.min(prev.maxHp, prev.hp + 26), score: prev.score + 8, floor: prev.floor + 1, log: '祭壇でHPを回復。次の階層へ。' }));
       return;
@@ -217,7 +218,7 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
       step: 'COMBAT',
       nodeType,
       combat: createAscentCombatState({
-        floor: prev.floor, nodeType,
+        floor: prev.floor, nodeType, enemyName: node.title,
         playerHp: prev.hp, playerMaxHp: prev.maxHp, energy: prev.energy,
         score: prev.score, relicIds: prev.relicIds,
       }),
@@ -279,7 +280,7 @@ function AscentPrototype({ onBack }: { onBack: () => void }) {
       {run.step === 'ROUTE' && <>
         <div className="epx-step-heading"><small>CHOOSE YOUR PATH / FLOOR {run.floor}</small><h3>{run.floor === 5 ? '最後の扉が開いた' : '次の一歩を選べ'}</h3><p>{run.floor === 5 ? '回復や買い物はここまで。虚空皇帝との最終戦へ。' : '安全な道はHPを守る。危険な道は強い遺物を得る。'}</p></div>
         <div className="epx-route-grid">{getAscentRouteChoices(run.floor, run.seed).map(node => (
-          <button className={'epx-route epx-route-' + node.type.toLowerCase()} type="button" key={node.id} onClick={() => chooseNode(node.type)}>
+          <button className={'epx-route epx-route-' + node.type.toLowerCase()} type="button" key={node.id} onClick={() => chooseNode(node)}>
             <span>{node.type === 'SHRINE' ? <Heart size={20} /> : node.type === 'FORGE' ? <Hammer size={20} /> : node.type === 'BOSS' ? <Crown size={20} /> : node.type === 'ELITE' ? <Target size={20} /> : <Swords size={20} />}</span>
             <small>{node.type === 'BOSS' ? 'FINAL BOSS' : node.type === 'ELITE' ? 'HIGH RISK' : node.type}</small><strong>{node.title}</strong><p>{node.reward}</p><em>{node.risk}</em>
           </button>

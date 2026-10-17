@@ -3245,6 +3245,12 @@ assert.deepStrictEqual(getAscentRelicChoices(['IRON_FEATHER', 'VOID_HEART'], 2).
 assert.ok(ASCENT_RELICS.length >= 6, 'Ascent must offer enough relics to create different run builds.');
 const ascentBase = createAscentCombatState({ floor: 1, nodeType: 'COMBAT', playerHp: 100, playerMaxHp: 100, energy: 0, score: 0, relicIds: [] });
 assert.strictEqual(ascentBase.intent, getAscentIntent(1));
+const namedEliteAscent = createAscentCombatState({
+  floor: 3, nodeType: 'ELITE', enemyName: '精鋭・王翼兵',
+  playerHp: 100, playerMaxHp: 100, energy: 0, score: 0, relicIds: [],
+});
+assert.strictEqual(namedEliteAscent.enemyName, '精鋭・王翼兵',
+  'A chosen floor-specific route name must carry into its actual combat screen.');
 const ascentGuarded = resolveAscentTurn(ascentBase, 'GUARD');
 const ascentCharged = resolveAscentTurn(ascentBase, 'CHARGE');
 assert.ok(ascentGuarded.playerHp > ascentCharged.playerHp, 'Guarding a telegraphed heavy attack must reduce damage.');
@@ -3283,7 +3289,7 @@ assert.strictEqual(compilerBurst.energy, 0);
 const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
 assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房', '反転決戦'].every(name => prototypeScreenSource.includes(name)));
 assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'Five playable concepts should be visible in the catalog.');
-assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'The gallery count must match the displayed prototype set.');
+assert.ok(prototypeScreenSource.includes('number="05"'), 'The fifth prototype, Kaiser reversal, must remain available in the gallery.');
 const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
 assert.strictEqual(forgeStart.bossHp, 120);
 assert.strictEqual(getBossForgeIntent(forgeStart), 'CRUSH');

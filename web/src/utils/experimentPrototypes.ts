@@ -119,6 +119,7 @@ export function getAscentIntent(turn: number): AscentIntent {
 export function createAscentCombatState(input: {
   floor: number;
   nodeType: Exclude<AscentNodeType, 'SHRINE' | 'FORGE'>;
+  enemyName?: string;
   playerHp: number;
   playerMaxHp: number;
   energy: number;
@@ -135,7 +136,7 @@ export function createAscentCombatState(input: {
     energy: Math.max(0, Math.min(3, input.energy + (input.relicIds.includes('LAST_SPARK') ? 1 : 0))),
     enemyHp: enemyMaxHp,
     enemyMaxHp,
-    enemyName: isBoss ? '虚空皇帝' : isElite ? '精鋭・断罪機' : input.floor <= 2 ? '侵食兵' : '王域の番人',
+    enemyName: input.enemyName?.trim() || (isBoss ? '虚空皇帝' : isElite ? '精鋭・断罪機' : input.floor <= 2 ? '侵食兵' : '王域の番人'),
     floor: input.floor,
     isBoss,
     isElite,
