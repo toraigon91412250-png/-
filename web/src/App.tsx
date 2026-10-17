@@ -749,14 +749,17 @@ export const App: React.FC = () => {
 
   const handleDeveloperSetResonanceAbility = (id: ResonanceAbilityId, level: number) => {
     const next = setResonanceAbilityForDeveloper(id, level);
+    const nextResonance = loadResonanceProgress();
     setAbilityProgress(next);
-    setResonanceProgress(loadResonanceProgress());
-    if (level <= 0) {
-      setBattleSetup(prev => ({
-        ...prev,
-        abilities: prev.abilities.filter(ability => ability.id !== id),
-      }));
-    }
+    setResonanceProgress(nextResonance);
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.filter(ability => (
+        ability.id in next.levels
+          ? next.levels[ability.id as AbilityId] > 0
+          : nextResonance.unlocked && (nextResonance.levels[ability.id as ResonanceAbilityId] ?? 0) > 0
+      )),
+    }));
   };
 
   const handleDeveloperSetResonanceShards = (amount: number) => {
@@ -802,7 +805,19 @@ export const App: React.FC = () => {
   const handleUnlockAllGameFeatures = (): boolean => {
     const result = unlockAllGameFeaturesForDeveloper();
     if (!result.persisted) return false;
+    const nextAbilities = loadAbilityProgress();
+    const nextResonance = loadResonanceProgress();
     setStellaModeProgress(result.progress);
+    setAbilityProgress(nextAbilities);
+    setResonanceProgress(nextResonance);
+    setBattleSetup(prev => ({
+      ...prev,
+      abilities: prev.abilities.filter(ability => (
+        ability.id in nextAbilities.levels
+          ? nextAbilities.levels[ability.id as AbilityId] > 0
+          : nextResonance.unlocked && (nextResonance.levels[ability.id as ResonanceAbilityId] ?? 0) > 0
+      )),
+    }));
     refreshProgress();
     return true;
   };

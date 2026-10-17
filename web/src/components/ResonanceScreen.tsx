@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Check, LockKeyhole, X } from 'lucide-react';
 import type { AbilityProgress, ResonanceAbilityId, ResonanceProgress } from '../types/game';
-import { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
+import { CRAFTABLE_RESONANCE_ABILITY_IDS, getResonanceCraftEligibility, getResonanceSourceConsumer, RESONANCE_DEFINITIONS, type ResonanceCraftEligibility } from '../data/resonanceAbilities';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
 
 interface ResonanceScreenProps {
@@ -24,12 +24,23 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
   const [pendingRecipe, setPendingRecipe] = useState<ResonanceAbilityId | null>(null);
   const pending = RESONANCE_DEFINITIONS.find(definition => definition.id === pendingRecipe) ?? null;
   const sourceName = (id: string) => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name ?? id;
-  const canCombine = (id: ResonanceAbilityId, ingredients: readonly [keyof AbilityProgress['levels'], keyof AbilityProgress['levels']]) =>
-    CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id)
-    && resonanceProgress.unlocked
-    && !resonanceProgress.craftedRecipes.includes(id)
-    && resonanceProgress.levels[id] === 0
-    && ingredients.every(ingredient => abilityProgress.levels[ingredient] >= 5);
+  const getCraftButtonLabel = (eligibility: ResonanceCraftEligibility): string => {
+    if (eligibility.canCombine) return '合成を確認';
+    switch (eligibility.reason) {
+      case 'UNKNOWN_RECIPE': return '不明なレシピ';
+      case 'NOT_CRAFTABLE': return '合成対象外';
+      case 'SYSTEM_LOCKED': return '未解放';
+      case 'RECIPE_ALREADY_CREATED': return '作成済み';
+      case 'ALREADY_OWNED': return '所持済み';
+      case 'SOURCE_MISSING': return '元権能を未所持';
+      case 'SOURCE_LEVEL_REQUIRED': return '素材のLv.5が必要';
+      case 'SOURCE_CONSUMED': {
+        const source = sourceName(eligibility.sourceAbilityId ?? '');
+        const consumer = RESONANCE_DEFINITIONS.find(definition => definition.id === eligibility.consumedBy);
+        return consumer ? `${source}は${consumer.name}で消費済み` : '素材消費済み';
+      }
+    }
+  };
 
   return (
     <main style={{ minHeight: '100%', height: '100%', overflowY: 'auto', boxSizing: 'border-box', padding: '20px 14px 36px', background: 'radial-gradient(ellipse at top, #202044 0%, #0b0d18 48%, #080a12 100%)', color: '#f8fafc' }}>
@@ -41,7 +52,7 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
           <p style={{ margin: 0, color: '#c4b5fd', fontSize: 10, letterSpacing: '.22em', fontWeight: 900 }}>AUTHORITY RESONANCE</p>
           <h1 style={{ margin: '5px 0 7px', fontSize: 28, fontWeight: 950 }}>権能共鳴</h1>
           <p style={{ margin: 0, color: '#cbd5e1', fontSize: 13, lineHeight: 1.7 }}>
-            通常合成の対象は5種。Lv.5の元権能2つを合成し、専用能力を持つ共鳴権能を獲得する。合成すると素材の元権能2つを消費し、未使用欠片は共鳴片に変換される。残る5種も全機能開放・開発者テストでは使用できる。
+            通常合成の対象は5種。Lv.5の元権能2つを合成し、専用能力を持つ共鳴権能を獲得する。残る5種も全機能開放・開発者テストでは使用できる。
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
             <span style={{ padding: '8px 11px', borderRadius: 10, background: '#14172a', border: '1px solid #45436a', fontSize: 12, fontWeight: 850 }}>
@@ -56,6 +67,16 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
           </div>
         </header>
 
+        <section role="note" style={{ marginTop: 14, padding: 14, borderRadius: 14, background: 'rgba(120,53,15,.20)', border: '1px solid rgba(251,191,36,.35)' }}>
+          <strong style={{ color: '#fde68a', fontSize: 13 }}>合成は不可逆の選択</strong>
+          <p style={{ margin: '7px 0 0', color: '#e2e8f0', fontSize: 12, lineHeight: 1.7 }}>
+            素材の元権能2種は消費され、未使用の元権能の欠片は共鳴片へ変換されます。消費した元権能を使う別レシピも、通常プレイでは素材を取り戻せないため合成できなくなります。
+          </p>
+          <p style={{ margin: '6px 0 0', color: '#cbd5e1', fontSize: 11, lineHeight: 1.65 }}>
+            5種は選択肢であり、全部を一度に作る設計ではありません。現在のレシピ構成では、素材が重ならない組み合わせを選んで最大2種まで作れます。
+          </p>
+        </section>
+
         {!resonanceProgress.unlocked && (
           <section role="status" style={{ marginTop: 14, padding: 15, borderRadius: 14, background: 'rgba(120,53,15,.24)', border: '1px solid rgba(251,191,36,.42)' }}>
             <strong style={{ display: 'flex', alignItems: 'center', gap: 8 }}><LockKeyhole size={18} /> 解放条件：通常カイザー Lv.50 に勝利</strong>
@@ -68,9 +89,9 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))', gap: 12, marginTop: 16 }}>
           {RESONANCE_DEFINITIONS.map(definition => {
             const level = resonanceProgress.levels[definition.id] ?? 0;
-            const isCraftable = CRAFTABLE_RESONANCE_ABILITY_IDS.includes(definition.id);
             const created = resonanceProgress.craftedRecipes.includes(definition.id);
-            const available = canCombine(definition.id, definition.ingredients);
+            const eligibility = getResonanceCraftEligibility(definition.id, abilityProgress, resonanceProgress);
+            const available = eligibility.canCombine;
             const ingredients = definition.ingredients;
             const nextCost = level >= 5 ? null : level * 40;
             return (
@@ -87,12 +108,20 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
                 </div>
                 <p style={{ margin: '12px 0', minHeight: 40, color: '#cbd5e1', fontSize: 12, lineHeight: 1.65 }}>{definition.shortDescription}</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {ingredients.map(ingredient => (
-                    <div key={ingredient} style={{ padding: 9, borderRadius: 9, background: '#0a0f1d', border: '1px solid #263146' }}>
-                      <small style={{ display: 'block', color: '#94a3b8', fontSize: 10 }}>{sourceName(ingredient)}</small>
-                      <strong style={{ fontSize: 13 }}>Lv.{abilityProgress.levels[ingredient] ?? 0}/5</strong>
-                    </div>
-                  ))}
+                  {ingredients.map(ingredient => {
+                    const sourceLevel = abilityProgress.levels[ingredient] ?? 0;
+                    const consumedBy = level <= 0 && sourceLevel <= 0
+                      ? getResonanceSourceConsumer(ingredient, resonanceProgress, definition.id)
+                      : null;
+                    return (
+                      <div key={ingredient} style={{ padding: 9, borderRadius: 9, background: '#0a0f1d', border: '1px solid #263146' }}>
+                        <small style={{ display: 'block', color: '#94a3b8', fontSize: 10 }}>{sourceName(ingredient)}</small>
+                        <strong style={{ display: 'block', fontSize: 13 }}>{consumedBy ? '消費済み' : `Lv.${sourceLevel}/5`}</strong>
+                        {consumedBy && <small style={{ display: 'block', marginTop: 3, color: '#fca5a5', fontSize: 9, lineHeight: 1.4 }}>「{consumedBy.name}」の合成で消費</small>}
+                        {!consumedBy && sourceLevel <= 0 && <small style={{ display: 'block', marginTop: 3, color: '#94a3b8', fontSize: 9 }}>未所持</small>}
+                      </div>
+                    );
+                  })}
                 </div>
                 <div style={{ marginTop: 10, padding: 10, borderRadius: 10, background: '#0a0f1d' }}>
                   <strong style={{ fontSize: 13 }}>共鳴Lv.{level > 0 ? level : '—'} {level >= 5 ? '· MAX' : ''}</strong>
@@ -113,7 +142,7 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
                   </button>
                 ) : (
                   <button type="button" disabled={!available} onClick={() => setPendingRecipe(definition.id)} style={{ width: '100%', marginTop: 10, minHeight: 40, borderRadius: 10, border: '1px solid #6656b6', background: available ? 'linear-gradient(90deg,#6d5bd0,#9333ea)' : '#20283a', color: available ? '#fff' : '#94a3b8', fontWeight: 900 }}>
-                    {!isCraftable ? '合成対象外' : !resonanceProgress.unlocked ? '未解放' : created ? '作成済み' : !ingredients.every(id => abilityProgress.levels[id] >= 5) ? '素材のLv.5が必要' : '合成を確認'}
+                    {getCraftButtonLabel(eligibility)}
                   </button>
                 )}
               </article>
@@ -135,7 +164,7 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
                 <p style={{ margin: 0 }}>共鳴片に変換：{pending.ingredients.reduce((sum, id) => sum + abilityProgress.shards[id], 0)} 個（未使用欠片を1:1）</p>
                 <p style={{ margin: 0 }}>合成コスト：追加の共鳴片は不要</p>
               </div>
-              <p style={{ color: '#fca5a5', fontSize: 12, lineHeight: 1.7 }}>確認後、元権能2種類は未解放に戻ります。同じレシピは永久に再合成できません。キャンセルすれば所持状態は変わりません。</p>
+              <p style={{ color: '#fca5a5', fontSize: 12, lineHeight: 1.7 }}>確定すると元権能2種類は消費され、元権能の欠片は共鳴片に変換されます。消費した元権能を使う別レシピも合成できなくなり、同じレシピも再合成できません。通常プレイでは取り消せません。キャンセルすれば所持状態は変わりません。</p>
               <p style={{ color: '#e2e8f0', fontSize: 12, lineHeight: 1.7 }}>能力：{pending.shortDescription}</p>
               <p style={{ color: '#cbd5e1', fontSize: 11, lineHeight: 1.7 }}>Lv.1：{pending.levelDescriptions[0]}</p>
               <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>

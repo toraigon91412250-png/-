@@ -1,7 +1,7 @@
 import { AbilityId, AbilityProgress, AchievementBadgeId, FeatherSkillPath, ImprintId, ImprintProgress, IrenaSkillId, IrenaSkillProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, ResonanceAbilityId, ResonanceProgress, RuinSkillPath } from '../types/game';
-import { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
+import { getResonanceCraftEligibility, RESONANCE_DEFINITIONS, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { getRecruitmentRewardForPull, RecruitmentDraw, RECRUITMENT_REWARDS } from '../data/recruitment';
-import { MAX_ABILITY_LEVEL } from '../data/abilities';
+import { ABILITY_DEFINITIONS, MAX_ABILITY_LEVEL } from '../data/abilities';
 import { IMPRINT_DEFINITIONS, isImprintId, MAX_EQUIPPED_IMPRINTS } from '../data/imprints';
 import type { ImprintDefinition } from '../data/imprints';
 import { normalizeEquippedImprints } from './imprintSystem';
@@ -726,12 +726,33 @@ export function combineResonanceAbility(id: ResonanceAbilityId): ResonanceCombin
   const recipe = RESONANCE_DEFINITIONS.find(definition => definition.id === id);
   const failure = (message: string): ResonanceCombineResult => ({ success: false, message, progress: current, resonance });
   if (!recipe) return failure('不明な共鳴レシピです。');
-  if (!CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id)) return failure('この共鳴権能は通常合成の対象外です。');
-  if (!resonance.unlocked) return failure('通常カイザーLv.50撃破で権能共鳴を解放してください。');
-  if (resonance.craftedRecipes.includes(id)) return failure('このレシピは作成済みです。二度目の合成はできません。');
-  if (resonance.levels[id] > 0) return failure('この共鳴権能はすでに所持しています。');
-  if (recipe.ingredients.some(ingredient => current.levels[ingredient] < MAX_ABILITY_LEVEL)) {
-    return failure('素材となる元権能2種類をLv.5にしてください。');
+
+  const eligibility = getResonanceCraftEligibility(id, current, resonance);
+  if (!eligibility.canCombine) {
+    switch (eligibility.reason) {
+      case 'NOT_CRAFTABLE':
+        return failure('この共鳴権能は通常合成の対象外です。');
+      case 'SYSTEM_LOCKED':
+        return failure('通常カイザーLv.50撃破で権能共鳴を解放してください。');
+      case 'RECIPE_ALREADY_CREATED':
+        return failure('このレシピは作成済みです。二度目の合成はできません。');
+      case 'ALREADY_OWNED':
+        return failure('この共鳴権能はすでに所持しています。');
+      case 'SOURCE_CONSUMED': {
+        const sourceName = ABILITY_DEFINITIONS.find(ability => ability.id === eligibility.sourceAbilityId)?.name
+          ?? eligibility.sourceAbilityId
+          ?? '素材の元権能';
+        const consumerName = RESONANCE_DEFINITIONS.find(definition => definition.id === eligibility.consumedBy)?.name
+          ?? '別の共鳴権能';
+        return failure(`${sourceName}は${consumerName}の合成で消費済みです。別のレシピには使えません。`);
+      }
+      case 'SOURCE_MISSING':
+        return failure('素材となる元権能を所持していません。素材2種を獲得してください。');
+      case 'SOURCE_LEVEL_REQUIRED':
+        return failure('素材となる元権能2種類をLv.5にしてください。');
+      case 'UNKNOWN_RECIPE':
+        return failure('不明な共鳴レシピです。');
+    }
   }
 
   const convertedShards = recipe.ingredients.reduce((sum, ingredient) => sum + current.shards[ingredient], 0);

@@ -135,7 +135,11 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           }}>閉じる</button>
         </header>
 
-        <button type="button" onClick={() => setFullUnlockResult(onUnlockAllGameFeatures() ? 'success' : 'failure')} aria-label="このゲームの全機能を開放" style={{
+        <button type="button" onClick={() => {
+          const succeeded = onUnlockAllGameFeatures();
+          if (succeeded) setSelectedIds(current => current.filter(isResonanceAbilityId));
+          setFullUnlockResult(succeeded ? 'success' : 'failure');
+        }} aria-label="このゲームの全機能を開放" style={{
           width:'100%', minHeight:56, marginBottom:fullUnlockResult ? 8 : 12, borderRadius:12,
           border:'1px solid #7DD3FC', background:'linear-gradient(135deg,#164E63,#10253D)',
           color:'#E0F2FE', fontSize:16, fontWeight:950, cursor:'pointer',
@@ -373,7 +377,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
           <div style={{ fontSize:11, fontWeight:950, color:'#DCCBFF' }}>✦ 権能共鳴テスト</div>
           <div style={{ marginTop:5, color:'#A9A0C5', fontSize:9, lineHeight:1.6 }}>
             解放状態：{resonanceProgress.unlocked ? '解放済み' : '未解放'} · 所持 {RESONANCE_DEFINITIONS.filter(ability => (resonanceProgress.levels[ability.id] ?? 0) > 0).length}/10 · 共鳴片 {resonanceProgress.shards.toLocaleString('ja-JP')}
-            <br />Lv.1〜Lv.5を直接設定できます。初めてLv.1以上にすると素材の元権能2種と欠片を消費します。L0でその権能のテスト状態を解除します。
+            <br />Lv.1〜Lv.5を直接設定できます。初めてLv.1以上にすると素材の元権能2種と欠片を消費します。L0にしても元権能は戻りません。必要なら権能テスト欄で素材を再設定してください。
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:7, marginTop:10 }}>
             <button type="button" onClick={() => { onSetResonanceShards(resonanceProgress.shards + 1000); onRefresh(); }} style={{
@@ -401,7 +405,11 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
                     {[0,1,2,3,4,5].map(nextLevel => (
                       <button key={nextLevel} type="button" aria-label={ability.name + 'をLv.' + nextLevel + 'に設定'} onClick={() => {
                         onSetResonanceAbility(ability.id, nextLevel);
-                        if (nextLevel === 0) setSelectedIds(current => current.filter(value => value !== ability.id));
+                        setSelectedIds(current => current.filter(value => {
+                          if (nextLevel === 0 && value === ability.id) return false;
+                          if (nextLevel > 0 && level <= 0 && ability.ingredients.includes(value as AbilityId)) return false;
+                          return true;
+                        }));
                         onRefresh();
                       }} style={{
                         width:28, height:28, borderRadius:7,
