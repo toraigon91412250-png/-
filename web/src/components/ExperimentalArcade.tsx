@@ -1,5 +1,5 @@
 import React,{useMemo,useState} from 'react';
-import {Activity,ArrowLeft,Atom,ChevronRight,FlaskConical,Heart,Layers3,RefreshCw,Shield,ShieldCheck,Sparkles,Swords,Target,TrendingUp,Zap} from 'lucide-react';
+import {Activity,ArrowLeft,Atom,ChevronRight,FlaskConical,Layers3,RefreshCw,Shield,ShieldCheck,Sparkles,Swords,Target,TrendingUp,Zap} from 'lucide-react';
 import {ABILITY_DEFINITIONS} from '../data/abilities';
 import {RESONANCE_DEFINITIONS} from '../data/resonanceAbilities';
 import {ABYSS_RELICS,analyzePrototypeBuild,chooseAbyssReward,createAbyssRun,createPrototypeDuel,getAbyssGrade,getPrototypeDuelGrade,getPrototypeModuleTags,normalizePrototypeBossConfig,resolveAbyssAction,resolvePrototypeDuelAction,type AbyssAction,type AbyssRelicId,type AbyssRunState,type PrototypeAction,type PrototypeBossConfig,type PrototypeDuelState,type PrototypePattern} from '../utils/experimentArcade';
