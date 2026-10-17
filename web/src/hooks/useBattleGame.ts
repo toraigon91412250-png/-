@@ -386,7 +386,9 @@ export function useBattleGame(
         const execution = getResonanceExecutionStats(resonance.id, resonance.level);
         if (!execution) return false;
         if (resonance.id === 'JUDGMENT_WING') {
-          return action === 'SPECIAL' && specialSkillId !== undefined;
+          return action === 'SPECIAL'
+            && specialSkillId !== undefined
+            && stateRef.current.player.character.id === 'irena';
         }
         return resonance.id === 'FALLEN_JUDGMENT'
           || resonance.id === 'KING_JUDGMENT'
