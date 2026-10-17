@@ -10,11 +10,17 @@ import {
   ASCENT_RELICS,
   createAscentCombatState,
   createBossForgeState,
+  createKaiserReversalState,
   getBossForgeIntent,
+  getKaiserReversalIntent,
   resolveBossForgeTurn,
+  resolveKaiserReversalTurn,
   type BossForgeAction,
   type BossForgePattern,
   type BossForgeState,
+  type KaiserReversalAction,
+  type KaiserReversalBuild,
+  type KaiserReversalState,
   createObservatoryState,
   createResonanceTrialState,
   getAscentRelicChoices,
@@ -37,7 +43,7 @@ import {
 } from '../utils/experimentPrototypes';
 import './ExperimentPrototypeShowcase.css';
 
-type PrototypeId = 'ASCENT' | 'OBSERVATORY' | 'COMPILER' | 'BOSSFORGE';
+type PrototypeId = 'ASCENT' | 'OBSERVATORY' | 'COMPILER' | 'BOSSFORGE' | 'REVERSAL';
 interface Props { onViewChange: (isPlayingPrototype: boolean) => void; }
 
 const PROTOTYPE_CARDS: readonly {
@@ -90,6 +96,16 @@ const PROTOTYPE_CARDS: readonly {
     question: '本編に入れる前にボスの圧力と読み合いを自分で調整できるか？',
     accent: 'rose',
   },
+  {
+    id: 'REVERSAL',
+    number: '05',
+    title: '反転決戦',
+    tagline: 'SIDE-SWAP / PLAY AS KAISER',
+    description: 'いつも倒す側のカイザーを操作。装甲板を使い切るか、再構築にターンを使うか。イレーナの迎撃・牽制・隙を読み、皇帝側で勝ち筋を作る。',
+    loop: '型を選ぶ → 予告を読む → 装甲・ゲージを管理 → イレーナを撃破',
+    question: '敵側を操作する反転モードは、本編の特別モード候補になるか？',
+    accent: 'red',
+  },
 ];
 
 function PrototypeHeader({ number, eyebrow, title, onBack }: { number: string; eyebrow: string; title: string; onBack: () => void }) {
@@ -121,19 +137,20 @@ export const ExperimentPrototypeShowcase: React.FC<Props> = ({ onViewChange }) =
   if (active === 'OBSERVATORY') return <ObservatoryPrototype onBack={backToCatalog} />;
   if (active === 'COMPILER') return <ResonanceCompilerPrototype onBack={backToCatalog} />;
   if (active === 'BOSSFORGE') return <BossForgePrototype onBack={backToCatalog} />;
+  if (active === 'REVERSAL') return <KaiserReversalPrototype onBack={backToCatalog} />;
 
   return (
     <section className="epx-catalog" aria-labelledby="epx-catalog-title">
       <div className="epx-catalog-heading">
         <div><p>PLAYABLE CONCEPTS / BUILD 0.1</p><h2 id="epx-catalog-title">試作品ショーケース</h2><span>各ボタンから実際に遊べる。全て仮実装で、本編のセーブ・通貨・解放条件には触れない。</span></div>
-        <span className="epx-count"><FlaskConical size={16} /> 4 PROTOTYPES</span>
+        <span className="epx-count"><FlaskConical size={16} /> 5 PROTOTYPES</span>
       </div>
       <div className="epx-prototype-grid">
         {PROTOTYPE_CARDS.map(card => (
           <article className={'epx-prototype-card epx-card-' + card.accent} key={card.id}>
             <div className="epx-card-top"><span>PROTOTYPE {card.number}</span><span className="epx-live-tag"><span /> PLAYABLE</span></div>
             <div className="epx-card-emblem" aria-hidden="true">
-              {card.id === 'ASCENT' ? <Compass size={36} strokeWidth={1.5} /> : card.id === 'OBSERVATORY' ? <Crosshair size={36} strokeWidth={1.5} /> : card.id === 'BOSSFORGE' ? <Hammer size={36} strokeWidth={1.5} /> : <Layers size={36} strokeWidth={1.5} />}
+              {card.id === 'ASCENT' ? <Compass size={36} strokeWidth={1.5} /> : card.id === 'OBSERVATORY' ? <Crosshair size={36} strokeWidth={1.5} /> : card.id === 'BOSSFORGE' ? <Hammer size={36} strokeWidth={1.5} /> : card.id === 'REVERSAL' ? <Crown size={36} strokeWidth={1.5} /> : <Layers size={36} strokeWidth={1.5} />}
               <b>{card.number}</b>
             </div>
             <p className="epx-card-tagline">{card.tagline}</p>
@@ -506,6 +523,64 @@ function BossForgePrototype({ onBack }: { onBack: () => void }) {
           <LogPanel logs={state.logs}/>
         </div>
         <div className="epx-no-save"><ShieldCheck size={15}/>この戦闘は実験限定。設定・スコア・勝敗は本編へ保存されない。</div>
+      </>}
+    </section>
+  );
+}
+
+
+const REVERSAL_INTENT_DETAILS: Record<import('../utils/experimentPrototypes').KaiserReversalIntent, { title: string; detail: string }> = {
+  COUNTER: { title: '迎撃構え', detail: '直接攻撃に強い反撃。攻撃を欲張ると追加ダメージを受ける。' },
+  FEINT: { title: '牽制', detail: '小さめの攻撃。装甲再構築を狙うならこの隙。' },
+  EXPOSED: { title: '大きな隙', detail: 'イレーナは攻撃しない。皇帝の斬撃と終局砲撃が強化される。' },
+  LAST_STAND: { title: '最終反撃', detail: 'イレーナが瀕死時に放つ大技。防御か、装甲を残して備えろ。' },
+};
+
+function KaiserReversalPrototype({ onBack }: { onBack: () => void }) {
+  const [build, setBuild] = useState<KaiserReversalBuild | null>(null);
+  const [state, setState] = useState<KaiserReversalState | null>(null);
+  const intent = state ? getKaiserReversalIntent(state.turn, state.irenaHp, state.irenaMaxHp) : null;
+  const finished = state !== null && state.status !== 'ACTIVE';
+  const act = (action: KaiserReversalAction) => setState(previous => previous ? resolveKaiserReversalTurn(previous, action) : previous);
+  const start = (selected: KaiserReversalBuild) => { setBuild(selected); setState(createKaiserReversalState(selected)); };
+  const restart = () => { if (build) setState(createKaiserReversalState(build)); };
+  const chooseAnotherBuild = () => { setState(null); setBuild(null); };
+  const intentInfo = intent ? REVERSAL_INTENT_DETAILS[intent] : null;
+  const grade = state?.status === 'VICTORY' ? (state.kaiserHp / Math.max(1, state.kaiserMaxHp) >= .65 ? 'S' : state.kaiserHp / Math.max(1, state.kaiserMaxHp) >= .35 ? 'A' : 'B')
+    : state?.status === 'DEFEAT' ? (state.irenaHp / Math.max(1, state.irenaMaxHp) <= .2 ? 'B' : state.irenaHp / Math.max(1, state.irenaMaxHp) <= .5 ? 'C' : 'D') : null;
+
+  return (
+    <section className="epx-game">
+      <PrototypeHeader number="05" eyebrow="SIDE-SWAP / ARMOR & BURST" title="反転決戦" onBack={onBack} />
+      {!state ? <>
+        <div className="epx-game-hero epx-hero-red">
+          <span>PLAY AS THE KAISER / LOCAL ONLY</span>
+          <h3>今回は、倒される側を操作しろ。</h3>
+          <p>イレーナの攻撃予告を読みながら、装甲板・エネルギー・攻撃の隙を管理する。皇帝が好きな人にも、既存バトルの反転モードが楽しいか試してもらうための独立プロトタイプ。</p>
+        </div>
+        <div className="epx-step-heading"><small>CHOOSE YOUR IMPERIAL BUILD</small><h3>皇帝の型を選ぶ</h3><p>どちらも一長一短。装甲要塞は耐久重視、終局兵器型は最初からゲージが多いが打たれ弱い。</p></div>
+        <div className="epx-choice-grid">
+          <button type="button" onClick={() => start('FORTRESS')}><Shield size={22}/><strong>装甲要塞</strong><span>HP 210 / 装甲板 3 / ゲージ 1</span><small>敵の行動を見て守り、長期戦で勝つ。</small></button>
+          <button type="button" onClick={() => start('EXECUTIONER')}><Zap size={22}/><strong>終局兵器</strong><span>HP 160 / 装甲板 1 / ゲージ 2</span><small>先手でゲージを満たし、短期決戦で押し切る。</small></button>
+        </div>
+      </> : <>
+        <div className="epx-compiled-build epx-reversal-build"><div><small>IMPERIAL BUILD / TURN {state.turn}</small><h3>{state.build === 'FORTRESS' ? '装甲要塞' : '終局兵器'}</h3><span>イレーナの行動を読んで反転勝利を狙う。{state.build === 'FORTRESS' ? '装甲は強いが、再構築にはターンが必要。' : '攻撃の回転は速いが、装甲が薄い。'}</span></div><strong>{state.score}<small> LOCAL SCORE</small></strong></div>
+        <div className="epx-combat-arena">
+          <div className="epx-enemy-top"><div><small>KAISER SIDE / TURN {state.turn}</small><h3>イレーナ</h3></div><span className={'epx-intent ' + (intent === 'EXPOSED' ? 'epx-intent-recover' : '')}><Eye size={15}/>{intentInfo?.title}</span></div>
+          <Meter label="IRENA HP" value={state.irenaHp} max={state.irenaMaxHp} tone="red"/>
+          <Meter label="KAISER HP" value={state.kaiserHp} max={state.kaiserMaxHp} tone="violet"/>
+          <div className="epx-reversal-stats"><div><Shield size={16}/><span>装甲板</span><strong>{'▰'.repeat(state.armorPlates)}{'▱'.repeat(Math.max(0,3-state.armorPlates))} <small>{state.armorPlates}/3</small></strong></div><div><Zap size={16}/><span>エネルギー</span><strong>{'◆'.repeat(state.energy)}{'◇'.repeat(Math.max(0,3-state.energy))}</strong></div><div><Target size={16}/><span>操作側</span><strong>皇帝</strong></div></div>
+          {intentInfo && <div className="epx-turn-tip"><strong>{intentInfo.title}：</strong>{intentInfo.detail}</div>}
+          {!finished ? <div className="epx-action-grid">
+            <button type="button" onClick={() => act('STRIKE')}><Swords size={18}/><strong>皇帝斬</strong><span>連撃補正・+1ゲージ</span></button>
+            <button type="button" onClick={() => act('GUARD')}><Shield size={18}/><strong>王域防御</strong><span>被害65%軽減・+1ゲージ</span></button>
+            <button type="button" disabled={state.armorPlates >= 3} onClick={() => act('REBUILD')}><Hammer size={18}/><strong>装甲再構築</strong><span>1ターン後に装甲板+1</span></button>
+            <button type="button" onClick={() => act('CHARGE')}><Zap size={18}/><strong>エネルギー蓄積</strong><span>+2ゲージ</span></button>
+            <button type="button" disabled={state.energy < 3} onClick={() => act('BURST')}><Sparkles size={18}/><strong>終局砲撃</strong><span>ゲージ3・大ダメージ</span></button>
+          </div> : <div className={'epx-finish-mini ' + (state.status === 'VICTORY' ? 'epx-finish-win' : 'epx-finish-loss')}><small>TEST REPORT / NOT SAVED</small><h3>{state.status === 'VICTORY' ? '皇帝の反転勝利' : '皇帝陥落。型を変えて再挑戦'}</h3><div className="epx-grade">{grade}</div><p>スコア {state.score} · 皇帝残HP {state.kaiserHp} · イレーナ残HP {state.irenaHp} · 装甲板 {state.armorPlates}</p><div className="epx-end-actions"><button type="button" className="epx-primary" onClick={restart}><RotateCcw size={16}/> 同じ型で再戦</button><button type="button" className="epx-secondary" onClick={chooseAnotherBuild}>型を変更</button></div></div>}
+          <LogPanel logs={state.logs}/>
+        </div>
+        <div className="epx-no-save"><ShieldCheck size={15}/>この戦闘は実験限定。勝敗・装甲・ゲージ・スコアは本編へ反映されない。</div>
       </>}
     </section>
   );
