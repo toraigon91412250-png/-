@@ -502,7 +502,7 @@ export function getBossForgeIntent(state: BossForgeState): BossForgePattern {
 export function createBossForgeState(config: BossForgeConfig): BossForgeState {
   const bossMaxHp = Math.max(60, Math.min(400, Math.round(config.bossMaxHp)));
   const attackPressure = Math.max(6, Math.min(40, Math.round(config.attackPressure)));
-  const pattern: BossForgePattern[] = (config.pattern.length ? config.pattern : ['CRUSH']).slice(0, 4);
+  const pattern: BossForgePattern[] = config.pattern.length ? config.pattern.slice(0, 4) : ['CRUSH'];
   return {
     bossHp: bossMaxHp,
     bossMaxHp,
