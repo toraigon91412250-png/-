@@ -455,9 +455,19 @@ export function useBattleGame(
   };
 
   const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string, isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ'): number => {
-    const safeDamage = Math.max(0, Math.floor(damage));
-    const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
+    let safeDamage = Math.max(0, Math.floor(damage));
     const resonance = target.isPlayer ? getEquippedResonanceAbility(stateRef.current.battleConfig) : null;
+    if (target.isPlayer && isDirectHit && safeDamage > 0 && resonance?.id === 'ABYSS_KING') {
+      const zone = getKingZoneValues(resonance.level);
+      const stacks = Math.min(zone.maxStacks, target.resonanceKingZoneStacks ?? 0);
+      const reduction = stacks * zone.directDamageReductionPerStack;
+      if (reduction > 0) {
+        const before = safeDamage;
+        safeDamage = Math.max(1, Math.floor(safeDamage * (1 - reduction)));
+        addLog(`👑【王域・直撃軽減】王域${stacks}スタックにより直接攻撃を${Math.round(reduction * 100)}%軽減（${before} → ${safeDamage}）。`, 'PASSIVE_TRIGGER', turn);
+      }
+    }
+    const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
     const fallenKingLevel = getAbilityLevel(stateRef.current.battleConfig, 'FALLEN_KING');
     let resultingHp = Math.max(0, target.currentHp - safeDamage);
     let resonanceSurvived = false;
@@ -1423,9 +1433,9 @@ export function useBattleGame(
           );
         }
 
-        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
-        const resonanceFallenExecution = activeResonanceForSpecial
-          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForSpecial.id);
+        const activeResonanceForAttack = getEquippedResonanceAbility(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonanceForAttack
+          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForAttack.id);
         const fallenExecution =
           isActorPlayer &&
           (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
@@ -1529,6 +1539,7 @@ export function useBattleGame(
       }
 
       case 'SPECIAL': {
+        const activeResonanceForSpecial = getEquippedResonanceAbility(stateRef.current.battleConfig);
         const isSuperFallenShot =
           isActorPlayer &&
           actor.character.id === 'irena' &&
