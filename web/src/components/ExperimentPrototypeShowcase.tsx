@@ -126,14 +126,14 @@ export const ExperimentPrototypeShowcase: React.FC<Props> = ({ onViewChange }) =
     <section className="epx-catalog" aria-labelledby="epx-catalog-title">
       <div className="epx-catalog-heading">
         <div><p>PLAYABLE CONCEPTS / BUILD 0.1</p><h2 id="epx-catalog-title">試作品ショーケース</h2><span>各ボタンから実際に遊べる。全て仮実装で、本編のセーブ・通貨・解放条件には触れない。</span></div>
-        <span className="epx-count"><FlaskConical size={16} /> 3 PROTOTYPES</span>
+        <span className="epx-count"><FlaskConical size={16} /> 4 PROTOTYPES</span>
       </div>
       <div className="epx-prototype-grid">
         {PROTOTYPE_CARDS.map(card => (
           <article className={'epx-prototype-card epx-card-' + card.accent} key={card.id}>
             <div className="epx-card-top"><span>PROTOTYPE {card.number}</span><span className="epx-live-tag"><span /> PLAYABLE</span></div>
             <div className="epx-card-emblem" aria-hidden="true">
-              {card.id === 'ASCENT' ? <Compass size={36} strokeWidth={1.5} /> : card.id === 'OBSERVATORY' ? <Crosshair size={36} strokeWidth={1.5} /> : <Layers size={36} strokeWidth={1.5} />}
+              {card.id === 'ASCENT' ? <Compass size={36} strokeWidth={1.5} /> : card.id === 'OBSERVATORY' ? <Crosshair size={36} strokeWidth={1.5} /> : card.id === 'BOSSFORGE' ? <Hammer size={36} strokeWidth={1.5} /> : <Layers size={36} strokeWidth={1.5} />}
               <b>{card.number}</b>
             </div>
             <p className="epx-card-tagline">{card.tagline}</p>

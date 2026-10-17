@@ -3273,6 +3273,7 @@ assert.ok(compilerBurst.enemyHp < compilerBurstState.enemyHp, 'A charged build r
 assert.strictEqual(compilerBurst.energy, 0);
 const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
 assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房'].every(name => prototypeScreenSource.includes(name)));
+assert.ok(prototypeScreenSource.includes('4 PROTOTYPES'), 'The gallery count must match the displayed prototype set.');
 const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
 assert.strictEqual(forgeStart.bossHp, 120);
 assert.strictEqual(getBossForgeIntent(forgeStart), 'CRUSH');
@@ -3290,6 +3291,10 @@ const forgeBurst = resolveBossForgeTurn(forgeBurstState, 'BURST');
 assert.ok(forgeBurst.bossHp < forgeBurstState.bossHp);
 assert.strictEqual(forgeBurst.energy, 0);
 assert.strictEqual(getBossForgeIntent({ ...forgeStart, turn: 4 }), 'CRUSH', 'Custom pattern order loops predictably.');
+const clampedForge = createBossForgeState({ bossMaxHp: 999, attackPressure: 99, pattern: ['CRUSH', 'FEINT', 'NOVA', 'GUARD', 'RECOVER'] });
+assert.strictEqual(clampedForge.bossMaxHp, 400, 'Boss design HP has a safe supported range.');
+assert.strictEqual(clampedForge.config.attackPressure, 40, 'Boss design pressure has a safe supported range.');
+assert.strictEqual(clampedForge.config.pattern.length, 4, 'Boss behavior sequences are bounded to four editable slots.');
 const forgeFinished = { ...forgeStart, status: 'VICTORY' };
 assert.strictEqual(resolveBossForgeTurn(forgeFinished, 'STRIKE'), forgeFinished, 'Finished custom boss fights ignore additional input.');
 console.log('✓ Experiment prototypes: seeded roguelite runs, telegraph counterplay, resonance buildcraft, and configurable boss balance verified.');
