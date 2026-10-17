@@ -91,7 +91,6 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name
       ?? RESONANCE_DEFINITIONS.find(ability => ability.id === id)?.name
       ?? id;
-  const isRegularAbility = (id: BattleAbilityId): id is AbilityId => id in abilityProgress.levels;
   const availableSelectedAbilities = selectedAbilities.filter(isAbilityAvailableForSelectedCharacter);
   const STELLA_INCOMPATIBLE_IMPRINTS: readonly ImprintId[] = ['BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'FEATHER_SPLIT'];
   const getCompatibleImprints = (ids: readonly ImprintId[]) =>
@@ -117,7 +116,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
 
   const buildValidationContext: BuildValidationContext = {
     availableStatPoints,
-    abilityLevels: abilityProgress.levels,
+    abilityLevels: { ...abilityProgress.levels, ...resonanceProgress.levels },
     unlockedImprintIds: imprintProgress.unlockedIds,
   };
 
@@ -130,7 +129,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       playerCharacterId: selectedPlayerCharacterId,
       abilities: validation.snapshot.abilityIds.filter(isAbilityAvailableForSelectedCharacter).map(id => ({
         id,
-        level: abilityProgress.levels[id],
+        level: getAbilityLevelForSelection(id),
       })),
       statAllocation: validation.snapshot.statAllocation,
       statPointTotal: availableStatPoints,
@@ -325,7 +324,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         <BuildSavePanel
           snapshot={{
             statAllocation,
-            abilityIds: selectedAbilities.filter(isRegularAbility),
+            abilityIds: [...selectedAbilities],
             imprintIds: [...imprintProgress.equippedIds],
           }}
           context={buildValidationContext}
