@@ -2195,7 +2195,7 @@ export function useBattleGame(
           }
         }
 
-        const judgmentActive = isActorPlayer && judgmentReadyRef.current;
+        const judgmentActive = isActorPlayer && (judgmentReadyRef.current || isResonanceExecutionReady('ULTIMATE'));
         const baseCalculatedDamage = calculateUltimateDamage({
           attacker: actor,
           target,
@@ -2203,6 +2203,7 @@ export function useBattleGame(
           turn,
           isActingFirst,
           judgmentReady: judgmentActive,
+          resonanceJudgmentMarks: resonanceJudgmentMarksRef.current,
           ultimateVariant: appliedIrenaVariant,
           alreadyPrepared: true,
           baseAttackerMaxHp: baseActorMaxHp,
@@ -2232,16 +2233,23 @@ export function useBattleGame(
           ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT')
           : 0;
         if (judgmentActive) {
+          const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+          const execution = resonance ? getResonanceExecutionStats(resonance.id, resonance.level) : null;
           addLog(
-            `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
+            execution && !judgmentReadyRef.current
+              ? `⚖️【共鳴断罪執行】必殺技に断罪が宿った！ 基本倍率×${execution.multiplier}`
+              : `⚖️【断罪執行】必殺技に断罪が宿った！ ダメージ×${getJudgmentDamageMultiplier(judgmentLevel).toFixed(2)}`,
             'PASSIVE_TRIGGER',
             turn,
           );
         }
 
+        const activeResonanceForUltimate = getEquippedResonanceAbility(stateRef.current.battleConfig);
+        const resonanceFallenExecution = activeResonanceForUltimate
+          && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(activeResonanceForUltimate.id);
         const fallenExecution =
           isActorPlayer &&
-          hasAbility(stateRef.current.battleConfig, 'FALLEN') &&
+          (hasAbility(stateRef.current.battleConfig, 'FALLEN') || resonanceFallenExecution) &&
           target.currentHp > 0 &&
           actor.currentHp > 1 &&
           actor.currentHp <= baseActorMaxHp * 0.05;
@@ -2284,10 +2292,18 @@ export function useBattleGame(
         updateState(prev => ({ ...prev, visualEffect: null }));
 
         if (judgmentActive) {
-          judgmentReadyRef.current = false;
-          judgmentMarksRef.current = 0;
-          updateState(prev => ({ ...prev, judgmentReady: false }));
-          addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          if (judgmentReadyRef.current) {
+            judgmentReadyRef.current = false;
+            judgmentMarksRef.current = 0;
+            updateState(prev => ({ ...prev, judgmentReady: false }));
+            addLog('⚖️【断罪執行完了】断罪の力が解放された。', 'PASSIVE_TRIGGER', turn);
+          } else {
+            finishResonanceJudgmentExecution(turn);
+          }
+        } else if (isActorPlayer && activeResonanceForUltimate?.id === 'FALLEN_JUDGMENT') {
+          addResonanceJudgmentMarks(3, turn, '必殺技命中');
+        } else if (isActorPlayer && activeResonanceForUltimate?.id === 'KING_JUDGMENT') {
+          addResonanceJudgmentMarks(1, turn, '必殺技命中');
         } else if (isActorPlayer && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) {
           addJudgmentMarks(3, turn);
         }
