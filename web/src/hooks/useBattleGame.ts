@@ -595,6 +595,19 @@ export function useBattleGame(
     source: string,
     isDirectHit = source !== '出血ダメージ',
   ): { damage: number; targetHp: number; phaseChanged: boolean } => {
+    if (target.isPlayer && isDirectHit) {
+      const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+      if (resonance?.id === 'ABYSS_KING') {
+        const zone = getKingZoneValues(resonance.level);
+        const stacks = Math.min(zone.maxStacks, target.resonanceKingZoneStacks ?? 0);
+        const reduction = Math.min(0.95, stacks * zone.directDamageReductionPerStack);
+        if (reduction > 0) {
+          const beforeZone = Math.max(0, Math.floor(damage));
+          damage = Math.max(0, Math.floor(beforeZone * (1 - reduction)));
+          addLog(`👑【王域】直接攻撃を${Math.round(reduction * 100)}%軽減（${beforeZone} → ${damage}）。`, 'PASSIVE_TRIGGER', turn);
+        }
+      }
+    }
     const damageBeforePassive = Math.max(0, Math.floor(damage));
     damage = applyPassiveDamageReduction(target, damage, isDirectHit);
     if (damage < damageBeforePassive) {
@@ -647,7 +660,7 @@ export function useBattleGame(
     }
     return {
       damage: Math.max(0, Math.floor(damage)),
-      targetHp: resolveIncomingDamage(target, damage, turn, source),
+      targetHp: resolveIncomingDamage(target, damage, turn, source, isDirectHit),
       phaseChanged: false,
     };
   };
