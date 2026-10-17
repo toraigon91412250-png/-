@@ -10,7 +10,7 @@ import { ResonanceScreen } from './components/ResonanceScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
 import { BattleDeployOverlay } from './components/BattleDeployOverlay';
-import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } from './utils/storage';
+import { addAbilityShardsForDeveloper, addRecruitmentTicketsForDeveloper, chooseIrenaSkillPath, loadAbilityProgress, loadOverallStats, loadRaidRewardProgress, loadRecruitmentProgress, loadSkillProgress, performRecruitment, drawImprintGacha, redeemRaidCoreFragment, resetProgressForDeveloper, setAbilityForDeveloper, setAllAbilitiesForDeveloper, setRecruitmentTicketsForDeveloper, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, setSkillProgressForDeveloper, unlockSuperFallenShotForDeveloper, upgradeAbility, upgradeIrenaSkill, loadStatPoints, loadImprintProgress, equipImprint, unequipImprint, replaceEquippedImprints, claimKaiser100VictoryReward, claimStellaFinalBattleReward, enableDeveloperMode, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, unlockAllGameFeaturesForDeveloper, setResonanceAbilityForDeveloper, setResonanceShardsForDeveloper, loadAchievementProgress, recordAchievementBattleProgress, syncAchievementCompletion, claimAchievementReward, markAllAchievementsCompleteForDeveloper, resetAchievementProgressForDeveloper, setEquippedAchievementBadge, unlockAchievementUltimateAuthority, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } from './utils/storage';
 import { RaidGame } from './raid/RaidGame';
 import { RecruitmentDraw } from './data/recruitment';
 import { RecruitmentScreen } from './components/RecruitmentScreen';
@@ -747,6 +747,23 @@ export const App: React.FC = () => {
     setAbilityProgress(setAllAbilitiesForDeveloper(level, shards));
   };
 
+  const handleDeveloperSetResonanceAbility = (id: ResonanceAbilityId, level: number) => {
+    const next = setResonanceAbilityForDeveloper(id, level);
+    setAbilityProgress(next);
+    setResonanceProgress(loadResonanceProgress());
+    if (level <= 0) {
+      setBattleSetup(prev => ({
+        ...prev,
+        abilities: prev.abilities.filter(ability => ability.id !== id),
+      }));
+    }
+  };
+
+  const handleDeveloperSetResonanceShards = (amount: number) => {
+    setAbilityProgress(setResonanceShardsForDeveloper(amount));
+    setResonanceProgress(loadResonanceProgress());
+  };
+
   const handleDeveloperAddAbilityShards = (id: AbilityId, amount: number) => {
     setAbilityProgress(addAbilityShardsForDeveloper(id, amount));
   };
@@ -852,6 +869,8 @@ export const App: React.FC = () => {
           unlockedKaiserLevel={kaiserChallengeProgress.unlockedLevel}
           availableStatPoints={availableStatPoints}
           abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
+          onOpenResonance={handleOpenResonance}
           stellaUnlockAvailable={stellaModeProgress.revealAvailable}
           stellaModeUnlocked={stellaModeProgress.stellaModeUnlocked}
           stellaFinalBattleUnlocked={stellaModeProgress.isUnlocked && stellaModeProgress.exKaiserDefeated}
@@ -1035,6 +1054,7 @@ export const App: React.FC = () => {
       ) : (
         <DeveloperToolsScreen
           abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
           recruitmentProgress={recruitmentProgress}
           imprintProgress={imprintProgress}
           raidRewardProgress={raidRewardProgress}
@@ -1046,6 +1066,8 @@ export const App: React.FC = () => {
           onSetAbility={handleDeveloperSetAbility}
           onSetAllAbilities={handleDeveloperSetAllAbilities}
           onAddAbilityShards={handleDeveloperAddAbilityShards}
+          onSetResonanceAbility={handleDeveloperSetResonanceAbility}
+          onSetResonanceShards={handleDeveloperSetResonanceShards}
           onSetTickets={handleDeveloperSetTickets}
           onAddTickets={handleDeveloperAddTickets}
           onSetImprintTickets={handleDeveloperSetImprintTickets}
