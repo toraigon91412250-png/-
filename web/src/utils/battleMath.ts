@@ -106,7 +106,7 @@ function applyFallenExecution(
   const resonanceFallen = resonance && ['FALLEN_WING', 'FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id);
   if (
     attacker.isPlayer &&
-    (hasAbility(config, 'FALLEN') || resonanceFallen || (attacker.isPlayer && isResonanceAbilityIdForGod(config))) &&
+    (hasAbility(config, 'FALLEN') || resonanceFallen || getEquippedResonanceAbilities(config).some(ability => ability.id === 'FALLEN_GOD')) &&
     target.currentHp > 0 &&
     attacker.currentHp > 1 &&
     attacker.currentHp <= baseAttackerMaxHp * 0.05
