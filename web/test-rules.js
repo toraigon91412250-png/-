@@ -3229,6 +3229,13 @@ try {
 // Playable prototype rules: route variation, readable counterplay, and loadout-analysis regressions.
 assert.deepStrictEqual(getAscentRouteChoices(5, 2).map(node => node.type), ['BOSS']);
 assert.strictEqual(getAscentRouteChoices(2, 0).some(node => node.type === 'ELITE'), true);
+const ascentFloorThree = getAscentRouteChoices(3, 1);
+assert.strictEqual(ascentFloorThree.find(node => node.type === 'COMBAT')?.title, '王域の番人',
+  'Route labels should prefer the correct floor-specific combat encounter.');
+assert.strictEqual(ascentFloorThree.find(node => node.type === 'ELITE')?.title, '精鋭・王翼兵',
+  'Route labels should prefer the correct floor-specific elite encounter.');
+assert.strictEqual(getAscentRouteChoices(4, 0).find(node => node.type === 'ELITE')?.title, '精鋭・深淵騎士',
+  'The final approach should use its own elite encounter label.');
 assert.notDeepStrictEqual(
   getAscentRouteChoices(1, 0).map(node => node.type),
   getAscentRouteChoices(1, 1).map(node => node.type),

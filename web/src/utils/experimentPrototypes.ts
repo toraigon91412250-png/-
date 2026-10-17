@@ -64,11 +64,20 @@ export function getAscentRouteChoices(floor: number, seed = 0): AscentRouteNode[
     3: [['COMBAT', 'SHRINE', 'ELITE'], ['COMBAT', 'FORGE', 'ELITE'], ['SHRINE', 'FORGE', 'ELITE']],
     4: [['ELITE', 'SHRINE', 'FORGE'], ['ELITE', 'COMBAT', 'FORGE'], ['SHRINE', 'COMBAT', 'FORGE']],
   };
-  const availableTemplates = Object.values(routeByFloor).flat();
   const variants = routeVariants[floor] ?? routeVariants[1];
   const chosenTypes = variants[Math.abs(Math.floor(seed + floor - 1)) % variants.length];
+  const templatesByFloor = Object.entries(routeByFloor).map(([templateFloor, nodes]) => ({
+    floor: Number(templateFloor),
+    nodes,
+  }));
   return chosenTypes.map((type, index) => {
-    const template = availableTemplates.find(node => node.type === type);
+    const localTemplate = routeByFloor[floor]?.find(node => node.type === type);
+    const nearestTemplate = templatesByFloor
+      .flatMap(entry => entry.nodes
+        .filter(node => node.type === type)
+        .map(node => ({ floor: entry.floor, node })))
+      .sort((a, b) => Math.abs(a.floor - floor) - Math.abs(b.floor - floor))[0]?.node;
+    const template = localTemplate ?? nearestTemplate;
     if (!template) throw new Error('Missing experiment route template: ' + type);
     return { ...template, id: 'f' + floor + '-' + type.toLowerCase() + '-' + index };
   });
