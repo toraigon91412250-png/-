@@ -472,3 +472,118 @@ export function resolveResonanceTrialTurn(
   if (status === 'DEFEAT') logs.push('HPが尽きた。構成を変えて再試験しよう。');
   return { ...state, playerHp, enemyHp, energy, turn: state.turn + 1, combo, score, status, logs: logs.slice(-6) };
 }
+
+
+/** Standalone boss-design test. These values exist only in the Experiment Lab. */
+export type BossForgePattern = 'CRUSH' | 'FEINT' | 'RECOVER' | 'NOVA' | 'GUARD';
+export type BossForgeAction = 'STRIKE' | 'GUARD' | 'EVADE' | 'CHARGE' | 'BURST';
+export interface BossForgeConfig {
+  bossMaxHp: number;
+  attackPressure: number;
+  pattern: BossForgePattern[];
+}
+export interface BossForgeState {
+  bossHp: number;
+  bossMaxHp: number;
+  playerHp: number;
+  playerMaxHp: number;
+  energy: number;
+  turn: number;
+  score: number;
+  combo: number;
+  status: PrototypeStatus;
+  config: BossForgeConfig;
+  logs: string[];
+}
+export function getBossForgeIntent(state: BossForgeState): BossForgePattern {
+  const sequence = state.config.pattern.length ? state.config.pattern : ['CRUSH'];
+  return sequence[(Math.max(1, state.turn) - 1) % sequence.length];
+}
+export function createBossForgeState(config: BossForgeConfig): BossForgeState {
+  const bossMaxHp = Math.max(60, Math.min(400, Math.round(config.bossMaxHp)));
+  const attackPressure = Math.max(6, Math.min(40, Math.round(config.attackPressure)));
+  const pattern = (config.pattern.length ? config.pattern : ['CRUSH']).slice(0, 4);
+  return {
+    bossHp: bossMaxHp,
+    bossMaxHp,
+    playerHp: 100,
+    playerMaxHp: 100,
+    energy: 1,
+    turn: 1,
+    score: 0,
+    combo: 0,
+    status: 'ACTIVE',
+    config: { bossMaxHp, attackPressure, pattern: [...pattern] },
+    logs: ['行動パターンを読み、調整した皇帝の強さを検証せよ。'],
+  };
+}
+export function resolveBossForgeTurn(state: BossForgeState, action: BossForgeAction): BossForgeState {
+  if (state.status !== 'ACTIVE') return state;
+  const intent = getBossForgeIntent(state);
+  let bossHp = state.bossHp;
+  let playerHp = state.playerHp;
+  let energy = state.energy;
+  let combo = state.combo;
+  let score = state.score;
+  let guarding = false;
+  let evading = false;
+  const logs = [...state.logs];
+  let damage = 0;
+
+  if (action === 'STRIKE') {
+    damage = 16 + combo * 2 + (intent === 'RECOVER' ? 10 : 0);
+    if (intent === 'GUARD') damage = Math.round(damage * 0.55);
+    combo += 1;
+    energy = Math.min(3, energy + 1);
+    score += damage;
+    logs.push('通常攻撃。皇帝に' + damage + 'ダメージ。');
+  } else if (action === 'GUARD') {
+    guarding = true;
+    energy = Math.min(3, energy + 1);
+    combo = 0;
+    score += 3;
+    logs.push('防御姿勢。次の攻撃を軽減。');
+  } else if (action === 'EVADE') {
+    evading = true;
+    combo = 0;
+    logs.push('回避に集中。攻撃は行わない。');
+  } else if (action === 'CHARGE') {
+    energy = Math.min(3, energy + 2);
+    combo = 0;
+    logs.push('エネルギーを2蓄積。');
+  } else if (energy >= 3) {
+    damage = 42 + combo * 2 + (intent === 'RECOVER' ? 12 : 0);
+    if (intent === 'GUARD') damage = Math.round(damage * 0.55);
+    energy = 0;
+    combo = 0;
+    score += damage + 10;
+    logs.push('共鳴解放！ 皇帝に' + damage + 'ダメージ。');
+  } else {
+    logs.push('エネルギー不足。共鳴解放には3ゲージ必要。');
+  }
+
+  bossHp = Math.max(0, bossHp - damage);
+  if (bossHp <= 0) {
+    logs.push('設計した皇帝を撃破。調整条件で試験を突破した。');
+    return { ...state, bossHp, playerHp, energy, combo, score: score + playerHp, status: 'VICTORY', turn: state.turn + 1, logs: logs.slice(-7) };
+  }
+
+  if (intent === 'RECOVER') {
+    const healing = Math.min(12, state.bossMaxHp - bossHp);
+    bossHp += healing;
+    logs.push('皇帝が再構成。HPを' + healing + '回復。');
+  } else {
+    const baseIncoming = state.config.attackPressure + (intent === 'CRUSH' ? 4 : intent === 'NOVA' ? 10 : intent === 'GUARD' ? -8 : -5);
+    const incoming = evading ? 0 : Math.max(0, Math.round(baseIncoming * (guarding ? 0.35 : 1)));
+    playerHp = Math.max(0, playerHp - incoming);
+    if (incoming > 0) logs.push('皇帝の' + (intent === 'NOVA' ? '全域崩壊' : intent === 'CRUSH' ? '重撃' : intent === 'GUARD' ? '防御衝撃' : '牽制') + '。' + incoming + 'ダメージ。');
+    else if (evading) {
+      energy = Math.min(3, energy + 1);
+      score += 6;
+      logs.push('回避成功。エネルギー+1、スコア+6。');
+    }
+  }
+  const status: PrototypeStatus = playerHp <= 0 ? 'DEFEAT' : 'ACTIVE';
+  if (status === 'DEFEAT') logs.push('HPが尽きた。HP・圧力・行動列を調整して再試験しよう。');
+  return { ...state, bossHp, playerHp, energy, combo, score, status, turn: state.turn + 1, logs: logs.slice(-7) };
+}
