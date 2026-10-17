@@ -225,7 +225,6 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
     damage = Math.round(damage * getJudgmentDamageMultiplier(judgmentLevel))
       + Math.round(target.currentHp * GAME_BALANCE.JUDGMENT_MAX_HP_BONUS);
   }
-  damage = applyResonanceExecutionDamage(damage, target, attacker, context);
 
   if (
     target.character.id === 'kaiser' &&
