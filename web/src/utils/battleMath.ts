@@ -12,7 +12,6 @@ import { resolveKaiserHit } from './kaiserChallenge';
 import { getFeatherSplitModeForSkill, resolveFeatherSplitDamage } from './imprintSystem';
 import {
   applyDynamicAbilityModifiers,
-  applyJudgmentDefense,
   getAbilityLevel,
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
@@ -89,10 +88,6 @@ function prepareFighters(context: DamageContext): { attacker: BattleFighter; tar
     attacker: applyDynamicAbilityModifiers(context.attacker, context.config, context.turn),
     target: applyDynamicAbilityModifiers(context.target, context.config, context.turn),
   };
-}
-
-function isResonanceAbilityIdForGod(config: BattleSetupConfig): boolean {
-  return config.abilities.some(ability => isResonanceAbilityId(ability.id) && ability.id === 'FALLEN_GOD' && ability.level > 0);
 }
 
 function applyFallenExecution(
