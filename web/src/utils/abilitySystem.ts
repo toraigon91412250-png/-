@@ -126,6 +126,8 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
 
   const fallenWingLevel = getResonanceAbilityLevel(config, 'FALLEN_WING');
   const kingWingLevel = getResonanceAbilityLevel(config, 'KING_WING');
+  const abyssWingLevel = getResonanceAbilityLevel(config, 'ABYSS_WING');
+  const judgmentWingLevel = getResonanceAbilityLevel(config, 'JUDGMENT_WING');
   const inheritedKingDurability = Math.max(
     getResonanceAbilityLevel(config, 'FALLEN_GOD'),
     getResonanceAbilityLevel(config, 'KING_JUDGMENT'),
@@ -149,12 +151,33 @@ export function applyStaticAbilityModifiers(character: CharacterDef, config: Bat
 
   if (character.id === 'irena' && kingWingLevel > 0) {
     const multiplier = [1.24, 1.28, 1.32, 1.36, 1.40][Math.min(5, Math.max(1, Math.floor(kingWingLevel))) - 1];
+    const blackWingStatMultiplier = 1 + kingWingLevel * 0.02;
     next = {
       ...next,
       maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
+      attack: Math.max(1, Math.round(next.attack * blackWingStatMultiplier)),
       defense: Math.max(0, Math.round(next.defense * multiplier)),
+      speed: Math.max(1, Math.round(next.speed * blackWingStatMultiplier)),
       ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * multiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * blackWingStatMultiplier)) } : {}),
       ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * multiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * blackWingStatMultiplier)) } : {}),
+    };
+  }
+
+  if (character.id === 'irena' && (abyssWingLevel > 0 || judgmentWingLevel > 0)) {
+    const inheritedBlackWingLevel = Math.max(abyssWingLevel, judgmentWingLevel);
+    const multiplier = 1 + inheritedBlackWingLevel * 0.02;
+    next = {
+      ...next,
+      maxHp: Math.max(1, Math.round(next.maxHp * multiplier)),
+      attack: Math.max(1, Math.round(next.attack * multiplier)),
+      defense: Math.max(0, Math.round(next.defense * multiplier)),
+      speed: Math.max(1, Math.round(next.speed * multiplier)),
+      ...(next.talentBaseMaxHp !== undefined ? { talentBaseMaxHp: Math.max(1, Math.round(next.talentBaseMaxHp * multiplier)) } : {}),
+      ...(next.talentBaseAttack !== undefined ? { talentBaseAttack: Math.max(1, Math.round(next.talentBaseAttack * multiplier)) } : {}),
+      ...(next.talentBaseDefense !== undefined ? { talentBaseDefense: Math.max(0, Math.round(next.talentBaseDefense * multiplier)) } : {}),
+      ...(next.talentBaseSpeed !== undefined ? { talentBaseSpeed: Math.max(1, Math.round(next.talentBaseSpeed * multiplier)) } : {}),
     };
   }
 
