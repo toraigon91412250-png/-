@@ -11,6 +11,7 @@ import {
   getJudgmentDamageMultiplier,
   getJudgmentDefenseIgnore,
   getJudgmentThreshold,
+  getAchievementBadgeDamageMultiplier,
 } from './src/utils/abilitySystem.ts';
 import { createInitialFighter } from './src/hooks/useBattleGame.ts';
 import { calculateHitDamagePreview, calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from './src/utils/battleMath.ts';
@@ -31,7 +32,7 @@ register(
 const { IRENA, KAISER, STELLA, PLAYER_CHARACTERS, CPU_CHARACTERS, getIrenaWithSkillProgress, getPlayerCharacterById } = await import('./src/data/characters.ts');
 const { STELLA_FINAL_BATTLE_TUNING, STELLA_FINAL_BATTLE_IMAGES } = await import('./src/data/stellaFinalBattleConfig.ts');
 const { getShortIrenaFinalTurnLimit } = await import('./src/utils/shortIrenaFinalBattle.ts');
-const { ACHIEVEMENT_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, completeAchievementIds, getAchievementMetricValue, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
+const { ACHIEVEMENT_DEFINITIONS, ACHIEVEMENT_BADGE_DEFINITIONS, INITIAL_ACHIEVEMENT_PROGRESS, buildAchievementBadgeProgress, completeAchievementIds, getAchievementMetricValue, getAchievementBadgeTier, markAllAchievementsForDeveloper, normalizeAchievementProgress, recordAchievementBattle } = await import('./src/utils/achievementSystem.ts');
 const { ABILITY_DEFINITIONS } = await import('./src/data/abilities.ts');
 const { IMPRINT_DEFINITIONS: ACHIEVEMENT_IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { RECRUITMENT_REWARDS } = await import('./src/data/recruitment.ts');
@@ -90,6 +91,23 @@ const allAchievementIdsForDev = markAllAchievementsForDeveloper(INITIAL_ACHIEVEM
 assert.strictEqual(allAchievementIdsForDev.completedIds.length, ACHIEVEMENT_DEFINITIONS.length);
 assert.strictEqual(normalizeAchievementProgress({ claimedRewardIds: ['unknown-id'] }).claimedRewardIds.length, 0,
   'Unknown achievement IDs cannot create claimable rewards.');
+assert.strictEqual(ACHIEVEMENT_BADGE_DEFINITIONS.length, 3, 'There must be exactly three achievement badges.');
+assert.deepStrictEqual(ACHIEVEMENT_BADGE_DEFINITIONS.map(badge => badge.achievementIds.length), [12, 12, 12]);
+const assignedBadgeAchievementIds = ACHIEVEMENT_BADGE_DEFINITIONS.flatMap(badge => badge.achievementIds);
+assert.strictEqual(new Set(assignedBadgeAchievementIds).size, 36, 'Each existing achievement must belong to exactly one badge.');
+assert.deepStrictEqual(
+  [...assignedBadgeAchievementIds].sort(),
+  ACHIEVEMENT_DEFINITIONS.map(achievement => achievement.id).sort(),
+  'Badge branches must cover all existing achievements without adding or omitting any.',
+);
+const badgeTierOne = completeAchievementIds(INITIAL_ACHIEVEMENT_PROGRESS, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(0, 3));
+const badgeTierTwo = completeAchievementIds(badgeTierOne, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(3, 5));
+const badgeTierThree = completeAchievementIds(badgeTierTwo, ACHIEVEMENT_BADGE_DEFINITIONS[0].achievementIds.slice(5, 8));
+assert.strictEqual(getAchievementBadgeTier('A', INITIAL_ACHIEVEMENT_PROGRESS), 0);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierOne).find(badge => badge.id === 'A').tier, 1);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierTwo).find(badge => badge.id === 'A').tier, 2);
+assert.strictEqual(buildAchievementBadgeProgress(badgeTierThree).find(badge => badge.id === 'A').tier, 3);
+assert.strictEqual(getAchievementBadgeTier('A', badgeTierThree), 3);
 
 // The final-form deadline is fixed to 8–10 turns and is independent of
 // allocated/effective speed, including extreme speed multipliers.
@@ -919,6 +937,59 @@ const criticalDamage = calculateNormalAttackDamage({
 
 assert.strictEqual(normalDamage, 180);
 assert.strictEqual(criticalDamage, 280);
+const fireBadgeNormalDamage = calculateNormalAttackDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'A', achievementBadgeLevel: 1 },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(fireBadgeNormalDamage, Math.round(normalDamage * 1.05),
+  'Fire badge tier I must increase player direct damage by exactly 5%.');
+assert.strictEqual(getAchievementBadgeDamageMultiplier({ ...config, achievementBadgeId: 'B', achievementBadgeLevel: 1 }, 'NORMAL'), 1,
+  'Skill badge must not increase normal attack damage.');
+const baseSpecialBadgeDamage = calculateSpecialDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config,
+  turn: 1,
+  isActingFirst: true,
+});
+const skillBadgeSpecialDamage = calculateSpecialDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'B', achievementBadgeLevel: 3 },
+  turn: 1,
+  isActingFirst: true,
+});
+assert.strictEqual(skillBadgeSpecialDamage, Math.round(baseSpecialBadgeDamage * 1.15),
+  'Skill badge tier III must increase special damage by exactly 15%.');
+assert.strictEqual(calculateUltimateDamage({
+  attacker: attackBase,
+  target: attackTarget,
+  config: { ...config, achievementBadgeId: 'B', achievementBadgeLevel: 3 },
+  turn: 1,
+  isActingFirst: true,
+  ultimateVariant: 'OMNIPOTENCE',
+}), 1680, 'Skill badge tier III must increase ultimate damage by 12%.');
+const balancedBadgeTierOne = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 1,
+});
+const balancedBadgeTierTwo = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 2,
+});
+const balancedBadgeTierThree = applyStaticAbilityModifiers(IRENA, {
+  kaiserLevel: 10, abilities: [], achievementBadgeId: 'C', achievementBadgeLevel: 3,
+});
+assert.strictEqual(balancedBadgeTierOne.maxHp, Math.round(IRENA.maxHp * 1.05));
+assert.strictEqual(balancedBadgeTierTwo.maxHp, Math.round(IRENA.maxHp * 1.07));
+assert.strictEqual(balancedBadgeTierTwo.defense, Math.round(IRENA.defense * 1.07));
+assert.strictEqual(balancedBadgeTierThree.attack, Math.round(IRENA.attack * 1.07));
+assert.strictEqual(balancedBadgeTierThree.speed, Math.round(IRENA.speed * 1.07));
+assert.strictEqual(balancedBadgeTierThree.damageTakenMultiplier, (IRENA.damageTakenMultiplier ?? 1) * 0.95);
+assert.strictEqual(applyPassiveDamageReduction({ character: balancedBadgeTierThree }, 100, true), 95);
+assert.strictEqual(applyPassiveDamageReduction({ character: balancedBadgeTierThree }, 100, false), 100,
+  'Balanced badge reduction must apply only to direct hits.');
 const attackTalentFighter = createInitialFighter(attackTalentBuild, true);
 assert.strictEqual(calculateNormalAttackDamage({
   attacker: attackTalentFighter,
