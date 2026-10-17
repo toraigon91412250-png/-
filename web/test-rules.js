@@ -3276,7 +3276,7 @@ assert.strictEqual(compilerBurst.energy, 0);
 const prototypeScreenSource = await readFile(new URL('./src/components/ExperimentPrototypeShowcase.tsx', import.meta.url), 'utf8');
 assert.ok(['虚空踏破', '行動観測室', '共鳴コンパイラ', '皇帝行動工房', '反転決戦'].every(name => prototypeScreenSource.includes(name)));
 assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'Five playable concepts should be visible in the catalog.');
-assert.ok(prototypeScreenSource.includes('4 PROTOTYPES'), 'The gallery count must match the displayed prototype set.');
+assert.ok(prototypeScreenSource.includes('5 PROTOTYPES'), 'The gallery count must match the displayed prototype set.');
 const forgeStart = createBossForgeState({ bossMaxHp: 120, attackPressure: 12, pattern: ['CRUSH', 'RECOVER', 'GUARD'] });
 assert.strictEqual(forgeStart.bossHp, 120);
 assert.strictEqual(getBossForgeIntent(forgeStart), 'CRUSH');
