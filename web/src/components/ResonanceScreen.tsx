@@ -96,6 +96,14 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
                   <strong style={{ fontSize: 13 }}>共鳴Lv.{level > 0 ? level : '—'} {level >= 5 ? '· MAX' : ''}</strong>
                   {level > 0 && <p style={{ margin: '5px 0 0', color: '#cbd5e1', fontSize: 11 }}>次の育成：共鳴片 {nextCost} 個（所持 {resonanceProgress.shards} 個）</p>}
                   {level > 0 && <p style={{ margin: '7px 0 0', fontSize: 11, lineHeight: 1.6, color: '#e2e8f0' }}>{definition.levelDescriptions[level - 1]}</p>}
+                  <details style={{ marginTop: 8, color: '#cbd5e1' }}>
+                    <summary style={{ cursor: 'pointer', fontSize: 11, fontWeight: 800, color: '#c4b5fd' }}>Lv.1〜Lv.5の効果一覧</summary>
+                    <ol style={{ margin: '8px 0 0', paddingLeft: 19, fontSize: 10, lineHeight: 1.65 }}>
+                      {definition.levelDescriptions.map((description, index) => (
+                        <li key={index} style={{ marginBottom: 5 }}><strong>Lv.{index + 1}：</strong>{description}</li>
+                      ))}
+                    </ol>
+                  </details>
                 </div>
                 {level > 0 ? (
                   <button type="button" disabled={level >= 5 || resonanceProgress.shards < (nextCost ?? Infinity)} onClick={() => onUpgrade(definition.id)} style={{ width: '100%', marginTop: 10, minHeight: 40, borderRadius: 10, border: 0, background: level >= 5 || resonanceProgress.shards < (nextCost ?? Infinity) ? '#273044' : 'linear-gradient(90deg,#6d5bd0,#9333ea)', color: level >= 5 || resonanceProgress.shards < (nextCost ?? Infinity) ? '#94a3b8' : '#fff', fontWeight: 900 }}>
