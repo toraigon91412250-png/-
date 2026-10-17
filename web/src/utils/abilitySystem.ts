@@ -1,6 +1,6 @@
 import { AbilityId, BattleAbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility, ResonanceAbilityId } from '../types/game';
 import { RESONANCE_DEFINITIONS, isResonanceAbilityId, isRegularAbilityId } from '../data/resonanceAbilities';
-import { getFallenDynamicMultiplier, getKingZoneValues } from './resonanceSystem';
+import { getEquippedResonanceAbilities, getFallenDynamicMultiplier, getKingZoneValues } from './resonanceSystem';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
 
@@ -253,7 +253,7 @@ export function applyDynamicAbilityModifiers(
 ): BattleFighter {
   const abyssLevel = getAbilityLevel(config, 'ABYSS');
   const fallenLevel = getAbilityLevel(config, 'FALLEN');
-  const resonance = getEquippedResonanceAbility(config);
+  const resonances = getEquippedResonanceAbilities(config);
   const resonanceBase = fighter.resonanceBaseStats;
   let character: CharacterDef = { ...fighter.character };
 
@@ -261,8 +261,7 @@ export function applyDynamicAbilityModifiers(
     character.id === 'kaiser' &&
     resonanceBase &&
     fighter.resonanceWeakness &&
-    resonance &&
-    ['ABYSS_FALLEN', 'ABYSS_KING', 'ABYSS_WING', 'ABYSS_JUDGMENT'].includes(resonance.id)
+    resonances.some(resonance => ['ABYSS_FALLEN', 'ABYSS_KING', 'ABYSS_WING', 'ABYSS_JUDGMENT'].includes(resonance.id))
   ) {
     const weakness = fighter.resonanceWeakness;
     character = {
@@ -276,17 +275,22 @@ export function applyDynamicAbilityModifiers(
     };
   }
 
-  if (character.id === 'irena' && resonanceBase && resonance) {
+  if (character.id === 'irena' && resonanceBase && resonances.length > 0) {
     const hpRatio = fighter.currentHp / Math.max(1, resonanceBase.maxHp);
-    const statMultiplier = resonance.id === 'FALLEN_GOD' &&
-      fighter.resonanceStatBuff &&
-      turn <= fighter.resonanceStatBuff.expiresAtTurn
-      ? fighter.resonanceStatBuff.multiplier
-      : getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
+    const statMultiplier = resonances.reduce((multiplier, resonance) => {
+      if (resonance.id === 'FALLEN_GOD') {
+        return multiplier * (
+          fighter.resonanceStatBuff && turn <= fighter.resonanceStatBuff.expiresAtTurn
+            ? fighter.resonanceStatBuff.multiplier
+            : 1
+        );
+      }
+      return multiplier * getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
+    }, 1);
 
     if (statMultiplier > 1) {
       character = {
-        ...fighter.character,
+        ...character,
         maxHp: Math.max(1, Math.round(resonanceBase.maxHp * statMultiplier)),
         attack: Math.max(1, Math.round(resonanceBase.attack * statMultiplier)),
         defense: Math.max(0, Math.round(resonanceBase.defense * statMultiplier)),
@@ -295,12 +299,13 @@ export function applyDynamicAbilityModifiers(
     }
   }
 
-  if (character.id === 'irena' && resonance?.id === 'ABYSS_KING' && resonanceBase) {
-    const values = getKingZoneValues(resonance.level);
+  const kingZone = resonances.find(resonance => resonance.id === 'ABYSS_KING');
+  if (character.id === 'irena' && kingZone && resonanceBase) {
+    const values = getKingZoneValues(kingZone.level);
     const stacks = Math.min(values.maxStacks, fighter.resonanceKingZoneStacks ?? 0);
     character = {
       ...character,
-      defense: Math.max(0, Math.round(resonanceBase.defense * (1 + stacks * values.defenseBonusPerStack))),
+      defense: Math.max(0, Math.round(character.defense * (1 + stacks * values.defenseBonusPerStack))),
     };
   }
 
