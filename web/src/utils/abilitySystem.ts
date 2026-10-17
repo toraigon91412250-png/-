@@ -1,5 +1,6 @@
 import { AbilityId, BattleAbilityId, BattleChallengeLevel, BattleFighter, BattleSetupConfig, CharacterDef, EquippedAbility, ResonanceAbilityId } from '../types/game';
 import { RESONANCE_DEFINITIONS, isResonanceAbilityId, isRegularAbilityId } from '../data/resonanceAbilities';
+import { getFallenDynamicMultiplier, getFallenGodStatMultiplier, getKingZoneValues } from './resonanceSystem';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
 
@@ -251,47 +252,31 @@ export function applyDynamicAbilityModifiers(
     };
   }
 
-  if (character.id === 'irena' && resonanceBase) {
+  if (character.id === 'irena' && resonanceBase && resonance) {
     const hpRatio = fighter.currentHp / Math.max(1, resonanceBase.maxHp);
-    const multiplierForStage = (thresholds: readonly number[], values: readonly number[]) => {
-      const index = thresholds.findIndex(threshold => hpRatio > threshold);
-      return index < 0 ? values[values.length - 1] : index === 0 ? 1 : values[index - 1];
-    };
-    const statMultiplier = resonance?.id === 'FALLEN_GOD' && fighter.resonanceStatBuff && turn <= fighter.resonanceStatBuff.expiresAtTurn
+    const statMultiplier = resonance.id === 'FALLEN_GOD' &&
+      fighter.resonanceStatBuff &&
+      turn <= fighter.resonanceStatBuff.expiresAtTurn
       ? fighter.resonanceStatBuff.multiplier
-      : 1;
-    const fallenMultiplier = resonance && ['FALLEN_WING'].includes(resonance.id)
-      ? multiplierForStage([0.1, 0.25, 0.5], resonance.id === 'FALLEN_WING'
-        ? ([([4.8, 3.8, 2.8]), ([5.25, 4.15, 3.05]), ([5.7, 4.5, 3.3]), ([6.15, 4.85, 3.55]), ([6.6, 5.2, 3.8])][resonance.level - 1] as number[])
-        : [1, 1, 1])
-      : resonance && ['FALLEN_JUDGMENT', 'ABYSS_FALLEN'].includes(resonance.id)
-        ? (hpRatio <= 0.1 ? 3.8 : hpRatio <= 0.25 ? 3.1 : hpRatio <= 0.5 ? 2.4 : 1)
-        : 1;
-    if (statMultiplier > 1 || fallenMultiplier > 1) {
-      const multiplier = statMultiplier > 1 ? statMultiplier : fallenMultiplier;
+      : getFallenDynamicMultiplier(resonance.id, resonance.level, hpRatio);
+
+    if (statMultiplier > 1) {
       character = {
-        ...resonanceBase,
         ...fighter.character,
-        maxHp: Math.max(1, Math.round(resonanceBase.maxHp * multiplier)),
-        attack: Math.max(1, Math.round(resonanceBase.attack * multiplier)),
-        defense: Math.max(0, Math.round(resonanceBase.defense * multiplier)),
-        speed: Math.max(1, Math.round(resonanceBase.speed * multiplier)),
-        specialSkillDamage: Math.max(1, Math.round(resonanceBase.specialSkillDamage * multiplier)),
-        ultimateSkillDamage: Math.max(1, Math.round(resonanceBase.ultimateSkillDamage * multiplier)),
+        maxHp: Math.max(1, Math.round(resonanceBase.maxHp * statMultiplier)),
+        attack: Math.max(1, Math.round(resonanceBase.attack * statMultiplier)),
+        defense: Math.max(0, Math.round(resonanceBase.defense * statMultiplier)),
+        speed: Math.max(1, Math.round(resonanceBase.speed * statMultiplier)),
       };
     }
   }
 
-  if (
-    character.id === 'irena' &&
-    resonance?.id === 'ABYSS_KING' &&
-    (fighter.resonanceKingZoneStacks ?? 0) > 0 &&
-    resonanceBase
-  ) {
-    const bonusPerStack = [0, 0.04, 0.05, 0.06, 0.07, 0.08][resonance.level] ?? 0;
+  if (character.id === 'irena' && resonance?.id === 'ABYSS_KING' && resonanceBase) {
+    const values = getKingZoneValues(resonance.level);
+    const stacks = Math.min(values.maxStacks, fighter.resonanceKingZoneStacks ?? 0);
     character = {
       ...character,
-      defense: Math.max(0, Math.round(resonanceBase.defense * (1 + (fighter.resonanceKingZoneStacks ?? 0) * bonusPerStack))),
+      defense: Math.max(0, Math.round(resonanceBase.defense * (1 + stacks * values.defenseBonusPerStack))),
     };
   }
 
