@@ -150,8 +150,17 @@ export interface BattleFighter {
   isPlayer: boolean;
   activeAilments: ActiveStatusAilment[];
   /** Resonance runtime values remain battle-scoped and are absent from legacy fighters. */
-  resonanceBaseStats?: { attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
+  resonanceBaseStats?: { maxHp: number; attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
   resonanceStatBuff?: { multiplier: number; expiresAtTurn: number; stage: number };
+  resonanceGodObservedHpStage?: number;
+  resonanceRevivalCount?: number;
+  resonanceKingWingStackExpiresAtTurns?: number[];
+  resonanceJudgmentMarks?: number;
+  resonanceJudgmentReady?: boolean;
+  resonanceKingZoneStacks?: number;
+  resonanceKingZoneThreshold?: number;
+  resonanceWeakness?: { attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
+  resonanceWeaknessStages?: { attack: number; defense: number; speed: number; specialSkillDamage: number; ultimateSkillDamage: number };
   resonanceKingWingStacks?: number;
   /** Kaiser-only armor/phase state. Undefined on older or non-Kaiser fighter objects. */
   kaiserArmorCurrent?: number;
