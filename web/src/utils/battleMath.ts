@@ -19,7 +19,6 @@ import {
   hasAbility,
 } from './abilitySystem';
 import { getEquippedResonanceAbilities, getKingWingStackValues, getResonanceExecutionStats } from './resonanceSystem';
-import { isResonanceAbilityId } from '../data/resonanceAbilities';
 
 export interface DamagePreviewResolution {
   /** Damage the target will actually lose from current HP. */
