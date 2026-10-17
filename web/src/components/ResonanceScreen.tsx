@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Check, LockKeyhole, X } from 'lucide-react';
 import type { AbilityProgress, ResonanceAbilityId, ResonanceProgress } from '../types/game';
-import { RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
+import { CRAFTABLE_RESONANCE_ABILITY_IDS, RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
 
 interface ResonanceScreenProps {
@@ -25,7 +25,8 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
   const pending = RESONANCE_DEFINITIONS.find(definition => definition.id === pendingRecipe) ?? null;
   const sourceName = (id: string) => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name ?? id;
   const canCombine = (id: ResonanceAbilityId, ingredients: readonly [keyof AbilityProgress['levels'], keyof AbilityProgress['levels']]) =>
-    resonanceProgress.unlocked
+    CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id)
+    && resonanceProgress.unlocked
     && !resonanceProgress.craftedRecipes.includes(id)
     && resonanceProgress.levels[id] === 0
     && ingredients.every(ingredient => abilityProgress.levels[ingredient] >= 5);
@@ -40,14 +41,14 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
           <p style={{ margin: 0, color: '#c4b5fd', fontSize: 10, letterSpacing: '.22em', fontWeight: 900 }}>AUTHORITY RESONANCE</p>
           <h1 style={{ margin: '5px 0 7px', fontSize: 28, fontWeight: 950 }}>権能共鳴</h1>
           <p style={{ margin: 0, color: '#cbd5e1', fontSize: 13, lineHeight: 1.7 }}>
-            Lv.5の元権能2つを合成し、専用能力を持つ共鳴権能を獲得する。レシピは各1回限定。合成すると元権能2つは未解放に戻る。
+            通常合成の対象は5種。Lv.5の元権能2つを合成し、専用能力を持つ共鳴権能を獲得する。合成すると素材の元権能2つを消費し、未使用欠片は共鳴片に変換される。残る5種も全機能開放・開発者テストでは使用できる。
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 14 }}>
             <span style={{ padding: '8px 11px', borderRadius: 10, background: '#14172a', border: '1px solid #45436a', fontSize: 12, fontWeight: 850 }}>
               共鳴片：{resonanceProgress.shards.toLocaleString('ja-JP')} 個
             </span>
             <span style={{ padding: '8px 11px', borderRadius: 10, background: '#14172a', border: '1px solid #45436a', fontSize: 12, fontWeight: 850 }}>
-              作成済み：{resonanceProgress.craftedRecipes.length}/10
+              作成済み：{CRAFTABLE_RESONANCE_ABILITY_IDS.filter(id => resonanceProgress.craftedRecipes.includes(id)).length}/5
             </span>
             <span style={{ padding: '8px 11px', borderRadius: 10, background: '#14172a', border: '1px solid #45436a', fontSize: 12, fontWeight: 850 }}>
               解放状態：{resonanceProgress.unlocked ? '解放済み' : '未解放'}
@@ -67,6 +68,7 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 290px), 1fr))', gap: 12, marginTop: 16 }}>
           {RESONANCE_DEFINITIONS.map(definition => {
             const level = resonanceProgress.levels[definition.id] ?? 0;
+            const isCraftable = CRAFTABLE_RESONANCE_ABILITY_IDS.includes(definition.id);
             const created = resonanceProgress.craftedRecipes.includes(definition.id);
             const available = canCombine(definition.id, definition.ingredients);
             const ingredients = definition.ingredients;
@@ -111,7 +113,7 @@ export const ResonanceScreen: React.FC<ResonanceScreenProps> = ({
                   </button>
                 ) : (
                   <button type="button" disabled={!available} onClick={() => setPendingRecipe(definition.id)} style={{ width: '100%', marginTop: 10, minHeight: 40, borderRadius: 10, border: '1px solid #6656b6', background: available ? 'linear-gradient(90deg,#6d5bd0,#9333ea)' : '#20283a', color: available ? '#fff' : '#94a3b8', fontWeight: 900 }}>
-                    {!resonanceProgress.unlocked ? '未解放' : created ? '作成済み' : !ingredients.every(id => abilityProgress.levels[id] >= 5) ? '素材のLv.5が必要' : '合成を確認'}
+                    {!isCraftable ? '合成対象外' : !resonanceProgress.unlocked ? '未解放' : created ? '作成済み' : !ingredients.every(id => abilityProgress.levels[id] >= 5) ? '素材のLv.5が必要' : '合成を確認'}
                   </button>
                 )}
               </article>
