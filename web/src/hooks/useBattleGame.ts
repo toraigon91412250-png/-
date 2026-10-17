@@ -622,7 +622,7 @@ export function useBattleGame(
     damage: number,
     turn: number,
     source: string,
-    isDirectHit = source !== '出血ダメージ',
+    isDirectHit = source !== '出血ダメージ' && source !== '星蝕ダメージ',
   ): { damage: number; targetHp: number; phaseChanged: boolean } => {
     if (target.isPlayer && isDirectHit) {
       const resonance = getEquippedResonanceAbilities(stateRef.current.battleConfig).find(item => item.id === 'ABYSS_KING');
