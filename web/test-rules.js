@@ -602,7 +602,7 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority, loadAbilityProgress, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility, addAbilityShards } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority, loadAbilityProgress, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility, addAbilityShards, setResonanceAbilityForDeveloper, setResonanceShardsForDeveloper } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
 const { getKingZoneValues } = await import('./src/utils/resonanceSystem.ts');
@@ -1886,6 +1886,20 @@ try {
     assert.strictEqual(abilityProgressForFullUnlock.levels[id], MAX_ABILITY_LEVEL, id + ' must be max level.');
     assert.ok(abilityProgressForFullUnlock.shards[id] >= 9999, id + ' must have enough shards to test upgrades.');
   }
+  const resonanceProgressForFullUnlock = loadResonanceProgress();
+  assert.strictEqual(resonanceProgressForFullUnlock.unlocked, true,
+    'Full feature unlock must unlock the resonance system.');
+  assert.ok(resonanceProgressForFullUnlock.shards >= 9999,
+    'Full feature unlock must supply shared resonance shards.');
+  assert.deepStrictEqual(
+    resonanceProgressForFullUnlock.craftedRecipes,
+    RESONANCE_DEFINITIONS.map(definition => definition.id),
+    'Full feature unlock must mark all ten recipes as available to test.',
+  );
+  for (const definition of RESONANCE_DEFINITIONS) {
+    assert.strictEqual(resonanceProgressForFullUnlock.levels[definition.id], MAX_ABILITY_LEVEL,
+      definition.id + ' must be max level after full feature unlock.');
+  }
   assert.ok(JSON.parse(storageValues.get('duel_arena_recruitment_progress')).tickets >= 9999,
     'Recruitment screen must have enough tickets to use multi-pulls.');
   const skillProgressForFullUnlock = JSON.parse(storageValues.get('duel_arena_irena_skill_progress'));
@@ -1905,8 +1919,21 @@ try {
   assert.strictEqual(getAvailableIrenaTalentPoints(normalizeIrenaTalentProgress(fullUnlockTalents)), 9,
     'The full unlock should make all nine talent points available on a fresh save.');
 
+  setResonanceAbilityForDeveloper('FALLEN_WING', 0);
+  assert.strictEqual(loadResonanceProgress().levels.FALLEN_WING, 0,
+    'Developer controls must be able to remove an injected resonance level for testing.');
+  assert.ok(!loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'),
+    'Resetting a resonance test level to zero must clear its injected crafted state.');
+  setResonanceAbilityForDeveloper('FALLEN_WING', 5);
+  assert.strictEqual(loadResonanceProgress().levels.FALLEN_WING, 5);
+  assert.ok(loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'));
+  setResonanceShardsForDeveloper(1234);
+  assert.strictEqual(loadResonanceProgress().shards, 1234,
+    'Developer tools must be able to set the shared resonance currency.');
   assert.strictEqual(unlockAllGameFeaturesForDeveloper().persisted, true, 'The all-unlock action should be safe to repeat.');
   assert.strictEqual(loadStatPoints(), 62, 'Repeating the all-unlock action must not grant the +50P reward again.');
+  assert.strictEqual(loadResonanceProgress().shards >= 9999, true,
+    'Repeating full unlock must restore the resonance test currency without erasing resonance data.');
 
   assert.ok(chooseIrenaSkillPath('FEATHER', 'ABYSS'),
     'Full unlock must leave the feather specialization selectable.');
@@ -1940,6 +1967,17 @@ try {
   const appSourceForFullUnlock = await readFile(new URL('./src/App.tsx', import.meta.url), 'utf8');
   assert.match(appSourceForFullUnlock, /currentStellaProgress\.allGameFeaturesUnlocked === true/,
     'Normal battle setup must use the saved flag to open all Kaiser levels.');
+  assert.match(developerToolsSourceForFullUnlock, /権能共鳴テスト/);
+  assert.match(developerToolsSourceForFullUnlock, /onSetResonanceAbility/);
+  const battleSetupSourceForResonance = await readFile(new URL('./src/components/BattleSetupScreen.tsx', import.meta.url), 'utf8');
+  assert.match(battleSetupSourceForResonance,
+    /RESONANCE_DEFINITIONS\s*\.filter\(ability => resonanceProgress\.unlocked && \(resonanceProgress\.levels\[ability\.id\] \?\? 0\) > 0\)/,
+    'Battle setup must only list owned resonance powers after unlocking the system.');
+  assert.doesNotMatch(battleSetupSourceForResonance, /未合成|先に権能共鳴画面で合成してください/,
+    'Battle setup must not display uncombined resonance placeholder cards or text.');
+  const homeDashboardSourceForResonance = await readFile(new URL('./src/components/HomeDashboard.tsx', import.meta.url), 'utf8');
+  assert.match(homeDashboardSourceForResonance, /home-dashboard__resonance-feature/);
+  assert.match(homeDashboardSourceForResonance, /onOpenResonance/);
 } finally {
   globalThis.localStorage.setItem = originalSetItemBeforeFullUnlockTest;
   for (const [key, value] of fullUnlockSaveBeforeTest) {

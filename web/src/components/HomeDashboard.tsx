@@ -21,6 +21,7 @@ import type {
   OverallStats,
   RaidRewardProgress,
   RecruitmentProgress,
+  ResonanceProgress,
 } from '../types/game';
 import { getIrenaWithSkillProgress } from '../data/characters';
 import './HomeDashboard.css';
@@ -37,6 +38,8 @@ interface HomeDashboardProps {
   raidRewardProgress: RaidRewardProgress;
   recruitmentProgress: RecruitmentProgress;
   abilityProgress: AbilityProgress;
+  resonanceProgress: ResonanceProgress;
+  onOpenResonance: () => void;
   onOpenDeveloperTools: () => void;
   onOpenAchievements: () => void;
   achievementCompletedCount: number;
@@ -66,6 +69,8 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   raidRewardProgress,
   recruitmentProgress,
   abilityProgress,
+  resonanceProgress,
+  onOpenResonance,
   onOpenDeveloperTools,
   onOpenAchievements,
   achievementCompletedCount,
@@ -87,6 +92,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     ? Math.round((overallStats.wins / overallStats.totalBattles) * 100)
     : 0;
   const unlockedAbilities = Object.entries(abilityProgress.levels).filter(([id, level]) => id !== 'ASTRAL_DOMINION' && level > 0).length;
+  const resonanceOwnedCount = Object.values(resonanceProgress.levels).filter(level => level > 0).length;
   const challengeProgress = Math.max(0, Math.min(100, unlockedKaiserLevel));
 
   return (
@@ -184,6 +190,25 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <span><Shield size={13} aria-hidden="true" /> 1対1 ターン制バトル</span>
             <span><Zap size={13} aria-hidden="true" /> 勝利で次のレベル解放</span>
           </div>
+        </section>
+
+        <section className="home-dashboard__resonance-feature" aria-labelledby="home-resonance-title">
+          <div className="home-dashboard__resonance-aura" aria-hidden="true" />
+          <span className="home-dashboard__resonance-emblem" aria-hidden="true"><Sparkles size={28} /></span>
+          <div className="home-dashboard__resonance-copy">
+            <p className="home-dashboard__section-kicker">AUTHORITY RESONANCE <span>本編・権能共鳴</span></p>
+            <h2 id="home-resonance-title">権能共鳴</h2>
+            <p>Lv.5の元権能を融合し、10種の専用能力を獲得。共鳴片を集めて、さらなる高みへ。</p>
+            <div className="home-dashboard__resonance-stats">
+              {resonanceProgress.unlocked
+                ? <span>合成済み <strong>{resonanceOwnedCount}/10</strong></span>
+                : <span>解放条件：通常カイザー Lv.50 撃破</span>}
+              <span><Gem size={14} aria-hidden="true" /> 共鳴片 {resonanceProgress.shards.toLocaleString('ja-JP')} 個</span>
+            </div>
+          </div>
+          <button type="button" className="home-dashboard__resonance-action" onClick={onOpenResonance}>
+            {resonanceProgress.unlocked ? '共鳴を管理' : '詳細・解放条件'} <ChevronRight size={19} aria-hidden="true" />
+          </button>
         </section>
 
         <section className="home-dashboard__growth-entry" aria-labelledby="home-growth-entry-title">

@@ -60,7 +60,14 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     initialConfig?.kaiserLevel ?? 10,
   );
   const [selectedAbilities, setSelectedAbilities] = useState<BattleAbilityId[]>(
-    initialConfig?.abilities.map(ability => ability.id).slice(0, 2) ?? [],
+    initialConfig?.abilities
+      .filter(ability => (
+        ability.id in abilityProgress.levels
+          ? abilityProgress.levels[ability.id as AbilityId] > 0
+          : resonanceProgress.unlocked && (resonanceProgress.levels[ability.id as ResonanceAbilityId] ?? 0) > 0
+      ))
+      .map(ability => ability.id)
+      .slice(0, 2) ?? [],
   );
   const [statAllocation, setStatAllocation] = useState<StatAllocation>(() =>
     normalizeStatAllocation(initialConfig?.statAllocation, availableStatPoints),
@@ -831,12 +838,13 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                 </button>
               );
             })}
-            {RESONANCE_DEFINITIONS.map(ability => {
+            {RESONANCE_DEFINITIONS
+              .filter(ability => resonanceProgress.unlocked && (resonanceProgress.levels[ability.id] ?? 0) > 0)
+              .map(ability => {
               const level = resonanceProgress.levels[ability.id] ?? 0;
               const selected = selectedAbilities.includes(ability.id);
-              const locked = !resonanceProgress.unlocked || level <= 0;
-              const disabled = locked || (!selected && selectedAbilities.length >= 2);
-              const detail = level > 0 ? ability.levelDescriptions[level - 1] : ability.shortDescription;
+              const disabled = !selected && selectedAbilities.length >= 2;
+              const detail = ability.levelDescriptions[level - 1];
               return (
                 <button
                   key={ability.id}
@@ -850,7 +858,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                     borderRadius: '12px',
                     border: selected ? '1.5px solid #C4B5FD' : '1px solid #554A87',
                     background: selected ? 'linear-gradient(135deg, rgba(61,45,112,.98), rgba(30,22,58,.98))' : 'rgba(25,23,47,.94)',
-                    opacity: locked ? 0.45 : disabled ? 0.52 : 1,
+                    opacity: disabled ? 0.52 : 1,
                     color: '#FFFFFF',
                     cursor: disabled ? 'not-allowed' : 'pointer',
                     padding: '10px 12px',
@@ -865,12 +873,11 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
                       <strong style={{ fontSize: 15 }}>{ability.name}</strong>
-                      <span style={{ fontSize: 10, fontWeight: 900, color: level > 0 ? '#DDD6FE' : '#94A3B8' }}>{level > 0 ? `Lv.${level}` : '未合成'}</span>
+                      <span style={{ fontSize: 10, fontWeight: 900, color: '#DDD6FE' }}>Lv.{level}</span>
                       {selected && <span style={{ fontSize: 9, color: '#DDD6FE', fontWeight: 900 }}>装備中</span>}
                     </span>
                     <span style={{ display: 'block', marginTop: 4, color: '#CBD5E1', fontSize: 10, lineHeight: 1.5 }}>{ability.shortDescription}</span>
                     {level > 0 && <span style={{ display: 'block', marginTop: 3, color: '#A5B4FC', fontSize: 9, lineHeight: 1.45 }}>Lv.{level}効果：{detail}</span>}
-                    {locked && <span style={{ display: 'block', marginTop: 3, color: '#FCD34D', fontSize: 9 }}>{!resonanceProgress.unlocked ? '通常カイザーLv.50勝利で解放' : '先に権能共鳴画面で合成してください'}</span>}
                   </span>
                 </button>
               );
