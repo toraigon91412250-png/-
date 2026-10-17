@@ -344,6 +344,116 @@ export function useBattleGame(
     }
   };
 
+
+  const addResonanceJudgmentMarks = (amount: number, turn: number, source: string) => {
+    const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+    if (!resonance) return;
+    const execution = getResonanceExecutionStats(resonance.id, resonance.level);
+    if (!execution || amount <= 0) return;
+    if (resonance.id !== 'FALLEN_JUDGMENT' && resonance.id !== 'KING_JUDGMENT'
+      && resonance.id !== 'JUDGMENT_WING' && resonance.id !== 'ABYSS_JUDGMENT') return;
+    if (resonanceJudgmentReadyRef.current && resonance.id !== 'ABYSS_JUDGMENT') return;
+
+    const maximum = resonance.id === 'ABYSS_JUDGMENT' ? execution.threshold * 3 : execution.threshold;
+    const previous = resonanceJudgmentMarksRef.current;
+    resonanceJudgmentMarksRef.current = Math.min(maximum, previous + amount);
+    if (resonanceJudgmentMarksRef.current >= execution.threshold && !resonanceJudgmentReadyRef.current) {
+      resonanceJudgmentReadyRef.current = true;
+      addLog(`⚖️【${resonance.id === 'JUDGMENT_WING' ? '断罪翼' : '共鳴断罪'}】蓄積完了（${resonanceJudgmentMarksRef.current}/${execution.threshold}）。次の対象攻撃で執行！`, 'PASSIVE_TRIGGER', turn);
+    } else {
+      addLog(`⚖️【共鳴断罪蓄積】${resonanceJudgmentMarksRef.current}/${execution.threshold}（${source}）`, 'PASSIVE_TRIGGER', turn);
+    }
+  };
+
+  const isResonanceExecutionReady = (
+    action: 'ATTACK' | 'SPECIAL' | 'ULTIMATE',
+    specialSkillId?: IrenaSpecialSkillId,
+  ): boolean => {
+    if (!resonanceJudgmentReadyRef.current) return false;
+    const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+    if (!resonance) return false;
+    if (resonance.id === 'JUDGMENT_WING') {
+      return action === 'SPECIAL' && specialSkillId !== undefined;
+    }
+    return resonance.id === 'FALLEN_JUDGMENT'
+      || resonance.id === 'KING_JUDGMENT'
+      || resonance.id === 'ABYSS_JUDGMENT';
+  };
+
+  const finishResonanceJudgmentExecution = (turn: number) => {
+    const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+    if (!resonance) return;
+    const execution = getResonanceExecutionStats(resonance.id, resonance.level);
+    if (!execution) return;
+    if (resonance.id === 'ABYSS_JUDGMENT') {
+      resonanceJudgmentMarksRef.current = Math.max(0, resonanceJudgmentMarksRef.current - execution.threshold);
+      resonanceJudgmentReadyRef.current = resonanceJudgmentMarksRef.current >= execution.threshold;
+      addLog(`⚖️【深淵断罪】執行。蓄積を${execution.threshold}消費、残り${resonanceJudgmentMarksRef.current}。`, 'PASSIVE_TRIGGER', turn);
+    } else {
+      resonanceJudgmentMarksRef.current = 0;
+      resonanceJudgmentReadyRef.current = false;
+      addLog('⚖️【共鳴断罪】執行完了。蓄積をリセットした。', 'PASSIVE_TRIGGER', turn);
+    }
+  };
+
+  const calculateErosionResult = (
+    enemy: BattleFighter,
+    player: BattleFighter,
+    amount: number,
+  ): { enemy: BattleFighter; player: BattleFighter; judgmentMarksGained: number; kingZoneStacksGained: number } => {
+    if (amount <= 0) return { enemy, player, judgmentMarksGained: 0, kingZoneStacksGained: 0 };
+    const fields: WeaknessKey[] = ['attack', 'defense', 'speed', 'specialSkillDamage', 'ultimateSkillDamage'];
+    const previous = enemy.resonanceWeakness ?? { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 };
+    const oldStages = enemy.resonanceWeaknessStages ?? { attack: 0, defense: 0, speed: 0, specialSkillDamage: 0, ultimateSkillDamage: 0 };
+    const weakness = { ...previous };
+    const stages = { ...oldStages };
+    let judgmentMarksGained = 0;
+    for (const field of fields) {
+      weakness[field] = Math.min(95, previous[field] + amount);
+      const crossedStage = Math.min(9, Math.floor(weakness[field] / 10));
+      if (getEquippedResonanceAbility(stateRef.current.battleConfig)?.id === 'ABYSS_JUDGMENT') {
+        judgmentMarksGained += Math.max(0, crossedStage - oldStages[field]);
+      }
+      stages[field] = Math.max(oldStages[field], crossedStage);
+    }
+
+    let nextPlayer = player;
+    let kingZoneStacksGained = 0;
+    const resonance = getEquippedResonanceAbility(stateRef.current.battleConfig);
+    if (resonance?.id === 'ABYSS_KING') {
+      const zone = getKingZoneValues(resonance.level);
+      const greatestWeakness = Math.max(weakness.attack, weakness.defense, weakness.speed);
+      const nextThreshold = Math.max(player.resonanceKingZoneThreshold ?? 0, Math.min(9, Math.floor(greatestWeakness / 10)));
+      kingZoneStacksGained = Math.max(0, nextThreshold - (player.resonanceKingZoneThreshold ?? 0));
+      nextPlayer = {
+        ...player,
+        resonanceKingZoneThreshold: nextThreshold,
+        resonanceKingZoneStacks: Math.min(zone.maxStacks, (player.resonanceKingZoneStacks ?? 0) + kingZoneStacksGained),
+      };
+    }
+    return {
+      enemy: { ...enemy, resonanceWeakness: weakness, resonanceWeaknessStages: stages },
+      player: nextPlayer,
+      judgmentMarksGained,
+      kingZoneStacksGained,
+    };
+  };
+
+  const applyResonanceErosion = (amount: number, turn: number, source: string) => {
+    if (amount <= 0) return;
+    const result = calculateErosionResult(stateRef.current.enemy, stateRef.current.player, amount);
+    updateState(prev => ({
+      ...prev,
+      enemy: { ...prev.enemy, resonanceWeakness: result.enemy.resonanceWeakness, resonanceWeaknessStages: result.enemy.resonanceWeaknessStages },
+      player: { ...prev.player, resonanceKingZoneThreshold: result.player.resonanceKingZoneThreshold, resonanceKingZoneStacks: result.player.resonanceKingZoneStacks },
+    }));
+    addLog(`🌑【共鳴侵食：${source}】敵5項目に+${amount}%侵食（攻撃${result.enemy.resonanceWeakness?.attack ?? 0}% / 防御${result.enemy.resonanceWeakness?.defense ?? 0}% / 速度${result.enemy.resonanceWeakness?.speed ?? 0}% / 特殊技${result.enemy.resonanceWeakness?.specialSkillDamage ?? 0}% / 必殺技${result.enemy.resonanceWeakness?.ultimateSkillDamage ?? 0}%）。`, 'PASSIVE_TRIGGER', turn);
+    if (result.kingZoneStacksGained > 0) {
+      addLog(`👑【王域】新たな弱体化段階を検出。王域+${result.kingZoneStacksGained}（現在${result.player.resonanceKingZoneStacks ?? 0}スタック）。`, 'PASSIVE_TRIGGER', turn);
+    }
+    if (result.judgmentMarksGained > 0) addResonanceJudgmentMarks(result.judgmentMarksGained, turn, '新規弱体化段階');
+  };
+
   const resolveIncomingDamage = (target: BattleFighter, damage: number, turn: number, source: string): number => {
     const safeDamage = Math.max(0, Math.floor(damage));
     const lethal = safeDamage >= target.currentHp && target.currentHp > 0;
