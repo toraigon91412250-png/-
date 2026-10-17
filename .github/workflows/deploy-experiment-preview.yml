@@ -82,9 +82,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: github-pages-preview
       url: ${{ steps.deployment.outputs.page_url }}prototype/
     steps:
       - name: Deploy isolated prototype preview
         id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          environment_name: github-pages-preview
