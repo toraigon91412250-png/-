@@ -1731,11 +1731,10 @@ export function useBattleGame(
             if (!resonanceExecutionIds.includes('JUDGMENT_WING')) addResonanceJudgmentMarks(1, turn, '超堕天撃命中', ['JUDGMENT_WING']);
             if (!judgmentActive && hasAbility(stateRef.current.battleConfig, 'JUDGMENT')) addJudgmentMarks(2, turn);
           }
-          if (isActorPlayer) {
-            for (const resonance of getEquippedResonanceAbilities(stateRef.current.battleConfig)) {
-              const immediateErosion = getFeatherErosionRate(resonance.id, resonance.level);
-              if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '超堕天撃命中');
-            }
+          if (isActorPlayer && !isEvaded) {
+            const immediateErosion = getEquippedResonanceAbilities(stateRef.current.battleConfig)
+              .reduce((sum, resonance) => sum + getFeatherErosionRate(resonance.id, resonance.level), 0);
+            if (immediateErosion > 0) applyResonanceErosion(immediateErosion, turn, '超堕天撃命中');
           }
 
           if (newTargetHp <= 0) return false;
