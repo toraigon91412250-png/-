@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { AbilityId, AbilityProgress, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, ImprintProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, IrenaSkillProgress } from '../types/game';
+import { AbilityId, AbilityProgress, BattleAbilityId, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, ImprintProgress, OverallStats, RaidRewardProgress, RecruitmentProgress, IrenaSkillProgress, ResonanceAbilityId, ResonanceProgress } from '../types/game';
 import { ABILITY_DEFINITIONS } from '../data/abilities';
-import { isRegularAbilityId } from '../data/resonanceAbilities';
+import { RESONANCE_DEFINITIONS, isRegularAbilityId, isResonanceAbilityId } from '../data/resonanceAbilities';
 import { IMPRINT_DEFINITIONS } from '../data/imprints';
 
 interface DeveloperToolsScreenProps {
   abilityProgress: AbilityProgress;
+  resonanceProgress: ResonanceProgress;
   recruitmentProgress: RecruitmentProgress;
   imprintProgress: ImprintProgress;
   raidRewardProgress: RaidRewardProgress;
@@ -17,6 +18,8 @@ interface DeveloperToolsScreenProps {
   onSetAbility: (id: AbilityId, level: number, shards?: number) => void;
   onSetAllAbilities: (level: number, shards: number) => void;
   onAddAbilityShards: (id: AbilityId, amount: number) => void;
+  onSetResonanceAbility: (id: ResonanceAbilityId, level: number) => void;
+  onSetResonanceShards: (amount: number) => void;
   onSetTickets: (tickets: number) => void;
   onAddTickets: (amount: number) => void;
   onSetImprintTickets: (tickets: number) => void;
@@ -37,13 +40,24 @@ interface DeveloperToolsScreenProps {
 }
 
 
-const makeConfig = (level: BattleChallengeLevel, abilityProgress: AbilityProgress, ids: AbilityId[]): BattleSetupConfig => ({
+const makeConfig = (
+  level: BattleChallengeLevel,
+  abilityProgress: AbilityProgress,
+  resonanceProgress: ResonanceProgress,
+  ids: BattleAbilityId[],
+): BattleSetupConfig => ({
   kaiserLevel: level,
-  abilities: ids.slice(0, 2).map(id => ({ id, level: Math.max(1, abilityProgress.levels[id]) })),
+  abilities: ids.slice(0, 2).map(id => ({
+    id,
+    level: Math.max(1, id in abilityProgress.levels
+      ? abilityProgress.levels[id as AbilityId]
+      : resonanceProgress.levels[id as ResonanceAbilityId] ?? 0),
+  })),
 });
 
 export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   abilityProgress,
+  resonanceProgress,
   recruitmentProgress,
   imprintProgress,
   raidRewardProgress,
@@ -55,6 +69,8 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onSetAbility,
   onSetAllAbilities,
   onAddAbilityShards,
+  onSetResonanceAbility,
+  onSetResonanceShards,
   onSetTickets,
   onAddTickets,
   onSetImprintTickets,
@@ -74,8 +90,11 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
   onReset,
 }) => {
   const [battleLevel, setBattleLevel] = useState<BattleChallengeLevel>(battleSetup.kaiserLevel);
-  const [selectedIds, setSelectedIds] = useState<AbilityId[]>(
-    battleSetup.abilities.map(ability => ability.id).filter(isRegularAbilityId).slice(0, 2),
+  const [selectedIds, setSelectedIds] = useState<BattleAbilityId[]>(
+    battleSetup.abilities.map(ability => ability.id).filter(id =>
+      isRegularAbilityId(id)
+      || (isResonanceAbilityId(id) && resonanceProgress.unlocked && (resonanceProgress.levels[id] ?? 0) > 0),
+    ).slice(0, 2),
   );
   const [confirmReset, setConfirmReset] = useState(false);
   const [fullUnlockResult, setFullUnlockResult] = useState<'success' | 'failure' | null>(null);
@@ -83,7 +102,8 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
     imprintProgress.unlockedIds.includes(imprint.id),
   ).length;
 
-  const toggleAbility = (id: AbilityId) => {
+  const toggleAbility = (id: BattleAbilityId) => {
+    if (isResonanceAbilityId(id) && (!resonanceProgress.unlocked || (resonanceProgress.levels[id] ?? 0) <= 0)) return;
     setSelectedIds(current => {
       if (current.includes(id)) return current.filter(value => value !== id);
       if (current.length >= 2) return current;
@@ -93,7 +113,7 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
 
   const startConfiguredBattle = () => {
     if (selectedIds.length !== 2) return;
-    onOpenBattleSetup(makeConfig(battleLevel, abilityProgress, selectedIds));
+    onOpenBattleSetup(makeConfig(battleLevel, abilityProgress, resonanceProgress, selectedIds));
   };
 
   return (
@@ -173,6 +193,34 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
                     background:selected ? '#6A1B7A' : '#202631', color:selected ? '#FFF' : '#788293',
                     fontWeight:950, fontSize:9,
                   }}>{selected ? '選択' : '未選択'}</span>
+                </button>
+              );
+            })}
+            {RESONANCE_DEFINITIONS.map(ability => {
+              const level = resonanceProgress.levels[ability.id] ?? 0;
+              const selected = selectedIds.includes(ability.id);
+              const unavailable = !resonanceProgress.unlocked || level <= 0;
+              return (
+                <button key={ability.id} type="button" disabled={unavailable || (!selected && selectedIds.length >= 2)} onClick={() => toggleAbility(ability.id)} style={{
+                  width:'100%', minHeight:58, borderRadius:10, padding:'8px 10px',
+                  border:selected ? '1.5px solid #C4B5FD' : '1px solid #4B4166',
+                  background:selected ? 'linear-gradient(135deg,#32285B,#1D1A31)' : '#151724',
+                  color:'#FFF', display:'flex', alignItems:'center', gap:9, textAlign:'left',
+                  cursor:unavailable || (!selected && selectedIds.length >= 2) ? 'not-allowed' : 'pointer',
+                  opacity:unavailable ? .42 : (!selected && selectedIds.length >= 2) ? .52 : 1,
+                }}>
+                  <span style={{ fontSize:21 }}>{ability.symbol}</span>
+                  <span style={{ flex:1, minWidth:0 }}>
+                    <span style={{ display:'block', fontWeight:950, fontSize:13 }}>
+                      {ability.name} <span style={{ color:'#D8C7FF', fontSize:9 }}>Lv.{level}</span>
+                    </span>
+                    <span style={{ display:'block', marginTop:2, color:'#9B95B4', fontSize:9 }}>{ability.shortDescription}</span>
+                  </span>
+                  <span style={{
+                    minWidth:42, textAlign:'center', padding:'5px 7px', borderRadius:7,
+                    background:selected ? '#51418B' : '#202034', color:selected ? '#FFF' : '#8F8AA5',
+                    fontWeight:950, fontSize:9,
+                  }}>{unavailable ? '未設定' : selected ? '選択' : '未選択'}</span>
                 </button>
               );
             })}
@@ -314,6 +362,59 @@ export const DeveloperToolsScreen: React.FC<DeveloperToolsScreenProps> = ({
               minHeight:40, borderRadius:9, border:'1px solid #4D4653', background:'#1C1920',
               color:'#C1BAC8', fontWeight:950, fontSize:9, cursor:'pointer',
             }}>全権能 未解放</button>
+          </div>
+        </section>
+
+        <section style={{
+          marginTop:12, padding:14, border:'1px solid #6654A0',
+          background:'linear-gradient(145deg,rgba(30,22,52,.97),rgba(17,18,31,.98))',
+          borderRadius:16,
+        }}>
+          <div style={{ fontSize:11, fontWeight:950, color:'#DCCBFF' }}>✦ 権能共鳴テスト</div>
+          <div style={{ marginTop:5, color:'#A9A0C5', fontSize:9, lineHeight:1.6 }}>
+            解放状態：{resonanceProgress.unlocked ? '解放済み' : '未解放'} · 所持 {RESONANCE_DEFINITIONS.filter(ability => (resonanceProgress.levels[ability.id] ?? 0) > 0).length}/10 · 共鳴片 {resonanceProgress.shards.toLocaleString('ja-JP')}
+            <br />Lv.1〜Lv.5を直接設定できます。Lv.1以上にするとテスト用に共鳴が解放され、L0でその権能のテスト状態を解除します。
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:7, marginTop:10 }}>
+            <button type="button" onClick={() => { onSetResonanceShards(resonanceProgress.shards + 1000); onRefresh(); }} style={{
+              minHeight:40, borderRadius:9, border:'1px solid #68539B', background:'#271F40',
+              color:'#E5D7FF', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>共鳴片 +1000</button>
+            <button type="button" onClick={() => { onSetResonanceShards(9999); onRefresh(); }} style={{
+              minHeight:40, borderRadius:9, border:'1px solid #8C6A2B', background:'#342914',
+              color:'#FFE9A8', fontSize:10, fontWeight:950, cursor:'pointer',
+            }}>共鳴片 9999</button>
+          </div>
+          <div style={{ display:'grid', gap:8, marginTop:10 }}>
+            {RESONANCE_DEFINITIONS.map(ability => {
+              const level = resonanceProgress.levels[ability.id] ?? 0;
+              return (
+                <div key={ability.id} style={{
+                  display:'grid', gridTemplateColumns:'1fr auto', gap:8, alignItems:'center',
+                  padding:'9px', borderRadius:10, background:'#171526', border:'1px solid #332C49',
+                }}>
+                  <div style={{ minWidth:0 }}>
+                    <div style={{ fontWeight:950, fontSize:12 }}>{ability.symbol} {ability.name} <span style={{ color:'#DCCBFF' }}>Lv.{level}</span></div>
+                    <div style={{ marginTop:3, color:'#9D96B3', fontSize:8, lineHeight:1.5 }}>{ability.ingredients.join(' + ')} · {ability.shortDescription}</div>
+                  </div>
+                  <div style={{ display:'flex', gap:4, flexWrap:'wrap', justifyContent:'flex-end' }}>
+                    {[0,1,2,3,4,5].map(nextLevel => (
+                      <button key={nextLevel} type="button" aria-label={ability.name + 'をLv.' + nextLevel + 'に設定'} onClick={() => {
+                        onSetResonanceAbility(ability.id, nextLevel);
+                        if (nextLevel === 0) setSelectedIds(current => current.filter(value => value !== ability.id));
+                        onRefresh();
+                      }} style={{
+                        width:28, height:28, borderRadius:7,
+                        border:level===nextLevel ? '1px solid #DCCBFF' : '1px solid #403952',
+                        background:level===nextLevel ? '#45346B' : '#1C1928',
+                        color:level===nextLevel ? '#F3E8FF' : '#9389A5',
+                        fontSize:9, fontWeight:950, cursor:'pointer',
+                      }}>L{nextLevel}</button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
