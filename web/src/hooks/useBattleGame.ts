@@ -23,8 +23,8 @@ import {
 import { CpuAi } from '../utils/ai';
 import { GAME_BALANCE } from '../data/gameBalance';
 import { calculateNormalAttackDamage, calculateSpecialDamage, calculateUltimateDamage } from '../utils/battleMath';
-import { getEquippedResonanceAbility, getResonanceAbilityLevel } from '../utils/abilitySystem';
-import { getEquippedResonance, getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
+import { getEquippedResonanceAbility } from '../utils/abilitySystem';
+import { getFeatherErosionRate, getFallenGodRevivalHpFraction, getFallenGodStatMultiplier, getKingWingStackValues, getKingZoneValues, getResonanceExecutionStats, getResonanceSurvivalLimit, getTurnErosionRate, type WeaknessKey } from '../utils/resonanceSystem';
 import { soundManager } from '../utils/audio';
 import { getBattleReward, PATH_MASTERY_REWARD, saveBattleResult } from '../utils/storage';
 import { normalizeStatAllocation } from '../utils/statBuild';
@@ -1594,7 +1594,6 @@ export function useBattleGame(
             consumeBuff(isActorPlayer);
           }
 
-          const judgmentLevel = isActorPlayer ? getAbilityLevel(stateRef.current.battleConfig, 'JUDGMENT') : 0;
           const judgmentActive = isActorPlayer && (
             judgmentReadyRef.current || isResonanceExecutionReady('SPECIAL', 'SUPER_FALLEN_SHOT')
           );
