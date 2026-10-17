@@ -1,4 +1,5 @@
-import type { AbilityId, ResonanceAbilityId } from '../types/game';
+import type { AbilityId, AbilityProgress, ResonanceAbilityId, ResonanceProgress } from '../types/game';
+import { MAX_ABILITY_LEVEL } from './abilities';
 
 export interface ResonanceDefinition {
   id: ResonanceAbilityId;
@@ -162,6 +163,82 @@ export const CRAFTABLE_RESONANCE_ABILITY_IDS: readonly ResonanceAbilityId[] = [
   'JUDGMENT_WING',
   'ABYSS_JUDGMENT',
 ];
+
+/** Returns the resonance recipe that permanently consumed this base ability, if one is currently owned. */
+export function getResonanceSourceConsumer(
+  sourceAbilityId: AbilityId,
+  progress: ResonanceProgress,
+  excludingRecipeId?: ResonanceAbilityId,
+): ResonanceDefinition | null {
+  return RESONANCE_DEFINITIONS.find(definition =>
+    definition.id !== excludingRecipeId
+    && progress.craftedRecipes.includes(definition.id)
+    && (progress.levels[definition.id] ?? 0) > 0
+    && definition.ingredients.includes(sourceAbilityId),
+  ) ?? null;
+}
+
+export type ResonanceCraftBlockReason =
+  | 'UNKNOWN_RECIPE'
+  | 'NOT_CRAFTABLE'
+  | 'SYSTEM_LOCKED'
+  | 'RECIPE_ALREADY_CREATED'
+  | 'ALREADY_OWNED'
+  | 'SOURCE_CONSUMED'
+  | 'SOURCE_MISSING'
+  | 'SOURCE_LEVEL_REQUIRED';
+
+export type ResonanceCraftEligibility =
+  | { canCombine: true; reason: 'READY' }
+  | {
+      canCombine: false;
+      reason: ResonanceCraftBlockReason;
+      sourceAbilityId?: AbilityId;
+      consumedBy?: ResonanceAbilityId;
+    };
+
+/** Shared rule for showing and enforcing normal-play fusion eligibility. */
+export function getResonanceCraftEligibility(
+  id: ResonanceAbilityId,
+  abilityProgress: AbilityProgress,
+  resonanceProgress: ResonanceProgress,
+): ResonanceCraftEligibility {
+  const recipe = RESONANCE_DEFINITIONS.find(definition => definition.id === id);
+  if (!recipe) return { canCombine: false, reason: 'UNKNOWN_RECIPE' };
+  if (!CRAFTABLE_RESONANCE_ABILITY_IDS.includes(id)) return { canCombine: false, reason: 'NOT_CRAFTABLE' };
+  if (!resonanceProgress.unlocked) return { canCombine: false, reason: 'SYSTEM_LOCKED' };
+  if (resonanceProgress.craftedRecipes.includes(id)) return { canCombine: false, reason: 'RECIPE_ALREADY_CREATED' };
+  if ((resonanceProgress.levels[id] ?? 0) > 0) return { canCombine: false, reason: 'ALREADY_OWNED' };
+
+  for (const ingredient of recipe.ingredients) {
+    if ((abilityProgress.levels[ingredient] ?? 0) > 0) continue;
+    const consumer = getResonanceSourceConsumer(ingredient, resonanceProgress, id);
+    if (consumer) {
+      return {
+        canCombine: false,
+        reason: 'SOURCE_CONSUMED',
+        sourceAbilityId: ingredient,
+        consumedBy: consumer.id,
+      };
+    }
+  }
+
+  const missingSource = recipe.ingredients.find(ingredient =>
+    (abilityProgress.levels[ingredient] ?? 0) <= 0,
+  );
+  if (missingSource) {
+    return { canCombine: false, reason: 'SOURCE_MISSING', sourceAbilityId: missingSource };
+  }
+
+  const underLevelSource = recipe.ingredients.find(ingredient =>
+    (abilityProgress.levels[ingredient] ?? 0) < MAX_ABILITY_LEVEL,
+  );
+  if (underLevelSource) {
+    return { canCombine: false, reason: 'SOURCE_LEVEL_REQUIRED', sourceAbilityId: underLevelSource };
+  }
+
+  return { canCombine: true, reason: 'READY' };
+}
 
 const ABILITY_IDS = new Set<AbilityId>(['ABYSS', 'FALLEN', 'BLACK_WING', 'FALLEN_KING', 'JUDGMENT', 'ASTRAL_DOMINION']);
 const RESONANCE_IDS = new Set<string>(RESONANCE_DEFINITIONS.map(definition => definition.id));
