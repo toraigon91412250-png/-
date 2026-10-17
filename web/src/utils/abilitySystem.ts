@@ -3,6 +3,7 @@ import { RESONANCE_DEFINITIONS, isResonanceAbilityId, isRegularAbilityId } from 
 import { getEquippedResonanceAbilities, getFallenDynamicMultiplier, getKingZoneValues } from './resonanceSystem';
 import { MAX_ABILITY_LEVEL } from '../data/abilities';
 import { applyStatAllocation } from './statBuild';
+import { KAISER_PHASE_TWO_DAMAGE_MULTIPLIER, KAISER_PHASE_TWO_SPEED_MULTIPLIER } from './kaiserChallenge';
 
 export function applyPassiveDamageReduction(target: BattleFighter, incomingDamage: number, isDirectHit = true): number {
   const safeDamage = Math.max(0, Math.floor(incomingDamage));
@@ -264,14 +265,17 @@ export function applyDynamicAbilityModifiers(
     resonances.some(resonance => ['ABYSS_FALLEN', 'ABYSS_KING', 'ABYSS_WING', 'ABYSS_JUDGMENT'].includes(resonance.id))
   ) {
     const weakness = fighter.resonanceWeakness;
+    const inPhaseTwo = (fighter.kaiserPhase ?? 1) === 2;
+    const phaseDamageMultiplier = inPhaseTwo ? KAISER_PHASE_TWO_DAMAGE_MULTIPLIER : 1;
+    const phaseSpeedMultiplier = inPhaseTwo ? KAISER_PHASE_TWO_SPEED_MULTIPLIER : 1;
     character = {
       ...character,
       maxHp: resonanceBase.maxHp,
-      attack: Math.max(1, Math.round(resonanceBase.attack * (1 - Math.min(95, weakness.attack) / 100))),
+      attack: Math.max(1, Math.round(resonanceBase.attack * phaseDamageMultiplier * (1 - Math.min(95, weakness.attack) / 100))),
       defense: Math.max(0, Math.round(resonanceBase.defense * (1 - Math.min(95, weakness.defense) / 100))),
-      speed: Math.max(1, Math.round(resonanceBase.speed * (1 - Math.min(95, weakness.speed) / 100))),
-      specialSkillDamage: Math.max(1, Math.round(resonanceBase.specialSkillDamage * (1 - Math.min(95, weakness.specialSkillDamage) / 100))),
-      ultimateSkillDamage: Math.max(1, Math.round(resonanceBase.ultimateSkillDamage * (1 - Math.min(95, weakness.ultimateSkillDamage) / 100))),
+      speed: Math.max(1, Math.round(resonanceBase.speed * phaseSpeedMultiplier * (1 - Math.min(95, weakness.speed) / 100))),
+      specialSkillDamage: Math.max(1, Math.round(resonanceBase.specialSkillDamage * phaseDamageMultiplier * (1 - Math.min(95, weakness.specialSkillDamage) / 100))),
+      ultimateSkillDamage: Math.max(1, Math.round(resonanceBase.ultimateSkillDamage * phaseDamageMultiplier * (1 - Math.min(95, weakness.ultimateSkillDamage) / 100))),
     };
   }
 
