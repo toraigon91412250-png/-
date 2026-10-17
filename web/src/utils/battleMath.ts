@@ -231,13 +231,14 @@ export function calculateNormalAttackDamage(context: DamageContext, critical = f
     target.character.id === 'kaiser' &&
     (target.kaiserArmorCurrent ?? 0) <= 0
   ) {
-    // While Ironclad Armor is up its 25% mitigation replaces this flat passive
-    // and must not stack with it. Armor/phase processing remains the final step.
-    damage = Math.round(damage * GAME_BALANCE.KAISER_PASSIVE_DAMAGE_MULTIPLIER);
+    // Preserve the existing Heavy Armor flat reduction once its separate
+    // armor gauge is empty. The armor/phase resolver still handles each hit.
+    damage = Math.max(0, damage - GAME_BALANCE.KAISER_HEAVY_ARMOR_REDUCTION);
   }
 
-  damage = applyFallenExecution(damage, attacker, target, context.config, baseAttackerMaxHp);
-  return Math.max(0, applyPassiveDamageModifiers(damage, context, attacker, target, false));
+  damage = Math.round(damage * (context.attacker.isPlayer ? getAchievementBadgeDamageMultiplier(context.config, 'NORMAL') : 1));
+  damage = applyResonanceExecutionDamage(damage, target, attacker, context);
+  return Math.max(0, applyFallenExecution(damage, attacker, target, context.config, baseAttackerMaxHp));
 }
 export function calculateSpecialDamage(context: DamageContext): number {
   const baseAttackerMaxHp = context.baseAttackerMaxHp ?? context.attacker.character.maxHp;
