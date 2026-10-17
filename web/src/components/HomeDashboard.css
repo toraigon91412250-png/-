@@ -108,6 +108,51 @@
 .home-dashboard__section-kicker { color: #A8B9D1; font-size: 8px; letter-spacing: .16em; }
 .home-dashboard__section-kicker span { color: #9EABC0; font-size: 10px; letter-spacing: .03em; }
 .home-dashboard__section-note { color: #8391A8; font-size: 10px; text-align: right; }
+.home-dashboard__resonance-feature {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; grid-template-columns: 58px minmax(0,1fr) auto; align-items: center; gap: 15px;
+  margin-top: 18px; padding: 20px;
+  border: 1px solid rgba(184,154,255,.46); border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 95% 0%, rgba(159,111,255,.24), transparent 48%),
+    linear-gradient(115deg, rgba(38,29,67,.98), rgba(17,23,42,.98) 65%, rgba(27,23,51,.98));
+  box-shadow: 0 14px 34px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.07);
+}
+.home-dashboard__resonance-aura {
+  position: absolute; z-index: -1; top: -105px; right: 15%; width: 220px; height: 220px;
+  border: 1px solid rgba(211,186,255,.2); border-radius: 50%;
+  box-shadow: 0 0 60px rgba(148,95,244,.15), inset 0 0 35px rgba(148,95,244,.1);
+  pointer-events: none;
+}
+.home-dashboard__resonance-emblem {
+  display: grid; place-items: center; width: 56px; height: 56px;
+  border: 1px solid rgba(215,189,255,.43); border-radius: 16px;
+  background: linear-gradient(145deg, rgba(160,115,241,.26), rgba(90,64,153,.2));
+  color: #E4D0FF; box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 25px rgba(153,105,255,.1);
+}
+.home-dashboard__resonance-copy { min-width: 0; }
+.home-dashboard__resonance-copy h2 {
+  margin: 5px 0 5px; color: #FFF; font-size: clamp(21px,3vw,28px); font-weight: 1000;
+  line-height: 1.2; letter-spacing: -.035em; text-shadow: 0 2px 16px rgba(130,83,222,.2);
+}
+.home-dashboard__resonance-copy > p:not(.home-dashboard__section-kicker) {
+  margin: 0; max-width: 620px; color: #C6C1D9; font-size: 12px; line-height: 1.7;
+}
+.home-dashboard__resonance-stats { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 14px; margin-top: 11px; }
+.home-dashboard__resonance-stats > span {
+  display: inline-flex; align-items: center; gap: 5px; color: #B9ACD9; font-size: 10px; font-weight: 850;
+}
+.home-dashboard__resonance-stats strong { color: #F2E5FF; font-size: 12px; font-variant-numeric: tabular-nums; }
+.home-dashboard__resonance-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 47px;
+  padding: 0 14px; border: 1px solid rgba(219,195,255,.48); border-radius: 12px;
+  background: linear-gradient(135deg, rgba(113,77,177,.5), rgba(38,31,66,.75));
+  color: #F5EEFF; font: inherit; font-size: 12px; font-weight: 950; white-space: nowrap; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+.home-dashboard__resonance-action:hover { border-color: rgba(230,211,255,.82); background: rgba(111,76,171,.65); transform: translateY(-1px); }
+.home-dashboard__resonance-action:focus-visible { outline: 2px solid #E3CAFF; outline-offset: 3px; }
 .home-dashboard__growth-entry {
   display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; align-items: center; gap: 14px;
   margin-top: 17px; padding: 17px; border: 1px solid rgba(203,177,255,.3); border-radius: 17px;
@@ -211,6 +256,14 @@
   .home-dashboard__section-heading { align-items: flex-end; gap: 8px; margin-bottom: 10px; }
   .home-dashboard__section-heading h2 { font-size: 19px; }
   .home-dashboard__section-note { max-width: 38%; font-size: 9px; }
+  .home-dashboard__resonance-feature { grid-template-columns: 43px minmax(0,1fr); gap: 10px 12px; padding: 13px; border-radius: 16px; }
+  .home-dashboard__resonance-emblem { width: 42px; height: 42px; border-radius: 12px; }
+  .home-dashboard__resonance-emblem svg { width: 22px; height: 22px; }
+  .home-dashboard__resonance-copy h2 { margin-top: 4px; font-size: 21px; }
+  .home-dashboard__resonance-copy > p:not(.home-dashboard__section-kicker) { font-size: 11px; line-height: 1.6; }
+  .home-dashboard__resonance-stats { gap: 6px 10px; margin-top: 8px; }
+  .home-dashboard__resonance-stats > span { font-size: 9px; }
+  .home-dashboard__resonance-action { grid-column: 1 / -1; width: 100%; justify-content: space-between; min-height: 42px; }
   .home-dashboard__growth-entry { grid-template-columns: 38px minmax(0,1fr); gap: 10px; padding: 12px; border-radius: 14px; }
   .home-dashboard__growth-entry-icon { width: 36px; height: 36px; border-radius: 11px; }
   .home-dashboard__growth-entry-copy h2 { font-size: 15px; }
@@ -253,6 +306,9 @@
   .home-dashboard__eyebrow > span { font-size: 7px; }
   .home-dashboard__hero-description { max-width: 245px; font-size: 10px; }
   .home-dashboard__hero-foot { gap: 5px 8px; font-size: 7px; }
+  .home-dashboard__resonance-feature { gap: 8px 10px; padding: 11px; }
+  .home-dashboard__resonance-copy h2 { font-size: 19px; }
+  .home-dashboard__resonance-stats > span { font-size: 8px; }
   .home-dashboard__growth-entry { gap: 8px; padding: 10px; }
   .home-dashboard__growth-entry-copy h2 { font-size: 14px; }
   .home-dashboard__mode-card { gap: 8px 6px; min-height: 174px; padding: 8px; }
