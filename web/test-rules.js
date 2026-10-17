@@ -936,6 +936,47 @@ const bleedPhaseHit = resolveKaiserHit({
 assert.strictEqual(bleedPhaseHit.phaseChanged, true, 'Bleed crossing 50% must also start phase 2.');
 console.log('✓ Kaiser armor, two-turn break window, Lv100 phase boundary, single-use scaling, and bleed threshold behavior verified.');
 
+// Resonance erosion must preserve Lv100 Phase 2's attack/skill and speed bonuses.
+const erosionBattleConfig = {
+  kaiserLevel: 100,
+  abilities: [{ id: 'ABYSS_WING', level: 5 }],
+};
+const erosionBaseKaiser = createBattleCharacters(IRENA, KAISER, erosionBattleConfig).enemy;
+const phaseTwoErosionKaiser = {
+  ...createInitialFighter(erosionBaseKaiser, false, 100),
+  kaiserPhase: 2,
+  resonanceWeakness: {
+    attack: 50,
+    defense: 20,
+    speed: 30,
+    specialSkillDamage: 40,
+    ultimateSkillDamage: 60,
+  },
+};
+const erosionPhaseTwoStats = applyDynamicAbilityModifiers(phaseTwoErosionKaiser, erosionBattleConfig, 10).character;
+assert.strictEqual(
+  erosionPhaseTwoStats.attack,
+  Math.round(erosionBaseKaiser.attack * 1.25 * 0.5),
+  'Abyss erosion must retain the Lv100 Phase 2 attack multiplier while weakening from base stats.',
+);
+assert.strictEqual(
+  erosionPhaseTwoStats.speed,
+  Math.round(erosionBaseKaiser.speed * 1.15 * 0.7),
+  'Abyss erosion must retain the Lv100 Phase 2 speed multiplier.',
+);
+assert.strictEqual(
+  erosionPhaseTwoStats.specialSkillDamage,
+  Math.round(erosionBaseKaiser.specialSkillDamage * 1.25 * 0.6),
+  'Abyss erosion must retain the Lv100 Phase 2 special-damage multiplier.',
+);
+assert.strictEqual(
+  erosionPhaseTwoStats.ultimateSkillDamage,
+  Math.round(erosionBaseKaiser.ultimateSkillDamage * 1.25 * 0.4),
+  'Abyss erosion must retain the Lv100 Phase 2 ultimate-damage multiplier.',
+);
+console.log('✓ Resonance erosion preserves Lv100 Kaiser Phase 2 combat multipliers.');
+
+
 assert.strictEqual(STATUS_AILMENTS.BLEED.defaultDuration, 3);
 assert.strictEqual(STATUS_AILMENTS.BLEED.dotDamage, 30);
 assert.strictEqual(STATUS_AILMENTS.BLEED.speedMod, -20);
