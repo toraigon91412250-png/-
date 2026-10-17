@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle2, LockKeyhole, Sparkles, Trophy } from 'lucide-react';
-import type { AchievementBoardItem, AchievementCategory } from '../utils/achievementSystem';
+import type { AchievementBadgeProgress, AchievementBoardItem, AchievementCategory } from '../utils/achievementSystem';
 
 interface AchievementScreenProps {
   items: AchievementBoardItem[];
   completedCount: number;
   claimedCount: number;
   astralDominionUnlocked: boolean;
+  badgeProgress: AchievementBadgeProgress[];
   message: string | null;
   onClaimReward: (id: string) => void;
   onBack: () => void;
@@ -32,6 +33,7 @@ export const AchievementScreen: React.FC<AchievementScreenProps> = ({
   completedCount,
   claimedCount,
   astralDominionUnlocked,
+  badgeProgress,
   message,
   onClaimReward,
   onBack,
@@ -105,6 +107,46 @@ export const AchievementScreen: React.FC<AchievementScreenProps> = ({
             </p>
           </div>
           <Sparkles size={19} color={astralDominionUnlocked ? '#E1C4FF' : '#70658A'} />
+        </section>
+
+        <section aria-label="実績バッジ進化状況" style={{
+          marginTop: 12, padding: 13, borderRadius: 14,
+          border: '1px solid rgba(194,168,255,.23)', background: 'rgba(16,18,31,.88)',
+        }}>
+          <div style={{ fontSize: 10, color: '#CDB7FF', fontWeight: 950, letterSpacing: '.12em' }}>BADGE EVOLUTION</div>
+          <h2 style={{ margin: '5px 0 4px', fontSize: 17, fontWeight: 950 }}>実績バッジ</h2>
+          <p style={{ margin: 0, color: '#AFA8C5', fontSize: 10, lineHeight: 1.55 }}>
+            各系統の既存実績を3個で獲得、5個で第II段階、8個で最終進化。装備は戦闘準備画面で1種類選べます。
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 7, marginTop: 10 }}>
+            {badgeProgress.map(badge => {
+              const color = badge.id === 'A' ? '#FFB5A8' : badge.id === 'B' ? '#D1B6FF' : '#A9E9CE';
+              return (
+                <article key={badge.id} style={{
+                  minWidth: 0, padding: '9px 7px', borderRadius: 10,
+                  border: badge.equipped ? `1px solid ${color}` : '1px solid rgba(151,151,183,.18)',
+                  background: badge.equipped ? 'rgba(55,44,75,.6)' : 'rgba(10,13,23,.7)',
+                }}>
+                  <div style={{ fontSize: 9, color, fontWeight: 950 }}>{badge.typeLabel}</div>
+                  <div style={{ marginTop: 4, color: '#F1EEFC', fontSize: 11, fontWeight: 950, overflowWrap: 'anywhere' }}>{badge.name}</div>
+                  <div style={{ marginTop: 5, fontSize: 9, color: '#B8B2CC' }}>{badge.completedAchievementCount}/12実績</div>
+                  <div style={{ marginTop: 4, fontSize: 9, color }}>
+                    {badge.tier === 0 ? '未獲得' : `第${badge.tier}段階`}
+                    {badge.equipped ? ' · 装備中' : ''}
+                  </div>
+                  <div style={{ height: 4, marginTop: 6, borderRadius: 99, overflow: 'hidden', background: 'rgba(179,166,220,.13)' }}>
+                    <span style={{ display: 'block', height: '100%', width: (badge.completedAchievementCount / 8 * 100) + '%', background: color }} />
+                  </div>
+                  <div style={{ marginTop: 6, minHeight: 31, fontSize: 9, lineHeight: 1.45, color: '#AAA4BF' }}>
+                    {badge.tier > 0 ? badge.tierEffects[badge.tier - 1] : '関連実績を3個達成で獲得'}
+                  </div>
+                  <div style={{ marginTop: 5, fontSize: 8, color: '#8E88A6' }}>
+                    {badge.nextTierTarget === null ? '最終進化済み' : `次の進化: ${badge.nextTierTarget}個`}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </section>
 
         {message && <p role="status" aria-live="polite" style={{ margin: '12px 0 0', padding: '10px 12px', borderRadius: 10, border: '1px solid #4B4263', background: 'rgba(42,34,61,.8)', color: '#E4D9FF', fontSize: 11 }}>{message}</p>}
