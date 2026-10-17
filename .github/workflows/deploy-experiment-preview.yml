@@ -9,10 +9,10 @@ permissions:
   pages: write
   id-token: write
 
-# Serialize preview publishing with the normal Pages workflow.
+# Serialize preview publishing with production without cancelling live deploys.
 concurrency:
   group: pages-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
