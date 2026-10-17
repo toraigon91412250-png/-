@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { ArrowLeft, Check, Minus, Play, Plus } from 'lucide-react';
 import arenaBg from '../assets/img_arena_bg.jpg';
 import { ABILITY_DEFINITIONS, getAbilityDefinition } from '../data/abilities';
-import { AbilityId, AbilityProgress, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, StatAllocation } from '../types/game';
+import { RESONANCE_DEFINITIONS } from '../data/resonanceAbilities';
+import { AbilityId, AbilityProgress, AchievementBadgeId, BATTLE_CHALLENGE_LEVELS, BattleAbilityId, BattleChallengeLevel, BattleSetupConfig, CharacterDef, CpuDifficulty, ImprintId, ImprintProgress, ResonanceAbilityId, ResonanceProgress, StatAllocation } from '../types/game';
 import { getSelectableKaiserLevels } from '../utils/kaiserChallengeProgress';
 import { IRENA } from '../data/characters';
 import { BuildSavePanel } from './BuildSavePanel';
@@ -15,6 +16,7 @@ interface BattleSetupScreenProps {
   selectedPlayerCharacterId: string;
   onSelectPlayerCharacter: (characterId: string) => void;
   abilityProgress: AbilityProgress;
+  resonanceProgress: ResonanceProgress;
   imprintProgress: ImprintProgress;
   achievementBadges: AchievementBadgeProgress[];
   equippedAchievementBadgeId: AchievementBadgeId | null;
@@ -37,6 +39,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   selectedPlayerCharacterId,
   onSelectPlayerCharacter,
   abilityProgress,
+  resonanceProgress,
   imprintProgress,
   achievementBadges,
   equippedAchievementBadgeId,
@@ -56,7 +59,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
   const [selectedLevel, setSelectedLevel] = useState<BattleChallengeLevel>(
     initialConfig?.kaiserLevel ?? 10,
   );
-  const [selectedAbilities, setSelectedAbilities] = useState<AbilityId[]>(
+  const [selectedAbilities, setSelectedAbilities] = useState<BattleAbilityId[]>(
     initialConfig?.abilities.map(ability => ability.id).slice(0, 2) ?? [],
   );
   const [statAllocation, setStatAllocation] = useState<StatAllocation>(() =>
@@ -78,8 +81,17 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
     setStatAllocation(createStatPreset(preset, availableStatPoints));
   };
 
-  const isAbilityAvailableForSelectedCharacter = (id: AbilityId) =>
+  const isAbilityAvailableForSelectedCharacter = (id: BattleAbilityId) =>
     selectedPlayerCharacterId !== 'stella' || id === 'ABYSS' || id === 'JUDGMENT';
+  const getAbilityLevelForSelection = (id: BattleAbilityId) =>
+    id in abilityProgress.levels
+      ? abilityProgress.levels[id as AbilityId]
+      : resonanceProgress.levels[id as ResonanceAbilityId] ?? 0;
+  const getAbilityNameForSelection = (id: BattleAbilityId) =>
+    ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name
+      ?? RESONANCE_DEFINITIONS.find(ability => ability.id === id)?.name
+      ?? id;
+  const isRegularAbility = (id: BattleAbilityId): id is AbilityId => id in abilityProgress.levels;
   const availableSelectedAbilities = selectedAbilities.filter(isAbilityAvailableForSelectedCharacter);
   const STELLA_INCOMPATIBLE_IMPRINTS: readonly ImprintId[] = ['BLOOD_TEAR', 'BLOOD_MEDIA', 'WIND_GUARD', 'FEATHER_SPLIT'];
   const getCompatibleImprints = (ids: readonly ImprintId[]) =>
@@ -87,12 +99,12 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       ? ids.filter(id => !STELLA_INCOMPATIBLE_IMPRINTS.includes(id))
       : [...ids];
 
-  const toggleAbility = (id: AbilityId) => {
+  const toggleAbility = (id: BattleAbilityId) => {
     if (!isAbilityAvailableForSelectedCharacter(id)) return;
     setSelectedAbilities(current => {
       if (current.includes(id)) return current.filter(value => value !== id);
       if (current.length >= 2) return current;
-      if (abilityProgress.levels[id] <= 0) return current;
+      if (getAbilityLevelForSelection(id) <= 0) return current;
       return [...current, id];
     });
   };
@@ -141,7 +153,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
       playerCharacterId: selectedPlayerCharacterId,
       abilities: availableSelectedAbilities.map(id => ({
         id,
-        level: abilityProgress.levels[id],
+        level: getAbilityLevelForSelection(id),
       })),
       statAllocation: normalizeStatAllocation(statAllocation, availableStatPoints),
       statPointTotal: availableStatPoints,
@@ -313,7 +325,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
         <BuildSavePanel
           snapshot={{
             statAllocation,
-            abilityIds: [...selectedAbilities],
+            abilityIds: selectedAbilities.filter(isRegularAbility),
             imprintIds: [...imprintProgress.equippedIds],
           }}
           context={buildValidationContext}
@@ -822,6 +834,52 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
             })}
           </div>
 
+            {RESONANCE_DEFINITIONS.map(ability => {
+              const level = resonanceProgress.levels[ability.id] ?? 0;
+              const selected = selectedAbilities.includes(ability.id);
+              const locked = !resonanceProgress.unlocked || level <= 0;
+              const disabled = locked || (!selected && selectedAbilities.length >= 2);
+              const detail = level > 0 ? ability.levelDescriptions[level - 1] : ability.shortDescription;
+              return (
+                <button
+                  key={ability.id}
+                  type="button"
+                  aria-pressed={selected}
+                  disabled={disabled}
+                  onClick={() => toggleAbility(ability.id)}
+                  style={{
+                    width: '100%',
+                    minHeight: '82px',
+                    borderRadius: '12px',
+                    border: selected ? '1.5px solid #C4B5FD' : '1px solid #554A87',
+                    background: selected ? 'linear-gradient(135deg, rgba(61,45,112,.98), rgba(30,22,58,.98))' : 'rgba(25,23,47,.94)',
+                    opacity: locked ? 0.45 : disabled ? 0.52 : 1,
+                    color: '#FFFFFF',
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '11px',
+                    textAlign: 'left',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <span style={{ width: 42, height: 42, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: 11, background: selected ? 'rgba(196,181,253,.18)' : 'rgba(109,91,208,.12)', border: '1px solid rgba(196,181,253,.28)', fontSize: 22 }}>{ability.symbol}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
+                      <strong style={{ fontSize: 15 }}>{ability.name}</strong>
+                      <span style={{ fontSize: 10, fontWeight: 900, color: level > 0 ? '#DDD6FE' : '#94A3B8' }}>{level > 0 ? `Lv.${level}` : '未合成'}</span>
+                      {selected && <span style={{ fontSize: 9, color: '#DDD6FE', fontWeight: 900 }}>装備中</span>}
+                    </span>
+                    <span style={{ display: 'block', marginTop: 4, color: '#CBD5E1', fontSize: 10, lineHeight: 1.5 }}>{ability.shortDescription}</span>
+                    {level > 0 && <span style={{ display: 'block', marginTop: 3, color: '#A5B4FC', fontSize: 9, lineHeight: 1.45 }}>Lv.{level}効果：{detail}</span>}
+                    {locked && <span style={{ display: 'block', marginTop: 3, color: '#FCD34D', fontSize: 9 }}>{!resonanceProgress.unlocked ? '通常カイザーLv.50勝利で解放' : '先に権能共鳴画面で合成してください'}</span>}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           <div style={{
             marginTop: '10px',
             padding: '9px 10px',
@@ -851,7 +909,7 @@ export const BattleSetupScreen: React.FC<BattleSetupScreenProps> = ({
           <div style={{ marginTop: '4px', fontSize: '11px', color: '#B0BEC5' }}>
             {availableSelectedAbilities.length === 0
               ? '権能なしで開始します。'
-              : availableSelectedAbilities.map(id => ABILITY_DEFINITIONS.find(ability => ability.id === id)?.name).join(' ＋ ')}
+              : availableSelectedAbilities.map(getAbilityNameForSelection).join(' ＋ ')}
           </div>
         </div>
 
