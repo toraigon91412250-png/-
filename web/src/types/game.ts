@@ -245,6 +245,9 @@ export const BATTLE_CHALLENGE_LEVELS: readonly BattleChallengeLevel[] = [10, 20,
 
 export type AbilityId = 'ABYSS' | 'FALLEN' | 'BLACK_WING' | 'FALLEN_KING' | 'JUDGMENT' | 'ASTRAL_DOMINION';
 
+export type AchievementBadgeId = 'A' | 'B' | 'C';
+export type AchievementBadgeTier = 0 | 1 | 2 | 3;
+
 export type ImprintId = 'FORESIGHT' | 'CHANT_HUNT' | 'YIN_YANG' | 'BLOOD_TEAR' | 'BLOOD_MEDIA' | 'WIND_GUARD' | 'COSTLY_SHOT' | 'FEATHER_SPLIT' | 'LAST_STAND' | 'STARFALL';
 
 export interface ImprintProgress {
@@ -278,6 +281,9 @@ export interface BattleSetupConfig {
   abilities: EquippedAbility[];
   /** Imprints are persisted separately and snapshotted into each battle config. */
   imprints?: ImprintId[];
+  /** Achievement-earned badge selected for this battle; absent legacy fields mean no badge. */
+  achievementBadgeId?: AchievementBadgeId | null;
+  achievementBadgeLevel?: AchievementBadgeTier;
   // Optional for backwards compatibility with older saved/config objects.
   statAllocation?: StatAllocation;
   statPointTotal?: number;
