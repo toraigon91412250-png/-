@@ -5,6 +5,7 @@ import { useBattleGame } from './hooks/useBattleGame';
 import { HomeDashboard } from './components/HomeDashboard';
 import { AchievementScreen } from './components/AchievementScreen';
 import { GrowthHubScreen } from './components/GrowthHubScreen';
+import { isRegularAbilityId } from './data/resonanceAbilities';
 import { ResonanceScreen } from './components/ResonanceScreen';
 import { IrenaTalentBoard } from './components/IrenaTalentBoard';
 import { BattleScreen } from './components/BattleScreen';
@@ -221,7 +222,7 @@ export const App: React.FC = () => {
         playerHp: battleState.player.currentHp,
         playerMaxHp: battleState.player.character.maxHp,
         actionsTaken: battleState.playerActionsTaken ?? [],
-        abilities: battleState.battleConfig.abilities,
+        abilities: battleState.battleConfig.abilities.filter(ability => isRegularAbilityId(ability.id)),
         equippedImprints: battleState.battleConfig.imprints ?? [],
         usedImprints: battleState.usedImprints,
         logLines: battleState.logs.map(log => log.text),
@@ -868,7 +869,6 @@ export const App: React.FC = () => {
           skillProgress={skillProgress}
           irenaTalentProgress={irenaTalentProgress}
           abilityProgress={abilityProgress}
-          resonanceProgress={resonanceProgress}
           imprintProgress={imprintProgress}
           raidRewardProgress={raidRewardProgress}
           raidItemMessage={raidItemMessage}
@@ -957,6 +957,7 @@ export const App: React.FC = () => {
             setBattleSetup(prev => ({ ...prev, playerCharacterId }));
           }}
           abilityProgress={abilityProgress}
+          resonanceProgress={resonanceProgress}
           imprintProgress={imprintProgress}
           achievementBadges={achievementBadgeProgress}
           equippedAchievementBadgeId={equippedAchievementBadge?.id ?? null}
