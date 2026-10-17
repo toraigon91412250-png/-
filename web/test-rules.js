@@ -525,9 +525,19 @@ const {
   advanceKaiserChallengeRound,
 } = await import('./src/utils/kaiserChallenge.ts');
 const { getRecruitmentRewardForPull } = await import('./src/data/recruitment.ts');
-const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority } = await import('./src/utils/storage.ts');
+const { loadStatPoints, addStatPoints, saveBattleResult, loadRaidRewardProgress, claimRaidVictoryReward, redeemRaidCoreFragment, performRecruitment, IMPRINT_PROGRESS_STORAGE_KEY, loadImprintProgress, loadSkillProgress, chooseIrenaSkillPath, upgradeIrenaSkill, unlockImprint, equipImprint, unequipImprint, drawImprintGacha, setImprintTicketsForDeveloper, addImprintTicketsForDeveloper, unlockAllImprintsForDeveloper, claimKaiser100VictoryReward, claimStellaFinalBattleReward, loadStellaModeProgress, recordExKaiserVictory, unlockStellaMode, enableDeveloperMode, unlockAllGameFeaturesForDeveloper, resetProgressForDeveloper, STELLA_MODE_PROGRESS_KEY, loadAchievementProgress, persistAchievementProgress, claimAchievementReward, unlockAchievementUltimateAuthority, loadAbilityProgress, loadResonanceProgress, unlockAbilityResonance, combineResonanceAbility, upgradeResonanceAbility } = await import('./src/utils/storage.ts');
 const { MAX_EQUIPPED_IMPRINTS, IMPRINT_DEFINITIONS } = await import('./src/data/imprints.ts');
 const { MAX_ABILITY_LEVEL } = await import('./src/data/abilities.ts');
+const { RESONANCE_DEFINITIONS } = await import('./src/data/resonanceAbilities.ts');
+const {
+  getFallenGodRevivalHpFraction,
+  getFallenGodStatMultiplier,
+  getResonanceExecutionStats,
+  getResonanceFeatherMultiplier,
+  getTurnErosionRate,
+  getFeatherErosionRate,
+  getKingZoneValues,
+} = await import('./src/utils/resonanceSystem.ts');
 const { normalizeEquippedImprints, shouldTriggerForesight, shouldSuppressCpuBuffAction, resolveYinYangDefense, getTurnExecutionPlan, YIN_YANG_DAMAGE_REDUCTION, getOpposingBloodImprint, getBloodTearBurstDamage, resolveWindGuardDamage, getWindGuardCounterDamage, WIND_GUARD_MAX_REDUCTION, COSTLY_SHOT_HP_COST, FEATHER_SPLIT_PIERCE_MULTIPLIER, FEATHER_SPLIT_RAPID_MULTIPLIER, FEATHER_SPLIT_ALTERNATION_BONUS, FEATHER_SPLIT_PIERCE_COOLDOWN, FEATHER_SPLIT_RAPID_COOLDOWN, getFeatherSplitModeForSkill, getSpecialCooldownRemaining, resolveFeatherSplitDamage } = await import('./src/utils/imprintSystem.ts');
 const { canUseRaidAction, createInitialRaidState, RAID_RULES, resolveRaidAction } = await import('./src/raid/engine.ts');
 const {
@@ -1341,6 +1351,85 @@ globalThis.localStorage = {
   removeItem: key => storageValues.delete(key),
   clear: () => storageValues.clear(),
 };
+
+const storageBeforeResonanceTests = new Map(storageValues);
+try {
+  assert.strictEqual(RESONANCE_DEFINITIONS.length, 10, 'Exactly ten resonance recipes must exist.');
+  const recipePairs = RESONANCE_DEFINITIONS.map(recipe => [...recipe.ingredients].sort().join('+'));
+  assert.strictEqual(new Set(recipePairs).size, 10, 'Resonance recipes must use ten distinct unordered source pairs.');
+  assert.ok(RESONANCE_DEFINITIONS.every(recipe =>
+    recipe.ingredients.length === 2 &&
+    !recipe.ingredients.includes('ASTRAL_DOMINION') &&
+    recipe.levelDescriptions.length === 5
+  ), 'Each recipe must have two eligible ingredients and five level descriptions; ASTRAL_DOMINION is excluded.');
+  assert.deepStrictEqual(
+    [0, 1, 2, 3, 4, 5, 6].map(index => getFallenGodRevivalHpFraction(5, index)),
+    [0.5, 0.25, 0.05, 0, 0, 0, 0],
+    'Fallen God Lv.5 must provide the exact seven-stage revival sequence.',
+  );
+  assert.strictEqual(getFallenGodRevivalHpFraction(5, 7), null, 'Fallen God must stop reviving after seven lethal hits.');
+  assert.strictEqual(getFallenGodStatMultiplier(5, 3), 4, 'Fallen God Lv.5 at HP1 must provide the specified x4 stat stage.');
+  assert.strictEqual(getResonanceFeatherMultiplier('JUDGMENT_WING', 5), 15, 'Judgment Wing Lv.5 must replace the base feather multiplier with x15.');
+  assert.strictEqual(getResonanceFeatherMultiplier('FALLEN_WING', 5), 10, 'Fallen Wing Lv.5 must replace the base feather multiplier with x10.');
+  assert.strictEqual(getTurnErosionRate('ABYSS_FALLEN', 5, 0.06), 45, 'Abyss Fallen Lv.5 at HP10% or lower must erode every stat by 45 points per turn.');
+  assert.strictEqual(getTurnErosionRate('ABYSS_WING', 5, 1), 18, 'Abyss Wing Lv.5 must erode 18% each turn.');
+  assert.strictEqual(getFeatherErosionRate('ABYSS_WING', 5), 15, 'Abyss Wing Lv.5 must apply 15% extra erosion per landed Feather.');
+  assert.deepStrictEqual(getKingZoneValues(5), {
+    maxStacks: 6,
+    defenseBonusPerStack: 0.08,
+    directDamageReductionPerStack: 0.06,
+  }, 'Abyss King Lv.5 must use the specified six-stack defense and mitigation values.');
+  assert.strictEqual(getResonanceExecutionStats('ABYSS_JUDGMENT', 5).threshold, 6);
+  assert.strictEqual(getResonanceExecutionStats('ABYSS_JUDGMENT', 5).overflowMultiplierCap, 2);
+  assert.strictEqual(getResonanceExecutionStats('KING_JUDGMENT', 5).defenseIgnore, 0.9);
+  console.log('✓ Ten resonance recipes and the core level-value tables are verified.');
+
+  storageValues.clear();
+  storageValues.set('duel_arena_ability_progress', JSON.stringify({
+    levels: { ABYSS: 5, FALLEN: 5, BLACK_WING: 5, FALLEN_KING: 0, JUDGMENT: 4, ASTRAL_DOMINION: 1 },
+    shards: { ABYSS: 2, FALLEN: 7, BLACK_WING: 5, FALLEN_KING: 0, JUDGMENT: 9, ASTRAL_DOMINION: 0 },
+  }));
+  const legacyAbilityProgress = loadAbilityProgress();
+  const legacyResonanceProgress = loadResonanceProgress();
+  assert.strictEqual(legacyAbilityProgress.levels.JUDGMENT, 4, 'Legacy base ability progress must be preserved.');
+  assert.strictEqual(legacyResonanceProgress.unlocked, false, 'Legacy saves must default resonance to locked.');
+  assert.strictEqual(legacyResonanceProgress.shards, 0, 'Legacy saves must safely default shared resonance shards.');
+
+  const unlockResult = unlockAbilityResonance();
+  assert.strictEqual(unlockResult.persisted, true);
+  assert.strictEqual(loadResonanceProgress().unlocked, true, 'Resonance unlock state must persist.');
+  const fused = combineResonanceAbility('FALLEN_WING');
+  assert.strictEqual(fused.success, true, 'A locked-check-passing recipe with both source powers at Lv.5 must fuse.');
+  assert.strictEqual(fused.progress.levels.FALLEN, 0);
+  assert.strictEqual(fused.progress.levels.BLACK_WING, 0);
+  assert.strictEqual(fused.progress.shards.FALLEN, 0);
+  assert.strictEqual(fused.progress.shards.BLACK_WING, 0);
+  assert.strictEqual(fused.progress.levels.JUDGMENT, 4, 'Fusion must not alter unrelated source powers.');
+  assert.strictEqual(fused.resonance.levels.FALLEN_WING, 1);
+  assert.strictEqual(fused.resonance.shards, 12, 'Unused source fragments must convert to shared resonance shards exactly once.');
+  assert.ok(fused.resonance.craftedRecipes.includes('FALLEN_WING'));
+  assert.strictEqual(loadResonanceProgress().craftedRecipes.includes('FALLEN_WING'), true, 'Crafted recipe records must survive reload.');
+
+  const storedAfterFusion = JSON.parse(storageValues.get('duel_arena_ability_progress'));
+  storedAfterFusion.levels.FALLEN = 5;
+  storedAfterFusion.levels.BLACK_WING = 5;
+  storedAfterFusion.shards.FALLEN = 3;
+  storedAfterFusion.shards.BLACK_WING = 4;
+  storedAfterFusion.resonance.shards = 400;
+  storageValues.set('duel_arena_ability_progress', JSON.stringify(storedAfterFusion));
+  const duplicateFusion = combineResonanceAbility('FALLEN_WING');
+  assert.strictEqual(duplicateFusion.success, false, 'A crafted recipe must remain permanently unavailable even after ingredients are reacquired.');
+  assert.ok(duplicateFusion.resonance.craftedRecipes.includes('FALLEN_WING'));
+
+  const upgraded = upgradeResonanceAbility('FALLEN_WING');
+  assert.strictEqual(upgraded.success, true, 'A resonance power with sufficient shared shards must upgrade.');
+  assert.strictEqual(upgraded.resonance.levels.FALLEN_WING, 2);
+  assert.strictEqual(upgraded.resonance.shards, 360, 'Lv.1 to Lv.2 must cost exactly 40 shared resonance shards.');
+  console.log('✓ Resonance unlock, atomic fusion, permanent recipe records, fragment conversion, and upgrades are verified.');
+} finally {
+  storageValues.clear();
+  for (const [key, value] of storageBeforeResonanceTests) storageValues.set(key, value);
+}
 
 const storageBeforeAchievementRewardTest = new Map(storageValues);
 try {
