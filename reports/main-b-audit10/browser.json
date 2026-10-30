@@ -1,0 +1,30 @@
+{
+  "passed": 23,
+  "checks": [
+    "320 opening shell main",
+    "320 no page scroll",
+    "320 six commands visible",
+    "320 power exposes for2T",
+    "320 HP panel stays in card",
+    "320 main real victory",
+    "320 normal P/reward/unlock unchanged",
+    "320 saved progress reopens floor6",
+    "320 lab adoption copy",
+    "320 pre-adoption comparison retained",
+    "320 lab still no main save write",
+    "390 opening shell main",
+    "390 no page scroll",
+    "390 six commands visible",
+    "390 power exposes for2T",
+    "390 HP panel stays in card",
+    "390 main real victory",
+    "390 normal P/reward/unlock unchanged",
+    "390 saved progress reopens floor6",
+    "390 lab adoption copy",
+    "390 pre-adoption comparison retained",
+    "390 lab still no main save write",
+    "no JS errors"
+  ],
+  "errors": [],
+  "iPhoneHardware": "user confirmed audit9 UI; developer has no device"
+}

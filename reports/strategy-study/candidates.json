@@ -1,0 +1,18 @@
+{
+  "raw": {
+    "sourceSHA256": "3b57160fb61283d4248ce07223e6ab67cf8ad74bd50258f48aeed0610bd63342",
+    "description": "納品時の現状そのまま"
+  },
+  "A": {
+    "sourceSHA256": "92172f524dd3bc1f4f924a332301d615f804b57b0b4a444a03e82d3d7b72dcc7",
+    "description": "ログ上限後の敵効果判定と重複刻印入手のみ修正・数値維持"
+  },
+  "B": {
+    "sourceSHA256": "40a23f56bc4c58d1f09457e02b14d723244ad8cfbb02a839aed4a3998ed34298",
+    "description": "A＋試作の蓄勢攻撃2→3倍"
+  },
+  "C": {
+    "sourceSHA256": "2171362f1ad6bf0e142e2fda9278e1316fe75a3dcea1ed5ab88fed6a4f94ef6a",
+    "description": "A＋試作の再生2.5→1%"
+  }
+}

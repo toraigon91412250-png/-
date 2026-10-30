@@ -1,0 +1,45 @@
+[
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "tail": [
+      "ℹ tests 164",
+      "ℹ suites 0",
+      "ℹ pass 164",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 605.778136"
+    ]
+  },
+  {
+    "command": "npm run check",
+    "exitCode": 0,
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 check",
+      "> node tools/check.mjs",
+      "",
+      "Syntax OK: 25 files"
+    ]
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 build",
+      "> node tools/build.mjs",
+      "",
+      "Build successful: dist/index.html + irena-play.html (5237470 bytes; 19 embedded images)"
+    ]
+  },
+  {
+    "command": "node tools/three-phase-sim.mjs",
+    "exitCode": 0,
+    "tail": [
+      "{\"featherSlash\":{\"wins\":0,\"losses\":200,\"meanRemainingHP\":0,\"meanTurns\":16.725,\"deadlineLosses\":120},\"featherGuard\":{\"wins\":21,\"losses\":179,\"meanRemainingHP\":1563.13,\"meanTurns\":15.895,\"deadlineLosses\":179},\"mixed\":{\"wins\":200,\"losses\":0,\"meanRemainingHP\":8743.575,\"meanTurns\":7.605,\"deadlineLosses\":0},\"defensive\":{\"wins\":200,\"losses\":0,\"meanRemainingHP\":10859.015,\"meanTurns\":9.86,\"deadlineLosses\":0},\"reserveUltimate\":{\"wins\":200,\"losses\":0,\"meanRemainingHP\":6422.95,\"meanTurns\":9.8,\"deadlineLosses\":0}}"
+    ]
+  }
+]

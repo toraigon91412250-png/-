@@ -1,0 +1,104 @@
+{
+  "trials": 3552,
+  "independentConditions": 592,
+  "seeds": [
+    1,
+    19,
+    46,
+    91,
+    173,
+    997
+  ],
+  "wins": 2221,
+  "violations": 0,
+  "byMode": {
+    "burst": {
+      "trials": 444,
+      "wins": 243,
+      "winningActions": 1346,
+      "winRate": 0.5472972972972973,
+      "meanWinningActions": 5.539094650205762
+    },
+    "shatter": {
+      "trials": 444,
+      "wins": 308,
+      "winningActions": 2861,
+      "winRate": 0.6936936936936937,
+      "meanWinningActions": 9.28896103896104
+    },
+    "counter": {
+      "trials": 444,
+      "wins": 217,
+      "winningActions": 1977,
+      "winRate": 0.48873873873873874,
+      "meanWinningActions": 9.110599078341014
+    },
+    "switch": {
+      "trials": 444,
+      "wins": 310,
+      "winningActions": 1847,
+      "winRate": 0.6981981981981982,
+      "meanWinningActions": 5.958064516129032
+    },
+    "wing": {
+      "trials": 444,
+      "wins": 395,
+      "winningActions": 1987,
+      "winRate": 0.8896396396396397,
+      "meanWinningActions": 5.030379746835443
+    },
+    "abyss": {
+      "trials": 444,
+      "wins": 212,
+      "winningActions": 1932,
+      "winRate": 0.4774774774774775,
+      "meanWinningActions": 9.11320754716981
+    },
+    "low": {
+      "trials": 444,
+      "wins": 236,
+      "winningActions": 1306,
+      "winRate": 0.5315315315315315,
+      "meanWinningActions": 5.533898305084746
+    },
+    "adaptive": {
+      "trials": 444,
+      "wins": 300,
+      "winningActions": 2183,
+      "winRate": 0.6756756756756757,
+      "meanWinningActions": 7.276666666666666
+    }
+  },
+  "byLevel": {
+    "1": {
+      "trials": 48,
+      "wins": 0,
+      "winningActions": 0,
+      "winRate": 0,
+      "meanWinningActions": null
+    },
+    "61": {
+      "trials": 432,
+      "wins": 161,
+      "winningActions": 1175,
+      "winRate": 0.3726851851851852,
+      "meanWinningActions": 7.298136645962733
+    },
+    "80": {
+      "trials": 3072,
+      "wins": 2060,
+      "winningActions": 14264,
+      "winRate": 0.6705729166666666,
+      "meanWinningActions": 6.924271844660194
+    }
+  },
+  "routes": {
+    "系統切替": 1252,
+    "必殺": 1166,
+    "破鏡": 1694,
+    "防御反撃": 1309,
+    "羽衣連携": 132,
+    "低HP切替": 1424,
+    "侵食": 2736
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "baseCommit": "04bd49c",
+  "sitePublished": false,
+  "checks": {
+    "npm run check": {
+      "status": "passed",
+      "files": 98
+    },
+    "npm test": {
+      "status": "passed",
+      "passed": 570,
+      "failed": 0
+    },
+    "npm run build": {
+      "status": "passed",
+      "distIndexBytes": 25900716,
+      "standaloneBytes": 52422926,
+      "embeddedImages": 78
+    },
+    "playwrightChromium": {
+      "engine": "chromium",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "checks": [
+        "iPhone-width trial no horizontal scroll",
+        "iPhone-width trial no vertical scroll",
+        "iPhone-width trial all commands visible",
+        "combat awakening uses the existing stage illustration",
+        "plume command unlocked during the trial",
+        "existing authority-specific cut-in is reused",
+        "large damage number appears on the enemy side",
+        "wide slash appears in the compact arena",
+        "hit-stop and screen shake play on impact",
+        "iPhone-width during combat no horizontal scroll",
+        "iPhone-width during combat no vertical scroll",
+        "iPhone-width during combat all commands visible",
+        "combat returns to usable commands",
+        "no page exceptions"
+      ],
+      "errors": []
+    },
+    "playwrightWebKit": {
+      "engine": "webkit",
+      "status": "blocked before test execution",
+      "reason": "browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libgtk-4.so.1                                    ║\n║     libgraphene-1.0.so.0                             ║\n║     libharfbuzz-icu.so.0                             ║\n║     libmanette-0.2.so.0                              ║\n║     libhyphen.so.0                                   ║\n║     libGLESv2.so.2                                   ║\n╚══════════════════════════════════════════════════════╝",
+      "checks": [],
+      "errors": [
+        "browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libgtk-4.so.1                                    ║\n║     libgraphene-1.0.so.0                             ║\n║     libharfbuzz-icu.so.0                             ║\n║     libmanette-0.2.so.0                              ║\n║     libhyphen.so.0                                   ║\n║     libGLESv2.so.2                                   ║\n╚══════════════════════════════════════════════════════╝"
+      ]
+    },
+    "builtHTMLChromium": {
+      "engine": "chromium",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reducedMotion": "no-preference",
+      "checks": [
+        "iPhone-width trial no horizontal scroll",
+        "iPhone-width trial no vertical scroll",
+        "iPhone-width trial all commands visible",
+        "combat awakening uses the existing stage illustration",
+        "plume command unlocked during the trial",
+        "existing authority-specific cut-in is reused",
+        "large damage number appears on the enemy side",
+        "wide slash appears in the compact arena",
+        "hit-stop and screen shake play on impact",
+        "iPhone-width during combat no horizontal scroll",
+        "iPhone-width during combat no vertical scroll",
+        "iPhone-width during combat all commands visible",
+        "combat returns to usable commands",
+        "no page exceptions"
+      ],
+      "errors": []
+    }
+  },
+  "buildArtifacts": {
+    "dist/index.html": {
+      "sha256": "db407948224e45969cd2097ca02fddb4b4a595107918ba6d7ed7ad25b737b2a1"
+    },
+    "irena-play.html": {
+      "sha256": "8e5fbd3052cd9e489559c1c5c30beb4b36964765d6e9319a5db27b1e9dead56f"
+    }
+  },
+  "verifiedAt": "2026-10-28",
+  "publicationPreparation": {
+    "bundleFix": "Include divinityPresentation.js in the explicit build file list",
+    "standaloneOutput": "52.4 MB standalone retained locally; excluded from Git update because the repository rejects objects above 32 MiB"
+  }
+}

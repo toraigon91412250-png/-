@@ -1,0 +1,20 @@
+{
+  "coreAndSaveUnchanged": true,
+  "standaloneAndHostedSameExceptAssetReferences": true,
+  "originalArtPreserved": true,
+  "standaloneBytes": 27771410,
+  "hostedBytes": 25755410,
+  "changedFiles": [
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/components/battleVisuals.js",
+    "web/src/components/sanctuaryPolish.js",
+    "tools/build.mjs",
+    "tests/battle-ui.test.js",
+    "tests/audit-baseline.js",
+    "tests/finale-audit4.test.js",
+    "tests/sanctuary-polish.test.js",
+    "assets/finale/confrontation.webp",
+    "assets/finale/confrontation.png"
+  ]
+}

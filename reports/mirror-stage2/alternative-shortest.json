@@ -1,0 +1,989 @@
+[
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 1,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 19,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 46,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 91,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 173,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-fallen-judge",
+    "seed": 997,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "arrival-king-judge",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 1,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 19,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 46,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 91,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 173,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-fallen-judge",
+    "seed": 997,
+    "burst": 5,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "trained-king-judge",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "fused-god",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-god",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "fused-god",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-god",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-god",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-god",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "fused-fallenwing",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-fallenwing",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-fallenwing",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-fallenwing",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-fallenwing",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fused-abyssking",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L1",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L1",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L1",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L1",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L1",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L1",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L2",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L2",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L2",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L2",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L2",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L2",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L3",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L3",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L3",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L3",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L3",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L3",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L4",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L4",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L4",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L4",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L4",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L4",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L5",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L5",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "god-L5",
+    "seed": 46,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L5",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L5",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "god-L5",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "fallenwing-L1",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L1",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L1",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L1",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L1",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L2",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L2",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L2",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L2",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L2",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L3",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L3",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L3",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L3",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L3",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L4",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L4",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L4",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L4",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L4",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L5",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L5",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L5",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L5",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenwing-L5",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L1",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L1",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L1",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L1",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L2",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L2",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L2",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L2",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L3",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L3",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L3",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L3",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L4",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L4",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L4",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L4",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L5",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L5",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L5",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "fallenjudge-L5",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L1",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L1",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssfallen-L1",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L1",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L1",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L2",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L2",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssfallen-L2",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L2",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L2",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L3",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L3",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssfallen-L3",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L3",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L3",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L4",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L4",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssfallen-L4",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L4",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L4",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L5",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L5",
+    "seed": 19,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssfallen-L5",
+    "seed": 91,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L5",
+    "seed": 173,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssfallen-L5",
+    "seed": 997,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 5
+  },
+  {
+    "build": "abyssking-L1",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssking-L2",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssking-L3",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssking-L4",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  },
+  {
+    "build": "abyssking-L5",
+    "seed": 1,
+    "burst": 6,
+    "alternative": "switch",
+    "actions": 6
+  }
+]

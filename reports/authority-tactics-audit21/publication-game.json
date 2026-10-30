@@ -1,0 +1,15 @@
+{
+  "id": "appgdep_6adc1ffb80748191bd9881e4b7cfbd3f",
+  "project_id": "appgprj_6ada04c83c3481918dbc196414e270c5",
+  "title": "いれーな REBORN",
+  "version_id": "appgprj_6ada04c83c3481918dbc196414e270c5~appgver_263e2b83c3b08191bb61c6aff643c966",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://irena-reborn-play-20261022.mossyelk258.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ada04c83c3481918dbc196414e270c5",
+  "failure_message": null,
+  "env_set_revision": 0,
+  "updated_at": "2026-10-24T03:03:46.296689+00:00"
+}

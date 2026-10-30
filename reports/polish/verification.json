@@ -1,0 +1,40 @@
+{
+  "unitPassed": 210,
+  "unitFailed": 0,
+  "syntaxFiles": 33,
+  "build": true,
+  "htmlSHA256": "202d98ef31c4f5d24315abe2d360e908b20b2db033618f7b5efbe95c280fb710",
+  "htmlBytes": 15434865,
+  "browser": {
+    "chromium": {
+      "passed": 58,
+      "failed": 0,
+      "errors": []
+    },
+    "webkit": {
+      "passed": 58,
+      "failed": 0,
+      "errors": []
+    },
+    "existingE2E": {
+      "passed": 119,
+      "failed": 0,
+      "errors": []
+    },
+    "existingUI": {
+      "passed": 389,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "recovery": {
+    "testsPassed": 210,
+    "checkFiles": 33,
+    "buildSuccess": true,
+    "htmlByteIdentical": true,
+    "htmlSHA256": "202d98ef31c4f5d24315abe2d360e908b20b2db033618f7b5efbe95c280fb710"
+  },
+  "iPhoneHardware": "unverified",
+  "fileURL": "blocked by browser policy; unverified",
+  "deployed": false
+}

@@ -1,0 +1,86 @@
+{
+  "passed": 6,
+  "checks": [
+    "desktop commands preserve exact audit18 layout (vertical scroll already present)",
+    "standalone all commands fit mobile viewport",
+    "standalone power image is decoded inline PNG",
+    "standalone impact completes and next slash works",
+    "standalone turn3",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "desktopBaseline": [
+    {
+      "id": "slash",
+      "x": 160,
+      "y": 923.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "feather",
+      "x": 645,
+      "y": 923.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "power",
+      "x": 160,
+      "y": 1033.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "ultimate",
+      "x": 160,
+      "y": 1143.109375,
+      "w": 960,
+      "h": 100
+    },
+    {
+      "id": "guard",
+      "x": 645,
+      "y": 1033.109375,
+      "w": 475,
+      "h": 100
+    }
+  ],
+  "desktopCurrent": [
+    {
+      "id": "slash",
+      "x": 160,
+      "y": 923.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "feather",
+      "x": 645,
+      "y": 923.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "power",
+      "x": 160,
+      "y": 1033.109375,
+      "w": 475,
+      "h": 100
+    },
+    {
+      "id": "ultimate",
+      "x": 160,
+      "y": 1143.109375,
+      "w": 960,
+      "h": 100
+    },
+    {
+      "id": "guard",
+      "x": 645,
+      "y": 1033.109375,
+      "w": 475,
+      "h": 100
+    }
+  ]
+}

@@ -1,0 +1,649 @@
+{
+  "checks": [
+    "320 lobby no overflow",
+    "320 lobby 44px touch height",
+    "320 combat no overflow",
+    "320 combat 44px touch height",
+    "only current feather commands",
+    "campaign art decoded",
+    "320 commands above fixed nav",
+    "375 lobby no overflow",
+    "375 lobby 44px touch height",
+    "375 combat no overflow",
+    "375 combat 44px touch height",
+    "only current feather commands",
+    "campaign art decoded",
+    "375 commands above fixed nav",
+    "390 lobby no overflow",
+    "390 lobby 44px touch height",
+    "390 combat no overflow",
+    "390 combat 44px touch height",
+    "only current feather commands",
+    "campaign art decoded",
+    "390 commands above fixed nav",
+    "430 lobby no overflow",
+    "430 lobby 44px touch height",
+    "430 combat no overflow",
+    "430 combat 44px touch height",
+    "only current feather commands",
+    "campaign art decoded",
+    "430 commands above fixed nav",
+    "active main battle blocks campaign",
+    "existing home resumes main fight",
+    "actual main win",
+    "real route 1 wins",
+    "only local reward displayed 0",
+    "main save unchanged 0",
+    "real route 2 wins",
+    "only local reward displayed 1",
+    "main save unchanged 1",
+    "real route 3 wins",
+    "only local reward displayed 2",
+    "main save unchanged 2",
+    "real route 4 wins",
+    "only local reward displayed 3",
+    "main save unchanged 3",
+    "real route 5 wins",
+    "only local reward displayed 4",
+    "main save unchanged 4",
+    "real route 6 wins",
+    "only local reward displayed 5",
+    "main save unchanged 5",
+    "real route 7 wins",
+    "only local reward displayed 6",
+    "main save unchanged 6",
+    "real route 8 wins",
+    "only local reward displayed 7",
+    "main save unchanged 7",
+    "real route 9 wins",
+    "only local reward displayed 8",
+    "main save unchanged 8",
+    "real route 10 wins",
+    "only local reward displayed 9",
+    "main save unchanged 9",
+    "real route 11 wins",
+    "only local reward displayed 10",
+    "main save unchanged 10",
+    "real route 12 wins",
+    "only local reward displayed 11",
+    "main save unchanged 11",
+    "real route 13 wins",
+    "only local reward displayed 12",
+    "main save unchanged 12",
+    "real route 14 wins",
+    "only local reward displayed 13",
+    "main save unchanged 13",
+    "real route 15 wins",
+    "only local reward displayed 14",
+    "main save unchanged 14",
+    "real route 16 wins",
+    "only local reward displayed 15",
+    "main save unchanged 15",
+    "real route 17 wins",
+    "only local reward displayed 16",
+    "main save unchanged 16",
+    "real route 18 wins",
+    "only local reward displayed 17",
+    "main save unchanged 17",
+    "real route 19 wins",
+    "only local reward displayed 18",
+    "main save unchanged 18",
+    "real route 20 wins",
+    "only local reward displayed 19",
+    "main save unchanged 19",
+    "real route 21 wins",
+    "only local reward displayed 20",
+    "main save unchanged 20",
+    "real route 22 wins",
+    "only local reward displayed 21",
+    "main save unchanged 21",
+    "all20 plus Stella EX completed",
+    "reset cancel preserves route",
+    "reset only trial",
+    "home resume returns ongoing campaign",
+    "retreat result has zero local gain",
+    "retry starts at full health",
+    "reload discards only trial run",
+    "campaign split exclusivity preserved"
+  ],
+  "errors": [],
+  "metrics": [
+    {
+      "label": "320 lobby",
+      "width": 320,
+      "scroll": 320,
+      "taps": [
+        {
+          "h": 47,
+          "w": 256,
+          "text": "挑戦する →"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 90,
+          "text": "実験場へ"
+        },
+        {
+          "h": 47,
+          "w": 132,
+          "text": "試作を最初から"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "実験場"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "開発者"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "ガイド"
+        }
+      ]
+    },
+    {
+      "label": "320 combat",
+      "width": 320,
+      "scroll": 320,
+      "taps": [
+        {
+          "h": 44,
+          "w": 44,
+          "text": "戦場へ"
+        },
+        {
+          "h": 44,
+          "w": 63.171875,
+          "text": "技を選ぶ ↓"
+        },
+        {
+          "h": 78,
+          "w": 144,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26\n"
+        },
+        {
+          "h": 78,
+          "w": 144,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39\n"
+        },
+        {
+          "h": 78,
+          "w": 144,
+          "text": "◈\n破壊の権能\n装備権能で攻撃 / CT3\n"
+        },
+        {
+          "h": 78,
+          "w": 144,
+          "text": "⬡\n防御\n軽減70%・ゲージ＋18・HP12%回復\n"
+        },
+        {
+          "h": 47,
+          "w": 296,
+          "text": "撤退する"
+        }
+      ]
+    },
+    {
+      "label": "375 lobby",
+      "width": 375,
+      "scroll": 375,
+      "taps": [
+        {
+          "h": 47,
+          "w": 305,
+          "text": "挑戦する →"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 90,
+          "text": "実験場へ"
+        },
+        {
+          "h": 47,
+          "w": 132,
+          "text": "試作を最初から"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "実験場"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "開発者"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "ガイド"
+        }
+      ]
+    },
+    {
+      "label": "375 combat",
+      "width": 375,
+      "scroll": 375,
+      "taps": [
+        {
+          "h": 44,
+          "w": 51,
+          "text": "戦場へ"
+        },
+        {
+          "h": 44,
+          "w": 72.078125,
+          "text": "技を選ぶ ↓"
+        },
+        {
+          "h": 80,
+          "w": 171.5,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26\n"
+        },
+        {
+          "h": 80,
+          "w": 171.5,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39\n"
+        },
+        {
+          "h": 76,
+          "w": 171.5,
+          "text": "◈\n破壊の権能\n装備権能で攻撃 / CT3\n"
+        },
+        {
+          "h": 80,
+          "w": 171.5,
+          "text": "⬡\n防御\n軽減70%・ゲージ＋18・HP12%回復\n"
+        },
+        {
+          "h": 47,
+          "w": 351,
+          "text": "撤退する"
+        }
+      ]
+    },
+    {
+      "label": "390 lobby",
+      "width": 390,
+      "scroll": 390,
+      "taps": [
+        {
+          "h": 47,
+          "w": 320,
+          "text": "挑戦する →"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 90,
+          "text": "実験場へ"
+        },
+        {
+          "h": 47,
+          "w": 132,
+          "text": "試作を最初から"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "実験場"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "開発者"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "ガイド"
+        }
+      ]
+    },
+    {
+      "label": "390 combat",
+      "width": 390,
+      "scroll": 390,
+      "taps": [
+        {
+          "h": 44,
+          "w": 51,
+          "text": "戦場へ"
+        },
+        {
+          "h": 44,
+          "w": 72.078125,
+          "text": "技を選ぶ ↓"
+        },
+        {
+          "h": 76,
+          "w": 179,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26\n"
+        },
+        {
+          "h": 76,
+          "w": 179,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39\n"
+        },
+        {
+          "h": 76,
+          "w": 179,
+          "text": "◈\n破壊の権能\n装備権能で攻撃 / CT3\n"
+        },
+        {
+          "h": 80,
+          "w": 179,
+          "text": "⬡\n防御\n軽減70%・ゲージ＋18・HP12%回復\n"
+        },
+        {
+          "h": 47,
+          "w": 366,
+          "text": "撤退する"
+        }
+      ]
+    },
+    {
+      "label": "430 lobby",
+      "width": 430,
+      "scroll": 430,
+      "taps": [
+        {
+          "h": 47,
+          "w": 360,
+          "text": "挑戦する →"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "強化"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "解除"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 62,
+          "text": "購入"
+        },
+        {
+          "h": 47,
+          "w": 90,
+          "text": "実験場へ"
+        },
+        {
+          "h": 47,
+          "w": 132,
+          "text": "試作を最初から"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "実験場"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "開発者"
+        },
+        {
+          "h": 44,
+          "w": 83.015625,
+          "text": "ガイド"
+        }
+      ]
+    },
+    {
+      "label": "430 combat",
+      "width": 430,
+      "scroll": 430,
+      "taps": [
+        {
+          "h": 44,
+          "w": 51,
+          "text": "戦場へ"
+        },
+        {
+          "h": 44,
+          "w": 72.078125,
+          "text": "技を選ぶ ↓"
+        },
+        {
+          "h": 76,
+          "w": 199,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26\n"
+        },
+        {
+          "h": 76,
+          "w": 199,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39\n"
+        },
+        {
+          "h": 76,
+          "w": 199,
+          "text": "◈\n破壊の権能\n装備権能で攻撃 / CT3\n"
+        },
+        {
+          "h": 80,
+          "w": 199,
+          "text": "⬡\n防御\n軽減70%・ゲージ＋18・HP12%回復\n"
+        },
+        {
+          "h": 47,
+          "w": 406,
+          "text": "撤退する"
+        }
+      ]
+    }
+  ],
+  "error": "locator.tap: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-action=\"combat\"][data-id=\"volley\"]').filter({ visible: true }).first()\u001b[22m\n\n    at actionClick (/workspace/irena-overnight/irena-reborn/tools/browser-actions.mjs:31:35)\n    at async file:///workspace/irena-overnight/irena-reborn/reports/overnight-lab/browser-check.mjs:25:547"
+}

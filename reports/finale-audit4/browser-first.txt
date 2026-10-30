@@ -1,0 +1,14 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-action="nav"][data-id="raid"]').filter({ visible: true }).first()[22m
+
+    at actionClick (/workspace/irena-finale-audit4/irena-reborn/tools/browser-actions.mjs:34:35)
+    at async file:///workspace/irena-finale-audit4/irena-reborn/reports/finale-audit4/browser.mjs:17:2 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

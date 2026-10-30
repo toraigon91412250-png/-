@@ -1,0 +1,16 @@
+{
+  "browser": "system Chromium",
+  "viewport": {
+    "width": 320,
+    "height": 900
+  },
+  "checks": 3,
+  "pass": 3,
+  "fail": 0,
+  "assertions": {
+    "finaleDifficultyControlFits": true,
+    "expertCanBeSelected": true,
+    "stellaStartsAtExpert": true
+  },
+  "pageErrors": []
+}

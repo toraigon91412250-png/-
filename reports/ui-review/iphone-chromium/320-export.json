@@ -1,0 +1,312 @@
+{
+  "game": "irena-reborn",
+  "version": 4,
+  "state": {
+    "version": 4,
+    "started": true,
+    "level": 100,
+    "floor": 100,
+    "cleared": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100
+    ],
+    "p": 999749,
+    "sp": 1000,
+    "stats": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spd": 0
+    },
+    "powers": {
+      "abyss": 5,
+      "wing": 5,
+      "fallen": 5,
+      "king": 5,
+      "judge": 5
+    },
+    "fragments": {
+      "abyss": 10007,
+      "fallen": 10007,
+      "wing": 10047,
+      "king": 10007,
+      "judge": 10007
+    },
+    "powerHistory": [
+      "abyss",
+      "wing"
+    ],
+    "maxHistory": [],
+    "equipped": [
+      "wing",
+      "abyss"
+    ],
+    "resonance": {
+      "god": 5,
+      "fallenwing": 5,
+      "fallenjudge": 5,
+      "abyssfallen": 5,
+      "kingwing": 5,
+      "kingjudge": 5,
+      "abyssking": 5,
+      "judgewing": 5,
+      "abysswing": 5,
+      "abyssjudge": 5
+    },
+    "recipes": [],
+    "resShards": 100019,
+    "marks": [
+      "split",
+      "starfall",
+      "endure",
+      "abyssmark",
+      "wind",
+      "iron",
+      "fire",
+      "moon",
+      "crown",
+      "life"
+    ],
+    "markEquip": [
+      "starfall",
+      "endure",
+      "wind"
+    ],
+    "markUsed": [],
+    "talent": 20,
+    "skills": {
+      "feather": 10,
+      "destruction": 10,
+      "ultimate": 10
+    },
+    "achieved": [
+      "A0",
+      "A3",
+      "C1",
+      "A6",
+      "A7",
+      "A8",
+      "A9",
+      "A10",
+      "A11",
+      "B8",
+      "B9",
+      "C2",
+      "C3",
+      "C7",
+      "C8",
+      "C9",
+      "C4",
+      "C6"
+    ],
+    "claimed": [],
+    "badge": null,
+    "summons": 10,
+    "collection": [
+      "星のかけら",
+      "王権の残光",
+      "堕天の羽根",
+      "断罪の印章",
+      "深淵結晶",
+      "黒翼の欠片"
+    ],
+    "summonHistory": [
+      {
+        "reward": "星のかけら",
+        "dupe": false
+      },
+      {
+        "reward": "王権の残光",
+        "dupe": false
+      },
+      {
+        "reward": "堕天の羽根",
+        "dupe": false
+      },
+      {
+        "reward": "断罪の印章",
+        "dupe": false
+      },
+      {
+        "reward": "深淵結晶",
+        "dupe": false
+      },
+      {
+        "reward": "黒翼の欠片",
+        "dupe": false
+      },
+      {
+        "reward": "星のかけら",
+        "dupe": true
+      },
+      {
+        "reward": "星のかけら",
+        "dupe": true
+      },
+      {
+        "reward": "星のかけら",
+        "dupe": true
+      },
+      {
+        "reward": "星のかけら",
+        "dupe": true
+      }
+    ],
+    "flags": {
+      "lv100": true,
+      "reward100": true,
+      "stella": true,
+      "warp": true,
+      "ex": true,
+      "exReward": true,
+      "stellaClear": true,
+      "final": true,
+      "finalClear": false
+    },
+    "counts": {
+      "wins": 1,
+      "streak": 1,
+      "special": 1,
+      "ultimate": 0,
+      "raid": 0
+    },
+    "records": {
+      "fast": true,
+      "nopower": false,
+      "basic": false,
+      "expert": false,
+      "starfinish": false,
+      "low": false,
+      "nomark": true,
+      "endure": false
+    },
+    "finalBuild": {
+      "points": 150,
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spd": 0
+    },
+    "awakening": 1,
+    "godMaterials": 994,
+    "godUnique": [
+      98,
+      99,
+      99,
+      99,
+      99
+    ],
+    "medals": 0,
+    "gauntlet": {
+      "index": 0,
+      "materials": 0,
+      "unique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "dev": null,
+    "savedAt": "2026-10-20T14:10:17.897Z"
+  }
+}

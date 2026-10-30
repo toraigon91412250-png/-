@@ -1,0 +1,3548 @@
+{
+  "generatedAt": "2026-10-26T16:30:27.874Z",
+  "purpose": "Expanded raid-only HP pressure comparison; no production source change.",
+  "source": {
+    "gameCoreSHA256": "8c3db3d1068188d222e499cbca79849558bd5340700ce538a9f99be18b6f9c52",
+    "runner": "production startBattle / act"
+  },
+  "coverage": {
+    "profiles": 7,
+    "policies": [
+      "feather",
+      "mixed",
+      "guard"
+    ],
+    "seeds": [
+      700001,
+      700019,
+      700046,
+      700091,
+      700123,
+      700177,
+      700211,
+      700307
+    ],
+    "seedsPerBuildPolicy": 8,
+    "conditions": 21,
+    "trialsPerCandidate": 168,
+    "actionLimit": 200
+  },
+  "candidates": [
+    {
+      "hp": 2,
+      "atk": 1
+    },
+    {
+      "hp": 3,
+      "atk": 1
+    }
+  ],
+  "groups": [
+    {
+      "hpFactor": 2,
+      "trials": 168,
+      "wins": 155,
+      "losses": 13,
+      "winRate": 0.9226,
+      "meanActions": 7.19,
+      "byBuild": {
+        "wing_abyss": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "king_judge": {
+          "trials": 24,
+          "wins": 11,
+          "losses": 13,
+          "winRate": 0.4583
+        },
+        "fallen_abyss": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "wing_fallen": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_judgewing": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_god": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_abyssjudge": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        }
+      },
+      "byPolicy": {
+        "feather": {
+          "trials": 56,
+          "wins": 48,
+          "losses": 8,
+          "winRate": 0.8571
+        },
+        "mixed": {
+          "trials": 56,
+          "wins": 56,
+          "losses": 0,
+          "winRate": 1
+        },
+        "guard": {
+          "trials": 56,
+          "wins": 51,
+          "losses": 5,
+          "winRate": 0.9107
+        }
+      }
+    },
+    {
+      "hpFactor": 3,
+      "trials": 168,
+      "wins": 153,
+      "losses": 15,
+      "winRate": 0.9107,
+      "meanActions": 8.71,
+      "byBuild": {
+        "wing_abyss": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "king_judge": {
+          "trials": 24,
+          "wins": 9,
+          "losses": 15,
+          "winRate": 0.375
+        },
+        "fallen_abyss": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "wing_fallen": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_judgewing": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_god": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        },
+        "res_abyssjudge": {
+          "trials": 24,
+          "wins": 24,
+          "losses": 0,
+          "winRate": 1
+        }
+      },
+      "byPolicy": {
+        "feather": {
+          "trials": 56,
+          "wins": 48,
+          "losses": 8,
+          "winRate": 0.8571
+        },
+        "mixed": {
+          "trials": 56,
+          "wins": 56,
+          "losses": 0,
+          "winRate": 1
+        },
+        "guard": {
+          "trials": 56,
+          "wins": 49,
+          "losses": 7,
+          "winRate": 0.875
+        }
+      }
+    }
+  ],
+  "rows": [
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2985,
+      "damageReceived": 3824
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2686,
+      "damageReceived": 4123
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "lose",
+      "actions": 14,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "lose",
+      "actions": 14,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1950,
+      "damageReceived": 11026
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2059,
+      "damageReceived": 11026
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2059,
+      "damageReceived": 11026
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1107,
+      "damageReceived": 11978
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1107,
+      "damageReceived": 11978
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1107,
+      "damageReceived": 11978
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1107,
+      "damageReceived": 11978
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1107,
+      "damageReceived": 11978
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1,
+      "damageReceived": 8840
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1,
+      "damageReceived": 8840
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 2,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2412,
+      "damageReceived": 3781
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2597,
+      "damageReceived": 3596
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2596,
+      "damageReceived": 3598
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2373,
+      "damageReceived": 4133
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2597,
+      "damageReceived": 3596
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 15,
+      "playerHP": 2374,
+      "damageReceived": 4132
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2412,
+      "damageReceived": 3780
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2598,
+      "damageReceived": 3594
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2375,
+      "damageReceived": 4128
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2597,
+      "damageReceived": 3595
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2598,
+      "damageReceived": 3594
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2375,
+      "damageReceived": 4128
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2412,
+      "damageReceived": 3780
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1835,
+      "damageReceived": 4356
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1835,
+      "damageReceived": 4356
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1834,
+      "damageReceived": 4359
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1834,
+      "damageReceived": 4358
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1835,
+      "damageReceived": 4357
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1834,
+      "damageReceived": 4358
+    },
+    {
+      "hpFactor": 2,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 1834,
+      "damageReceived": 4358
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3524,
+      "damageReceived": 4511
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3026,
+      "damageReceived": 5009
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3524,
+      "damageReceived": 4511
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3026,
+      "damageReceived": 5009
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3524,
+      "damageReceived": 4511
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3148,
+      "damageReceived": 4887
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 3763,
+      "damageReceived": 6098
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5345
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 3763,
+      "damageReceived": 6098
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5828,
+      "damageReceived": 4033
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 3763,
+      "damageReceived": 6098
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5345
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 3763,
+      "damageReceived": 6098
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5828,
+      "damageReceived": 4033
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 4222,
+      "damageReceived": 5640
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 5631,
+      "damageReceived": 4230
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3566,
+      "damageReceived": 6296
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3763,
+      "damageReceived": 6099
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3566,
+      "damageReceived": 6296
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3763,
+      "damageReceived": 6099
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 5631,
+      "damageReceived": 4230
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3763,
+      "damageReceived": 6099
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 2,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1987,
+      "damageReceived": 4822
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2246,
+      "damageReceived": 4563
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1248,
+      "damageReceived": 5561
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 638,
+      "damageReceived": 6171
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1283,
+      "damageReceived": 5526
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1764,
+      "damageReceived": 5045
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1283,
+      "damageReceived": 5526
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2022,
+      "damageReceived": 4787
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1283,
+      "damageReceived": 5526
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1283,
+      "damageReceived": 5526
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 1283,
+      "damageReceived": 5526
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2022,
+      "damageReceived": 4787
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "lose",
+      "actions": 14,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "lose",
+      "actions": 14,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "lose",
+      "actions": 13,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 12974
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 14,
+      "playerHP": 1,
+      "damageReceived": 13083
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "lose",
+      "actions": 17,
+      "playerHP": 0,
+      "damageReceived": 9792
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "lose",
+      "actions": 18,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "lose",
+      "actions": 15,
+      "playerHP": 0,
+      "damageReceived": 9126
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2412,
+      "damageReceived": 3782
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2597,
+      "damageReceived": 3596
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2374,
+      "damageReceived": 4131
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2595,
+      "damageReceived": 3600
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2373,
+      "damageReceived": 4134
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2374,
+      "damageReceived": 4131
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2597,
+      "damageReceived": 3597
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 17,
+      "playerHP": 2374,
+      "damageReceived": 4132
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2412,
+      "damageReceived": 3780
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2597,
+      "damageReceived": 3595
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2596,
+      "damageReceived": 3598
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2374,
+      "damageReceived": 4132
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2374,
+      "damageReceived": 4130
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2597,
+      "damageReceived": 3595
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 2375,
+      "damageReceived": 4129
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 2412,
+      "damageReceived": 3782
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1835,
+      "damageReceived": 4357
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1834,
+      "damageReceived": 4359
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1833,
+      "damageReceived": 4362
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1833,
+      "damageReceived": 4362
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1834,
+      "damageReceived": 4358
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1833,
+      "damageReceived": 4360
+    },
+    {
+      "hpFactor": 3,
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 16,
+      "playerHP": 1833,
+      "damageReceived": 4361
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 3213,
+      "damageReceived": 5257
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 1962,
+      "damageReceived": 6508
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 1961,
+      "damageReceived": 6509
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 1961,
+      "damageReceived": 6509
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 1961,
+      "damageReceived": 6509
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 2715,
+      "damageReceived": 5754
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 1961,
+      "damageReceived": 6509
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3524,
+      "damageReceived": 4512
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5763
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2715,
+      "damageReceived": 5755
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 2272,
+      "damageReceived": 5764
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 3213,
+      "damageReceived": 5258
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 2837,
+      "damageReceived": 5634
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3147,
+      "damageReceived": 4890
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 2837,
+      "damageReceived": 5635
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 2837,
+      "damageReceived": 5635
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 2837,
+      "damageReceived": 5634
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3147,
+      "damageReceived": 4890
+    },
+    {
+      "hpFactor": 3,
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 2837,
+      "damageReceived": 5635
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 7950,
+      "damageReceived": 1014
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3763,
+      "damageReceived": 6099
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3762,
+      "damageReceived": 6100
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5347
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4516,
+      "damageReceived": 5345
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3763,
+      "damageReceived": 6099
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4516,
+      "damageReceived": 5346
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3762,
+      "damageReceived": 6100
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5347
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4516,
+      "damageReceived": 5345
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4515,
+      "damageReceived": 5348
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 4221,
+      "damageReceived": 5641
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 13,
+      "playerHP": 4552,
+      "damageReceived": 5309
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3565,
+      "damageReceived": 6297
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3762,
+      "damageReceived": 6100
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3565,
+      "damageReceived": 6297
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3762,
+      "damageReceived": 6100
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 13,
+      "playerHP": 4319,
+      "damageReceived": 5543
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 11,
+      "playerHP": 3762,
+      "damageReceived": 6100
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0
+    },
+    {
+      "hpFactor": 3,
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848
+    }
+  ]
+}

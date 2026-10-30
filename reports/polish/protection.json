@@ -1,0 +1,8 @@
+{
+  "web/src/utils/gameCore.js": "1a46858acdbcacb4ccbac8a8e58ee1f2f5e093bb2e3fbc427453c646c9542569",
+  "web/src/utils/progression.js": "8ad7032fe4358d8fbb715fdd7f39989069161f243b6823ec15ce162b8f930d21",
+  "web/src/utils/storage.js": "e7c2006c1e2901aeb9f30ba0c5906826a97e0f926c1e90e13d1b95b34665dc86",
+  "web/src/utils/threePhase.js": "19703203b62cf58fa180a1cb204bb0c8445d99e17cd93a96db64059c760cd3e0",
+  "web/src/data/config.js": "c2257de7871e2be8c4a0bd10746c11ec36242c9a2dc1813c1ab16da020c0ee26",
+  "web/src/components/campaign20View.js": "b317ca811a774c80fd1bf9092582ad0ca5647046a378b7f30209cd103b53b947"
+}

@@ -1,0 +1,129 @@
+{
+  "authoritativeZIP": "irena-REBORN-Codex-light.zip",
+  "sourceSHA256": "4f5723705eec13c67dc7eb02594fdca652d966c0bfd750aba83e97c0d286806d",
+  "finalHTMLSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+  "tests": [
+    {
+      "suite": "iphone-chromium",
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/iphone-qa.mjs chromium",
+      "exitCode": 0,
+      "durationSeconds": 107.28,
+      "log": "reports/quality-evolution/resume-iphone-chromium.txt",
+      "report": "reports/ui-review/iphone-chromium/results.json",
+      "pass": 441,
+      "fail": 0,
+      "errors": [],
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "browserVersion": "154.0.8037.57",
+      "profiles": [
+        {
+          "width": 320,
+          "height": 568
+        },
+        {
+          "width": 375,
+          "height": 667
+        },
+        {
+          "width": 390,
+          "height": 664
+        },
+        {
+          "width": 430,
+          "height": 740
+        }
+      ],
+      "screens": 100
+    },
+    {
+      "suite": "iphone-webkit",
+      "command": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/iphone-qa.mjs webkit",
+      "exitCode": 0,
+      "durationSeconds": 294.6,
+      "log": "reports/quality-evolution/resume-iphone-webkit.txt",
+      "report": "reports/ui-review/iphone-webkit/results.json",
+      "pass": 441,
+      "fail": 0,
+      "errors": [],
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "browserVersion": "26.0",
+      "profiles": [
+        {
+          "width": 320,
+          "height": 568
+        },
+        {
+          "width": 375,
+          "height": 667
+        },
+        {
+          "width": 390,
+          "height": 664
+        },
+        {
+          "width": 430,
+          "height": 740
+        }
+      ],
+      "screens": 100
+    },
+    {
+      "suite": "browser",
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/browser-e2e.mjs",
+      "exitCode": 0,
+      "durationSeconds": 65.57,
+      "log": "reports/quality-evolution/resume-browser.txt",
+      "report": "reports/browser-results.json",
+      "pass": 119,
+      "fail": 0,
+      "errors": [],
+      "unverified": [
+        "file:// navigation blocked by managed browser policy; not verified"
+      ],
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+    },
+    {
+      "suite": "ui-regression",
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/ui-regression.mjs",
+      "exitCode": 0,
+      "durationSeconds": 74.84,
+      "log": "reports/quality-evolution/resume-ui-regression.txt",
+      "report": "reports/ui-review/ui-regression-results.json",
+      "pass": 389,
+      "fail": 0,
+      "errors": [],
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+    },
+    {
+      "suite": "lab-retry",
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/lab-retry-check.mjs",
+      "exitCode": 0,
+      "durationSeconds": 5.3,
+      "log": "reports/quality-evolution/resume-lab-retry.txt",
+      "report": "reports/ui-review/lab-retry-result.json",
+      "pass": 3,
+      "fail": 0,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+    },
+    {
+      "suite": "quality-review",
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/quality-review.mjs quality-evolution-resume",
+      "exitCode": 0,
+      "durationSeconds": 32.41,
+      "log": "reports/quality-evolution/resume-quality-review.txt",
+      "report": "reports/ui-review/quality-evolution-resume/audit.json",
+      "errors": [],
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "screens": 27,
+      "horizontalOverflow": []
+    }
+  ],
+  "realIPhoneTested": false,
+  "notes": [
+    "Resumed only unfinished verification; no gameplay feature added.",
+    "Linux WebKit emulation is not physical iPhone Safari.",
+    "WebKit host dependency precheck skipped for existing local shared libraries only; no assertion skipped.",
+    "Direct file:// navigation is explicitly unverified if blocked by managed browser policy.",
+    "All result hashes are captured from actual loaded HTTP document responses."
+  ]
+}

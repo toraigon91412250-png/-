@@ -1,0 +1,4668 @@
+{
+  "mode": "before",
+  "engine": "chromium",
+  "browser": "154.0.8037.57",
+  "url": "http://127.0.0.1:4181/irena-play.html",
+  "pass": 157,
+  "fail": 0,
+  "results": [
+    "320-01-title: no horizontal overflow",
+    "320-01-title: images decoded",
+    "320-02-home: no horizontal overflow",
+    "320-02-home: images decoded",
+    "320-03-normal: no horizontal overflow",
+    "320-03-normal: images decoded",
+    "320 genuine slash damages foe",
+    "320 correct feather cut-in",
+    "320 ordinary win",
+    "320-04-victory: no horizontal overflow",
+    "320-04-victory: images decoded",
+    "320 normal progress saved",
+    "320 reload preserves floor2",
+    "320 power purchase and gear change",
+    "320-05-powers: no horizontal overflow",
+    "320-05-powers: images decoded",
+    "320-06-marks: no horizontal overflow",
+    "320-06-marks: images decoded",
+    "320-07-resonance: no horizontal overflow",
+    "320-07-resonance: images decoded",
+    "320-08-training: no horizontal overflow",
+    "320-08-training: images decoded",
+    "320-09-summon: no horizontal overflow",
+    "320-09-summon: images decoded",
+    "320-10-achievements: no horizontal overflow",
+    "320-10-achievements: images decoded",
+    "320 exactly36 achievements",
+    "320-11-lab: no horizontal overflow",
+    "320-11-lab: images decoded",
+    "320-12-developer: no horizontal overflow",
+    "320-12-developer: images decoded",
+    "320-13-raid: no horizontal overflow",
+    "320-13-raid: images decoded",
+    "320-14-raid-fight: no horizontal overflow",
+    "320-14-raid-fight: images decoded",
+    "320-15-ex: no horizontal overflow",
+    "320-15-ex: images decoded",
+    "320-16-gauntlet: no horizontal overflow",
+    "320-16-gauntlet: images decoded",
+    "320-17-stella: no horizontal overflow",
+    "320-17-stella: images decoded",
+    "320 Stella cut-in title",
+    "320-18-final-neutral: no horizontal overflow",
+    "320-18-final-neutral: images decoded",
+    "320 neutral portrait present",
+    "320-19-final-fallen: no horizontal overflow",
+    "320-19-final-fallen: images decoded",
+    "320 clean final commands",
+    "320-20-final-divine: no horizontal overflow",
+    "320-20-final-divine: images decoded",
+    "320-21-awakening: no horizontal overflow",
+    "320-21-awakening: images decoded",
+    "320 developer tests preserve main progression",
+    "390-01-title: no horizontal overflow",
+    "390-01-title: images decoded",
+    "390-02-home: no horizontal overflow",
+    "390-02-home: images decoded",
+    "390-03-normal: no horizontal overflow",
+    "390-03-normal: images decoded",
+    "390 genuine slash damages foe",
+    "390 correct feather cut-in",
+    "390 ordinary win",
+    "390-04-victory: no horizontal overflow",
+    "390-04-victory: images decoded",
+    "390 normal progress saved",
+    "390 reload preserves floor2",
+    "390 power purchase and gear change",
+    "390-05-powers: no horizontal overflow",
+    "390-05-powers: images decoded",
+    "390-06-marks: no horizontal overflow",
+    "390-06-marks: images decoded",
+    "390-07-resonance: no horizontal overflow",
+    "390-07-resonance: images decoded",
+    "390-08-training: no horizontal overflow",
+    "390-08-training: images decoded",
+    "390-09-summon: no horizontal overflow",
+    "390-09-summon: images decoded",
+    "390-10-achievements: no horizontal overflow",
+    "390-10-achievements: images decoded",
+    "390 exactly36 achievements",
+    "390-11-lab: no horizontal overflow",
+    "390-11-lab: images decoded",
+    "390-12-developer: no horizontal overflow",
+    "390-12-developer: images decoded",
+    "390-13-raid: no horizontal overflow",
+    "390-13-raid: images decoded",
+    "390-14-raid-fight: no horizontal overflow",
+    "390-14-raid-fight: images decoded",
+    "390-15-ex: no horizontal overflow",
+    "390-15-ex: images decoded",
+    "390-16-gauntlet: no horizontal overflow",
+    "390-16-gauntlet: images decoded",
+    "390-17-stella: no horizontal overflow",
+    "390-17-stella: images decoded",
+    "390 Stella cut-in title",
+    "390-18-final-neutral: no horizontal overflow",
+    "390-18-final-neutral: images decoded",
+    "390 neutral portrait present",
+    "390-19-final-fallen: no horizontal overflow",
+    "390-19-final-fallen: images decoded",
+    "390 clean final commands",
+    "390-20-final-divine: no horizontal overflow",
+    "390-20-final-divine: images decoded",
+    "390-21-awakening: no horizontal overflow",
+    "390-21-awakening: images decoded",
+    "390 developer tests preserve main progression",
+    "768-01-title: no horizontal overflow",
+    "768-01-title: images decoded",
+    "768-02-home: no horizontal overflow",
+    "768-02-home: images decoded",
+    "768-03-normal: no horizontal overflow",
+    "768-03-normal: images decoded",
+    "768 genuine slash damages foe",
+    "768 correct feather cut-in",
+    "768 ordinary win",
+    "768-04-victory: no horizontal overflow",
+    "768-04-victory: images decoded",
+    "768 normal progress saved",
+    "768 reload preserves floor2",
+    "768 power purchase and gear change",
+    "768-05-powers: no horizontal overflow",
+    "768-05-powers: images decoded",
+    "768-06-marks: no horizontal overflow",
+    "768-06-marks: images decoded",
+    "768-07-resonance: no horizontal overflow",
+    "768-07-resonance: images decoded",
+    "768-08-training: no horizontal overflow",
+    "768-08-training: images decoded",
+    "768-09-summon: no horizontal overflow",
+    "768-09-summon: images decoded",
+    "768-10-achievements: no horizontal overflow",
+    "768-10-achievements: images decoded",
+    "768 exactly36 achievements",
+    "768-11-lab: no horizontal overflow",
+    "768-11-lab: images decoded",
+    "768-12-developer: no horizontal overflow",
+    "768-12-developer: images decoded",
+    "768-14-raid-fight: no horizontal overflow",
+    "768-14-raid-fight: images decoded",
+    "768-15-ex: no horizontal overflow",
+    "768-15-ex: images decoded",
+    "768-16-gauntlet: no horizontal overflow",
+    "768-16-gauntlet: images decoded",
+    "768-17-stella: no horizontal overflow",
+    "768-17-stella: images decoded",
+    "768 Stella cut-in title",
+    "768-18-final-neutral: no horizontal overflow",
+    "768-18-final-neutral: images decoded",
+    "768 neutral portrait present",
+    "768-19-final-fallen: no horizontal overflow",
+    "768-19-final-fallen: images decoded",
+    "768 clean final commands",
+    "768-20-final-divine: no horizontal overflow",
+    "768-20-final-divine: images decoded",
+    "768-21-awakening: no horizontal overflow",
+    "768-21-awakening: images decoded",
+    "768 developer tests preserve main progression"
+  ],
+  "screens": [
+    {
+      "label": "320-01-title",
+      "path": "reports/quality-evolution/before-chromium/320-01-title.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "再誕の物語を始める",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONから復元",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-02-home",
+      "path": "reports/quality-evolution/before-chromium/320-02-home.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "挑戦の準備カイザー Lv.1 に挑戦",
+          "height": 61
+        },
+        {
+          "text": "強化を開く",
+          "height": 47
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "失われた力を見る",
+          "height": 44
+        },
+        {
+          "text": "いれーなのステータス・装備を確認",
+          "height": 44
+        },
+        {
+          "text": "装備変更",
+          "height": 46
+        },
+        {
+          "text": "実績を見る →",
+          "height": 46
+        },
+        {
+          "text": "セーブ書き出し",
+          "height": 44
+        },
+        {
+          "text": "セーブ読み込み",
+          "height": 44
+        },
+        {
+          "text": "仕様・操作ガイド",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル：金色の光と黒翼",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-03-normal",
+      "path": "reports/quality-evolution/before-chromium/320-03-normal.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "320-04-victory",
+      "path": "reports/quality-evolution/before-chromium/320-04-victory.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "聖域に戻る",
+          "height": 47.09375
+        },
+        {
+          "text": "次の階層へ",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        },
+        {
+          "alt": "通常戦闘の勝利イラスト",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-05-powers",
+      "path": "reports/quality-evolution/before-chromium/320-05-powers.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "装備する",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-06-marks",
+      "path": "reports/quality-evolution/before-chromium/320-06-marks.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-07-resonance",
+      "path": "reports/quality-evolution/before-chromium/320-07-resonance.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-08-training",
+      "path": "reports/quality-evolution/before-chromium/320-08-training.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "46Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "30Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "専用配分をリセット",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-09-summon",
+      "path": "reports/quality-evolution/before-chromium/320-09-summon.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "単発 25P",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-10-achievements",
+      "path": "reports/quality-evolution/before-chromium/320-10-achievements.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-11-lab",
+      "path": "reports/quality-evolution/before-chromium/320-11-lab.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "通常いれーなEXカイザーステラ最終決戦いれーな",
+          "height": 46
+        },
+        {
+          "text": "",
+          "height": 46.390625
+        },
+        {
+          "text": "",
+          "height": 46.390625
+        },
+        {
+          "text": "独立試験を開始",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-12-developer",
+      "path": "reports/quality-evolution/before-chromium/320-12-developer.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "全機能開放",
+          "height": 47.09375
+        },
+        {
+          "text": "保存済み試験データを開く",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONバックアップ",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONを読み込む",
+          "height": 47.09375
+        },
+        {
+          "text": "タイトルへ",
+          "height": 47.09375
+        },
+        {
+          "text": "本編を初期化",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-13-raid",
+      "path": "reports/quality-evolution/before-chromium/320-13-raid.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "レイドに挑戦する →",
+          "height": 49
+        },
+        {
+          "text": "育成を整える",
+          "height": 49
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "320-14-raid-fight",
+      "path": "reports/quality-evolution/before-chromium/320-14-raid-fight.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "320-15-ex",
+      "path": "reports/quality-evolution/before-chromium/320-15-ex.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "320-16-gauntlet",
+      "path": "reports/quality-evolution/before-chromium/320-16-gauntlet.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "320-17-stella",
+      "path": "reports/quality-evolution/before-chromium/320-17-stella.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "星の斬撃",
+          "height": 72
+        },
+        {
+          "text": "不滅",
+          "height": 72
+        },
+        {
+          "text": "再誕",
+          "height": 72
+        },
+        {
+          "text": "天象支配",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ステラの戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-18-final-neutral",
+      "path": "reports/quality-evolution/before-chromium/320-18-final-neutral.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-19-final-fallen",
+      "path": "reports/quality-evolution/before-chromium/320-19-final-fallen.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-20-final-divine",
+      "path": "reports/quality-evolution/before-chromium/320-20-final-divine.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-21-awakening",
+      "path": "reports/quality-evolution/before-chromium/320-21-awakening.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "手動で覚醒する",
+          "height": 47.09375
+        },
+        {
+          "text": "連戦を続ける",
+          "height": 47.09375
+        },
+        {
+          "text": "代替演出をプレビュー",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供の共通キービジュアル（覚醒段階別ではありません）",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "390-01-title",
+      "path": "reports/quality-evolution/before-chromium/390-01-title.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "再誕の物語を始める",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONから復元",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-02-home",
+      "path": "reports/quality-evolution/before-chromium/390-02-home.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "挑戦の準備カイザー Lv.1 に挑戦",
+          "height": 61
+        },
+        {
+          "text": "強化を開く",
+          "height": 47
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "失われた力を見る",
+          "height": 44
+        },
+        {
+          "text": "いれーなのステータス・装備を確認",
+          "height": 44
+        },
+        {
+          "text": "装備変更",
+          "height": 46
+        },
+        {
+          "text": "実績を見る →",
+          "height": 46
+        },
+        {
+          "text": "セーブ書き出し",
+          "height": 44
+        },
+        {
+          "text": "セーブ読み込み",
+          "height": 44
+        },
+        {
+          "text": "仕様・操作ガイド",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル：金色の光と黒翼",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-03-normal",
+      "path": "reports/quality-evolution/before-chromium/390-03-normal.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "390-04-victory",
+      "path": "reports/quality-evolution/before-chromium/390-04-victory.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "聖域に戻る",
+          "height": 47.09375
+        },
+        {
+          "text": "次の階層へ",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        },
+        {
+          "alt": "通常戦闘の勝利イラスト",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-05-powers",
+      "path": "reports/quality-evolution/before-chromium/390-05-powers.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "装備する",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-06-marks",
+      "path": "reports/quality-evolution/before-chromium/390-06-marks.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-07-resonance",
+      "path": "reports/quality-evolution/before-chromium/390-07-resonance.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-08-training",
+      "path": "reports/quality-evolution/before-chromium/390-08-training.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "46Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "30Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "専用配分をリセット",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-09-summon",
+      "path": "reports/quality-evolution/before-chromium/390-09-summon.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "権能",
+          "height": 44
+        },
+        {
+          "text": "刻印",
+          "height": 44
+        },
+        {
+          "text": "権能共鳴",
+          "height": 44
+        },
+        {
+          "text": "才能・技",
+          "height": 44
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 44
+        },
+        {
+          "text": "単発 25P",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-10-achievements",
+      "path": "reports/quality-evolution/before-chromium/390-10-achievements.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-11-lab",
+      "path": "reports/quality-evolution/before-chromium/390-11-lab.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "通常いれーなEXカイザーステラ最終決戦いれーな",
+          "height": 46
+        },
+        {
+          "text": "",
+          "height": 46.390625
+        },
+        {
+          "text": "",
+          "height": 46.390625
+        },
+        {
+          "text": "独立試験を開始",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-12-developer",
+      "path": "reports/quality-evolution/before-chromium/390-12-developer.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "全機能開放",
+          "height": 47.09375
+        },
+        {
+          "text": "保存済み試験データを開く",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONバックアップ",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONを読み込む",
+          "height": 47.09375
+        },
+        {
+          "text": "タイトルへ",
+          "height": 47.09375
+        },
+        {
+          "text": "本編を初期化",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-13-raid",
+      "path": "reports/quality-evolution/before-chromium/390-13-raid.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "レイドに挑戦する →",
+          "height": 49
+        },
+        {
+          "text": "育成を整える",
+          "height": 49
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "390-14-raid-fight",
+      "path": "reports/quality-evolution/before-chromium/390-14-raid-fight.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "390-15-ex",
+      "path": "reports/quality-evolution/before-chromium/390-15-ex.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "390-16-gauntlet",
+      "path": "reports/quality-evolution/before-chromium/390-16-gauntlet.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "穿羽",
+          "height": 72
+        },
+        {
+          "text": "連羽",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "390-17-stella",
+      "path": "reports/quality-evolution/before-chromium/390-17-stella.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "星の斬撃",
+          "height": 72
+        },
+        {
+          "text": "不滅",
+          "height": 72
+        },
+        {
+          "text": "再誕",
+          "height": 72
+        },
+        {
+          "text": "天象支配",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ステラの戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-18-final-neutral",
+      "path": "reports/quality-evolution/before-chromium/390-18-final-neutral.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-19-final-fallen",
+      "path": "reports/quality-evolution/before-chromium/390-19-final-fallen.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-20-final-divine",
+      "path": "reports/quality-evolution/before-chromium/390-20-final-divine.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 82
+        },
+        {
+          "text": "防御",
+          "height": 82
+        },
+        {
+          "text": "神化",
+          "height": 82
+        },
+        {
+          "text": "堕天",
+          "height": 82
+        },
+        {
+          "text": "終極殲滅",
+          "height": 82
+        },
+        {
+          "text": "絶界昇華",
+          "height": 82
+        },
+        {
+          "text": "理外掌握",
+          "height": 82
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "390-21-awakening",
+      "path": "reports/quality-evolution/before-chromium/390-21-awakening.jpg",
+      "width": 390,
+      "height": 664,
+      "scrollWidth": 390,
+      "targets": [
+        {
+          "text": "本編へ戻る",
+          "height": 44
+        },
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "手動で覚醒する",
+          "height": 47.09375
+        },
+        {
+          "text": "連戦を続ける",
+          "height": 47.09375
+        },
+        {
+          "text": "代替演出をプレビュー",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供の共通キービジュアル（覚醒段階別ではありません）",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "768-01-title",
+      "path": "reports/quality-evolution/before-chromium/768-01-title.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "再誕の物語を始める",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONから復元",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-02-home",
+      "path": "reports/quality-evolution/before-chromium/768-02-home.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "挑戦の準備カイザー Lv.1 に挑戦",
+          "height": 70
+        },
+        {
+          "text": "強化を開く",
+          "height": 49
+        },
+        {
+          "text": "装備変更",
+          "height": 46
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "失われた力を見る",
+          "height": 44
+        },
+        {
+          "text": "実績を見る →",
+          "height": 47.09375
+        },
+        {
+          "text": "セーブ書き出し",
+          "height": 46
+        },
+        {
+          "text": "セーブ読み込み",
+          "height": 46
+        },
+        {
+          "text": "仕様・操作ガイド",
+          "height": 46
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル：金色の光と黒翼",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-03-normal",
+      "path": "reports/quality-evolution/before-chromium/768-03-normal.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 76
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 76
+        },
+        {
+          "text": "破壊の権能",
+          "height": 76
+        },
+        {
+          "text": "防御",
+          "height": 76
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "768-04-victory",
+      "path": "reports/quality-evolution/before-chromium/768-04-victory.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "聖域に戻る",
+          "height": 47.09375
+        },
+        {
+          "text": "次の階層へ",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        },
+        {
+          "alt": "通常戦闘の勝利イラスト",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-05-powers",
+      "path": "reports/quality-evolution/before-chromium/768-05-powers.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "権能",
+          "height": 45.4375
+        },
+        {
+          "text": "刻印",
+          "height": 45.4375
+        },
+        {
+          "text": "権能共鳴",
+          "height": 45.4375
+        },
+        {
+          "text": "才能・技",
+          "height": 45.4375
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 45.4375
+        },
+        {
+          "text": "装備する",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        },
+        {
+          "text": "装備解除",
+          "height": 46
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-06-marks",
+      "path": "reports/quality-evolution/before-chromium/768-06-marks.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "権能",
+          "height": 45.4375
+        },
+        {
+          "text": "刻印",
+          "height": 45.4375
+        },
+        {
+          "text": "権能共鳴",
+          "height": 45.4375
+        },
+        {
+          "text": "才能・技",
+          "height": 45.4375
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 45.4375
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-07-resonance",
+      "path": "reports/quality-evolution/before-chromium/768-07-resonance.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "権能",
+          "height": 45.4375
+        },
+        {
+          "text": "刻印",
+          "height": 45.4375
+        },
+        {
+          "text": "権能共鳴",
+          "height": 45.4375
+        },
+        {
+          "text": "才能・技",
+          "height": 45.4375
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 45.4375
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-08-training",
+      "path": "reports/quality-evolution/before-chromium/768-08-training.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "権能",
+          "height": 45.4375
+        },
+        {
+          "text": "刻印",
+          "height": 45.4375
+        },
+        {
+          "text": "権能共鳴",
+          "height": 45.4375
+        },
+        {
+          "text": "才能・技",
+          "height": 45.4375
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 45.4375
+        },
+        {
+          "text": "46Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "30Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "35Pで強化",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "＋1P",
+          "height": 47.09375
+        },
+        {
+          "text": "専用配分をリセット",
+          "height": 46
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-09-summon",
+      "path": "reports/quality-evolution/before-chromium/768-09-summon.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "権能",
+          "height": 45.4375
+        },
+        {
+          "text": "刻印",
+          "height": 45.4375
+        },
+        {
+          "text": "権能共鳴",
+          "height": 45.4375
+        },
+        {
+          "text": "才能・技",
+          "height": 45.4375
+        },
+        {
+          "text": "黒翼召喚",
+          "height": 45.4375
+        },
+        {
+          "text": "単発 25P",
+          "height": 47.09375
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-10-achievements",
+      "path": "reports/quality-evolution/before-chromium/768-10-achievements.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        },
+        {
+          "text": "60P 受取",
+          "height": 46
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-11-lab",
+      "path": "reports/quality-evolution/before-chromium/768-11-lab.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "通常いれーなEXカイザーステラ最終決戦いれーな",
+          "height": 44
+        },
+        {
+          "text": "",
+          "height": 44
+        },
+        {
+          "text": "",
+          "height": 44
+        },
+        {
+          "text": "独立試験を開始",
+          "height": 47.09375
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-12-developer",
+      "path": "reports/quality-evolution/before-chromium/768-12-developer.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "全機能開放",
+          "height": 47.09375
+        },
+        {
+          "text": "保存済み試験データを開く",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONバックアップ",
+          "height": 47.09375
+        },
+        {
+          "text": "JSONを読み込む",
+          "height": 47.09375
+        },
+        {
+          "text": "タイトルへ",
+          "height": 47.09375
+        },
+        {
+          "text": "本編を初期化",
+          "height": 47.09375
+        }
+      ],
+      "images": []
+    },
+    {
+      "label": "768-14-raid-fight",
+      "path": "reports/quality-evolution/before-chromium/768-14-raid-fight.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 76
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 76
+        },
+        {
+          "text": "穿羽",
+          "height": 76
+        },
+        {
+          "text": "連羽",
+          "height": 76
+        },
+        {
+          "text": "破壊の権能",
+          "height": 76
+        },
+        {
+          "text": "防御",
+          "height": 76
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "768-15-ex",
+      "path": "reports/quality-evolution/before-chromium/768-15-ex.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 76
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 76
+        },
+        {
+          "text": "穿羽",
+          "height": 76
+        },
+        {
+          "text": "連羽",
+          "height": 76
+        },
+        {
+          "text": "破壊の権能",
+          "height": 76
+        },
+        {
+          "text": "防御",
+          "height": 76
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "768-16-gauntlet",
+      "path": "reports/quality-evolution/before-chromium/768-16-gauntlet.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 76
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 76
+        },
+        {
+          "text": "穿羽",
+          "height": 76
+        },
+        {
+          "text": "連羽",
+          "height": 76
+        },
+        {
+          "text": "破壊の権能",
+          "height": 76
+        },
+        {
+          "text": "防御",
+          "height": 76
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "768-17-stella",
+      "path": "reports/quality-evolution/before-chromium/768-17-stella.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "星の斬撃",
+          "height": 76
+        },
+        {
+          "text": "不滅",
+          "height": 76
+        },
+        {
+          "text": "再誕",
+          "height": 76
+        },
+        {
+          "text": "天象支配",
+          "height": 76
+        },
+        {
+          "text": "防御",
+          "height": 76
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "ステラの戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-18-final-neutral",
+      "path": "reports/quality-evolution/before-chromium/768-18-final-neutral.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 88.796875
+        },
+        {
+          "text": "防御",
+          "height": 88.796875
+        },
+        {
+          "text": "神化",
+          "height": 88.796875
+        },
+        {
+          "text": "堕天",
+          "height": 88.796875
+        },
+        {
+          "text": "終極殲滅",
+          "height": 88.796875
+        },
+        {
+          "text": "絶界昇華",
+          "height": 88.796875
+        },
+        {
+          "text": "理外掌握",
+          "height": 88.796875
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-19-final-fallen",
+      "path": "reports/quality-evolution/before-chromium/768-19-final-fallen.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 88.796875
+        },
+        {
+          "text": "防御",
+          "height": 88.796875
+        },
+        {
+          "text": "神化",
+          "height": 88.796875
+        },
+        {
+          "text": "堕天",
+          "height": 88.796875
+        },
+        {
+          "text": "終極殲滅",
+          "height": 88.796875
+        },
+        {
+          "text": "絶界昇華",
+          "height": 88.796875
+        },
+        {
+          "text": "理外掌握",
+          "height": 88.796875
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-20-final-divine",
+      "path": "reports/quality-evolution/before-chromium/768-20-final-divine.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "斬撃",
+          "height": 88.796875
+        },
+        {
+          "text": "防御",
+          "height": 88.796875
+        },
+        {
+          "text": "神化",
+          "height": 88.796875
+        },
+        {
+          "text": "堕天",
+          "height": 88.796875
+        },
+        {
+          "text": "終極殲滅",
+          "height": 88.796875
+        },
+        {
+          "text": "絶界昇華",
+          "height": 88.796875
+        },
+        {
+          "text": "理外掌握",
+          "height": 88.796875
+        },
+        {
+          "text": "撤退する",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーな・最終決戦の戦闘立ち絵",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "768-21-awakening",
+      "path": "reports/quality-evolution/before-chromium/768-21-awakening.jpg",
+      "width": 768,
+      "height": 900,
+      "scrollWidth": 768,
+      "targets": [
+        {
+          "text": "ホーム",
+          "height": 47.09375
+        },
+        {
+          "text": "強化",
+          "height": 47.09375
+        },
+        {
+          "text": "戦闘",
+          "height": 47.09375
+        },
+        {
+          "text": "実験場",
+          "height": 47.09375
+        },
+        {
+          "text": "開発者",
+          "height": 47.09375
+        },
+        {
+          "text": "資料・操作説明",
+          "height": 46
+        },
+        {
+          "text": "本編へ戻る",
+          "height": 30
+        },
+        {
+          "text": "音 OFF",
+          "height": 27
+        },
+        {
+          "text": "手動で覚醒する",
+          "height": 47.09375
+        },
+        {
+          "text": "連戦を続ける",
+          "height": 47.09375
+        },
+        {
+          "text": "代替演出をプレビュー",
+          "height": 47.09375
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供の共通キービジュアル（覚醒段階別ではありません）",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "CT 4",
+      "url": "http://127.0.0.1:4181/irena-play.html"
+    }
+  ],
+  "observations": [
+    {
+      "case": "generic cut-in Enter re-entry",
+      "initialTurn": 1,
+      "finalTurn": 2,
+      "errors": [
+        {
+          "message": "CT 4",
+          "url": "http://127.0.0.1:4181/irena-play.html"
+        }
+      ]
+    }
+  ],
+  "realIPhoneTested": false,
+  "htmlSHA256": "545c661f864d421c7d57e60d59b633ae4388becf2781f4a89641088343361ea4",
+  "previouslyRecordedWorkingHtmlSHA256": "8bd94efbc23b9cb47166861f0bf4cea68b204295460a1fe727b6de4e118eaf94",
+  "htmlBytes": 3875189,
+  "identityCorrection": "SHA corrected from working HTML to immutable served4181 baseline response; screenshot/test assertions unchanged."
+}

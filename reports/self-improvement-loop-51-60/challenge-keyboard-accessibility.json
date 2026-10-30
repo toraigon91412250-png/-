@@ -1,0 +1,29 @@
+{
+  "browser": "Chromium",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checks": 9,
+  "errors": [],
+  "results": [
+    {
+      "name": "raid",
+      "ariaLabel": "深淵レイドの難易度",
+      "labelCount": 1,
+      "keyboardSelection": "NIGHTMARE"
+    },
+    {
+      "name": "god",
+      "ariaLabel": "神域連戦の難易度",
+      "labelCount": 1,
+      "keyboardSelection": "NIGHTMARE"
+    },
+    {
+      "name": "finale",
+      "ariaLabel": "最終決戦の難易度",
+      "labelCount": 1,
+      "keyboardSelection": "NIGHTMARE"
+    }
+  ]
+}

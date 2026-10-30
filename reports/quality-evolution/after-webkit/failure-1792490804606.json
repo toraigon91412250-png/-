@@ -1,0 +1,314 @@
+{
+  "mode": "after",
+  "engine": "webkit",
+  "url": "http://127.0.0.1:4180/irena-play.html",
+  "pass": 13,
+  "results": [
+    "320-01-title: no horizontal overflow",
+    "320-01-title: images decoded",
+    "320-02-home: no horizontal overflow",
+    "320-02-home: images decoded",
+    "320-03-normal: no horizontal overflow",
+    "320-03-normal: images decoded",
+    "320 command shortcut exposes first action",
+    "320 visible command centers accept touch",
+    "320-03b-commands-jump: no horizontal overflow",
+    "320-03b-commands-jump: images decoded",
+    "320 stage shortcut returns to portrait",
+    "320 genuine slash damages foe",
+    "320 correct feather cut-in"
+  ],
+  "screens": [
+    {
+      "label": "320-01-title",
+      "path": "reports/quality-evolution/after-webkit/320-01-title.jpg",
+      "viewportPath": null,
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "再誕の物語を始める",
+          "height": 47
+        },
+        {
+          "text": "JSONから復元",
+          "height": 47
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-02-home",
+      "path": "reports/quality-evolution/after-webkit/320-02-home.jpg",
+      "viewportPath": null,
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "挑戦の準備カイザー Lv.1 に挑戦",
+          "height": 60
+        },
+        {
+          "text": "強化を開く",
+          "height": 47
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "開く",
+          "height": 44
+        },
+        {
+          "text": "失われた力を見る",
+          "height": 44
+        },
+        {
+          "text": "いれーなのステータス・装備を確認",
+          "height": 44
+        },
+        {
+          "text": "装備変更",
+          "height": 46
+        },
+        {
+          "text": "実績を見る →",
+          "height": 46
+        },
+        {
+          "text": "セーブ書き出し",
+          "height": 44
+        },
+        {
+          "text": "セーブ読み込み",
+          "height": 44
+        },
+        {
+          "text": "仕様・操作ガイド",
+          "height": 44
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "ユーザー提供キービジュアル：金色の光と黒翼",
+          "loaded": true,
+          "fit": "cover"
+        }
+      ]
+    },
+    {
+      "label": "320-03-normal",
+      "path": "reports/quality-evolution/after-webkit/320-03-normal.jpg",
+      "viewportPath": null,
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "戦場へ",
+          "height": 44
+        },
+        {
+          "text": "技を選ぶ ↓",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    },
+    {
+      "label": "320-03b-commands-jump",
+      "path": "reports/quality-evolution/after-webkit/320-03b-commands-jump.jpg",
+      "viewportPath": "reports/quality-evolution/after-webkit/320-03b-commands-jump-viewport.jpg",
+      "width": 320,
+      "height": 568,
+      "scrollWidth": 320,
+      "targets": [
+        {
+          "text": "音 OFF",
+          "height": 44
+        },
+        {
+          "text": "戦場へ",
+          "height": 44
+        },
+        {
+          "text": "技を選ぶ ↓",
+          "height": 44
+        },
+        {
+          "text": "斬撃",
+          "height": 72
+        },
+        {
+          "text": "黒翼・羽弾",
+          "height": 72
+        },
+        {
+          "text": "破壊の権能",
+          "height": 72
+        },
+        {
+          "text": "防御",
+          "height": 72
+        },
+        {
+          "text": "撤退する",
+          "height": 47
+        },
+        {
+          "text": "実験場",
+          "height": 44
+        },
+        {
+          "text": "開発者",
+          "height": 44
+        },
+        {
+          "text": "ガイド",
+          "height": 44
+        },
+        {
+          "text": "ホーム",
+          "height": 57
+        },
+        {
+          "text": "強化",
+          "height": 57
+        },
+        {
+          "text": "ガチャ",
+          "height": 57
+        },
+        {
+          "text": "戦闘",
+          "height": 57
+        },
+        {
+          "text": "レイド",
+          "height": 57
+        }
+      ],
+      "images": [
+        {
+          "alt": "いれーなの戦闘立ち絵",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "observations": [],
+  "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#skipCinema')\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" id=\"skipCinema\">スキップ</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n    at /workspace/irena-quality-latest/irena-reborn/tools/quality-evolution.mjs:29:372"
+}

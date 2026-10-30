@@ -1,0 +1,628 @@
+{
+  "sourceZIP": "irena-REBORN-Codex-light.zip",
+  "sha256": "4f5723705eec13c67dc7eb02594fdca652d966c0bfd750aba83e97c0d286806d",
+  "config": {
+    "ACHIEVEMENTS": [
+      {
+        "id": "A0",
+        "cat": "A",
+        "name": "初勝利",
+        "detail": "初めて勝利"
+      },
+      {
+        "id": "A1",
+        "cat": "A",
+        "name": "常勝への一歩",
+        "detail": "通算10勝"
+      },
+      {
+        "id": "A2",
+        "cat": "A",
+        "name": "闘技場の常連",
+        "detail": "通算50勝"
+      },
+      {
+        "id": "A3",
+        "cat": "A",
+        "name": "瞬撃",
+        "detail": "5ターン以内に勝利"
+      },
+      {
+        "id": "A4",
+        "cat": "A",
+        "name": "羽弾の熟練者",
+        "detail": "特殊技25回"
+      },
+      {
+        "id": "A5",
+        "cat": "A",
+        "name": "必殺の求道者",
+        "detail": "必殺技10回"
+      },
+      {
+        "id": "A6",
+        "cat": "A",
+        "name": "最初の壁",
+        "detail": "通常Lv.10撃破"
+      },
+      {
+        "id": "A7",
+        "cat": "A",
+        "name": "強敵撃破",
+        "detail": "通常Lv.30撃破"
+      },
+      {
+        "id": "A8",
+        "cat": "A",
+        "name": "折り返し地点",
+        "detail": "通常Lv.50撃破"
+      },
+      {
+        "id": "A9",
+        "cat": "A",
+        "name": "極限への挑戦",
+        "detail": "通常Lv.70撃破"
+      },
+      {
+        "id": "A10",
+        "cat": "A",
+        "name": "王座目前",
+        "detail": "通常Lv.90撃破"
+      },
+      {
+        "id": "A11",
+        "cat": "A",
+        "name": "百戦錬磨",
+        "detail": "通常Lv.100撃破"
+      },
+      {
+        "id": "B0",
+        "cat": "B",
+        "name": "連勝街道",
+        "detail": "5連勝"
+      },
+      {
+        "id": "B1",
+        "cat": "B",
+        "name": "己の腕一本",
+        "detail": "権能未装備で勝利"
+      },
+      {
+        "id": "B2",
+        "cat": "B",
+        "name": "基本を極めし者",
+        "detail": "特殊・必殺を使わず勝利"
+      },
+      {
+        "id": "B3",
+        "cat": "B",
+        "name": "読み合いの極致",
+        "detail": "EXPERTで勝利"
+      },
+      {
+        "id": "B4",
+        "cat": "B",
+        "name": "権能の収集者",
+        "detail": "通常権能3種を解放"
+      },
+      {
+        "id": "B5",
+        "cat": "B",
+        "name": "五権能の使い手",
+        "detail": "通常権能5種を解放"
+      },
+      {
+        "id": "B6",
+        "cat": "B",
+        "name": "極限強化",
+        "detail": "通常権能1種Lv.5"
+      },
+      {
+        "id": "B7",
+        "cat": "B",
+        "name": "権能の完全掌握",
+        "detail": "通常権能5種Lv.5"
+      },
+      {
+        "id": "B8",
+        "cat": "B",
+        "name": "堕天の極致",
+        "detail": "才能Lv.20"
+      },
+      {
+        "id": "B9",
+        "cat": "B",
+        "name": "技術の到達点",
+        "detail": "羽弾・破壊ともLv.10"
+      },
+      {
+        "id": "B10",
+        "cat": "B",
+        "name": "星墜の一撃",
+        "detail": "星墜の必殺で勝利"
+      },
+      {
+        "id": "B11",
+        "cat": "B",
+        "name": "刻印を使いこなす者",
+        "detail": "刻印10種を実戦発動"
+      },
+      {
+        "id": "C0",
+        "cat": "C",
+        "name": "あと一歩の奇跡",
+        "detail": "HP10%以下から勝利"
+      },
+      {
+        "id": "C1",
+        "cat": "C",
+        "name": "飾らぬ勝利",
+        "detail": "刻印未装備で勝利"
+      },
+      {
+        "id": "C2",
+        "cat": "C",
+        "name": "終局を越えて",
+        "detail": "EXカイザー撃破"
+      },
+      {
+        "id": "C3",
+        "cat": "C",
+        "name": "星を越えた決戦",
+        "detail": "ステラ最終決戦クリア"
+      },
+      {
+        "id": "C4",
+        "cat": "C",
+        "name": "召喚の幕開け",
+        "detail": "召喚10回"
+      },
+      {
+        "id": "C5",
+        "cat": "C",
+        "name": "召喚研究家",
+        "detail": "召喚50回"
+      },
+      {
+        "id": "C6",
+        "cat": "C",
+        "name": "黒翼の収集家",
+        "detail": "召喚6種収集"
+      },
+      {
+        "id": "C7",
+        "cat": "C",
+        "name": "刻印の蒐集者",
+        "detail": "刻印5種収集"
+      },
+      {
+        "id": "C8",
+        "cat": "C",
+        "name": "十刻印の覇者",
+        "detail": "刻印10種収集"
+      },
+      {
+        "id": "C9",
+        "cat": "C",
+        "name": "三重刻印",
+        "detail": "刻印3枠装備"
+      },
+      {
+        "id": "C10",
+        "cat": "C",
+        "name": "深淵の踏破者",
+        "detail": "レイド10勝"
+      },
+      {
+        "id": "C11",
+        "cat": "C",
+        "name": "不屈の証",
+        "detail": "不屈発動後に勝利"
+      }
+    ],
+    "AWAKENINGS": [
+      "未覚醒",
+      "神性の微光",
+      "神翼の胎動",
+      "神威の顕現",
+      "神域の再臨（補完名）",
+      "再誕の神格（補完名）"
+    ],
+    "BALANCE": {
+      "provenance": "仕様書に基づく新規復元。敵・経済・未回収数値は補完設計。",
+      "base": {
+        "hp": 400,
+        "hpLevel": 42,
+        "atk": 47,
+        "atkLevel": 13,
+        "def": 18,
+        "defLevel": 5,
+        "spd": 22,
+        "spdLevel": 2
+      },
+      "gauge": {
+        "slash": 26,
+        "feather": 39,
+        "guard": 18
+      },
+      "skills": {
+        "feather": 1.95,
+        "ultimate": 5.4
+      },
+      "resCosts": [
+        40,
+        80,
+        120,
+        160
+      ],
+      "abyssStep": 0.06,
+      "abyssCap": 0.95,
+      "exLimit": 9,
+      "summonCost": 25,
+      "achievementReward": 60
+    },
+    "FINAL_SKILLS": {
+      "godspeed": {
+        "name": "神域の速度",
+        "side": 1,
+        "stage": 1,
+        "ct": 5,
+        "duration": 4,
+        "mul": {
+          "def": 1.5,
+          "spd": 999
+        },
+        "text": "防御1.5倍・速度999倍 / 4T"
+      },
+      "omnipotent": {
+        "name": "全能降臨",
+        "side": 1,
+        "stage": 2,
+        "ct": 5,
+        "duration": 4,
+        "mul": {
+          "atk": 2,
+          "def": 2,
+          "spd": 2
+        },
+        "text": "攻・防・速2倍 / 4T"
+      },
+      "dominion": {
+        "name": "万象支配",
+        "side": 1,
+        "stage": 3,
+        "ct": 5,
+        "duration": 2,
+        "mul": {
+          "atk": 4,
+          "def": 2,
+          "spd": 999
+        },
+        "minimum": 3000,
+        "text": "攻4・防2・速999倍 / 2T。最低3000・異常解除"
+      },
+      "erosion": {
+        "name": "堕天侵食",
+        "side": -1,
+        "stage": 1,
+        "ct": 4,
+        "duration": 3,
+        "mul": {
+          "atk": 2.2,
+          "def": 0.85
+        },
+        "text": "補完：攻2.2・防0.85倍 / 3T"
+      },
+      "release": {
+        "name": "深淵解放",
+        "side": -1,
+        "stage": 2,
+        "ct": 4,
+        "duration": 2,
+        "mul": {
+          "atk": 3.2,
+          "spd": 2
+        },
+        "text": "補完：攻3.2・速2倍 / 2T。HP12%消費"
+      },
+      "sovereignty": {
+        "name": "堕天王権",
+        "side": -1,
+        "stage": 3,
+        "ct": 5,
+        "duration": 2,
+        "mul": {
+          "atk": 4.5,
+          "def": 0.65
+        },
+        "text": "補完：攻4.5・防0.65倍 / 2T。終了時1T停止"
+      },
+      "annihilate": {
+        "name": "終極殲滅",
+        "ct": 5,
+        "text": "防御無視・最低5000。次ターン停止・速度反動"
+      },
+      "transcend": {
+        "name": "絶界昇華",
+        "ct": 4,
+        "duration": 3,
+        "mul": {
+          "atk": 3,
+          "def": 3,
+          "spd": 3
+        },
+        "text": "全能力3倍 / 3T。権能禁止、終了後停止・防御半減"
+      },
+      "grasp": {
+        "name": "理外掌握",
+        "ct": 8,
+        "text": "全回復・重圧解除・速度1000倍永続・敵1回停止。終極殲滅CTのみ解除。攻撃倍率を発動ターンで固定 / CT8（補完）"
+      }
+    },
+    "GODS": [
+      "黎明の神アウロラ",
+      "境界の神リメス",
+      "深淵の神ノクス",
+      "断罪の神ユスティア",
+      "失われた神座"
+    ],
+    "MARKS": [
+      {
+        "id": "split",
+        "name": "羽撃ち分け",
+        "icon": "⋈",
+        "cost": 160,
+        "effect": "穿羽1.30倍・CT3 / 連羽0.70倍×2・CT2。交互使用で15%強化。",
+        "confirmed": true
+      },
+      {
+        "id": "starfall",
+        "name": "星墜の印",
+        "icon": "✧",
+        "cost": 220,
+        "effect": "必殺ダメージ＋12%",
+        "confirmed": true
+      },
+      {
+        "id": "endure",
+        "name": "不屈の印",
+        "icon": "◇",
+        "cost": 200,
+        "effect": "HP＋18%。致命傷を1回耐える",
+        "confirmed": true
+      },
+      {
+        "id": "abyssmark",
+        "name": "深淵の印",
+        "icon": "◈",
+        "cost": 160,
+        "effect": "攻撃＋8%"
+      },
+      {
+        "id": "wind",
+        "name": "疾風の印",
+        "icon": "≋",
+        "cost": 160,
+        "effect": "速度＋15%"
+      },
+      {
+        "id": "iron",
+        "name": "鉄壁の印",
+        "icon": "⬡",
+        "cost": 180,
+        "effect": "防御＋12%"
+      },
+      {
+        "id": "fire",
+        "name": "業火の印",
+        "icon": "♨",
+        "cost": 200,
+        "effect": "特殊技＋8%"
+      },
+      {
+        "id": "moon",
+        "name": "月影の印",
+        "icon": "☾",
+        "cost": 200,
+        "effect": "必殺ゲージ獲得＋25%"
+      },
+      {
+        "id": "crown",
+        "name": "王冠の印",
+        "icon": "♛",
+        "cost": 260,
+        "effect": "攻撃・防御＋5%"
+      },
+      {
+        "id": "life",
+        "name": "生命の印",
+        "icon": "❀",
+        "cost": 180,
+        "effect": "最大HP＋10%"
+      }
+    ],
+    "POWERS": [
+      {
+        "id": "abyss",
+        "name": "深淵",
+        "icon": "◈",
+        "effect": "毎ターン敵のHP・攻撃・防御・速度を基礎値の6%侵食。上限95%。",
+        "source": "初期解放 / 120Pで再入手"
+      },
+      {
+        "id": "fallen",
+        "name": "堕天",
+        "icon": "♜",
+        "effect": "HP50/25/10%以下で全ステータス2.4/3.1/3.8倍。段階は重複しない。",
+        "source": "Lv.5撃破 / 120P"
+      },
+      {
+        "id": "wing",
+        "name": "黒翼",
+        "icon": "✦",
+        "effect": "全ステータス1.1倍。羽弾の最終ダメージ5倍。",
+        "source": "初期解放 / 120Pで再入手"
+      },
+      {
+        "id": "king",
+        "name": "堕天王",
+        "icon": "♛",
+        "effect": "最大HP・防御1.2倍。致命傷をHP1で5回耐える。",
+        "source": "Lv.10撃破 / 120P"
+      },
+      {
+        "id": "judge",
+        "name": "断罪",
+        "icon": "⚖",
+        "effect": "命中2回蓄積後の次の命中で3倍・防御60%無視・敵の攻撃前現在HP20%を加算。",
+        "source": "Lv.20撃破 / 120P"
+      },
+      {
+        "id": "star",
+        "name": "天星覇権",
+        "icon": "✺",
+        "effect": "全ステータス3倍・与ダメージ2倍・毎ターン最大HP5%回復（補完性能）。",
+        "source": "実績36個すべて達成でLv.5"
+      }
+    ],
+    "RECIPES": [
+      {
+        "id": "god",
+        "name": "堕天の神",
+        "parts": [
+          "fallen",
+          "king"
+        ],
+        "live": true,
+        "effect": "低HP50/25/5%で全能力2/3/4倍を2ターン維持。段階ごとの致死耐性＋HP1耐性4回。"
+      },
+      {
+        "id": "fallenwing",
+        "name": "堕天翼",
+        "parts": [
+          "fallen",
+          "wing"
+        ],
+        "live": true,
+        "effect": "HP50/25/10%で全能力4.8/6.2/7.6倍。羽弾最終10倍。"
+      },
+      {
+        "id": "fallenjudge",
+        "name": "堕天審判",
+        "parts": [
+          "fallen",
+          "judge"
+        ],
+        "live": false,
+        "effect": "低HP全能力強化。断罪4倍・防御90%無視。"
+      },
+      {
+        "id": "abyssfallen",
+        "name": "深淵堕天",
+        "parts": [
+          "abyss",
+          "fallen"
+        ],
+        "live": false,
+        "effect": "毎ターン9%侵食。低HPと侵食に応じて攻撃強化。"
+      },
+      {
+        "id": "kingwing",
+        "name": "王の翼",
+        "parts": [
+          "king",
+          "wing"
+        ],
+        "live": false,
+        "effect": "HP・防御1.5倍。致死耐性7回。羽弾最終10倍。"
+      },
+      {
+        "id": "kingjudge",
+        "name": "王権断罪",
+        "parts": [
+          "king",
+          "judge"
+        ],
+        "live": false,
+        "effect": "HP・防御1.5倍。致死耐性6回。命中・被弾で断罪蓄積。"
+      },
+      {
+        "id": "abyssking",
+        "name": "深淵王",
+        "parts": [
+          "abyss",
+          "king"
+        ],
+        "live": true,
+        "effect": "毎ターン9%侵食。防御1.3〜2.05倍、攻撃も侵食に応じて増加。致死耐性6回。"
+      },
+      {
+        "id": "judgewing",
+        "name": "断罪翼",
+        "parts": [
+          "judge",
+          "wing"
+        ],
+        "live": true,
+        "effect": "羽弾最終10倍。羽弾の命中だけで断罪を蓄積・発動。"
+      },
+      {
+        "id": "abysswing",
+        "name": "深淵の翼",
+        "parts": [
+          "abyss",
+          "wing"
+        ],
+        "live": false,
+        "effect": "毎ターン9%侵食。羽弾命中で追加侵食、羽弾最終10倍。"
+      },
+      {
+        "id": "abyssjudge",
+        "name": "深淵断罪",
+        "parts": [
+          "abyss",
+          "judge"
+        ],
+        "live": true,
+        "effect": "毎ターン9%侵食。断罪の火力が侵食と状態異常数で増加。"
+      }
+    ],
+    "SUMMONS": [
+      "黒翼の欠片",
+      "深淵結晶",
+      "断罪の印章",
+      "堕天の羽根",
+      "王権の残光",
+      "星のかけら"
+    ],
+    "VERSION": 4
+  },
+  "files": {
+    "web/src/utils/progression.js": "8ad7032fe4358d8fbb715fdd7f39989069161f243b6823ec15ce162b8f930d21",
+    "web/src/utils/storage.js": "e7c2006c1e2901aeb9f30ba0c5906826a97e0f926c1e90e13d1b95b34665dc86"
+  },
+  "functions": {
+    "baseStats": "077cc8f141dd13a52c22c6d1a75a9f9620964973ed49d167f30d3cf7e4cc79ec",
+    "normalEnemy": "5887a735578bffa7a7326c01d06545305a4372cd1c52491e242793644e92784b",
+    "enemyConfig": "98fcf536f21af4b3628a9da7f6260e7ec3d6751e1cebb0759462940d9c57c368",
+    "canStart": "f99a18900ddb2a60f169cb509e25a1c65687a0be6579f875d15a23d80259cdbd",
+    "startBattle": "967b7737ba6f91d3a4b8f6a08bf25e436d78a07814844b21e520db7a4c941dee",
+    "log": "d12829b087fbdd543ed63e5ff4f7dd357932c4ba01b82017f5fe4f2ade375483",
+    "fallenMultiplier": "bcf84098da784b1666395a6e04de477d159d6295bc66bc05e05c24b883229343",
+    "playerStats": "ab7d4ecb72c4ce1f4126cd895a9c23374e1526d2a798a4edee3f143272c73587",
+    "enemyStats": "4c3caa86e227c04e3d804e928d5899129c9c0623316655990189f07b24ad9467",
+    "damage": "de9970e2801ef328f5befb68624080df26a234c366f6774bea53ed5aa6a98897",
+    "buff": "f1513e9cf1bc538b71e37faa3c23d5700f401232b382ea7eba2f7e82cc1af351",
+    "dealPlayer": "a1147922184276bc5d7f0c56bd06ee906f9b5dce752444c33ee533f366692e9a",
+    "heal": "54d1dacafe41f992269b87d212101c21c5aed2c2e3f24eb1a7ed5d7a81a81457",
+    "markUsed": "1c9913d365a455df00afd7652c3669a6b3fbcbd431acb4ed05d06213ef988c72",
+    "tickMap": "cea711bbe8fbf6d83e9c9fc75388457ca66d703bd8812eb83d7778ca6c30a279",
+    "erosion": "20f78753eb2186c9e1af3be527c55c5786a845d3b7d9c8ab14daa24bd1342e11",
+    "passiveStart": "e53da348168fdbf380f6063c87aeb34e563da5c762966186d0bead3e88622e89",
+    "stage": "ffc6c2243ce23679fc3f8cb90a0143f255c96d3fc4f8dc256221c460e97aaf1a",
+    "attack": "ce0863f442c257a03cf1fb32bd44bc64f6cf633d569ed555eb39eaed8df79fa8",
+    "phase": "2dd820f62aee945d7b900633d38c8cf826b5df2b4841d918a9356dfbaa69dd76",
+    "enemyTurn": "c424f7b90121b53bd5fdc8b5a8b86126dede53691e0965627c7403791cd03181",
+    "act": "f312eaabc01ff00533ac2e27862a84a6b26a5eacd93d20be5c6328cdc8c23c12"
+  }
+}

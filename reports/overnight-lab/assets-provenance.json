@@ -1,0 +1,20 @@
+{
+  "moon-temple.jpg": {
+    "bytes": 288937,
+    "sha256": "a5d148f6d50346f825a601cfb3dd3434da8e19d5058654420ecc4652dc93e273",
+    "role": "試作限定戦場背景",
+    "edited": false
+  },
+  "kaiser-normal.webp": {
+    "bytes": 2032186,
+    "sha256": "067206ac550724d07c5eecb25013614b417a18cbf3437ac4b7b14a29bc362cae",
+    "role": "通常カイザー／提供ファイル名はirena_transparent_2x3.webpだが画像の人物を確認して配置",
+    "edited": false
+  },
+  "kaiser-ex.png": {
+    "bytes": 2514669,
+    "sha256": "147f9d2f80332510b3aec52448d4e9c45a47e76839a6bc007efcd9912cef06ea",
+    "role": "EXカイザー",
+    "edited": false
+  }
+}

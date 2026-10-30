@@ -1,0 +1,20 @@
+{
+  "passed": 14,
+  "checks": [
+    "320 latest release only",
+    "320 bottom artwork preserved",
+    "320 no overflow",
+    "390 latest release only",
+    "390 bottom artwork preserved",
+    "390 no overflow",
+    "1280 latest release only",
+    "1280 bottom artwork preserved",
+    "1280 no overflow",
+    "play browser assembled file SHA256",
+    "play download controls recover",
+    "source browser assembled file SHA256",
+    "source download controls recover",
+    "no JS errors"
+  ],
+  "errors": []
+}

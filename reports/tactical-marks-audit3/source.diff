@@ -1,0 +1,269 @@
+--- audit2/web/src/utils/storage.js
++++ audit3/web/src/utils/storage.js
+@@ -1,3 +1,4 @@
++import {markBattleCheckpoint,restoreMarkBattle} from './battleCheckpoint.js';
+ import {fresh,clamp,achievements} from './progression.js';
+ import {POWERS,RECIPES,MARKS,ACHIEVEMENTS,SUMMONS} from '../data/config.js';
+ export const SAVE_KEY='irena-reborn-v3';
+@@ -33,7 +34,7 @@
+  if(a.gauntlet&&typeof a.gauntlet==='object')s.gauntlet={index:clamp(num(a.gauntlet.index,0),0,4),materials:num(a.gauntlet.materials,0),unique:Array.from({length:5},(_,i)=>num(a.gauntlet.unique?.[i],0))};
+  s.summonHistory=Array.isArray(a.summonHistory)?a.summonHistory.slice(0,60).filter(x=>x&&SUMMONS.includes(x.reward)).map(x=>({reward:x.reward,dupe:!!x.dupe})):[];
+  s.savedAt=typeof a.savedAt==='string'?a.savedAt:null;
+- achievements(s);return s;
++ achievements(s);if(a.markBattle!=null)s.markBattle=markBattleCheckpoint(restoreMarkBattle(a.markBattle,validateSave));return s;
+ }
+ export function save(s,storage=globalThis.localStorage){const output={...s,dev:null,savedAt:new Date().toISOString()};const json=JSON.stringify(output);storage.setItem(SAVE_KEY,json);s.savedAt=output.savedAt;return json;}
+ export function load(storage=globalThis.localStorage){for(const key of [SAVE_KEY,'irena-reborn-v2','irena-reborn-v1']){const raw=storage.getItem(key);if(raw){try{return {state:validateSave(JSON.parse(raw)),key,error:null};}catch(e){return {state:null,key,error:e.message};}}}return {state:fresh(),key:null,error:null};}
+--- audit2/web/src/utils/gameCore.js
++++ audit3/web/src/utils/gameCore.js
+@@ -1,3 +1,4 @@
++import {markState,markGuard,beginMarkAttack,judgeMarkMultiplier,reduceKingMarkHit,triggerKingMark} from './tacticalMarks.js';
+ import {BALANCE,RECIPES,MARKS,GODS,FINAL_SKILLS} from '../data/config.js';
+ import {clamp,clone,achievements,badgeRank,powerGrowth} from './progression.js';
+ export function baseStats(s,character='irena'){
+@@ -12,7 +13,7 @@
+  if(p.includes('star'))for(const k in out)mul(k,3);
+  if(p.includes('kingwing')||p.includes('kingjudge')){mul('hp',1.5);mul('def',1.5);}
+  for(const id of p){if(s.powers[id]&&id!=='star')for(const k in out)mul(k,powerGrowth(s.powers[id]));if(s.resonance[id])for(const k in out)mul(k,1.2+(s.resonance[id]-1)*.12);}
+- if(m.includes('endure'))mul('hp',1.18);if(m.includes('life'))mul('hp',1.1);if(m.includes('abyssmark'))mul('atk',1.08);if(m.includes('wind'))mul('spd',1.15);if(m.includes('iron'))mul('def',1.12);if(m.includes('crown')){mul('atk',1.05);mul('def',1.05);}
++ if(m.includes('endure'))mul('hp',1.18);
+  if(s.badge==='C'){const r=badgeRank(s,'C');if(r===1)mul('hp',1.05);if(r===2){mul('hp',1.07);mul('def',1.07);}if(r===3)for(const k in out)mul(k,1.12);}
+  return Object.fromEntries(Object.entries(out).map(([k,v])=>[k,Math.round(v)]));
+ }
+@@ -33,7 +34,7 @@
+  if(difficulty==='EXPERT'){enemy.base.hp*=1.3;enemy.base.atk*=1.2;enemy.base.spd*=1.1;}
+  const powers=character==='irena'?[...s.equipped]:[],marks=character==='irena'?[...s.markEquip]:[];
+  let lives=powers.includes('king')?5:0;for(const [id,n]of [['god',4],['kingwing',7],['kingjudge',6],['abyssking',6]])if(powers.includes(id))lives+=n;
+- return {mode,floor,difficulty,test,character,build:clone(s),base,hp:base.hp,enemy:{...enemy,hp:enemy.base.hp,phase:1,buffs:[],statuses:{}},turn:1,gauge:0,balance:0,cd:{},buffs:[],statuses:{},erosion:0,stacks:{},lives,markLife:marks.includes('endure')?1:0,godThresholds:[],rebirths:0,meteor:false,phaseTurns:0,powers,marks,used:{special:0,ultimate:0,marks:[],endure:false,low:false},result:null,settled:false,lastFeather:null,log:['境界に立つ者よ、失われた力を取り戻せ。'],lastDamage:0,enemyDamage:0,enemyStop:0,events:[],noBuff:0,noPressure:0,ignoreDefense:0};
++ return {mode,floor,difficulty,test,character,build:clone({...s,markBattle:undefined}),replay:[],base,hp:base.hp,enemy:{...enemy,hp:enemy.base.hp,phase:1,buffs:[],statuses:{}},turn:1,gauge:0,balance:0,cd:{},buffs:[],statuses:{},erosion:0,stacks:{},lives,markLife:marks.includes('endure')?1:0,godThresholds:[],rebirths:0,meteor:false,phaseTurns:0,powers,marks,used:{special:0,ultimate:0,marks:[],endure:false,low:false},result:null,settled:false,lastFeather:null,log:['境界に立つ者よ、失われた力を取り戻せ。'],lastDamage:0,enemyDamage:0,enemyStop:0,events:[],noBuff:0,noPressure:0,ignoreDefense:0};
+ }
+ export function log(b,text){b.log.push(text);if(b.log.length>100)b.log.shift();}
+ export function fallenMultiplier(r){return r<=.1?3.8:r<=.25?3.1:r<=.5?2.4:1;}
+@@ -53,8 +54,8 @@
+ export function enemyStats(b){const factor=Math.max(.05,1-b.erosion),v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*factor)]));for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
+ export function damage(atk,def,{mult=1,ignore=0,final=1,extra=0,minimum=1}={}){const safe=(v,max=1e15)=>Number.isNaN(v)?0:Math.max(0,Math.min(max,v));const base=Math.max(1,safe(atk)*safe(mult,1e12)-safe(def)*(1-clamp(ignore,0,1)));return Math.floor(Math.min(1e15,Math.max(safe(minimum),base*safe(final,1e12)+safe(extra))));}
+ export function buff(b,id,duration,mul={},extra={}){b.buffs=b.buffs.filter(x=>x.id!==id);b.buffs.push({id,remaining:duration,mul,...extra});}
+-export function dealPlayer(b,amount){const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');return 0;}let actual=amount;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;return amount;}}else if(b.lives>0){b.lives--;actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;return amount;}}
+- b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;return actual;
++export function dealPlayer(b,amount){const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;return amount;}}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;return amount;}}
++ b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;triggerKingMark(b,kingEndured);return actual;
+ }
+ export function heal(b,fraction){b.hp=Math.min(b.base.hp,b.hp+b.base.hp*fraction);}
+ function markUsed(b,id){if(b.marks.includes(id)&&!b.used.marks.includes(id))b.used.marks.push(id);}
+@@ -63,7 +64,7 @@
+ function passiveStart(b){if(b.character!=='irena')return;const p=b.powers;if(p.some(x=>['abyss','abyssfallen','abyssking','abysswing','abyssjudge'].includes(x)))erosion(b,p.includes('abyss')?.06:.09);
+  if(p.includes('god')){const r=b.hp/b.base.hp,m=r<=.05?4:r<=.25?3:r<=.5?2:1;if(m>1)buff(b,'godlow',2,{}, {multiplier:m});}
+  if(p.includes('star'))heal(b,.05);
+- for(const id of ['abyssmark','wind','iron','crown','life','endure'])markUsed(b,id);
++ if(b.marks.includes('endure'))markUsed(b,'endure');
+ }
+ export function stage(gauge){return Math.abs(gauge)>=100?3:Math.abs(gauge)>=60?2:Math.abs(gauge)>=30?1:0;}
+ export function available(b,action,route){if(b.result)return '戦闘終了';if(b.cd[action]>0)return `CT ${b.cd[action]}`;
+@@ -78,26 +79,25 @@
+  const skill=FINAL_SKILLS[action];if(!skill)return '使用できない技';if(b.buffs.some(x=>x.id==='transcend'))return '絶界昇華中は権能を使用できません';
+  if(skill.side&&(Math.sign(b.balance)!==skill.side||stage(b.balance)<(skill.stage||0)))return '対応する側の段階が不足';return null;
+  }return '使用できません';}
+-export function attack(b,action,rng=Math.random){let p=playerStats(b),e=enemyStats(b);const special=['feather','pierce','volley','power'].includes(action),feather=['feather','pierce','volley'].includes(action),ultimate=action==='ultimate';let mult=1,final=1,ignore=0,extra=0;
++export function attack(b,action,rng=Math.random){let p=playerStats(b),e=enemyStats(b);const special=['feather','pierce','volley','power'].includes(action),feather=['feather','pierce','volley'].includes(action),ultimate=action==='ultimate';let mult=1,final=1,ignore=0,extra=0;const markMultiplier=beginMarkAttack(b,action);
+  if(feather){mult=1.95*(1+(b.build.skills.feather-1)*.07);if(action==='pierce')mult*=1.3;if(action==='volley')mult*=.7;if(b.powers.includes('wing'))final*=5;if(b.powers.some(x=>['fallenwing','kingwing','judgewing','abysswing'].includes(x)))final*=10;
+  if(b.lastFeather&&b.lastFeather!==action&&['pierce','volley'].includes(action)){final*=1.15;log(b,'羽撃ち分け：交互連携＋15%');}b.lastFeather=action;if(action!=='feather')markUsed(b,'split');}
+  if(action==='power')mult=2.4*(1+(b.build.skills.destruction-1)*.1);
+  if(ultimate){mult=5.4*(1+(b.build.skills.ultimate-1)*.08);if(b.marks.includes('starfall')){final*=1.12;markUsed(b,'starfall');}}
+- if(special&&b.marks.includes('fire')){final*=1.08;markUsed(b,'fire');}
+  if(b.powers.includes('star'))final*=2;
+  const rank=badgeRank(b.build,b.build.badge);if(b.build.badge==='A')final*=[1,1.05,1.09,1.12][rank];if(b.build.badge==='B'){if(special)final*=[1,1.08,1.12,1.15][rank];if(ultimate)final*=[1,1,1.08,1.12][rank];}
+  // Each equipped execution authority has its own hit-only counter; wing version only feathers.
+  const judges=b.powers.filter(x=>['judge','fallenjudge','kingjudge','judgewing','abyssjudge'].includes(x)&& (x!=='judgewing'||feather));
+  let total=0,hit=false;const hits=action==='volley'?2:1,parts=[];
+  for(let shot=0;shot<hits&&b.enemy.hp>0;shot++){
+-  const landed=rng()>=clamp((e.spd-p.spd)/Math.max(1,e.spd)*.12,0,.12);hit ||= landed;let shotMult=mult,shotIgnore=ignore,shotExtra=extra;
+-  if(landed){for(const id of judges){if((b.stacks[id]||0)>=2){shotMult*=id==='fallenjudge'?4:3;shotIgnore=Math.max(shotIgnore,id==='fallenjudge'?.9:.6);shotExtra+=b.enemy.hp*.2;if(id==='abyssjudge')shotMult*=1+b.erosion+Object.keys(b.enemy.statuses).length*.1;b.stacks[id]=0;log(b,'断罪発動：敵の攻撃前現在HP20%を加算');}else b.stacks[id]=(b.stacks[id]||0)+1;}}
+-  const minimum=Math.max(1,...b.buffs.map(x=>x.minimum||1));const d=landed?damage(p.atk,e.def,{mult:shotMult,ignore:Math.max(shotIgnore,b.ignoreDefense?1:0),final,extra:shotExtra,minimum}):0;
++  const landed=rng()>=clamp((e.spd-p.spd)/Math.max(1,e.spd)*.12,0,.12);hit ||= landed;let shotMult=mult,shotIgnore=ignore,shotExtra=extra,judgeTriggered=false;
++  if(landed){for(const id of judges){if((b.stacks[id]||0)>=2){if(id==='judge')judgeTriggered=true;shotMult*=id==='fallenjudge'?4:3;shotIgnore=Math.max(shotIgnore,id==='fallenjudge'?.9:.6);shotExtra+=b.enemy.hp*.2;if(id==='abyssjudge')shotMult*=1+b.erosion+Object.keys(b.enemy.statuses).length*.1;b.stacks[id]=0;log(b,'断罪発動：敵の攻撃前現在HP20%を加算');}else b.stacks[id]=(b.stacks[id]||0)+1;}}
++  const judgeMark=judgeMarkMultiplier(b,judgeTriggered);const minimum=Math.max(1,...b.buffs.map(x=>x.minimum||1));const d=landed?damage(p.atk,e.def,{mult:shotMult,ignore:Math.max(shotIgnore,b.ignoreDefense?1:0),final:final*markMultiplier*judgeMark,extra:shotExtra*markMultiplier,minimum}):0;
+   b.enemy.hp=Math.max(0,b.enemy.hp-d);total+=d;parts.push(d);b.events.push({type:'hit',damage:d});
+  }
+  b.lastDamage=total;log(b,`${action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
+  if(hit&&feather&&b.powers.includes('abysswing'))erosion(b,.09);
+- if(special)b.used.special++;if(ultimate){b.used.ultimate++;b.gauge=0;}else{const gain=feather?39:26;b.gauge=Math.min(100,b.gauge+Math.round(gain*(b.marks.includes('moon')?1.25:1)));markUsed(b,'moon');}
++ if(special)b.used.special++;if(ultimate){b.used.ultimate++;b.gauge=0;}else{const gain=feather?39:26;b.gauge=Math.min(100,b.gauge+Math.round(gain));}
+  if(special)b.cd[action]=action==='pierce'?3:action==='volley'?2:action==='power'?3:2;
+ }
+ export function finalAction(b,action,route){if(action==='divine'||action==='fallen'){b.balance=clamp(b.balance+(action==='divine'?15:-15),-100,100);log(b,`${action==='divine'?'神化':'堕天'}：${b.balance>0?'+':''}${b.balance} / 段階${stage(b.balance)}`);return;}
+@@ -125,14 +125,14 @@
+  if(b.hp>0&&b.mode==='ex'&&b.enemy.phase===2&&b.turn%5===0){b.statuses.seal=2;log(b,'第二形態：権能封印');}
+ }
+ export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn}={}){
+- const reason=available(b,action,route);if(reason)throw Error(reason);b.events=[];b.lastDamage=0;b.enemyDamage=0;b.lastAction=action;
+- passiveStart(b);b.used.low ||= b.hp/b.base.hp<=.1;
++ const reason=available(b,action,route);if(reason)throw Error(reason);const rolls=[],originalRng=rng;rng=()=>{const value=originalRng();rolls.push(value);return value;};b.events=[];b.lastDamage=0;b.enemyDamage=0;b.lastAction=action;
++ if(b.character==='irena'){markState(b);b.enemy.markTurns=(b.enemy.markTurns||0)+1;}passiveStart(b);b.used.low ||= b.hp/b.base.hp<=.1;
+  const early=enemyStats(b).spd>playerStats(b).spd;
+  // Enemy-first turns allow immortality/guard to resolve defensively before incoming damage.
+  if(action==='immortal')b.statuses.invulnerable=1;
+  if(early)enemyAction(b,action==='guard',rng);
+  if(b.hp>0){if(action==='wait'){log(b,'反動で行動できない');}
+- else if(action==='guard'){b.gauge=Math.min(100,b.gauge+18);log(b,'防御：被ダメージ70%軽減');}
++ else if(action==='guard'){markGuard(b);b.gauge=Math.min(100,b.gauge+18);log(b,'防御：被ダメージ70%軽減');}
+  else if(b.character==='final'&&!['slash'].includes(action))finalAction(b,action,route);
+  else if(b.character==='stella'){
+  if(action==='immortal'){b.cd.immortal=4;log(b,'不滅：このターン完全無敵');}
+@@ -150,6 +150,7 @@
+  if(ended.includes('transcend')){b.pendingStun=1;b.statuses.fragile=3;log(b,'絶界昇華の反動：次ターン停止・防御半減');}if(ended.includes('sovereignty'))b.pendingStun=1;
+  if(b.pendingStun){b.statuses.stun=b.pendingStun;delete b.pendingStun;}
+  if(b.result)log(b,b.result==='win'?'VICTORY — 再誕への一歩':'DEFEAT — 力を整え、再び');else b.turn++;
++ if(!b.test&&b.character==='irena')b.replay.push({action,rolls});
+  return b;
+ }
+ export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
+--- audit2/web/src/components/App.js
++++ audit3/web/src/components/App.js
+@@ -1,3 +1,4 @@
++import {markBattleCheckpoint,restoreMarkBattle} from '../utils/battleCheckpoint.js';
+ import {POWERS,RECIPES,MARKS,SUMMONS,ACHIEVEMENTS,AWAKENINGS,GODS,FINAL_SKILLS,BALANCE} from '../data/config.js';
+ import {fresh,clone,equip,buyPower,upgradePower,fuse,buyMark,train,summon,claim,warp,awaken,startGauntlet,allocate,developerState,achievements,badgeRank,powerGrowth,powerUpgradeInfo} from '../utils/progression.js';
+ import {save,load,validateSave,exportSave} from '../utils/storage.js';
+@@ -22,9 +23,9 @@
+ const navs=[['home','⌂','ホーム'],['upgrade','✧','強化'],['battle','⚔','戦闘'],['lab','◈','実験場'],['dev','⚙','開発者']];
+ let campaign=null;
+ let s=fresh(),sandbox=null,battle=null,page='home',tab='overview',powerSort='default',difficulty='NORMAL',selectedFloor=1,saveError='',saveBlocked=false,toastTimer,cinemaTimer,alignmentRevealTimer,combatAnimating=false,combatRecovering=false,combatReleaseTimer,sound=false,audio=null,lastSummon=[],summonSession=null;
+-try{const loaded=load();if(loaded.error){saveError='既存セーブを読み込めません：'+loaded.error;saveBlocked=true;}else s=loaded.state;}catch(e){saveError='保存領域を利用できません。JSONバックアップをご利用ください。';}
++try{const loaded=load();if(loaded.error){saveError='既存セーブを読み込めません：'+loaded.error;saveBlocked=true;}else {s=loaded.state;battle=restoreMarkBattle(s.markBattle,validateSave);}}catch(e){saveError='保存領域を利用できません。JSONバックアップをご利用ください。';}
+ const current=()=>sandbox||s;
+-function persist(){if(saveBlocked&&!sandbox)return false;try{if(sandbox)localStorage.setItem('irena-reborn-lab-v4',JSON.stringify(sandbox));else save(s);saveError='';return true;}catch(e){saveError='自動保存失敗。JSONを書き出してください。';toast(saveError);return false;}}
++function persist(){if(saveBlocked&&!sandbox)return false;try{if(sandbox)localStorage.setItem('irena-reborn-lab-v4',JSON.stringify(sandbox));else {const checkpoint=markBattleCheckpoint(battle);if(checkpoint)s.markBattle=checkpoint;else delete s.markBattle;save(s);}saveError='';return true;}catch(e){saveError='自動保存失敗。JSONを書き出してください。';toast(saveError);return false;}}
+ function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4200);}
+ function button(text,action,id='',cls='',disabled=false){return `<button class="${cls}" data-action="${action}" data-id="${id}" ${disabled?'disabled':''}>${text}</button>`;}
+ function modal(title,body,actions=''){const el=$('#modal');el.classList.remove('summon-dialog');el.setAttribute('aria-labelledby','modal-title');el.innerHTML=`<h2 id="modal-title">${title}</h2>${body}<div class="row">${actions}${button('閉じる','close','','ghost')}</div>`;if(!el.open)el.showModal();}
+@@ -95,7 +96,7 @@
+  return `<article class="upgrade-power-card state-${v.state} ${v.selected?'equipped':''}"><div class="upgrade-power-main"><img class="upgrade-power-art" ${p.id!=='star'?`data-authority-art="${p.id}"`: ''} src="${UPGRADE_ART[p.id]}" alt=""><div class="upgrade-power-identity"><h3>${p.name}</h3><p class="upgrade-power-level">${v.lv?'Lv.'+v.lv+' / 5':'未所持'}</p></div><button class="upgrade-power-detail" data-action="powerDetails" data-id="${p.id}" aria-label="${p.name}の詳細を見る">${uiIcon('search',19)}</button></div><div class="power-card-badges">${v.selected?'<span class="power-equipped-badge">✓ 装備中</span>':''}<span class="power-state-badge badge-${v.state}">${v.label}</span></div><div class="upgrade-power-meter" aria-label="強化レベル ${v.lv}/5"><span style="width:${v.lv*20}%"></span></div><div class="upgrade-power-cost">${costText}</div><div class="upgrade-power-actions">${action}</div></article>`;
+  }).join('')}</div><div class="upgrade-info">${uiIcon('book',26)}<span><strong>権能の詳細</strong><small>虫眼鏡で現在・次レベルの効果と必要素材を比較できます。</small></span></div>`;
+ }
+-function marksView(a){return `<div class="notice">刻印は独立した3枠。所持 ${a.marks.length}/10・装備 ${a.markEquip.length}/3。最初の3種以外の効果と価格は復元記録を基にした補完仕様です。</div><div class="grid">${MARKS.map(m=>`<section class="card power-card ${a.markEquip.includes(m.id)?'selected':''}"><div class="row"><div class="emblem">${m.icon}</div><div><h3>${m.name}</h3><small>${m.confirmed?'復元記録あり':'補完仕様'} / ${a.marks.includes(m.id)?'所持':'未所持'}</small></div></div><p>${m.effect}</p><div class="actions">${a.marks.includes(m.id)?button(a.markEquip.includes(m.id)?'装備解除':'装備する','equipMark',m.id,'primary'):button(`${m.cost}P で入手`,'buyMark',m.id,'',a.p<m.cost)}</div></section>`).join('')}</div>`;}
++function marksView(a){return `<div class="notice">刻印は独立した3枠。所持 ${a.marks.length}/10・装備 ${a.markEquip.length}/3。権能連動型は対応する通常権能の装備が必要です。<br>旧刻印の所持・装備は引き継がれます。戦闘中の装備変更は次の戦闘から反映されます。</div><div class="grid">${MARKS.map(m=>`<section class="card power-card ${a.markEquip.includes(m.id)?'selected':''}" data-mark="${m.id}"><div class="row"><div class="emblem">${m.icon}</div><div><h3>${m.name}</h3><small>${a.markEquip.includes(m.id)?'装備中':a.marks.includes(m.id)?'所持':'未所持'}${m.power?' / '+(a.equipped.includes(m.power)?'対応権能を装備中':'対応権能が未装備'):''}</small></div></div><p>${m.effect}</p><div class="actions">${a.marks.includes(m.id)?button(a.markEquip.includes(m.id)?'装備解除':'装備する','equipMark',m.id,'primary'):button(`${m.cost}P で入手`,'buyMark',m.id,'',a.p<m.cost)}</div></section>`).join('')}</div>`;}
+ function resonanceView(a){return `<div class="notice">${a.cleared.includes(50)?'共鳴解放済み':'通常カイザーLv.50の撃破記録で解放'}。Lv.5権能2つを消費する永久1回の合成です。余剰欠片は共鳴片へ1:1変換。消費後も権能を120Pで再入手できます。</div><div class="grid">${RECIPES.map(r=>{const lv=a.resonance[r.id],done=a.recipes.includes(r.id),eligible=r.live&&a.cleared.includes(50)&&r.parts.every(x=>a.powers[x]===5)&&!done;return `<section class="card power-card ${a.equipped.includes(r.id)?'selected':''}"><div class="row between"><h3>◇ ${r.name}</h3><span class="tag">${lv?'Lv. '+lv:r.live?'LIVE RECIPE':'開発者専用'}</span></div><div class="small">${r.parts.map(x=>name(x)+' Lv.'+(a.powers[x]||0)).join(' ＋ ')}</div><p>${r.effect}</p><div class="effect">補完倍率：Lv.1 基礎全能力1.20倍 → Lv.5 1.68倍。現在 ${lv?(1.2+(lv-1)*.12).toFixed(2):'—'}倍。${lv&&lv<5?'次 '+(1.2+lv*.12).toFixed(2)+'倍':''}<br>強化：40 / 80 / 120 / 160共鳴片</div><div class="actions">${lv?`${button(a.equipped.includes(r.id)?'装備解除':'装備する','equipPower',r.id,'primary')}${button(lv>=5?'MAX':`強化 ${BALANCE.resCosts[lv-1]}片`,'upgradePower',r.id,'',lv>=5||a.resShards<BALANCE.resCosts[lv-1])}`:button(done?'合成済み':r.live?'共鳴する':'通常合成不可','askFuse',r.id,'',!eligible)}</div></section>`;}).join('')}</div>`;}
+ function trainingView(a){return `<div class="grid"><section class="card stack"><h3>いれーな育成</h3>${[['level','基礎レベル',a.level,150,40+a.level*3,'HP＋42 / 攻撃＋13 / 防御＋5 / 速度＋2'],['talent','才能',a.talent,20,a.talent*30,`攻撃補正 ${Math.round((a.talent-1)*3.5)}% → ${Math.round(a.talent*3.5)}%`],['feather','黒翼・羽弾',a.skills.feather,10,a.skills.feather*35,`技倍率 ${(1.95*(1+(a.skills.feather-1)*.07)).toFixed(2)} → ${(1.95*(1+a.skills.feather*.07)).toFixed(2)}`],['destruction','破壊の権能',a.skills.destruction,10,a.skills.destruction*35,`技倍率 ${(2.4*(1+(a.skills.destruction-1)*.1)).toFixed(2)} → ${(2.4*(1+a.skills.destruction*.1)).toFixed(2)}`],['ultimate','超堕天撃',a.skills.ultimate,10,a.skills.ultimate*35,`技倍率 ${(5.4*(1+(a.skills.ultimate-1)*.08)).toFixed(2)} → ${(5.4*(1+a.skills.ultimate*.08)).toFixed(2)}`]].map(([id,title,lv,max,cost,text])=>`<div><div class="row between"><div>${title}<small> Lv.${lv}/${max}</small><div class="small">${lv<max?text:'最大強化済み'}</div></div>${button(lv>=max?'MAX':`${cost}Pで強化`,'train',id,'',lv>=max||a.p<cost)}</div></div>`).join('')}</section><div class="stack"><section class="card"><h3>通常ステータス調整</h3><p class="small">残り ${a.sp}P / 通常Lv.100初撃破で50P、一度だけ獲得。</p>${allocations(a,false)}</section><section class="card"><h3>最終決戦専用・独立150P</h3><p class="small">残り ${a.finalBuild.points}P / 通常いれーなに影響しません。</p>${allocations(a,true)}${button('専用配分をリセット','resetFinal','','ghost small')}</section></div></div>`;}
+ function allocations(a,final){return `<div class="statgrid">${[['hp','HP',final?80:35],['atk','攻撃',final?35:12],['def','防御',final?22:9],['spd','速度',final?6:3]].map(([id,label,value])=>`<div><span class="small">${label} ＋${value} / ${final?a.finalBuild[id]:a.stats[id]}P</span><div>${button('＋1P',final?'allocateFinal':'allocate',id,'ghost',final?a.finalBuild.points<=0:a.sp<=0)}</div></div>`).join('')}</div>`;}
+@@ -197,6 +198,7 @@
+  try{
+   const previousPhase=b.enemy.phase;if(b.campaign)actCampaign(b,id,{route});else if(b.trial)actThreePhase(b,id,{route});else act(b,id,{route});b.lastAction=id;
+   if(b.result){b.reward=b.campaign?settleCampaign(campaign,b):settle(current(),b);if(!b.test&&b.result==='win'&&id==='ultimate'&&b.used.marks.includes('starfall')){current().records.starfinish=true;achievements(current());}if(!b.campaign&&(!b.test||sandbox))persist();}
++  if(!b.result&&!b.test&&b.character==='irena')persist();
+   tone(['ultimate','meteor','annihilate','genesis','ending'].includes(id)?'ultimate':'hit');render();
+   if(b.events.some(x=>x.type==='hit')||b.lastDamage>0)showBladeStrike(id);showCombatFeedback(b);
+   if(b.trial&&!b.result&&b.enemy.phase>previousPhase){const active=b;setTimeout(()=>{if(battle!==active||battle.result)return;cinema('cut',b.enemy.phase===3?'第三相・終極':'第二相・変転','EX KAISER · THREE PHASE',null,850,ENEMIES.ex);$('#cinema').classList.add('phase-transition');},0);}
+@@ -206,7 +208,7 @@
+  }
+ }
+ function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+-function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const data=validateSave(JSON.parse(await file.text()));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=null;page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
++function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const data=validateSave(JSON.parse(await file.text()));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=sandbox?null:restoreMarkBattle(s.markBattle,validateSave);page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
+ async function handle(action,id){if(combatAnimating||combatRecovering)return;const a=current();switch(action){
+  case 'begin':if(saveBlocked){confirmDialog('読み込めない既存セーブがあります','新しい旅を始めると保存済みデータを上書きします。既存のデータを残す場合は閉じて、正しいJSONを読み込んでください。','newAfterError','');break;}a.started=true;persist();render();break;
+  case 'newAfterError':saveBlocked=false;s=fresh();s.started=true;persist();close();render();break;
+--- audit2/web/src/data/config.js
++++ audit3/web/src/data/config.js
+@@ -23,13 +23,13 @@
+ {id:'split',name:'羽撃ち分け',icon:'⋈',cost:160,effect:'穿羽1.30倍・CT3 / 連羽0.70倍×2・CT2。交互使用で15%強化。',confirmed:true},
+ {id:'starfall',name:'星墜の印',icon:'✧',cost:220,effect:'必殺ダメージ＋12%',confirmed:true},
+ {id:'endure',name:'不屈の印',icon:'◇',cost:200,effect:'HP＋18%。致命傷を1回耐える',confirmed:true},
+-{id:'abyssmark',name:'深淵の印',icon:'◈',cost:160,effect:'攻撃＋8%'},
+-{id:'wind',name:'疾風の印',icon:'≋',cost:160,effect:'速度＋15%'},
+-{id:'iron',name:'鉄壁の印',icon:'⬡',cost:180,effect:'防御＋12%'},
+-{id:'fire',name:'業火の印',icon:'♨',cost:200,effect:'特殊技＋8%'},
+-{id:'moon',name:'月影の印',icon:'☾',cost:200,effect:'必殺ゲージ獲得＋25%'},
+-{id:'crown',name:'王冠の印',icon:'♛',cost:260,effect:'攻撃・防御＋5%'},
+-{id:'life',name:'生命の印',icon:'❀',cost:180,effect:'最大HP＋10%'}];
++{id:'abyssmark',name:'深淵の刻印',icon:'◈',cost:160,power:'abyss',effect:'深淵装備時、同じ敵との3ターン目以降は与ダメージ＋18%。',confirmed:true},
++{id:'wind',name:'黒翼の刻印',icon:'≋',cost:160,power:'wing',effect:'黒翼装備時、羽弾・穿羽・連羽の最終ダメージ＋12%。',confirmed:true},
++{id:'iron',name:'反攻の刻印',icon:'⬡',cost:180,effect:'防御で次の攻撃＋35%。攻撃するまで保持し、連続防御で重複しない。回避されても攻撃実行時に消費。',confirmed:true},
++{id:'fire',name:'堕天の刻印',icon:'♨',cost:200,power:'fallen',effect:'堕天装備時、HP50/25/10%以下で特殊攻撃＋12/18/25%。最も強い段階のみ適用。',confirmed:true},
++{id:'moon',name:'断罪の刻印',icon:'☾',cost:200,power:'judge',effect:'断罪装備時、蓄積後の強化攻撃部分＋20%（HP20%追加はそのまま）。再発動は3ターン後。',confirmed:true},
++{id:'crown',name:'堕天王の刻印',icon:'♛',cost:260,power:'king',effect:'堕天王のHP1耐久時に最大HP12%回復、次の被ダメージ20%軽減。1戦1回。耐久回数は増えない。',confirmed:true},
++{id:'life',name:'終幕の刻印',icon:'❀',cost:180,effect:'攻撃開始時の敵HPが25/10%以下で与ダメージ＋20/35%。最も強い段階のみ適用。',confirmed:true}];
+ export const SUMMONS=['黒翼の欠片','深淵結晶','断罪の印章','堕天の羽根','王権の残光','星のかけら'];
+ export const GODS=['黎明の神アウロラ','境界の神リメス','深淵の神ノクス','断罪の神ユスティア','失われた神座'];
+ export const AWAKENINGS=['未覚醒','神性の微光','神翼の胎動','神威の顕現','神域の再臨（補完名）','再誕の神格（補完名）'];
+--- audit2/tests/campaign.test.js
++++ audit3/tests/campaign.test.js
+@@ -12,7 +12,14 @@
+ let campaign;
+ test('REAL campaign: new game, ordinary100 floors without dev flags or forced wins',()=>{let s=fresh();s.started=true;const summaries=[];for(let floor=1;floor<=100;floor++){growth(s);const b=fight(s);summaries.push({floor,turn:b.turn,result:b.result,hp:Math.round(playerStats(b).current)});assert.equal(b.result,'win',`floor ${floor}: ${b.log.slice(-6).join(';')}`);assert.ok(s.cleared.includes(floor));s=validateSave(JSON.parse(exportSave(s)));}assert.equal(s.cleared.length,100);assert.equal(s.sp,50);assert.ok(s.flags.lv100);assert.equal(s.flags.stella,false);campaign=s;fs.writeFileSync('reports/pre-warp-save.json',exportSave(s));console.log('Campaign: 100 wins, max rounds '+Math.max(...summaries.map(x=>x.turn))+'; final '+JSON.stringify(summaries.at(-1)));});
+ test('REAL campaign: warp before EX, Stella boss and dedicated final victory',()=>{const s=campaign;assert.ok(s);warp(s);growth(s);for(let i=0;i<50;i++)allocate(s,'atk');const ex=fight(s,'ex');assert.equal(ex.result,'win',ex.log.join('\n'));assert.ok(s.flags.ex);const stella=fight(s,'stella');assert.equal(stella.result,'win',stella.log.join('\n'));assert.ok(s.flags.final);for(let i=0;i<150;i++)allocate(s,'atk',true);const final=fight(s,'final',b=>{if(b.statuses.stun)return 'wait';if(!b.buffs.some(x=>x.id==='grasp'))return b.balance<0?'grasp':'fallen';if(b.balance<30)return 'divine';if(!b.buffs.some(x=>x.id==='godspeed')&&!available(b,'godspeed'))return 'godspeed';if(!available(b,'annihilate'))return 'annihilate';return 'slash';});assert.equal(final.result,'win',final.log.join('\n'));assert.ok(s.flags.finalClear);console.log(`Bosses: EX ${ex.turn}T, Stella ${stella.turn}T, final ${final.turn}T`);});
+-test('REAL campaign: raid10, summon50, all marks collected and equipped',()=>{const s=campaign;s.equipped=['wing','abyss'];growth(s);for(let i=0;i<10;i++)assert.equal(fight(s,'raid').result,'win');for(let i=0;i<5;i++)summon(s,10,()=>.5);const ids=['split','starfall','endure','abyssmark','wind','iron','fire','moon','crown','life'];for(const id of ids)if(!s.marks.includes(id))buyMark(s,id);for(const group of [['split','starfall','endure'],['abyssmark','wind','iron'],['fire','moon','crown'],['life']]){s.markEquip=[];for(const id of group)equip(s,id,'mark');const b=startBattle(s,{floor:1});while(!b.result){const skill=group.includes('split')&&!available(b,'pierce')?'pierce':group.includes('fire')&&!available(b,'feather')?'feather':'slash';act(b,skill,{rng});}settle(s,b);}assert.equal(s.collection.length,6);assert.equal(s.counts.raid,10);assert.equal(s.marks.length,10);assert.ok(s.markUsed.includes('life'));assert.ok(s.achieved.includes('C10'));});
++test('REAL campaign: raid10, summon50, all marks collected and equipped',()=>{const s=campaign;s.equipped=['wing','abyss'];growth(s);for(let i=0;i<10;i++)assert.equal(fight(s,'raid').result,'win');for(let i=0;i<5;i++)summon(s,10,()=>.5);const ids=['split','starfall','endure','abyssmark','wind','iron','fire','moon','crown','life'];for(const id of ids)if(!s.marks.includes(id))buyMark(s,id);// The redesigned marks must meet their real conditions; equipping alone no longer counts.
++const use=(powers,marks,strategy,options={})=>{s.equipped=powers;s.markEquip=[];for(const id of marks)equip(s,id,'mark');const b=fight(s,'normal',strategy,{floor:100,...options});return b;};
++let b=use(['wing','abyss'],['abyssmark','wind','iron'],b=>b.turn<=2?'guard':!available(b,'feather')?'feather':'slash');for(const id of ['abyssmark','wind','iron'])assert.ok(b.used.marks.includes(id),id);
++b=use(['judge','king'],['moon','life','split'],()=> 'slash');for(const id of ['moon','life'])assert.ok(b.used.marks.includes(id),id);
++b=use(['fallen','wing'],['fire'],b=>b.hp/b.base.hp>.5?'guard':!available(b,'feather')?'feather':'slash');assert.ok(b.used.marks.includes('fire'));
++b=use(['king','wing'],['crown'],b=>!b.markState?.kingUsed?'guard':!available(b,'feather')?'feather':'slash',{difficulty:'EXPERT'});assert.ok(b.used.marks.includes('crown'));
++use(['wing','abyss'],['split','starfall','endure'],b=>!available(b,'pierce')?'pierce':'slash');
++assert.equal(s.collection.length,6);assert.equal(s.counts.raid,10);assert.equal(s.marks.length,10);assert.ok(s.markUsed.includes('life'));assert.ok(s.achieved.includes('C10'));});
+ test('REAL campaign: five-god sequence clears and awakens manually',()=>{const s=campaign;growth(s);startGauntlet(s);for(let i=0;i<5;i++){const b=fight(s,'god');assert.equal(b.result,'win',`${i}: ${b.log.join('\n')}`);}assert.equal(s.gauntlet,null);assert.ok(s.godMaterials>=30);assert.equal(awaken(s),1);assert.equal(s.awakening,1);});
+ 
+ test('REAL campaign: remaining challenges complete all36 and unlock starLv5',()=>{
+--- audit2/tests/authority-art.test.js
++++ audit3/tests/authority-art.test.js
+@@ -1,3 +1,4 @@
++import {tacticalBaselineRead} from './audit-baseline.js';
+ import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import {createHash} from 'node:crypto';
+ import {fresh,powerGrowth,powerUpgradeInfo} from '../web/src/utils/progression.js';import {POWERS,ACHIEVEMENTS} from '../web/src/data/config.js';
+ const sha=x=>createHash('sha256').update(x).digest('hex');const app=fs.readFileSync('web/src/components/App.js','utf8');
+@@ -12,7 +13,7 @@
+  for(const id of ['fallen','king','judge','abyss','wing'])expected=expected.replace(`${id}:'assets/upgrade-ui/${id}-power.webp'`,`${id}:'assets/upgrade-ui/authority-unlock/${id}.png'`);
+  expected=expected.replace('<img src="${UPGRADE_ART[p.id]}" alt=""><div><strong>${p.name}', '<img ${p.id!==\'star\'?`data-authority-art="${p.id}"`: \'\'} src="${UPGRADE_ART[p.id]}" alt=""><div><strong>${p.name}');
+  expected=expected.replace('<img class="upgrade-power-art" src="${UPGRADE_ART[p.id]}"','<img class="upgrade-power-art" ${p.id!==\'star\'?`data-authority-art="${p.id}"`: \'\'} src="${UPGRADE_ART[p.id]}"');
+- assert.equal(app,expected);
++ assert.equal(tacticalBaselineRead('web/src/components/App.js','utf8'),expected);
+  const css=fs.readFileSync('web/src/components/game.css','utf8'),before=edits['web/src/components/game.css'].before;assert.ok(css.startsWith(before));assert.equal(css.slice(before.length),'\n/* audit2: Preserve the full supplied landscape artwork inside existing icon frames. */\n.upgrade-power-card .upgrade-power-art[data-authority-art],\n.power-detail-heading img[data-authority-art]{object-fit:contain;object-position:center}\n');
+ });
+ test('all authority states render the same supplied artwork in list and detail without state mutation',()=>{
+@@ -22,5 +23,5 @@
+ });
+ test('star artwork and every non-presentation baseline source and asset remain exact',()=>{
+  assert.equal(art.star,'assets/upgrade-ui/star-power.webp');const map=JSON.parse(fs.readFileSync('reports/authority-art-audit2/baseline-files.json'));
+- for(const [file,hash]of Object.entries(map)){if(['web/src/components/App.js','web/src/components/game.css','tests/audit-baseline.js'].includes(file))continue;assert.equal(sha(fs.readFileSync(file)),hash,file);}
++ for(const [file,hash]of Object.entries(map)){if(['web/src/components/App.js','web/src/components/game.css','tests/audit-baseline.js'].includes(file))continue;assert.equal(sha(tacticalBaselineRead(file)),hash,file);}
+ });
+--- audit2/tests/core.test.js
++++ audit3/tests/core.test.js
+@@ -34,7 +34,7 @@
+ test('seal blocks powers but permits slash; status ticks',()=>{const b=weakEnemy(plain());b.statuses.seal=2;assert.throws(()=>act(b,'feather'));act(b,'slash',{rng:hit});assert.equal(b.statuses.seal,1);});
+ // Equipment and economy
+ for(const type of ['power','mark'])test(`${type} ownership, duplicate toggle, slot limits`,()=>{const s=fresh();if(type==='power'){assert.throws(()=>equip(s,'judge',type));s.powers.judge=1;assert.throws(()=>equip(s,'judge',type));equip(s,'wing',type);equip(s,'judge',type);assert.equal(s.equipped.length,2);assert.equal(new Set(s.equipped).size,2);}else{assert.throws(()=>equip(s,'split',type));s.marks=MARKS.map(x=>x.id);for(const x of s.marks.slice(0,3))equip(s,x,type);assert.throws(()=>equip(s,'life',type));equip(s,'split',type);assert.equal(s.markEquip.length,2);}});
+-test('marks alter stats independently',()=>{const s=fresh();s.equipped=[];const p=baseStats(s);s.markEquip=['life','iron','wind'];const q=baseStats(s);assert.equal(q.hp,Math.round(p.hp*1.1));assert.equal(q.def,Math.round(p.def*1.12));assert.equal(q.spd,Math.round(p.spd*1.15));});
++test('redesigned marks no longer grant unconditional stats; preserved endure still grants HP18%',()=>{const s=fresh();s.equipped=[];const p=baseStats(s);for(const id of ['life','iron','wind','abyssmark','fire','moon','crown']){s.markEquip=[id];assert.deepEqual(baseStats(s),p,id);}s.markEquip=['endure'];const q=baseStats(s);assert.equal(q.hp,Math.round(p.hp*1.18));for(const k of ['atk','def','spd'])assert.equal(q[k],p[k]);});
+ test('endurance mark consumes one life and only records on actual activation',()=>{const s=fresh();s.equipped=[];s.markEquip=['endure'];const b=startBattle(s);assert.equal(b.used.endure,false);dealPlayer(b,1e12);assert.equal(b.markLife,0);assert.equal(b.used.endure,true);dealPlayer(b,1e12);assert.equal(b.hp,0);});
+ test('split wing alternation enhances damage and CT differs',()=>{const s=fresh();s.markEquip=['split'];const b=weakEnemy(startBattle(s));act(b,'pierce',{rng:hit});const first=b.lastDamage;assert.equal(b.cd.pierce,2);act(b,'volley',{rng:hit});assert.equal(b.cd.volley,1);assert.ok(b.lastDamage>first);assert.ok(b.used.marks.includes('split'));});
+ test('summon cost, missing priority, duplicates, history',()=>{const s=fresh();s.p=3000;summon(s,10,()=>0);assert.equal(s.p,2750);assert.equal(s.summons,10);assert.equal(s.collection.length,6);assert.equal(s.resShards,20);assert.equal(s.summonHistory.length,10);});
+--- audit2/tests/audit-baseline.js
++++ audit3/tests/audit-baseline.js
+@@ -8,9 +8,15 @@
+ const root=fileURLToPath(new URL('../',import.meta.url));
+ const manifest=JSON.parse(fs.readFileSync(new URL('../reports/audit-20261022/authorized-changes.json',import.meta.url),'utf8'));
+ const sha=x=>createHash('sha256').update(x).digest('hex');
++export function tacticalBaselineRead(file,encoding){
++ const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));
++ let bytes=fs.readFileSync(file);const change=JSON.parse(fs.readFileSync(new URL('../reports/tactical-marks-audit3/authorized-changes.json',import.meta.url),'utf8'))[key];
++ if(change){assert.equal(sha(bytes),change.afterSHA256,key+' exact tactical mark change');assert.equal(sha(change.before),change.beforeSHA256,key+' audit2 baseline');bytes=Buffer.from(change.before);}
++ return encoding?bytes.toString(encoding):bytes;
++}
+ export function auditRead(file,encoding){
+  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));
+- let bytes=fs.readFileSync(file);const imageEdits=JSON.parse(fs.readFileSync(new URL('../reports/authority-art-audit2/presentation-changes.json',import.meta.url),'utf8')),imageEdit=imageEdits[key];
++ let bytes=tacticalBaselineRead(file);const imageEdits=JSON.parse(fs.readFileSync(new URL('../reports/authority-art-audit2/presentation-changes.json',import.meta.url),'utf8')),imageEdit=imageEdits[key];
+  if(imageEdit){assert.equal(sha(bytes),imageEdit.afterSHA256,key+' exact authority image-only edit');assert.equal(sha(imageEdit.before),imageEdit.beforeSHA256,key+' original audit1 bytes');bytes=Buffer.from(imageEdit.before);}
+  const record=manifest[key];
+  if(!record)return encoding?bytes.toString(encoding):bytes;
+--- audit2/tools/build.mjs
++++ audit3/tools/build.mjs
+@@ -1,7 +1,7 @@
+ import fs from 'node:fs';
+ import path from 'node:path';
+ const root=process.cwd(),out=path.join(root,'dist');fs.mkdirSync(out,{recursive:true});
+-const files=['web/src/data/config.js','web/src/utils/progression.js','web/src/utils/storage.js','web/src/utils/gameCore.js','web/src/utils/threePhase.js','web/src/utils/campaign20.js','web/src/components/campaign20View.js','web/src/components/App.js'];
++const files=['web/src/data/config.js','web/src/utils/progression.js','web/src/utils/storage.js','web/src/utils/tacticalMarks.js','web/src/utils/gameCore.js','web/src/utils/battleCheckpoint.js','web/src/utils/threePhase.js','web/src/utils/campaign20.js','web/src/components/campaign20View.js','web/src/components/App.js'];
+ const css=fs.readFileSync('web/src/components/game.css','utf8');
+ const mime={svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp'};const embedded=new Map();
+ const js=files.map(f=>fs.readFileSync(f,'utf8').replace(/^import .*?;\s*$/gm,'').replace(/\bexport (?=(const|function|class|let)\b)/g,'')).join('\n').replace(/(['"])(assets\/[^'"\n]+\.(svg|png|jpe?g|webp))\1/g,(_match,_quote,file,ext)=>{if(!embedded.has(file))embedded.set(file,'data:'+mime[ext]+';base64,'+fs.readFileSync(file).toString('base64'));return JSON.stringify(embedded.get(file));});

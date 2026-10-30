@@ -1,0 +1,57 @@
+[
+  {
+    "file": "README.md",
+    "change": "modified",
+    "bytes": 7808
+  },
+  {
+    "file": "assets/home-ui/irena-hero.jpeg",
+    "change": "added",
+    "bytes": 339093
+  },
+  {
+    "file": "assets/home-ui/kaiser.jpeg",
+    "change": "added",
+    "bytes": 594497
+  },
+  {
+    "file": "assets/home-ui/stella.jpeg",
+    "change": "added",
+    "bytes": 206435
+  },
+  {
+    "file": "tests/home-ui-baseline.json",
+    "change": "added",
+    "bytes": 7311
+  },
+  {
+    "file": "tests/home-ui.test.js",
+    "change": "added",
+    "bytes": 3302
+  },
+  {
+    "file": "tools/home-ui-browser.mjs",
+    "change": "added",
+    "bytes": 10897
+  },
+  {
+    "file": "tools/package.py",
+    "change": "modified",
+    "bytes": 2617
+  },
+  {
+    "file": "tools/ui-regression.mjs",
+    "change": "modified",
+    "bytes": 10781
+  },
+  {
+    "file": "web/src/components/App.js",
+    "change": "modified",
+    "bytes": 66050
+  },
+  {
+    "file": "web/src/components/game.css",
+    "change": "modified",
+    "bytes": 78719
+  }
+]

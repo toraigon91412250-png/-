@@ -1,0 +1,6 @@
+{
+  "assets": true,
+  "web/src/data": true,
+  "storage": true,
+  "progression": true
+}

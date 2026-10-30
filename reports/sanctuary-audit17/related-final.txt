@@ -1,0 +1,15 @@
+✔ equipped final feather multipliers are factual and do not change battle state (3.543471ms)
+✔ full power slots replace exactly chosen slot, preserve inventory and save roundtrip (9.224296ms)
+✔ three marks replace one selected slot without consuming ownership or changing powers (0.386076ms)
+✔ stale/unowned/duplicate replacement requests never mutate data (2.469113ms)
+✔ equipment replacement rolls back selected slots if operation fails (0.732325ms)
+✔ recap reads existing replay, never invents actions or stored counters (1.214674ms)
+✔ chapter presentation respects existing unlock and clear flags (2.379683ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 255.331086

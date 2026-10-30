@@ -1,0 +1,25 @@
+{
+  "pass": 2,
+  "fail": 0,
+  "htmlSHA256": "18a38832d87ed6094556c181a1617169411b694f03efa482c636d32a8159fbef",
+  "rows": [
+    {
+      "width": 320,
+      "height": 568,
+      "controlsTop": 32.671875,
+      "controlsBottom": 287.734375,
+      "navTop": 496,
+      "documentHeight": 1121,
+      "allCommandsVisibleAfterJump": true
+    },
+    {
+      "width": 390,
+      "height": 664,
+      "controlsTop": 134.671875,
+      "controlsBottom": 383.859375,
+      "navTop": 592,
+      "documentHeight": 1128,
+      "allCommandsVisibleAfterJump": true
+    }
+  ]
+}

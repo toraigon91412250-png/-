@@ -1,0 +1,25 @@
+{
+  "passed": 8,
+  "checks": [
+    "published HTML matches tested build",
+    "390 source art decoded and fully contained",
+    "390 one sortie and approximately 750ms",
+    "390 no hidden turn advance",
+    "390 no horizontal overflow",
+    "390 current HP and afterimage both present",
+    "390 restore does not replay sortie",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "width": 390,
+      "sessions": [
+        {
+          "start": 8757.10000000149,
+          "end": 9508.60000000149
+        }
+      ]
+    }
+  ]
+}

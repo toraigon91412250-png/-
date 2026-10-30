@@ -1,0 +1,55 @@
+{
+  "error": "320/default exactly one slash turn",
+  "checks": [
+    "320/default live navigation hidden",
+    "320/default retreat present",
+    "320/default enemy above Irena",
+    "320/default no horizontal overflow",
+    "320/default two command columns",
+    "320/default ultimate full width and last",
+    "320/default guard usable size"
+  ],
+  "errors": [],
+  "geometry": [
+    {
+      "tag": "320/default",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 296,
+        "h": 196
+      },
+      "player": {
+        "x": 12,
+        "y": 359.4375,
+        "w": 296,
+        "h": 196
+      },
+      "grid": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 296,
+        "h": 272
+      },
+      "guard": {
+        "x": 165,
+        "y": 819.671875,
+        "w": 143,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 912.671875,
+        "w": 296,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 143,
+        "h": 83
+      },
+      "overflow": false
+    }
+  ]
+}

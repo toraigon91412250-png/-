@@ -1,0 +1,363 @@
+{
+  "generatedAt": "2026-10-26T16:38:53.616Z",
+  "inputs": [
+    "reports/self-improvement-loop-61-70/main20-all-floor-strategy-probe.json",
+    "reports/self-improvement-loop-61-70/raid-heavy-guard-probe.json",
+    "reports/self-improvement-loop-31-40/main20-nightmare-loss-analysis.json"
+  ],
+  "coverage": {
+    "main20Trials": 2240,
+    "main20Conditions": 560,
+    "main20Seeds": [
+      1,
+      19,
+      46,
+      91
+    ],
+    "lateFloorTrials": 560,
+    "raidTrials": 224,
+    "raidSeeds": [
+      700001,
+      700019,
+      700046,
+      700091,
+      700123,
+      700177,
+      700211,
+      700307
+    ]
+  },
+  "main20PolicyTotals": {
+    "feather": {
+      "trials": 560,
+      "wins": 505,
+      "losses": 55,
+      "winRate": 0.9018,
+      "meanActions": 5.227,
+      "meanWinningActions": 4.879,
+      "meanDamageReceived": 2695.2
+    },
+    "mixed": {
+      "trials": 560,
+      "wins": 516,
+      "losses": 44,
+      "winRate": 0.9214,
+      "meanActions": 3.659,
+      "meanWinningActions": 3.374,
+      "meanDamageReceived": 2572.8
+    },
+    "guard": {
+      "trials": 560,
+      "wins": 526,
+      "losses": 34,
+      "winRate": 0.9393,
+      "meanActions": 4.188,
+      "meanWinningActions": 3.884,
+      "meanDamageReceived": 2784.5
+    },
+    "guardHeavy": {
+      "trials": 560,
+      "wins": 537,
+      "losses": 23,
+      "winRate": 0.9589,
+      "meanActions": 3.668,
+      "meanWinningActions": 3.566,
+      "meanDamageReceived": 2523.8
+    }
+  },
+  "main20LateFloors": {
+    "guard": {
+      "policy": "guard",
+      "trials": 140,
+      "wins": 106,
+      "losses": 34,
+      "timeouts": 0,
+      "winRate": 0.7571,
+      "meanActions": 7.3,
+      "meanWinningActions": 6.792,
+      "meanPlayerHP": 3133.2
+    },
+    "guardHeavy": {
+      "policy": "guardHeavy",
+      "trials": 140,
+      "wins": 117,
+      "losses": 23,
+      "timeouts": 0,
+      "winRate": 0.8357,
+      "meanActions": 6.221,
+      "meanWinningActions": 6.256,
+      "meanPlayerHP": 3004
+    },
+    "floorComparison": {
+      "16": {
+        "guardWins": 24,
+        "guardHeavyWins": 28,
+        "winDelta": 4,
+        "guardMeanActions": 8.29,
+        "guardHeavyMeanActions": 6.39
+      },
+      "17": {
+        "guardWins": 22,
+        "guardHeavyWins": 24,
+        "winDelta": 2,
+        "guardMeanActions": 6.82,
+        "guardHeavyMeanActions": 5.68
+      },
+      "18": {
+        "guardWins": 20,
+        "guardHeavyWins": 24,
+        "winDelta": 4,
+        "guardMeanActions": 7.86,
+        "guardHeavyMeanActions": 6.21
+      },
+      "19": {
+        "guardWins": 20,
+        "guardHeavyWins": 20,
+        "winDelta": 0,
+        "guardMeanActions": 7.07,
+        "guardHeavyMeanActions": 6.93
+      },
+      "20": {
+        "guardWins": 20,
+        "guardHeavyWins": 21,
+        "winDelta": 1,
+        "guardMeanActions": 6.46,
+        "guardHeavyMeanActions": 5.89
+      }
+    }
+  },
+  "main20BuildPolicy": {
+    "wing_abyss/feather": {
+      "trials": 80,
+      "wins": 60,
+      "losses": 20,
+      "winRate": 0.75,
+      "meanActions": 2.775,
+      "meanDamageReceived": 2797.3625,
+      "meanEnemyHPRemainingOnLoss": 360761.4
+    },
+    "wing_abyss/mixed": {
+      "trials": 80,
+      "wins": 60,
+      "losses": 20,
+      "winRate": 0.75,
+      "meanActions": 2.475,
+      "meanDamageReceived": 2699.175,
+      "meanEnemyHPRemainingOnLoss": 365550.2
+    },
+    "wing_abyss/guard": {
+      "trials": 80,
+      "wins": 64,
+      "losses": 16,
+      "winRate": 0.8,
+      "meanActions": 3.05,
+      "meanDamageReceived": 2808.2125,
+      "meanEnemyHPRemainingOnLoss": 346725.6875
+    },
+    "king_judge/feather": {
+      "trials": 80,
+      "wins": 49,
+      "losses": 31,
+      "winRate": 0.6125,
+      "meanActions": 8.9375,
+      "meanDamageReceived": 4846.85,
+      "meanEnemyHPRemainingOnLoss": 233688.7419
+    },
+    "king_judge/mixed": {
+      "trials": 80,
+      "wins": 60,
+      "losses": 20,
+      "winRate": 0.75,
+      "meanActions": 6.4625,
+      "meanDamageReceived": 4890.8,
+      "meanEnemyHPRemainingOnLoss": 184023.4
+    },
+    "king_judge/guard": {
+      "trials": 80,
+      "wins": 62,
+      "losses": 18,
+      "winRate": 0.775,
+      "meanActions": 7.0875,
+      "meanDamageReceived": 5273.225,
+      "meanEnemyHPRemainingOnLoss": 208786.8889
+    },
+    "fallen_abyss/feather": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 10.7625,
+      "meanDamageReceived": 2434.3625,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "fallen_abyss/mixed": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 5.625,
+      "meanDamageReceived": 2413.1625,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "fallen_abyss/guard": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 7.175,
+      "meanDamageReceived": 2806.2625,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "wing_fallen/feather": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.9375,
+      "meanDamageReceived": 3484.4875,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "wing_fallen/mixed": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 3.625,
+      "meanDamageReceived": 3101.775,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "wing_fallen/guard": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.025,
+      "meanDamageReceived": 3421.6125,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_judgewing/feather": {
+      "trials": 80,
+      "wins": 76,
+      "losses": 4,
+      "winRate": 0.95,
+      "meanActions": 1.625,
+      "meanDamageReceived": 1403.6,
+      "meanEnemyHPRemainingOnLoss": 227443.5
+    },
+    "res_judgewing/mixed": {
+      "trials": 80,
+      "wins": 76,
+      "losses": 4,
+      "winRate": 0.95,
+      "meanActions": 1.7125,
+      "meanDamageReceived": 1434.05,
+      "meanEnemyHPRemainingOnLoss": 189486
+    },
+    "res_judgewing/guard": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 1.8625,
+      "meanDamageReceived": 1471.9125,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_god/feather": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 5.6625,
+      "meanDamageReceived": 2742.725,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_god/mixed": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4,
+      "meanDamageReceived": 2488.8625,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_god/guard": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.4375,
+      "meanDamageReceived": 2817.5,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_abyssjudge/feather": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 1.8875,
+      "meanDamageReceived": 1157.325,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_abyssjudge/mixed": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 1.7125,
+      "meanDamageReceived": 981.6375,
+      "meanEnemyHPRemainingOnLoss": 0
+    },
+    "res_abyssjudge/guard": {
+      "trials": 80,
+      "wins": 80,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 1.675,
+      "meanDamageReceived": 892.6875,
+      "meanEnemyHPRemainingOnLoss": 0
+    }
+  },
+  "raidPolicyTotals": {
+    "feather": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 5.29,
+      "meanDamageReceived": 3302,
+      "meanWinningHP": 5086
+    },
+    "mixed": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4,
+      "meanDamageReceived": 2888.2,
+      "meanWinningHP": 5801
+    },
+    "guard": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.43,
+      "meanDamageReceived": 2964.3,
+      "meanWinningHP": 5419
+    },
+    "guardHeavy": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.61,
+      "meanDamageReceived": 2785.4,
+      "meanWinningHP": 6043
+    }
+  },
+  "decision": {
+    "display": "Show a compact combat hint for the known turn-4 heavy strike inside the battle detail area; keep the existing enemy damage and difficulty unchanged.",
+    "reason": "Timing one guard every four turns raised late-floor wins by 11/140 and cut incoming damage. It helps tactical play without invalidating builds; the main advantage is concentrated on floors16–18 and modest on floors19–20.",
+    "limit": "The runner is deterministic and does not represent human behavior. It tests one seed set and seven high-investment profiles. Do not claim human win-rate predictions."
+  }
+}

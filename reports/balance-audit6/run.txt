@@ -1,0 +1,29 @@
+actual routes 144 battles 2828
+sensitivity seeds 4 battles 8484
+sensitivity seeds 8 battles 14140
+sensitivity seeds 12 battles 19796
+sensitivity seeds 16 battles 25452
+holdout complete [
+  {
+    profile: 'wingFallen',
+    marks: 'split',
+    policies: [ 'feather', 'defensive' ],
+    completionDelta: 0,
+    stepDelta: -19.3125
+  },
+  {
+    profile: 'wingAbyss',
+    marks: 'none',
+    policies: [ 'feather', 'mixed' ],
+    completionDelta: 0,
+    stepDelta: 13.4375
+  },
+  {
+    profile: 'abyssKing',
+    marks: 'none',
+    policies: [ 'feather', 'defensive' ],
+    completionDelta: 0,
+    stepDelta: 51.125
+  }
+]
+{"runtimeUnchanged":true,"actualRepeatsIdentical":true,"routeCount":1488,"battles":30416,"primaryBattles":29292,"pairedBattles":504,"branchBattles":44,"replayBattles":576,"selectedHoldout":[{"profile":"wingFallen","marks":"split","policies":["feather","defensive"],"completionDelta":0,"stepDelta":-19.3125},{"profile":"wingAbyss","marks":"none","policies":["feather","mixed"],"completionDelta":0,"stepDelta":13.4375},{"profile":"abyssKing","marks":"none","policies":["feather","defensive"],"completionDelta":0,"stepDelta":51.125}],"roundLimit":200,"elapsedSeconds":12.988,"engine":"main20 audit5, no runtime edits"}

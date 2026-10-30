@@ -1,0 +1,1869 @@
+{
+  "sourceHashes": {
+    "config.js": "c2257de7871e2be8c4a0bd10746c11ec36242c9a2dc1813c1ab16da020c0ee26",
+    "../utils/gameCore.js": "1bd673bf12181d3f9a25fe89376a1bf464659d4c8959b631e84fe118c3a558e6",
+    "../utils/progression.js": "728e36f0bc02ac87228adad9554f0ab89039f49b781120c93099b1647fbdcb3c",
+    "../utils/campaign20.js": "4861a2bf982fd03cdfb424708cd3e0e414bfa687afc37ee1289e6696fbb59bf5"
+  },
+  "conditions": "Current runtime; deterministic seeds 21001..21032; no forced victories. Developer build ONLY for explicit fixed-build EX comparisons. Timeouts count as failures.",
+  "main": {
+    "wins": 100,
+    "maxTurns": 3,
+    "endingLevel": 101
+  },
+  "ex": [
+    {
+      "pair": [
+        "wing",
+        "abyss"
+      ],
+      "split": false,
+      "samples": 32,
+      "wins": 0,
+      "meanTurns": 4
+    },
+    {
+      "pair": [
+        "wing",
+        "abyss"
+      ],
+      "split": true,
+      "samples": 32,
+      "wins": 32,
+      "meanTurns": 4
+    },
+    {
+      "pair": [
+        "wing",
+        "king"
+      ],
+      "split": false,
+      "samples": 32,
+      "wins": 28,
+      "meanTurns": 9.09375
+    },
+    {
+      "pair": [
+        "wing",
+        "king"
+      ],
+      "split": true,
+      "samples": 32,
+      "wins": 32,
+      "meanTurns": 5
+    },
+    {
+      "pair": [
+        "judge",
+        "abyss"
+      ],
+      "split": false,
+      "samples": 32,
+      "wins": 0,
+      "meanTurns": 4
+    },
+    {
+      "pair": [
+        "judge",
+        "abyss"
+      ],
+      "split": true,
+      "samples": 32,
+      "wins": 0,
+      "meanTurns": 4
+    },
+    {
+      "pair": [
+        "wing",
+        "fallen"
+      ],
+      "split": false,
+      "samples": 32,
+      "wins": 32,
+      "meanTurns": 4
+    },
+    {
+      "pair": [
+        "wing",
+        "fallen"
+      ],
+      "split": true,
+      "samples": 32,
+      "wins": 32,
+      "meanTurns": 2.0625
+    },
+    {
+      "pair": [
+        "abyss",
+        "king"
+      ],
+      "split": false,
+      "samples": 32,
+      "wins": 0,
+      "meanTurns": 11.21875
+    },
+    {
+      "pair": [
+        "abyss",
+        "king"
+      ],
+      "split": true,
+      "samples": 32,
+      "wins": 11,
+      "meanTurns": 11.34375
+    }
+  ],
+  "campaign": [
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.544117647058823
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.248366013071895
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.1265625
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 14.583606557377049
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.7625
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.4890625
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 31,
+      "timeouts": 0,
+      "normalMean": 3.009375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.1546875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.403125
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.9328125
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.1953125
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 31,
+      "timeouts": 0,
+      "normalMean": 2.9546875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.1
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.8796875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.3515625
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.596875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.946875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 14.636065573770491
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 4.1890625
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.5484375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.69375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.7421875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.5359375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.69375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.5484375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.69375
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.7421875
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.43125
+    },
+    {
+      "profile": "wing-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.69375
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.513245033112582
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 6.203947368421052
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 12.84375
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 6.737190082644628
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.4953125
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 30,
+      "timeouts": 0,
+      "normalMean": 3.25625
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.353125
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.386363636363637
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 29,
+      "timeouts": 0,
+      "normalMean": 2.996875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.3953125
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 30,
+      "timeouts": 0,
+      "normalMean": 3.2015625
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.2984375
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.335227272727273
+    },
+    {
+      "profile": "wing-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 29,
+      "timeouts": 0,
+      "normalMean": 2.946875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 4.037676609105181
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 31,
+      "ex": 12,
+      "timeouts": 0,
+      "normalMean": 4.021875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 13,
+      "timeouts": 0,
+      "normalMean": 4.1265625
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 12.934659090909092
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.1265625
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.65
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.644886363636363
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.6
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.454545454545455
+    },
+    {
+      "profile": "wing-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 5.1329690346083785
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 4.581818181818182
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.4140625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.989071038251366
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 10,
+      "timeouts": 0,
+      "normalMean": 5.2171875
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 2,
+      "timeouts": 0,
+      "normalMean": 4.3890625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.459375
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.75625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.9203125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.39375
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 2,
+      "timeouts": 0,
+      "normalMean": 4.0953125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.3046875
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.7015625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.8921875
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.340625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.1462522851919563
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 3.6282894736842106
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 3,
+      "timeouts": 0,
+      "normalMean": 4.1125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 0,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 14.047358834244081
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 22,
+      "timeouts": 0,
+      "normalMean": 3.6015625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 22,
+      "timeouts": 0,
+      "normalMean": 2.5
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 1,
+      "timeouts": 0,
+      "normalMean": 2.2953125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.3453125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 14.0078125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.4390625
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 22,
+      "timeouts": 0,
+      "normalMean": 2.5
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 1,
+      "timeouts": 0,
+      "normalMean": 2.2953125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.3453125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 13.903125
+    },
+    {
+      "profile": "judge-abyss",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 2.4390625
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 4.509375
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 4.2171875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.39375
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 23.4375
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.475
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.5
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.2140625
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.6078125
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 19.2359375
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.5328125
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.45
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.1640625
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.5578125
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 19.0875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.4828125
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.0515625
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.296875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.596875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 0,
+      "timeouts": 0,
+      "normalMean": 23.4875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 3.996875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.65
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.946875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 19.3578125
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.846875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.6
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.796875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.946875
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 19.20625
+    },
+    {
+      "profile": "wing-fallen",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 1.846875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 9.7265625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 8.8953125
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 8.5234375
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 14,
+      "timeouts": 0,
+      "normalMean": 15.4625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 8.3296875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 9.1578125
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.6546875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.640625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.5265625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.1953125
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 8.9984375
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.5015625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.525
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.4984375
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "none",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.9390625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 9.1171875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 7.996875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 7.91875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 14,
+      "timeouts": 0,
+      "normalMean": 15.5125
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "low",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 7.690625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 7.03125
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.35
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.7171875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.66875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "standard",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.1796875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "feather",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 6.796875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "mixed",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.3484375
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "guard",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.7296875
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "slash",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 14.5640625
+    },
+    {
+      "profile": "abyss-king",
+      "mark": "split",
+      "tier": "high",
+      "strategy": "adaptive",
+      "samples": 32,
+      "clear20": 32,
+      "ex": 32,
+      "timeouts": 0,
+      "normalMean": 5.1296875
+    }
+  ],
+  "resonance": [
+    {
+      "id": "god",
+      "lv": 1,
+      "upgradeShards": 0,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 6.9375
+    },
+    {
+      "id": "god",
+      "lv": 5,
+      "upgradeShards": 400,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 6.03125
+    },
+    {
+      "id": "fallenwing",
+      "lv": 1,
+      "upgradeShards": 0,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 2
+    },
+    {
+      "id": "fallenwing",
+      "lv": 5,
+      "upgradeShards": 400,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 2
+    },
+    {
+      "id": "abyssking",
+      "lv": 1,
+      "upgradeShards": 0,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 9.875
+    },
+    {
+      "id": "abyssking",
+      "lv": 5,
+      "upgradeShards": 400,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 8
+    },
+    {
+      "id": "judgewing",
+      "lv": 1,
+      "upgradeShards": 0,
+      "wins": 31,
+      "samples": 32,
+      "meanTurns": 2.03125
+    },
+    {
+      "id": "judgewing",
+      "lv": 5,
+      "upgradeShards": 400,
+      "wins": 32,
+      "samples": 32,
+      "meanTurns": 2
+    },
+    {
+      "id": "abyssjudge",
+      "lv": 1,
+      "upgradeShards": 0,
+      "wins": 0,
+      "samples": 32,
+      "meanTurns": 4
+    },
+    {
+      "id": "abyssjudge",
+      "lv": 5,
+      "upgradeShards": 400,
+      "wins": 1,
+      "samples": 32,
+      "meanTurns": 4.03125
+    }
+  ],
+  "campaignFloors": {
+    "16": {
+      "attempts": 4608,
+      "wins": 4608
+    },
+    "19": {
+      "attempts": 4409,
+      "wins": 4171
+    }
+  },
+  "totalSimulatedBattles": 102332,
+  "summon": {
+    "singleP": 25,
+    "tenP": 250,
+    "guaranteedUniqueUntilCollectionComplete": true,
+    "fragmentPerDraw": 8,
+    "duplicateResShards": 5,
+    "fixedTargetGuaranteed": false
+  }
+}

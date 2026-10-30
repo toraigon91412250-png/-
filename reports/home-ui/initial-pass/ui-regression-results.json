@@ -1,0 +1,1422 @@
+{
+  "pass": 389,
+  "fail": 0,
+  "results": [
+    "320 viewport fits",
+    "320 key visual decoded",
+    "320 reference navigation",
+    "320 challenge CTA visible above fixed nav",
+    "320 growth CTA visible on first screen",
+    "320 bottom nav touch targets",
+    "320 locked raid stays gated",
+    "320 gacha opens summon",
+    "320 developer remains accessible",
+    "375 viewport fits",
+    "375 key visual decoded",
+    "375 reference navigation",
+    "375 challenge CTA visible above fixed nav",
+    "375 growth CTA visible on first screen",
+    "375 bottom nav touch targets",
+    "375 locked raid stays gated",
+    "375 gacha opens summon",
+    "375 developer remains accessible",
+    "390 viewport fits",
+    "390 key visual decoded",
+    "390 reference navigation",
+    "390 challenge CTA visible above fixed nav",
+    "390 growth CTA visible on first screen",
+    "390 bottom nav touch targets",
+    "390 locked raid stays gated",
+    "390 gacha opens summon",
+    "390 developer remains accessible",
+    "430 viewport fits",
+    "430 key visual decoded",
+    "430 reference navigation",
+    "430 challenge CTA visible above fixed nav",
+    "430 growth CTA visible on first screen",
+    "430 bottom nav touch targets",
+    "430 locked raid stays gated",
+    "430 gacha opens summon",
+    "430 developer remains accessible",
+    "768 viewport fits",
+    "768 key visual decoded",
+    "768 reference navigation",
+    "768 desktop sidebar does not overlap content",
+    "1440 viewport fits",
+    "1440 key visual decoded",
+    "1440 reference navigation",
+    "1440 desktop sidebar does not overlap content",
+    "initial:1A engine permission equivalence",
+    "initial:1A no disabled or explanation",
+    "initial:1A touch targets",
+    "divine:2 engine permission equivalence",
+    "divine:2 no disabled or explanation",
+    "divine:2 touch targets",
+    "divine resolves exactly one round",
+    "divine:3 engine permission equivalence",
+    "divine:3 no disabled or explanation",
+    "divine:3 touch targets",
+    "divine resolves exactly one round",
+    "divine:4 engine permission equivalence",
+    "divine:4 no disabled or explanation",
+    "divine:4 touch targets",
+    "divine resolves exactly one round",
+    "divine:5 engine permission equivalence",
+    "divine:5 no disabled or explanation",
+    "divine:5 touch targets",
+    "divine resolves exactly one round",
+    "divine:6 engine permission equivalence",
+    "divine:6 no disabled or explanation",
+    "divine:6 touch targets",
+    "divine resolves exactly one round",
+    "divine:7 engine permission equivalence",
+    "divine:7 no disabled or explanation",
+    "divine:7 touch targets",
+    "divine resolves exactly one round",
+    "divine:8 engine permission equivalence",
+    "divine:8 no disabled or explanation",
+    "divine:8 touch targets",
+    "divine resolves exactly one round",
+    "opposite side hidden",
+    "genesis has all3 named routes",
+    "genesis choices contain no explanations",
+    "genesis modal fits viewport",
+    "genesis:9 engine permission equivalence",
+    "genesis:9 no disabled or explanation",
+    "genesis:9 touch targets",
+    "genesis resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "initial:1B engine permission equivalence",
+    "initial:1B no disabled or explanation",
+    "initial:1B touch targets",
+    "divine:2 engine permission equivalence",
+    "divine:2 no disabled or explanation",
+    "divine:2 touch targets",
+    "divine resolves exactly one round",
+    "divine:3 engine permission equivalence",
+    "divine:3 no disabled or explanation",
+    "divine:3 touch targets",
+    "divine resolves exactly one round",
+    "divine:4 engine permission equivalence",
+    "divine:4 no disabled or explanation",
+    "divine:4 touch targets",
+    "divine resolves exactly one round",
+    "divine:5 engine permission equivalence",
+    "divine:5 no disabled or explanation",
+    "divine:5 touch targets",
+    "divine resolves exactly one round",
+    "divine:6 engine permission equivalence",
+    "divine:6 no disabled or explanation",
+    "divine:6 touch targets",
+    "divine resolves exactly one round",
+    "divine:7 engine permission equivalence",
+    "divine:7 no disabled or explanation",
+    "divine:7 touch targets",
+    "divine resolves exactly one round",
+    "divine:8 engine permission equivalence",
+    "divine:8 no disabled or explanation",
+    "divine:8 touch targets",
+    "divine resolves exactly one round",
+    "opposite side hidden",
+    "genesis has all3 named routes",
+    "genesis choices contain no explanations",
+    "genesis modal fits viewport",
+    "genesis:9 engine permission equivalence",
+    "genesis:9 no disabled or explanation",
+    "genesis:9 touch targets",
+    "genesis resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "initial:1C engine permission equivalence",
+    "initial:1C no disabled or explanation",
+    "initial:1C touch targets",
+    "divine:2 engine permission equivalence",
+    "divine:2 no disabled or explanation",
+    "divine:2 touch targets",
+    "divine resolves exactly one round",
+    "divine:3 engine permission equivalence",
+    "divine:3 no disabled or explanation",
+    "divine:3 touch targets",
+    "divine resolves exactly one round",
+    "divine:4 engine permission equivalence",
+    "divine:4 no disabled or explanation",
+    "divine:4 touch targets",
+    "divine resolves exactly one round",
+    "divine:5 engine permission equivalence",
+    "divine:5 no disabled or explanation",
+    "divine:5 touch targets",
+    "divine resolves exactly one round",
+    "divine:6 engine permission equivalence",
+    "divine:6 no disabled or explanation",
+    "divine:6 touch targets",
+    "divine resolves exactly one round",
+    "divine:7 engine permission equivalence",
+    "divine:7 no disabled or explanation",
+    "divine:7 touch targets",
+    "divine resolves exactly one round",
+    "divine:8 engine permission equivalence",
+    "divine:8 no disabled or explanation",
+    "divine:8 touch targets",
+    "divine resolves exactly one round",
+    "opposite side hidden",
+    "genesis has all3 named routes",
+    "genesis choices contain no explanations",
+    "genesis modal fits viewport",
+    "genesis:9 engine permission equivalence",
+    "genesis:9 no disabled or explanation",
+    "genesis:9 touch targets",
+    "genesis resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "initial:-1A engine permission equivalence",
+    "initial:-1A no disabled or explanation",
+    "initial:-1A touch targets",
+    "fallen:2 engine permission equivalence",
+    "fallen:2 no disabled or explanation",
+    "fallen:2 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:3 engine permission equivalence",
+    "fallen:3 no disabled or explanation",
+    "fallen:3 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:4 engine permission equivalence",
+    "fallen:4 no disabled or explanation",
+    "fallen:4 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:5 engine permission equivalence",
+    "fallen:5 no disabled or explanation",
+    "fallen:5 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:6 engine permission equivalence",
+    "fallen:6 no disabled or explanation",
+    "fallen:6 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:7 engine permission equivalence",
+    "fallen:7 no disabled or explanation",
+    "fallen:7 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:8 engine permission equivalence",
+    "fallen:8 no disabled or explanation",
+    "fallen:8 touch targets",
+    "fallen resolves exactly one round",
+    "opposite side hidden",
+    "all4 supplied fallen images loaded",
+    "ending has all3 named routes",
+    "ending choices contain no explanations",
+    "ending modal fits viewport",
+    "ending:9 engine permission equivalence",
+    "ending:9 no disabled or explanation",
+    "ending:9 touch targets",
+    "ending resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "initial:-1B engine permission equivalence",
+    "initial:-1B no disabled or explanation",
+    "initial:-1B touch targets",
+    "fallen:2 engine permission equivalence",
+    "fallen:2 no disabled or explanation",
+    "fallen:2 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:3 engine permission equivalence",
+    "fallen:3 no disabled or explanation",
+    "fallen:3 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:4 engine permission equivalence",
+    "fallen:4 no disabled or explanation",
+    "fallen:4 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:5 engine permission equivalence",
+    "fallen:5 no disabled or explanation",
+    "fallen:5 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:6 engine permission equivalence",
+    "fallen:6 no disabled or explanation",
+    "fallen:6 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:7 engine permission equivalence",
+    "fallen:7 no disabled or explanation",
+    "fallen:7 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:8 engine permission equivalence",
+    "fallen:8 no disabled or explanation",
+    "fallen:8 touch targets",
+    "fallen resolves exactly one round",
+    "opposite side hidden",
+    "all4 supplied fallen images loaded",
+    "ending has all3 named routes",
+    "ending choices contain no explanations",
+    "ending modal fits viewport",
+    "ending:9 engine permission equivalence",
+    "ending:9 no disabled or explanation",
+    "ending:9 touch targets",
+    "ending resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "initial:-1C engine permission equivalence",
+    "initial:-1C no disabled or explanation",
+    "initial:-1C touch targets",
+    "fallen:2 engine permission equivalence",
+    "fallen:2 no disabled or explanation",
+    "fallen:2 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:3 engine permission equivalence",
+    "fallen:3 no disabled or explanation",
+    "fallen:3 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:4 engine permission equivalence",
+    "fallen:4 no disabled or explanation",
+    "fallen:4 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:5 engine permission equivalence",
+    "fallen:5 no disabled or explanation",
+    "fallen:5 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:6 engine permission equivalence",
+    "fallen:6 no disabled or explanation",
+    "fallen:6 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:7 engine permission equivalence",
+    "fallen:7 no disabled or explanation",
+    "fallen:7 touch targets",
+    "fallen resolves exactly one round",
+    "fallen:8 engine permission equivalence",
+    "fallen:8 no disabled or explanation",
+    "fallen:8 touch targets",
+    "fallen resolves exactly one round",
+    "opposite side hidden",
+    "all4 supplied fallen images loaded",
+    "ending has all3 named routes",
+    "ending choices contain no explanations",
+    "ending modal fits viewport",
+    "ending:9 engine permission equivalence",
+    "ending:9 no disabled or explanation",
+    "ending:9 touch targets",
+    "ending resolves exactly one round",
+    "main save unchanged by experiment and ultimate",
+    "fallen:2 engine permission equivalence",
+    "fallen:2 no disabled or explanation",
+    "fallen:2 touch targets",
+    "fallen resolves exactly one round",
+    "grasp:3 engine permission equivalence",
+    "grasp:3 no disabled or explanation",
+    "grasp:3 touch targets",
+    "grasp resolves exactly one round",
+    "CT hides grasp",
+    "divine:4 engine permission equivalence",
+    "divine:4 no disabled or explanation",
+    "divine:4 touch targets",
+    "divine resolves exactly one round",
+    "divine:5 engine permission equivalence",
+    "divine:5 no disabled or explanation",
+    "divine:5 touch targets",
+    "divine resolves exactly one round",
+    "divine:6 engine permission equivalence",
+    "divine:6 no disabled or explanation",
+    "divine:6 touch targets",
+    "divine resolves exactly one round",
+    "godspeed:7 engine permission equivalence",
+    "godspeed:7 no disabled or explanation",
+    "godspeed:7 touch targets",
+    "godspeed resolves exactly one round",
+    "CT hides godspeed",
+    "fallen:8 engine permission equivalence",
+    "fallen:8 no disabled or explanation",
+    "fallen:8 touch targets",
+    "fallen resolves exactly one round",
+    "opposite side hidden while prior buff persists",
+    "transcend:9 engine permission equivalence",
+    "transcend:9 no disabled or explanation",
+    "transcend:9 touch targets",
+    "transcend resolves exactly one round",
+    "transcend suppresses all authority commands",
+    "guard:10 engine permission equivalence",
+    "guard:10 no disabled or explanation",
+    "guard:10 touch targets",
+    "guard resolves exactly one round",
+    "guard:11 engine permission equivalence",
+    "guard:11 no disabled or explanation",
+    "guard:11 touch targets",
+    "guard resolves exactly one round",
+    "recoil leaves only wait",
+    "wait:12 engine permission equivalence",
+    "wait:12 no disabled or explanation",
+    "wait:12 touch targets",
+    "wait resolves exactly one round",
+    "annihilate:13 engine permission equivalence",
+    "annihilate:13 no disabled or explanation",
+    "annihilate:13 touch targets",
+    "annihilate resolves exactly one round",
+    "annihilation recoil leaves only wait",
+    "wait:14 engine permission equivalence",
+    "wait:14 no disabled or explanation",
+    "wait:14 touch targets",
+    "wait resolves exactly one round",
+    "guard:15 engine permission equivalence",
+    "guard:15 no disabled or explanation",
+    "guard:15 touch targets",
+    "guard resolves exactly one round",
+    "guard:16 engine permission equivalence",
+    "guard:16 no disabled or explanation",
+    "guard:16 touch targets",
+    "guard resolves exactly one round",
+    "guard:17 engine permission equivalence",
+    "guard:17 no disabled or explanation",
+    "guard:17 touch targets",
+    "guard resolves exactly one round",
+    "guard:18 engine permission equivalence",
+    "guard:18 no disabled or explanation",
+    "guard:18 touch targets",
+    "guard resolves exactly one round",
+    "cooldown skill returns when usable",
+    "source image failure uses loaded fallback",
+    "web/src/utils/progression.js authoritative contents unchanged",
+    "web/src/utils/storage.js authoritative contents unchanged",
+    "baseStats protected battle logic unchanged",
+    "normalEnemy protected battle logic unchanged",
+    "enemyConfig protected battle logic unchanged",
+    "canStart protected battle logic unchanged",
+    "startBattle protected battle logic unchanged",
+    "log protected battle logic unchanged",
+    "fallenMultiplier protected battle logic unchanged",
+    "playerStats protected battle logic unchanged",
+    "enemyStats protected battle logic unchanged",
+    "damage protected battle logic unchanged",
+    "buff protected battle logic unchanged",
+    "dealPlayer protected battle logic unchanged",
+    "heal protected battle logic unchanged",
+    "markUsed protected battle logic unchanged",
+    "tickMap protected battle logic unchanged",
+    "erosion protected battle logic unchanged",
+    "passiveStart protected battle logic unchanged",
+    "stage protected battle logic unchanged",
+    "attack protected battle logic unchanged",
+    "phase protected battle logic unchanged",
+    "enemyTurn protected battle logic unchanged",
+    "act protected battle logic unchanged",
+    "authoritative balance tables preserved except authorized fallen-only grasp",
+    "no unhandled JavaScript errors"
+  ],
+  "states": [
+    {
+      "label": "initial:1A",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:2",
+      "gauge": 15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:3",
+      "gauge": 30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:4",
+      "gauge": 45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:5",
+      "gauge": 60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:6",
+      "gauge": 75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:7",
+      "gauge": 90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:8",
+      "gauge": 100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend",
+        "genesis"
+      ]
+    },
+    {
+      "label": "genesis:9",
+      "gauge": 100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "initial:1B",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:2",
+      "gauge": 15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:3",
+      "gauge": 30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:4",
+      "gauge": 45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:5",
+      "gauge": 60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:6",
+      "gauge": 75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:7",
+      "gauge": 90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:8",
+      "gauge": 100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend",
+        "genesis"
+      ]
+    },
+    {
+      "label": "genesis:9",
+      "gauge": 100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "initial:1C",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:2",
+      "gauge": 15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:3",
+      "gauge": 30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:4",
+      "gauge": 45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:5",
+      "gauge": 60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:6",
+      "gauge": 75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:7",
+      "gauge": 90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:8",
+      "gauge": 100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend",
+        "genesis"
+      ]
+    },
+    {
+      "label": "genesis:9",
+      "gauge": 100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "omnipotent",
+        "dominion",
+        "annihilate",
+        "transcend",
+        "genesis"
+      ]
+    },
+    {
+      "label": "initial:-1A",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "fallen:2",
+      "gauge": -15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:3",
+      "gauge": -30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:4",
+      "gauge": -45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:5",
+      "gauge": -60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:6",
+      "gauge": -75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:7",
+      "gauge": -90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:8",
+      "gauge": -100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp",
+        "ending"
+      ]
+    },
+    {
+      "label": "ending:9",
+      "gauge": -100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "initial:-1B",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "fallen:2",
+      "gauge": -15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:3",
+      "gauge": -30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:4",
+      "gauge": -45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:5",
+      "gauge": -60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:6",
+      "gauge": -75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:7",
+      "gauge": -90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:8",
+      "gauge": -100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp",
+        "ending"
+      ]
+    },
+    {
+      "label": "ending:9",
+      "gauge": -100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "initial:-1C",
+      "gauge": 0,
+      "turn": 1,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "fallen:2",
+      "gauge": -15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:3",
+      "gauge": -30,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:4",
+      "gauge": -45,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:5",
+      "gauge": -60,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:6",
+      "gauge": -75,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:7",
+      "gauge": -90,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:8",
+      "gauge": -100,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp",
+        "ending"
+      ]
+    },
+    {
+      "label": "ending:9",
+      "gauge": -100,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "erosion",
+        "release",
+        "sovereignty",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "fallen:2",
+      "gauge": -15,
+      "turn": 2,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend",
+        "grasp"
+      ]
+    },
+    {
+      "label": "grasp:3",
+      "gauge": -15,
+      "turn": 3,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:4",
+      "gauge": 0,
+      "turn": 4,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:5",
+      "gauge": 15,
+      "turn": 5,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "divine:6",
+      "gauge": 30,
+      "turn": 6,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "godspeed",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "godspeed:7",
+      "gauge": 30,
+      "turn": 7,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "fallen:8",
+      "gauge": 15,
+      "turn": 8,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "transcend:9",
+      "gauge": 15,
+      "turn": 9,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen"
+      ]
+    },
+    {
+      "label": "guard:10",
+      "gauge": 15,
+      "turn": 10,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen"
+      ]
+    },
+    {
+      "label": "guard:11",
+      "gauge": 15,
+      "turn": 11,
+      "commands": [
+        "wait"
+      ]
+    },
+    {
+      "label": "wait:12",
+      "gauge": 15,
+      "turn": 12,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "annihilate:13",
+      "gauge": 15,
+      "turn": 13,
+      "commands": [
+        "wait"
+      ]
+    },
+    {
+      "label": "wait:14",
+      "gauge": 15,
+      "turn": 14,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "transcend"
+      ]
+    },
+    {
+      "label": "guard:15",
+      "gauge": 15,
+      "turn": 15,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "transcend"
+      ]
+    },
+    {
+      "label": "guard:16",
+      "gauge": 15,
+      "turn": 16,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "transcend"
+      ]
+    },
+    {
+      "label": "guard:17",
+      "gauge": 15,
+      "turn": 17,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    },
+    {
+      "label": "guard:18",
+      "gauge": 15,
+      "turn": 18,
+      "commands": [
+        "slash",
+        "guard",
+        "divine",
+        "fallen",
+        "annihilate",
+        "transcend"
+      ]
+    }
+  ],
+  "errors": [],
+  "htmlSHA256": "b1512695d68d52fb77d2a44649eb0e88e2522a3dc715540715d00f44e366f7c5"
+}

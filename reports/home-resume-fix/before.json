@@ -1,0 +1,8 @@
+{
+  "pass": 1,
+  "fail": 0,
+  "checks": [
+    "original collision reproduced"
+  ],
+  "errors": []
+}

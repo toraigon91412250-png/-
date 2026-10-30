@@ -1,0 +1,15 @@
+{
+  "runtimeUnchanged": true,
+  "protectedFiles": 70,
+  "htmlSHA256": "812503bd94e9490c633b5083e8959f34ebd70320a2d8bf826e73f57c7ba2ddd8",
+  "relatedTests": 6,
+  "fullTests": 321,
+  "failed": 0,
+  "syntaxFiles": 44,
+  "build": "success",
+  "battles": 30416,
+  "routes": 1488,
+  "actualRepetitionsIdentical": true,
+  "iPhoneHardware": false,
+  "publicGameUpdated": false
+}

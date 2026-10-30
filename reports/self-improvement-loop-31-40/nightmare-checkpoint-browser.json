@@ -1,0 +1,21 @@
+{
+  "browser": "Chromium",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "before": {
+    "difficulty": "NIGHTMARE",
+    "heading": "TURN 2\nカイザー戦\n\n通常攻略 / NIGHTMARE",
+    "playerHP": "4,816 / 5,060",
+    "enemyHP": "681,500 / 681,500",
+    "initialEnemyHP": "725,000 / 725,000"
+  },
+  "after": {
+    "difficulty": "NIGHTMARE",
+    "heading": "TURN 2\nカイザー戦\n\n通常攻略 / NIGHTMARE",
+    "playerHP": "4,816 / 5,060",
+    "enemyHP": "681,500 / 681,500"
+  },
+  "errors": []
+}

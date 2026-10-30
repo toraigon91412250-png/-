@@ -1,0 +1,12 @@
+{
+  "pass": 5,
+  "fail": 0,
+  "checks": [
+    "active battle shows resume",
+    "resume preserves turn HP gauge and save",
+    "resumed battle remains playable",
+    "finished battle restores normal adventure",
+    "next battle starts normally"
+  ],
+  "errors": []
+}

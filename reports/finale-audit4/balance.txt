@@ -1,0 +1,99 @@
+{
+  "settings": {
+    "hp": 100000,
+    "atk": 1400,
+    "def": 900,
+    "spd": 150,
+    "armor": 8,
+    "reformHits": 3,
+    "focus": 3,
+    "guardHeal": 0.12
+  },
+  "battles": 9,
+  "nonfinite": 0,
+  "unfinished": 0,
+  "mainSaveChanges": 0,
+  "rows": [
+    {
+      "strategy": "feather",
+      "seed": 1,
+      "result": "lose",
+      "turns": 12,
+      "peak": 5,
+      "guards": 0,
+      "breaks": 0
+    },
+    {
+      "strategy": "feather",
+      "seed": 2,
+      "result": "lose",
+      "turns": 12,
+      "peak": 5,
+      "guards": 0,
+      "breaks": 0
+    },
+    {
+      "strategy": "feather",
+      "seed": 3,
+      "result": "lose",
+      "turns": 12,
+      "peak": 5,
+      "guards": 0,
+      "breaks": 0
+    },
+    {
+      "strategy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 12,
+      "peak": 17015,
+      "guards": 0,
+      "breaks": 3
+    },
+    {
+      "strategy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 12,
+      "peak": 17015,
+      "guards": 0,
+      "breaks": 3
+    },
+    {
+      "strategy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 12,
+      "peak": 17015,
+      "guards": 0,
+      "breaks": 3
+    },
+    {
+      "strategy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 41,
+      "peak": 17015,
+      "guards": 28,
+      "breaks": 10
+    },
+    {
+      "strategy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 41,
+      "peak": 17015,
+      "guards": 28,
+      "breaks": 10
+    },
+    {
+      "strategy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 40,
+      "peak": 17015,
+      "guards": 27,
+      "breaks": 10
+    }
+  ]
+}

@@ -1,0 +1,587 @@
+{
+  "source": "reports/final-release-20261026/main20.json",
+  "sourceCommit": "7f06330bf7bba657116264539d99822a1db1fdd4",
+  "sourceHashes": {
+    "commit": "7f06330bf7bba657116264539d99822a1db1fdd4",
+    "main20SHA256": "27d4396561619985eb33d2027fdbc430308f4ebaec2dbf66b2967f21b6097bff",
+    "AppSHA256": "1a200e72fa2ab8a395a6b6684e68a01d9c8fc1ef4751d486e7b6d9ebadbdf92e",
+    "runner": "production startMainBattle / actMainBattle / settleMainBattle",
+    "testFlag": false
+  },
+  "trialCount": 5040,
+  "uniqueConditions": 1260,
+  "seedsPerCondition": 4,
+  "groupsValidated": 180,
+  "matchedRewardKeys": 1680,
+  "totals": [
+    {
+      "difficulty": "NORMAL",
+      "trials": 1680,
+      "wins": 1680,
+      "losses": 0,
+      "timeouts": 0,
+      "winRate": 1,
+      "meanActions": 1.524
+    },
+    {
+      "difficulty": "EXPERT",
+      "trials": 1680,
+      "wins": 1680,
+      "losses": 0,
+      "timeouts": 0,
+      "winRate": 1,
+      "meanActions": 1.688
+    },
+    {
+      "difficulty": "NIGHTMARE",
+      "trials": 1680,
+      "wins": 1478,
+      "losses": 202,
+      "timeouts": 0,
+      "winRate": 0.8798,
+      "meanActions": 3.833
+    }
+  ],
+  "nightmareByFloor": [
+    {
+      "floor": 1,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        }
+      ]
+    },
+    {
+      "floor": 2,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1
+        }
+      ]
+    },
+    {
+      "floor": 3,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.143
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.143
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.143
+        }
+      ]
+    },
+    {
+      "floor": 4,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.429
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.429
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.429
+        }
+      ]
+    },
+    {
+      "floor": 5,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.143
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.143
+        }
+      ]
+    },
+    {
+      "floor": 6,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2.571
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.464
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.464
+        }
+      ]
+    },
+    {
+      "floor": 7,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2.429
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.857
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.857
+        }
+      ]
+    },
+    {
+      "floor": 8,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2.571
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.857
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 1.857
+        }
+      ]
+    },
+    {
+      "floor": 9,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 5.857
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2.857
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 2.857
+        }
+      ]
+    },
+    {
+      "floor": 10,
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "winRate": 1,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 4.321
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 3.179
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 3.321
+        }
+      ]
+    },
+    {
+      "floor": 11,
+      "trials": 84,
+      "wins": 80,
+      "losses": 4,
+      "winRate": 0.9524,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 24,
+          "losses": 4,
+          "meanActions": 7.964
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 3.5
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 4.821
+        }
+      ]
+    },
+    {
+      "floor": 12,
+      "trials": 84,
+      "wins": 80,
+      "losses": 4,
+      "winRate": 0.9524,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 24,
+          "losses": 4,
+          "meanActions": 5.75
+        },
+        {
+          "policy": "mixed",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 4.321
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 5.786
+        }
+      ]
+    },
+    {
+      "floor": 13,
+      "trials": 84,
+      "wins": 79,
+      "losses": 5,
+      "winRate": 0.9405,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 24,
+          "losses": 4,
+          "meanActions": 6.286
+        },
+        {
+          "policy": "mixed",
+          "wins": 27,
+          "losses": 1,
+          "meanActions": 5.143
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 5.607
+        }
+      ]
+    },
+    {
+      "floor": 14,
+      "trials": 84,
+      "wins": 75,
+      "losses": 9,
+      "winRate": 0.8929,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 8.143
+        },
+        {
+          "policy": "mixed",
+          "wins": 27,
+          "losses": 1,
+          "meanActions": 4.714
+        },
+        {
+          "policy": "guard",
+          "wins": 28,
+          "losses": 0,
+          "meanActions": 4.857
+        }
+      ]
+    },
+    {
+      "floor": 15,
+      "trials": 84,
+      "wins": 65,
+      "losses": 19,
+      "winRate": 0.7738,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 22,
+          "losses": 6,
+          "meanActions": 6.107
+        },
+        {
+          "policy": "mixed",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 5.286
+        },
+        {
+          "policy": "guard",
+          "wins": 23,
+          "losses": 5,
+          "meanActions": 6.107
+        }
+      ]
+    },
+    {
+      "floor": 16,
+      "trials": 84,
+      "wins": 60,
+      "losses": 24,
+      "winRate": 0.7143,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 6.286
+        },
+        {
+          "policy": "mixed",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 5.536
+        },
+        {
+          "policy": "guard",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 6
+        }
+      ]
+    },
+    {
+      "floor": 17,
+      "trials": 84,
+      "wins": 59,
+      "losses": 25,
+      "winRate": 0.7024,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 19,
+          "losses": 9,
+          "meanActions": 8.393
+        },
+        {
+          "policy": "mixed",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 4.714
+        },
+        {
+          "policy": "guard",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 5.964
+        }
+      ]
+    },
+    {
+      "floor": 18,
+      "trials": 84,
+      "wins": 55,
+      "losses": 29,
+      "winRate": 0.6548,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 18,
+          "losses": 10,
+          "meanActions": 5.321
+        },
+        {
+          "policy": "mixed",
+          "wins": 17,
+          "losses": 11,
+          "meanActions": 4.893
+        },
+        {
+          "policy": "guard",
+          "wins": 20,
+          "losses": 8,
+          "meanActions": 6
+        }
+      ]
+    },
+    {
+      "floor": 19,
+      "trials": 84,
+      "wins": 53,
+      "losses": 31,
+      "winRate": 0.631,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 19,
+          "losses": 9,
+          "meanActions": 6.143
+        },
+        {
+          "policy": "mixed",
+          "wins": 16,
+          "losses": 12,
+          "meanActions": 5.5
+        },
+        {
+          "policy": "guard",
+          "wins": 18,
+          "losses": 10,
+          "meanActions": 6.357
+        }
+      ]
+    },
+    {
+      "floor": 20,
+      "trials": 84,
+      "wins": 32,
+      "losses": 52,
+      "winRate": 0.381,
+      "policies": [
+        {
+          "policy": "feather",
+          "wins": 5,
+          "losses": 23,
+          "meanActions": 6.214
+        },
+        {
+          "policy": "mixed",
+          "wins": 11,
+          "losses": 17,
+          "meanActions": 4.571
+        },
+        {
+          "policy": "guard",
+          "wins": 16,
+          "losses": 12,
+          "meanActions": 5.393
+        }
+      ]
+    }
+  ]
+}

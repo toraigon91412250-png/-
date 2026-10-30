@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "320 exactly3 final chapters",
+    "320 locked before warp",
+    "320 hub no overflow",
+    "320 all chapters available on valid progressed save",
+    "320 every chapter target >=44px",
+    "320 raid provided image decoded",
+    "320 raid no overflow",
+    "390 exactly3 final chapters",
+    "390 locked before warp",
+    "390 hub no overflow",
+    "390 all chapters available on valid progressed save",
+    "390 every chapter target >=44px",
+    "390 raid provided image decoded",
+    "390 raid no overflow",
+    "430 exactly3 final chapters",
+    "430 locked before warp",
+    "430 hub no overflow",
+    "430 all chapters available on valid progressed save",
+    "430 every chapter target >=44px",
+    "430 raid provided image decoded",
+    "430 raid no overflow",
+    "1280 exactly3 final chapters",
+    "1280 locked before warp",
+    "1280 hub no overflow"
+  ],
+  "passed": 24,
+  "error": "TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4192/irena-play.html\", waiting until \"load\"\u001b[22m\n"
+}

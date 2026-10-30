@@ -1,0 +1,226 @@
+{
+  "battles": 72,
+  "regressionBattles": 12,
+  "comparedTurns": 60,
+  "nonfinite": 0,
+  "unfinished": 0,
+  "build": "Lv100/才能10/技7/通常権能Lv5/HP20P・攻30P/覚醒0・徽章なし/seed1〜3",
+  "summaries": [
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 5,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 9,
+      "peak": 42926
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 42926
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 14,
+      "peak": 42926
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 67234
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 49802
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 4,
+      "peak": 67234
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 77886
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 57693
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 10,
+      "peak": 65365
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 9,
+      "peak": 51643
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 4,
+      "peak": 52613
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 117267
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 67764
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 5,
+      "peak": 73291
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 132006
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 17.7,
+      "peak": 29879
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 8,
+      "peak": 23827
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 12,
+      "peak": 32167
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 16,
+      "peak": 52584
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 8,
+      "peak": 74205
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 12,
+      "peak": 122985
+    }
+  ]
+}

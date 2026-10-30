@@ -1,0 +1,440 @@
+{
+  "passed": 111,
+  "errors": [],
+  "checks": [
+    "320/default live navigation hidden",
+    "320/default retreat present",
+    "320/default enemy above Irena",
+    "320/default no horizontal overflow",
+    "320/default two command columns",
+    "320/default ultimate full width and last",
+    "320/default guard usable size",
+    "320/default exactly one slash turn",
+    "320/default navigation returns after retreat",
+    "320/default natural victory",
+    "320/default main reward/progress saved",
+    "320/default reload current floor",
+    "320/split live navigation hidden",
+    "320/split retreat present",
+    "320/split enemy above Irena",
+    "320/split no horizontal overflow",
+    "320/split two command columns",
+    "320/split ultimate full width and last",
+    "320/split guard usable size",
+    "320/split exactly one slash turn",
+    "320/split navigation returns after retreat",
+    "320/split natural victory",
+    "320/split main reward/progress saved",
+    "320/split reload current floor",
+    "375/default live navigation hidden",
+    "375/default retreat present",
+    "375/default enemy above Irena",
+    "375/default no horizontal overflow",
+    "375/default two command columns",
+    "375/default ultimate full width and last",
+    "375/default guard usable size",
+    "375/default exactly one slash turn",
+    "375/default navigation returns after retreat",
+    "375/default natural victory",
+    "375/default main reward/progress saved",
+    "375/default reload current floor",
+    "375/split live navigation hidden",
+    "375/split retreat present",
+    "375/split enemy above Irena",
+    "375/split no horizontal overflow",
+    "375/split two command columns",
+    "375/split ultimate full width and last",
+    "375/split guard usable size",
+    "375/split exactly one slash turn",
+    "375/split navigation returns after retreat",
+    "375/split natural victory",
+    "375/split main reward/progress saved",
+    "375/split reload current floor",
+    "390/default live navigation hidden",
+    "390/default retreat present",
+    "390/default enemy above Irena",
+    "390/default no horizontal overflow",
+    "390/default two command columns",
+    "390/default ultimate full width and last",
+    "390/default guard usable size",
+    "390/default exactly one slash turn",
+    "390/default navigation returns after retreat",
+    "390/default natural victory",
+    "390/default main reward/progress saved",
+    "390/default reload current floor",
+    "390/split live navigation hidden",
+    "390/split retreat present",
+    "390/split enemy above Irena",
+    "390/split no horizontal overflow",
+    "390/split two command columns",
+    "390/split ultimate full width and last",
+    "390/split guard usable size",
+    "390/split exactly one slash turn",
+    "390/split navigation returns after retreat",
+    "390/split natural victory",
+    "390/split main reward/progress saved",
+    "390/split reload current floor",
+    "430/default live navigation hidden",
+    "430/default retreat present",
+    "430/default enemy above Irena",
+    "430/default no horizontal overflow",
+    "430/default two command columns",
+    "430/default ultimate full width and last",
+    "430/default guard usable size",
+    "430/default exactly one slash turn",
+    "430/default navigation returns after retreat",
+    "430/default natural victory",
+    "430/default main reward/progress saved",
+    "430/default reload current floor",
+    "430/split live navigation hidden",
+    "430/split retreat present",
+    "430/split enemy above Irena",
+    "430/split no horizontal overflow",
+    "430/split two command columns",
+    "430/split ultimate full width and last",
+    "430/split guard usable size",
+    "430/split exactly one slash turn",
+    "430/split navigation returns after retreat",
+    "430/split natural victory",
+    "430/split main reward/progress saved",
+    "430/split reload current floor",
+    "old100 migration/warp no duplicateSP",
+    "EX/Stella unlocked, final locked",
+    "ex battle opens",
+    "ex global navigation hidden",
+    "ex no overflow after action",
+    "ex navigation restored",
+    "stella battle opens",
+    "stella global navigation hidden",
+    "stella no overflow after action",
+    "stella navigation restored",
+    "final battle opens",
+    "final global navigation hidden",
+    "final no overflow after action",
+    "final navigation restored",
+    "no page errors"
+  ],
+  "geometry": [
+    {
+      "tag": "320/default",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 296,
+        "h": 196
+      },
+      "player": {
+        "x": 12,
+        "y": 359.4375,
+        "w": 296,
+        "h": 196
+      },
+      "grid": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 296,
+        "h": 272
+      },
+      "guard": {
+        "x": 165,
+        "y": 819.671875,
+        "w": 143,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 912.671875,
+        "w": 296,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 143,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "320/split",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 296,
+        "h": 196
+      },
+      "player": {
+        "x": 12,
+        "y": 359.4375,
+        "w": 296,
+        "h": 196
+      },
+      "grid": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 296,
+        "h": 365
+      },
+      "guard": {
+        "x": 12,
+        "y": 912.671875,
+        "w": 143,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 1005.671875,
+        "w": 296,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 726.671875,
+        "w": 143,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "375/default",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 351,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 351,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 351,
+        "h": 277.40625
+      },
+      "guard": {
+        "x": 192.5,
+        "y": 863.671875,
+        "w": 170.5,
+        "h": 88.40625
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 962.078125,
+        "w": 351,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 170.5,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "375/split",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 351,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 351,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 351,
+        "h": 370.40625
+      },
+      "guard": {
+        "x": 12,
+        "y": 956.671875,
+        "w": 170.5,
+        "h": 88.40625
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 1055.078125,
+        "w": 351,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 170.5,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "390/default",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 366,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 366,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 366,
+        "h": 272
+      },
+      "guard": {
+        "x": 200,
+        "y": 863.671875,
+        "w": 178,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 956.671875,
+        "w": 366,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 178,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "390/split",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 366,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 366,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 366,
+        "h": 365
+      },
+      "guard": {
+        "x": 12,
+        "y": 956.671875,
+        "w": 178,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 1049.671875,
+        "w": 366,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 178,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "430/default",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 406,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 406,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 406,
+        "h": 272
+      },
+      "guard": {
+        "x": 220,
+        "y": 863.671875,
+        "w": 198,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 956.671875,
+        "w": 406,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 198,
+        "h": 83
+      },
+      "overflow": false
+    },
+    {
+      "tag": "430/split",
+      "enemy": {
+        "x": 12,
+        "y": 151.4375,
+        "w": 406,
+        "h": 218
+      },
+      "player": {
+        "x": 12,
+        "y": 381.4375,
+        "w": 406,
+        "h": 218
+      },
+      "grid": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 406,
+        "h": 365
+      },
+      "guard": {
+        "x": 12,
+        "y": 956.671875,
+        "w": 198,
+        "h": 83
+      },
+      "ultimate": {
+        "x": 12,
+        "y": 1049.671875,
+        "w": 406,
+        "h": 86
+      },
+      "first": {
+        "x": 12,
+        "y": 770.671875,
+        "w": 198,
+        "h": 83
+      },
+      "overflow": false
+    }
+  ],
+  "iPhoneHardware": false
+}

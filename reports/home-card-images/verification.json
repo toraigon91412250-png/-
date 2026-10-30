@@ -1,0 +1,25 @@
+{
+  "htmlSHA256": "a021a5cee1ed67a7a33deec941e4fc5aef2820ddbb6b75e96b7aeb34729c83df",
+  "unitTests": {
+    "pass": 170,
+    "fail": 0
+  },
+  "relatedHomeTests": {
+    "pass": 6,
+    "fail": 0
+  },
+  "resumeBrowserChecks": {
+    "pass": 5,
+    "fail": 0
+  },
+  "cardBrowserChecks": {
+    "chromium": 102,
+    "webkit": 102,
+    "fail": 0
+  },
+  "syntaxFiles": 27,
+  "standaloneBytes": 8953853,
+  "embeddedImages": 26,
+  "realIPhoneTested": false,
+  "deployed": false
+}

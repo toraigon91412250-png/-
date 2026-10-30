@@ -1,0 +1,58 @@
+{
+  "testPass": 315,
+  "testFail": 0,
+  "syntaxFiles": 43,
+  "browserChecks": 27,
+  "pageErrors": 0,
+  "recoveredTestPass": 315,
+  "buildBytes": 23264033,
+  "htmlSHA256": "812503bd94e9490c633b5083e8959f34ebd70320a2d8bf826e73f57c7ba2ddd8",
+  "iPhoneHardware": false,
+  "publicGameUpdated": false,
+  "changes": [
+    {
+      "file": "web/src/components/App.js",
+      "status": "modified"
+    },
+    {
+      "file": "web/src/utils/battleCheckpoint.js",
+      "status": "modified"
+    },
+    {
+      "file": "web/src/utils/campaign20.js",
+      "status": "modified"
+    },
+    {
+      "file": "web/src/utils/gameCore.js",
+      "status": "modified"
+    },
+    {
+      "file": "web/src/utils/main20.js",
+      "status": "new"
+    },
+    {
+      "file": "web/src/utils/progression.js",
+      "status": "modified"
+    },
+    {
+      "file": "web/src/utils/storage.js",
+      "status": "modified"
+    },
+    {
+      "file": "tools/build.mjs",
+      "status": "modified"
+    },
+    {
+      "file": "tests/audit-baseline.js",
+      "status": "modified"
+    },
+    {
+      "file": "tests/finale-audit4.test.js",
+      "status": "modified"
+    },
+    {
+      "file": "tests/main20.test.js",
+      "status": "new"
+    }
+  ]
+}

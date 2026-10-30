@@ -1,0 +1,26 @@
+[
+  {
+    "file": "README.md",
+    "change": "modified"
+  },
+  {
+    "file": "tests/battle-ui.test.js",
+    "change": "added"
+  },
+  {
+    "file": "tests/home-ui.test.js",
+    "change": "modified"
+  },
+  {
+    "file": "tools/three-phase-browser.mjs",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/components/App.js",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/components/game.css",
+    "change": "modified"
+  }
+]

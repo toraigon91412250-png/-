@@ -1,0 +1,32 @@
+[
+  {
+    "width": 320,
+    "height": 664,
+    "documentHeight": 1514,
+    "headerHeight": 108,
+    "stageHeight": 326,
+    "commandsHeight": 232,
+    "commandCount": 5,
+    "descriptionFont": "10px",
+    "logFont": "12px",
+    "shortcutButtons": [
+      "戦場へ",
+      "技を選ぶ ↓"
+    ]
+  },
+  {
+    "width": 390,
+    "height": 664,
+    "documentHeight": 1548,
+    "headerHeight": 108,
+    "stageHeight": 358.78125,
+    "commandsHeight": 232,
+    "commandCount": 5,
+    "descriptionFont": "10px",
+    "logFont": "12px",
+    "shortcutButtons": [
+      "戦場へ",
+      "技を選ぶ ↓"
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "latest audit28 displayed",
+    "five independent source links",
+    "no mobile horizontal overflow",
+    "part01 browser download SHA256",
+    "irena-audit28-source-02-assets.zip verified",
+    "irena-audit28-source-03-assets.zip verified",
+    "irena-audit28-source-04-assets.zip verified",
+    "irena-audit28-source-05-materials.zip verified",
+    "zero JS errors"
+  ],
+  "errors": []
+}

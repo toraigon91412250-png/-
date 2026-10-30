@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-10-26T15:04:03.218Z",
+  "browser": "system Chromium",
+  "htmlSHA256": "eaf856cb94946f159078b5f3080a2fef7fc9a7de3ef51fdd212b3e9fd392f8b6",
+  "viewports": [
+    1440,
+    320
+  ],
+  "checks": 24,
+  "pass": 24,
+  "fail": 0,
+  "errors": [],
+  "unverified": [
+    "iPhone hardware was not tested"
+  ],
+  "results": [
+    "1440px Raid selector fits",
+    "1440px Raid NIGHTMARE starts at 220,236 HP and displays its tier",
+    "1440px Raid battle fits",
+    "1440px Raid retry preserves NIGHTMARE",
+    "1440px Gauntlet selector fits",
+    "1440px Five-God NIGHTMARE starts at 72,000 HP and displays its tier",
+    "1440px Five-God battle fits",
+    "1440px Five-God retry preserves NIGHTMARE and stage-one stats",
+    "1440px Final hub selector fits",
+    "1440px dedicated finale NIGHTMARE starts at 136,000 HP",
+    "1440px Finale NIGHTMARE battle fits",
+    "1440px dedicated finale retry preserves NIGHTMARE",
+    "320px Raid selector fits",
+    "320px Raid NIGHTMARE starts at 220,236 HP and displays its tier",
+    "320px Raid battle fits",
+    "320px Raid retry preserves NIGHTMARE",
+    "320px Gauntlet selector fits",
+    "320px Five-God NIGHTMARE starts at 72,000 HP and displays its tier",
+    "320px Five-God battle fits",
+    "320px Five-God retry preserves NIGHTMARE and stage-one stats",
+    "320px Final hub selector fits",
+    "320px dedicated finale NIGHTMARE starts at 136,000 HP",
+    "320px Finale NIGHTMARE battle fits",
+    "320px dedicated finale retry preserves NIGHTMARE"
+  ]
+}

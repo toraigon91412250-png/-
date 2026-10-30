@@ -1,0 +1,4863 @@
+[
+  {
+    "category": "armor",
+    "profile": "wingAbyss",
+    "marks": "none",
+    "floor": 6,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 6,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 16,
+        "floor": 6,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "p": 115,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 3,
+          "wing": 3,
+          "fallen": 3
+        },
+        "fragments": {
+          "abyss": 18,
+          "fallen": 18,
+          "wing": 18,
+          "king": 42,
+          "judge": 42
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen"
+        ],
+        "maxHistory": [],
+        "equipped": [
+          "wing",
+          "abyss"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 15,
+        "marks": [],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 6,
+        "skills": {
+          "feather": 3,
+          "destruction": 3,
+          "ultimate": 2
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 5,
+          "streak": 5,
+          "special": 5,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.7622712324373424,
+            0.7592407402116805
+          ]
+        }
+      ],
+      "base": {
+        "hp": 1375,
+        "atk": 384,
+        "def": 126,
+        "spd": 69
+      },
+      "hp": 1370,
+      "enemy": {
+        "name": "黒晶の門",
+        "base": {
+          "hp": 4600,
+          "atk": 140,
+          "def": 55,
+          "spd": 40
+        },
+        "hp": 315,
+        "phase": 1,
+        "buffs": [
+          {
+            "id": "campaignArmor",
+            "mul": {
+              "def": 4
+            },
+            "remaining": 9999
+          }
+        ],
+        "statuses": {
+          "campaignArmor": 9998
+        },
+        "markTurns": 1
+      },
+      "turn": 2,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0.06,
+      "stacks": {},
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "abyss"
+      ],
+      "marks": [],
+      "used": {
+        "special": 1,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第6階層",
+        "黒翼・羽弾 → 4,009 ダメージ",
+        "敵の反撃 → 5",
+        "黒晶殻が形成された：敵の防御力が上昇"
+      ],
+      "lastDamage": 4009,
+      "enemyDamage": 5,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 4009
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 6,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 3260914149,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 3,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 190,
+          "power": 925
+        },
+        "received": 1,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 91,
+        "minHP": 0.9956363636363637,
+        "finalHPRatio": 0.9956363636363637,
+        "startHP": 1370,
+        "finalInternalHP": 1369,
+        "startEnemyHP": 315,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 2,
+        "win": true,
+        "uses": {
+          "power": 1
+        },
+        "damageByAction": {
+          "power": 912
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 65,
+        "minHP": 0.9963636363636363,
+        "finalHPRatio": 0.9963636363636363,
+        "startHP": 1370,
+        "finalInternalHP": 1370,
+        "startEnemyHP": 315,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 3,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 3137
+        },
+        "received": 1,
+        "guardHeal": 6,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 83,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 1370,
+        "finalInternalHP": 1375,
+        "startEnemyHP": 315,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "armor",
+    "profile": "wingFallen",
+    "marks": "none",
+    "floor": 6,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 6,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 16,
+        "floor": 6,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "p": 115,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 3,
+          "wing": 3,
+          "fallen": 3
+        },
+        "fragments": {
+          "abyss": 18,
+          "fallen": 18,
+          "wing": 18,
+          "king": 42,
+          "judge": 42
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen"
+        ],
+        "maxHistory": [],
+        "equipped": [
+          "wing",
+          "fallen"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 15,
+        "marks": [],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 6,
+        "skills": {
+          "feather": 3,
+          "destruction": 3,
+          "ultimate": 2
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 5,
+          "streak": 5,
+          "special": 5,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.7622712324373424,
+            0.7592407402116805
+          ]
+        }
+      ],
+      "base": {
+        "hp": 1375,
+        "atk": 384,
+        "def": 126,
+        "spd": 69
+      },
+      "hp": 1361,
+      "enemy": {
+        "name": "黒晶の門",
+        "base": {
+          "hp": 4600,
+          "atk": 140,
+          "def": 55,
+          "spd": 40
+        },
+        "hp": 607,
+        "phase": 1,
+        "buffs": [
+          {
+            "id": "campaignArmor",
+            "mul": {
+              "def": 4
+            },
+            "remaining": 9999
+          }
+        ],
+        "statuses": {
+          "campaignArmor": 9998
+        },
+        "markTurns": 1
+      },
+      "turn": 2,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0,
+      "stacks": {},
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "fallen"
+      ],
+      "marks": [],
+      "used": {
+        "special": 1,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第6階層",
+        "黒翼・羽弾 → 3,993 ダメージ",
+        "敵の反撃 → 14",
+        "黒晶殻が形成された：敵の防御力が上昇"
+      ],
+      "lastDamage": 3993,
+      "enemyDamage": 14,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 3993
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 6,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 3260914149,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 3,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 164,
+          "power": 885
+        },
+        "received": 14,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 91,
+        "minHP": 0.9796363636363636,
+        "finalHPRatio": 0.9796363636363636,
+        "startHP": 1361,
+        "finalInternalHP": 1347,
+        "startEnemyHP": 607,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 2,
+        "win": true,
+        "uses": {
+          "power": 1
+        },
+        "damageByAction": {
+          "power": 885
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 65,
+        "minHP": 0.9898181818181818,
+        "finalHPRatio": 0.9898181818181818,
+        "startHP": 1361,
+        "finalInternalHP": 1361,
+        "startEnemyHP": 607,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 3,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 3097
+        },
+        "received": 4,
+        "guardHeal": 18,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 83,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 1361,
+        "finalInternalHP": 1375,
+        "startEnemyHP": 607,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "armor",
+    "profile": "abyssKing",
+    "marks": "none",
+    "floor": 11,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 11,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 31,
+        "floor": 11,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "p": 165,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5
+        },
+        "fragments": {
+          "abyss": 14,
+          "fallen": 14,
+          "wing": 14,
+          "king": 14,
+          "judge": 94
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "equipped": [
+          "abyss",
+          "king"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 30,
+        "marks": [
+          "split"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 8,
+        "skills": {
+          "feather": 6,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 10,
+          "streak": 10,
+          "special": 15,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.6942200816702098,
+            0.917510078754276
+          ]
+        }
+      ],
+      "base": {
+        "hp": 2748,
+        "atk": 754,
+        "def": 279,
+        "spd": 113
+      },
+      "hp": 2660,
+      "enemy": {
+        "name": "黒晶の聖堂",
+        "base": {
+          "hp": 21025,
+          "atk": 390.99999999999994,
+          "def": 135,
+          "spd": 80
+        },
+        "hp": 17905.5,
+        "phase": 1,
+        "buffs": [
+          {
+            "id": "campaignArmor",
+            "mul": {
+              "def": 4
+            },
+            "remaining": 9999
+          }
+        ],
+        "statuses": {
+          "campaignArmor": 9998
+        },
+        "markTurns": 1
+      },
+      "turn": 2,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0.06,
+      "stacks": {},
+      "lives": 5,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "abyss",
+        "king"
+      ],
+      "marks": [],
+      "used": {
+        "special": 1,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第11階層",
+        "黒翼・羽弾 → 1,858 ダメージ",
+        "敵の反撃 → 88",
+        "黒晶殻が形成された：敵の防御力が上昇"
+      ],
+      "lastDamage": 1858,
+      "enemyDamage": 88,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 1858
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 11,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 3940675782,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 9,
+        "turnDisplay": 10,
+        "win": true,
+        "uses": {
+          "slash": 2,
+          "power": 1,
+          "feather": 4,
+          "ultimate": 2
+        },
+        "damageByAction": {
+          "slash": 953,
+          "power": 1728,
+          "feather": 7624,
+          "ultimate": 9102
+        },
+        "received": 233,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 2,
+        "severApplications": 2,
+        "gaugeReached": 2,
+        "gaugeUnused": 39,
+        "minHP": 0.8831877729257642,
+        "finalHPRatio": 0.8831877729257642,
+        "startHP": 2660,
+        "finalInternalHP": 2427,
+        "startEnemyHP": 17905.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 8,
+        "turnDisplay": 9,
+        "win": true,
+        "uses": {
+          "power": 1,
+          "feather": 4,
+          "ultimate": 2,
+          "slash": 1
+        },
+        "damageByAction": {
+          "power": 1696,
+          "feather": 7592,
+          "ultimate": 9062,
+          "slash": 667
+        },
+        "received": 232,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 2,
+        "severApplications": 2,
+        "gaugeReached": 2,
+        "gaugeUnused": 39,
+        "minHP": 0.883551673944687,
+        "finalHPRatio": 0.883551673944687,
+        "startHP": 2660,
+        "finalInternalHP": 2428,
+        "startEnemyHP": 17905.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 8,
+        "turnDisplay": 9,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1,
+          "feather": 3,
+          "ultimate": 2,
+          "slash": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 6071,
+          "feather": 5694,
+          "ultimate": 9102,
+          "slash": 675
+        },
+        "received": 187,
+        "guardHeal": 108,
+        "focusUses": 1,
+        "armorBreaks": 2,
+        "severApplications": 2,
+        "gaugeReached": 2,
+        "gaugeUnused": 0,
+        "minHP": 0.9392285298398836,
+        "finalHPRatio": 0.9392285298398836,
+        "startHP": 2660,
+        "finalInternalHP": 2581,
+        "startEnemyHP": 17905.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      }
+    ]
+  },
+  {
+    "category": "pressure",
+    "profile": "abyssKing",
+    "marks": "split",
+    "floor": 13,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 13,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 37,
+        "floor": 13,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "p": 126,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5
+        },
+        "fragments": {
+          "abyss": 38,
+          "fallen": 38,
+          "wing": 38,
+          "king": 38,
+          "judge": 118
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "equipped": [
+          "abyss",
+          "king"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 36,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [
+          "split"
+        ],
+        "markUsed": [
+          "split"
+        ],
+        "talent": 10,
+        "skills": {
+          "feather": 5,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 12,
+          "streak": 12,
+          "special": 22,
+          "ultimate": 4,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": false,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "volley",
+          "rolls": [
+            0.4669996213633567,
+            0.7808178141713142,
+            0.008201479678973556
+          ]
+        },
+        {
+          "action": "pierce",
+          "rolls": [
+            0.8040306163020432,
+            0.29766813130117953
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3155,
+        "atk": 934,
+        "def": 328,
+        "spd": 129
+      },
+      "hp": 3033,
+      "enemy": {
+        "name": "無音の崩落",
+        "base": {
+          "hp": 28275,
+          "atk": 511.74999999999994,
+          "def": 180,
+          "spd": 100
+        },
+        "hp": 20351.5,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {},
+        "markTurns": 2
+      },
+      "turn": 3,
+      "gauge": 78,
+      "balance": 0,
+      "cd": {
+        "pierce": 2
+      },
+      "buffs": [],
+      "statuses": {
+        "pressure": 2
+      },
+      "erosion": 0.12,
+      "stacks": {},
+      "lives": 5,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "abyss",
+        "king"
+      ],
+      "marks": [
+        "split"
+      ],
+      "used": {
+        "special": 2,
+        "ultimate": 0,
+        "marks": [
+          "split"
+        ],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "pierce",
+      "log": [
+        "再誕の物語 — 第13階層",
+        "連羽 ×2 → 1,462 ＋ 1,462 ダメージ",
+        "速度優位：敵の攻撃を回避",
+        "羽撃ち分け：交互連携＋15%",
+        "穿羽 → 3,303 ダメージ",
+        "敵の反撃 → 122",
+        "圧壊の残響：重圧を受けた"
+      ],
+      "lastDamage": 3303,
+      "enemyDamage": 122,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 3303
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 13,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 1278474889,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "pierce",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 9,
+        "turnDisplay": 11,
+        "win": true,
+        "uses": {
+          "slash": 3,
+          "guard": 4,
+          "power": 2
+        },
+        "damageByAction": {
+          "slash": 6083,
+          "guard": 0,
+          "power": 15929
+        },
+        "received": 193,
+        "guardHeal": 315,
+        "focusUses": 4,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9324881141045959,
+        "finalHPRatio": 1,
+        "startHP": 3033,
+        "finalInternalHP": 3155,
+        "startEnemyHP": 20351.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 78,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 3
+      },
+      {
+        "first": "volley",
+        "result": "win",
+        "steps": 7,
+        "turnDisplay": 9,
+        "win": true,
+        "uses": {
+          "volley": 1,
+          "guard": 3,
+          "power": 2,
+          "slash": 1
+        },
+        "damageByAction": {
+          "volley": 2850,
+          "guard": 0,
+          "power": 15929,
+          "slash": 2697
+        },
+        "received": 191,
+        "guardHeal": 313,
+        "focusUses": 3,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9324881141045959,
+        "finalHPRatio": 1,
+        "startHP": 3033,
+        "finalInternalHP": 3155,
+        "startEnemyHP": 20351.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 78,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 9,
+        "turnDisplay": 11,
+        "win": true,
+        "uses": {
+          "power": 3,
+          "guard": 4,
+          "slash": 2
+        },
+        "damageByAction": {
+          "power": 18111,
+          "guard": 0,
+          "slash": 5395
+        },
+        "received": 193,
+        "guardHeal": 315,
+        "focusUses": 4,
+        "armorBreaks": 0,
+        "severApplications": 3,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9324881141045959,
+        "finalHPRatio": 1,
+        "startHP": 3033,
+        "finalInternalHP": 3155,
+        "startEnemyHP": 20351.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 78,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 8,
+        "turnDisplay": 10,
+        "win": true,
+        "uses": {
+          "guard": 4,
+          "power": 2,
+          "slash": 2
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 15908,
+          "slash": 5416
+        },
+        "received": 267,
+        "guardHeal": 389,
+        "focusUses": 4,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9375594294770206,
+        "finalHPRatio": 1,
+        "startHP": 3033,
+        "finalInternalHP": 3155,
+        "startEnemyHP": 20351.5,
+        "remainingEnemyHP": 0,
+        "startGauge": 78,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      }
+    ]
+  },
+  {
+    "category": "pressure",
+    "profile": "wingKing",
+    "marks": "none",
+    "floor": 13,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 13,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 37,
+        "floor": 13,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "p": 111,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5
+        },
+        "fragments": {
+          "abyss": 38,
+          "fallen": 38,
+          "wing": 38,
+          "king": 38,
+          "judge": 118
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king"
+        ],
+        "equipped": [
+          "wing",
+          "king"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 36,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 10,
+        "skills": {
+          "feather": 6,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 12,
+          "streak": 12,
+          "special": 21,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.4669996213633567,
+            0.7808178141713142
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3471,
+        "atk": 1028,
+        "def": 361,
+        "spd": 142
+      },
+      "hp": 3321,
+      "enemy": {
+        "name": "無音の崩落",
+        "base": {
+          "hp": 28275,
+          "atk": 511.74999999999994,
+          "def": 180,
+          "spd": 100
+        },
+        "hp": 15644,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {},
+        "markTurns": 1
+      },
+      "turn": 2,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {
+        "pressure": 2
+      },
+      "erosion": 0,
+      "stacks": {},
+      "lives": 5,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "king"
+      ],
+      "marks": [],
+      "used": {
+        "special": 1,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第13階層",
+        "黒翼・羽弾 → 12,631 ダメージ",
+        "敵の反撃 → 150",
+        "圧壊の残響：重圧を受けた"
+      ],
+      "lastDamage": 12631,
+      "enemyDamage": 150,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 12631
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 13,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 3353586976,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 7,
+        "turnDisplay": 8,
+        "win": true,
+        "uses": {
+          "slash": 2,
+          "guard": 3,
+          "power": 2
+        },
+        "damageByAction": {
+          "slash": 3597,
+          "guard": 0,
+          "power": 17402
+        },
+        "received": 764,
+        "guardHeal": 914,
+        "focusUses": 3,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9052146355517142,
+        "finalHPRatio": 1,
+        "startHP": 3321,
+        "finalInternalHP": 3471,
+        "startEnemyHP": 15644,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 7,
+        "turnDisplay": 8,
+        "win": true,
+        "uses": {
+          "power": 2,
+          "guard": 3,
+          "slash": 2
+        },
+        "damageByAction": {
+          "power": 11037,
+          "guard": 0,
+          "slash": 5808
+        },
+        "received": 764,
+        "guardHeal": 914,
+        "focusUses": 3,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9052146355517142,
+        "finalHPRatio": 1,
+        "startHP": 3321,
+        "finalInternalHP": 3471,
+        "startEnemyHP": 15644,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 6,
+        "turnDisplay": 7,
+        "win": true,
+        "uses": {
+          "guard": 3,
+          "power": 2,
+          "slash": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 17402,
+          "slash": 2904
+        },
+        "received": 444,
+        "guardHeal": 594,
+        "focusUses": 3,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9567847882454624,
+        "finalHPRatio": 1,
+        "startHP": 3321,
+        "finalInternalHP": 3471,
+        "startEnemyHP": 15644,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      }
+    ]
+  },
+  {
+    "category": "pressure",
+    "profile": "judgeAbyss",
+    "marks": "none",
+    "floor": 16,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 16,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 46,
+        "floor": 16,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "p": 130,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 76,
+          "fallen": 76,
+          "wing": 76,
+          "king": 76,
+          "judge": 76
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "judge",
+          "abyss"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 45,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 11,
+        "skills": {
+          "feather": 8,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A4",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 15,
+          "streak": 15,
+          "special": 30,
+          "ultimate": 1,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.6261689309030771,
+            0.07577941729687154
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3138,
+        "atk": 1172,
+        "def": 334,
+        "spd": 153
+      },
+      "hp": 2802,
+      "enemy": {
+        "name": "深淵の狭間",
+        "base": {
+          "hp": 43500,
+          "atk": 713,
+          "def": 260,
+          "spd": 135
+        },
+        "hp": 37730,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {},
+        "markTurns": 1
+      },
+      "turn": 2,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {
+        "pressure": 2
+      },
+      "erosion": 0.06,
+      "stacks": {
+        "judge": 1
+      },
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "judge",
+        "abyss"
+      ],
+      "marks": [],
+      "used": {
+        "special": 1,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第16階層",
+        "黒翼・羽弾 → 3,160 ダメージ",
+        "敵の反撃 → 336",
+        "圧壊の残響：重圧を受けた"
+      ],
+      "lastDamage": 3160,
+      "enemyDamage": 336,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 3160
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 16,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 325470119,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 3,
+        "turnDisplay": 4,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 767,
+          "guard": 0,
+          "power": 36911
+        },
+        "received": 368,
+        "guardHeal": 377,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.7995538559592097,
+        "finalHPRatio": 0.895653282345443,
+        "startHP": 2802,
+        "finalInternalHP": 2810.56,
+        "startEnemyHP": 37730,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 9,
+        "turnDisplay": 10,
+        "win": true,
+        "uses": {
+          "power": 3,
+          "guard": 4,
+          "slash": 2
+        },
+        "damageByAction": {
+          "power": 43463,
+          "guard": 0,
+          "slash": 20460
+        },
+        "received": 1128,
+        "guardHeal": 1465,
+        "focusUses": 4,
+        "armorBreaks": 0,
+        "severApplications": 3,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.7691395793499044,
+        "finalHPRatio": 1,
+        "startHP": 2802,
+        "finalInternalHP": 3138,
+        "startEnemyHP": 37730,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 8,
+        "turnDisplay": 9,
+        "win": true,
+        "uses": {
+          "guard": 4,
+          "power": 2,
+          "slash": 2
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 19887,
+          "slash": 19022
+        },
+        "received": 788,
+        "guardHeal": 1125,
+        "focusUses": 4,
+        "armorBreaks": 0,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.9052135117909497,
+        "finalHPRatio": 1,
+        "startHP": 2802,
+        "finalInternalHP": 3138,
+        "startEnemyHP": 37730,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      }
+    ]
+  },
+  {
+    "category": "lowHP",
+    "profile": "judgeAbyss",
+    "marks": "none",
+    "floor": 17,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 17,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 49,
+        "floor": 17,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "p": 132,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 90,
+          "fallen": 90,
+          "wing": 90,
+          "king": 90,
+          "judge": 90
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "judge",
+          "abyss"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 48,
+        "marks": [
+          "split",
+          "starfall",
+          "endure"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 11,
+        "skills": {
+          "feather": 9,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A4",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 16,
+          "streak": 16,
+          "special": 33,
+          "ultimate": 1,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.012558700749650598,
+            0.5074332850053906
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.624791570706293,
+            0.42529786517843604
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.1651041090954095,
+            0.15326000936329365
+          ]
+        },
+        {
+          "action": "ultimate",
+          "rolls": [
+            0.35315340920351446,
+            0.9145224527455866
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.7217243204358965,
+            0.41054153349250555
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3307,
+        "atk": 1243,
+        "def": 354,
+        "spd": 161
+      },
+      "hp": 1640,
+      "enemy": {
+        "name": "砕ける神域",
+        "base": {
+          "hp": 49300,
+          "atk": 787.7499999999999,
+          "def": 290,
+          "spd": 150
+        },
+        "hp": 9829,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {
+          "campaignSever": 1
+        },
+        "markTurns": 5
+      },
+      "turn": 6,
+      "gauge": 39,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0.3,
+      "stacks": {
+        "judge": 2
+      },
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "judge",
+        "abyss"
+      ],
+      "marks": [],
+      "used": {
+        "special": 4,
+        "ultimate": 1,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第17階層",
+        "黒翼・羽弾 → 3,508 ダメージ",
+        "敵の反撃 → 386",
+        "黒晶殻が形成された：敵の防御力が上昇",
+        "破壊の権能 → 2,559 ダメージ",
+        "黒晶殻を破壊した：敵防御が元に戻った",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 339",
+        "断罪発動：敵の攻撃前現在HP20%を加算",
+        "黒翼・羽弾 → 19,303 ダメージ",
+        "敵の反撃 → 291",
+        "超堕天撃 → 7,565 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の重撃 → 454",
+        "黒翼・羽弾 → 3,578 ダメージ",
+        "敵の反撃 → 197"
+      ],
+      "lastDamage": 3578,
+      "enemyDamage": 197,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 3578
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 17,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 1763262460,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 3,
+        "turnDisplay": 8,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 5620,
+          "guard": 0,
+          "power": 10136
+        },
+        "received": 181,
+        "guardHeal": 397,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.4505594194133656,
+        "finalHPRatio": 0.5611853643785908,
+        "startHP": 1640,
+        "finalInternalHP": 1855.84,
+        "startEnemyHP": 9829,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "power": 1
+        },
+        "damageByAction": {
+          "power": 12631
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 65,
+        "minHP": 0.49591775022679163,
+        "finalHPRatio": 0.49591775022679163,
+        "startHP": 1640,
+        "finalInternalHP": 1640,
+        "startEnemyHP": 9829,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 7,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 34117
+        },
+        "received": 45,
+        "guardHeal": 397,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 83,
+        "minHP": 0.6023102509827638,
+        "finalHPRatio": 0.6023102509827638,
+        "startHP": 1640,
+        "finalInternalHP": 1991.84,
+        "startEnemyHP": 9829,
+        "remainingEnemyHP": 0,
+        "startGauge": 39,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "lowHP",
+    "profile": "wingFallen",
+    "marks": "none",
+    "floor": 18,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 18,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 52,
+        "floor": 18,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "p": 111,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 104,
+          "fallen": 104,
+          "wing": 104,
+          "king": 104,
+          "judge": 104
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "wing",
+          "fallen"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 51,
+        "marks": [
+          "split",
+          "starfall",
+          "endure"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 11,
+        "skills": {
+          "feather": 10,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A4",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 17,
+          "streak": 17,
+          "special": 36,
+          "ultimate": 3,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.39894847059622407,
+            0.9390871527139097
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.27893909346312284,
+            0.33061467739753425
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.631963103543967,
+            0.620994494529441
+          ]
+        },
+        {
+          "action": "ultimate",
+          "rolls": [
+            0.09707459062337875,
+            0.319025352364406
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3825,
+        "atk": 1445,
+        "def": 411,
+        "spd": 187
+      },
+      "hp": 1719,
+      "enemy": {
+        "name": "再誕の残火",
+        "base": {
+          "hp": 55100,
+          "atk": 862.4999999999999,
+          "def": 320,
+          "spd": 165
+        },
+        "hp": 902,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {
+          "campaignSever": 2
+        },
+        "markTurns": 4
+      },
+      "turn": 5,
+      "gauge": 0,
+      "balance": 0,
+      "cd": {},
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0,
+      "stacks": {},
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "fallen"
+      ],
+      "marks": [],
+      "used": {
+        "special": 3,
+        "ultimate": 1,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第18階層",
+        "黒翼・羽弾 → 21,364 ダメージ",
+        "敵の反撃 → 451",
+        "再生：敵HPが1102回復",
+        "破壊の権能 → 3,841 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 451",
+        "黒翼・羽弾 → 21,364 ダメージ",
+        "敵の反撃 → 451",
+        "超堕天撃 → 8,731 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の重撃 → 753"
+      ],
+      "lastDamage": 8731,
+      "enemyDamage": 753,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 8731
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 18,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 1370203455,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "ultimate",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "slash": 1
+        },
+        "damageByAction": {
+          "slash": 3148
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 26,
+        "minHP": 0.44941176470588234,
+        "finalHPRatio": 0.44941176470588234,
+        "startHP": 1719,
+        "finalInternalHP": 1719,
+        "startEnemyHP": 902,
+        "remainingEnemyHP": 0,
+        "startGauge": 0,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "feather",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "feather": 1
+        },
+        "damageByAction": {
+          "feather": 53515
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 39,
+        "minHP": 0.44941176470588234,
+        "finalHPRatio": 0.44941176470588234,
+        "startHP": 1719,
+        "finalInternalHP": 1719,
+        "startEnemyHP": 902,
+        "remainingEnemyHP": 0,
+        "startGauge": 0,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "power": 1
+        },
+        "damageByAction": {
+          "power": 9667
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 26,
+        "minHP": 0.44941176470588234,
+        "finalHPRatio": 0.44941176470588234,
+        "startHP": 1719,
+        "finalInternalHP": 1719,
+        "startEnemyHP": 902,
+        "remainingEnemyHP": 0,
+        "startGauge": 0,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 12164
+        },
+        "received": 1,
+        "guardHeal": 459,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 44,
+        "minHP": 0.5693028322440087,
+        "finalHPRatio": 0.5693028322440087,
+        "startHP": 1719,
+        "finalInternalHP": 2177.583333333333,
+        "startEnemyHP": 902,
+        "remainingEnemyHP": 0,
+        "startGauge": 0,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "lowHP",
+    "profile": "abyssKing",
+    "marks": "none",
+    "floor": 20,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 20,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 58,
+        "floor": 20,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "p": 195,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 132,
+          "fallen": 132,
+          "wing": 132,
+          "king": 132,
+          "judge": 132
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "abyss",
+          "king"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 57,
+        "marks": [
+          "split",
+          "starfall",
+          "endure"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 12,
+        "skills": {
+          "feather": 10,
+          "destruction": 4,
+          "ultimate": 4
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A4",
+          "A9",
+          "B5",
+          "B7",
+          "A5",
+          "A10"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 19,
+          "streak": 19,
+          "special": 70,
+          "ultimate": 14,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.171728010289371,
+            0.802394888130948
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.5872341389767826,
+            0.14124830183573067
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.565681092441082,
+            0.5564634648617357
+          ]
+        },
+        {
+          "action": "ultimate",
+          "rolls": [
+            0.5849169534631073,
+            0.1280311516020447
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.28868836630135775,
+            0.23898574034683406
+          ]
+        },
+        {
+          "action": "slash",
+          "rolls": [
+            0.9755187868140638,
+            0.644689652370289
+          ]
+        },
+        {
+          "action": "feather",
+          "rolls": [
+            0.2796796280890703,
+            0.96901293261908
+          ]
+        }
+      ],
+      "base": {
+        "hp": 4579,
+        "atk": 1493,
+        "def": 497,
+        "spd": 186
+      },
+      "hp": 2281,
+      "enemy": {
+        "name": "カイザー・境界の王",
+        "base": {
+          "hp": 72500,
+          "atk": 1035,
+          "def": 390,
+          "spd": 200
+        },
+        "hp": 35091.00000000001,
+        "phase": 1,
+        "buffs": [
+          {
+            "id": "campaignArmor",
+            "mul": {
+              "def": 4
+            },
+            "remaining": 9999
+          }
+        ],
+        "statuses": {
+          "campaignArmor": 9998
+        },
+        "markTurns": 7
+      },
+      "turn": 8,
+      "gauge": 100,
+      "balance": 0,
+      "cd": {
+        "feather": 1
+      },
+      "buffs": [],
+      "statuses": {},
+      "erosion": 0.42,
+      "stacks": {},
+      "lives": 5,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "abyss",
+        "king"
+      ],
+      "marks": [],
+      "used": {
+        "special": 5,
+        "ultimate": 1,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第20階層",
+        "敵の反撃 → 475",
+        "黒晶殻が形成された：敵の防御力が上昇",
+        "黒翼・羽弾 → 3,279 ダメージ",
+        "破壊の権能 → 3,285 ダメージ",
+        "黒晶殻を破壊した：敵防御が元に戻った",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 413",
+        "黒翼・羽弾 → 4,425 ダメージ",
+        "敵の反撃 → 351",
+        "超堕天撃 → 9,700 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の重撃 → 564",
+        "黒翼・羽弾 → 4,472 ダメージ",
+        "敵の反撃 → 227",
+        "斬撃 → 1,243 ダメージ",
+        "敵の反撃 → 165",
+        "黒翼・羽弾 → 4,519 ダメージ",
+        "敵の反撃 → 103",
+        "黒晶殻が形成された：敵の防御力が上昇"
+      ],
+      "lastDamage": 4519,
+      "enemyDamage": 103,
+      "enemyStop": 0,
+      "events": [
+        {
+          "type": "hit",
+          "damage": 4519
+        }
+      ],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 20,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 4161878855,
+        "applied": true,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "feather",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 6,
+        "turnDisplay": 13,
+        "win": true,
+        "uses": {
+          "slash": 2,
+          "guard": 1,
+          "power": 1,
+          "ultimate": 1,
+          "feather": 1
+        },
+        "damageByAction": {
+          "slash": 2088,
+          "guard": 0,
+          "power": 13350,
+          "ultimate": 9864,
+          "feather": 4636
+        },
+        "received": 233,
+        "guardHeal": 549,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 65,
+        "minHP": 0.44813278008298757,
+        "finalHPRatio": 0.5672592269054378,
+        "startHP": 2281,
+        "finalInternalHP": 2597.48,
+        "startEnemyHP": 35091.00000000001,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "power",
+        "result": "win",
+        "steps": 8,
+        "turnDisplay": 15,
+        "win": true,
+        "uses": {
+          "power": 1,
+          "guard": 1,
+          "slash": 2,
+          "ultimate": 2,
+          "feather": 2
+        },
+        "damageByAction": {
+          "power": 3846,
+          "guard": 0,
+          "slash": 5730,
+          "ultimate": 19705,
+          "feather": 9319
+        },
+        "received": 235,
+        "guardHeal": 549,
+        "focusUses": 1,
+        "armorBreaks": 2,
+        "severApplications": 3,
+        "gaugeReached": 1,
+        "gaugeUnused": 0,
+        "minHP": 0.44813278008298757,
+        "finalHPRatio": 0.566822450316663,
+        "startHP": 2281,
+        "finalInternalHP": 2595.48,
+        "startEnemyHP": 35091.00000000001,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 2
+      },
+      {
+        "first": "ultimate",
+        "result": "win",
+        "steps": 6,
+        "turnDisplay": 13,
+        "win": true,
+        "uses": {
+          "ultimate": 2,
+          "guard": 1,
+          "power": 1,
+          "feather": 1,
+          "slash": 1
+        },
+        "damageByAction": {
+          "ultimate": 19096,
+          "guard": 0,
+          "power": 13818,
+          "feather": 4612,
+          "slash": 1383
+        },
+        "received": 233,
+        "guardHeal": 549,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 2,
+        "gaugeReached": 1,
+        "gaugeUnused": 0,
+        "minHP": 0.44813278008298757,
+        "finalHPRatio": 0.5672592269054378,
+        "startHP": 2281,
+        "finalInternalHP": 2597.48,
+        "startEnemyHP": 35091.00000000001,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 1,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 6,
+        "turnDisplay": 13,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1,
+          "ultimate": 1,
+          "feather": 2,
+          "slash": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 13256,
+          "ultimate": 9841,
+          "feather": 9271,
+          "slash": 1383
+        },
+        "received": 73,
+        "guardHeal": 549,
+        "focusUses": 1,
+        "armorBreaks": 1,
+        "severApplications": 1,
+        "gaugeReached": 1,
+        "gaugeUnused": 100,
+        "minHP": 0.6022013540074252,
+        "finalHPRatio": 0.6022013540074252,
+        "startHP": 2281,
+        "finalInternalHP": 2757.48,
+        "startEnemyHP": 35091.00000000001,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 5,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      }
+    ]
+  },
+  {
+    "category": "ultimateReady",
+    "profile": "wingAbyss",
+    "marks": "split",
+    "floor": 16,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 16,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 46,
+        "floor": 16,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "p": 110,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 76,
+          "fallen": 76,
+          "wing": 76,
+          "king": 76,
+          "judge": 76
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "wing",
+          "abyss"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 45,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [
+          "split"
+        ],
+        "markUsed": [
+          "split"
+        ],
+        "talent": 11,
+        "skills": {
+          "feather": 7,
+          "destruction": 4,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 15,
+          "streak": 15,
+          "special": 24,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": false,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "volley",
+          "rolls": [
+            0.6261689309030771,
+            0.07577941729687154,
+            0.9706440479494631
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.5199810529593378
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.698245114646852,
+            0.6855255241971463
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.6092322277836502
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3452,
+        "atk": 1289,
+        "def": 367,
+        "spd": 169
+      },
+      "hp": 3452,
+      "enemy": {
+        "name": "深淵の狭間",
+        "base": {
+          "hp": 43500,
+          "atk": 713,
+          "def": 260,
+          "spd": 135
+        },
+        "hp": 6499,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {
+          "campaignSever": 1
+        },
+        "markTurns": 4
+      },
+      "turn": 5,
+      "gauge": 100,
+      "balance": 0,
+      "cd": {
+        "power": 1
+      },
+      "buffs": [
+        {
+          "id": "campaignFocus",
+          "remaining": 3,
+          "mul": {}
+        }
+      ],
+      "statuses": {},
+      "erosion": 0.24,
+      "stacks": {},
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "abyss"
+      ],
+      "marks": [
+        "split"
+      ],
+      "used": {
+        "special": 2,
+        "ultimate": 0,
+        "marks": [
+          "split"
+        ],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "volley",
+      "log": [
+        "再誕の物語 — 第16階層",
+        "連羽 ×2 → 11,270 ＋ 11,270 ダメージ",
+        "敵の反撃 → 303",
+        "圧壊の残響：重圧を受けた",
+        "防御：被ダメージ70%軽減",
+        "敵の反撃 → 78",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP381回復・斬撃／権能の蓄勢",
+        "破壊の権能 → 11,851 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 217",
+        "圧壊の残響：重圧を受けた",
+        "蓄勢を解放した",
+        "防御：被ダメージ70%軽減",
+        "敵の重撃 → 109",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP326回復・斬撃／権能の蓄勢"
+      ],
+      "lastDamage": 0,
+      "enemyDamage": 109,
+      "enemyStop": 0,
+      "events": [],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 16,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 2616632494,
+        "applied": false,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "guard",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 3,
+        "turnDisplay": 7,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 3685,
+          "guard": 0,
+          "power": 11914
+        },
+        "received": 159,
+        "guardHeal": 159,
+        "focusUses": 2,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.9617612977983777,
+        "finalHPRatio": 1,
+        "startHP": 3452,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 6499,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "volley",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "volley": 1
+        },
+        "damageByAction": {
+          "volley": 11582
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3452,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 6499,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "pierce",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "pierce": 1
+        },
+        "damageByAction": {
+          "pierce": 25633
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3452,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 6499,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "ultimate",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "ultimate": 1
+        },
+        "damageByAction": {
+          "ultimate": 7892
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 0,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3452,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 6499,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 11898
+        },
+        "received": 40,
+        "guardHeal": 40,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3452,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 6499,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "ultimateReady",
+    "profile": "wingFallen",
+    "marks": "split",
+    "floor": 16,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 16,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 46,
+        "floor": 16,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "p": 110,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 76,
+          "fallen": 76,
+          "wing": 76,
+          "king": 76,
+          "judge": 76
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "wing",
+          "fallen"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 45,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [
+          "split"
+        ],
+        "markUsed": [
+          "split"
+        ],
+        "talent": 11,
+        "skills": {
+          "feather": 7,
+          "destruction": 4,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 15,
+          "streak": 15,
+          "special": 24,
+          "ultimate": 0,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": false,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "volley",
+          "rolls": [
+            0.6261689309030771,
+            0.07577941729687154,
+            0.9706440479494631
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.5199810529593378
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.698245114646852,
+            0.6855255241971463
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.6092322277836502
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3452,
+        "atk": 1289,
+        "def": 367,
+        "spd": 169
+      },
+      "hp": 3305.4799999999996,
+      "enemy": {
+        "name": "深淵の狭間",
+        "base": {
+          "hp": 43500,
+          "atk": 713,
+          "def": 260,
+          "spd": 135
+        },
+        "hp": 9311,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {
+          "campaignSever": 1
+        },
+        "markTurns": 4
+      },
+      "turn": 5,
+      "gauge": 100,
+      "balance": 0,
+      "cd": {
+        "power": 1
+      },
+      "buffs": [
+        {
+          "id": "campaignFocus",
+          "remaining": 3,
+          "mul": {}
+        }
+      ],
+      "statuses": {},
+      "erosion": 0,
+      "stacks": {},
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "fallen"
+      ],
+      "marks": [
+        "split"
+      ],
+      "used": {
+        "special": 2,
+        "ultimate": 0,
+        "marks": [
+          "split"
+        ],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "volley",
+      "log": [
+        "再誕の物語 — 第16階層",
+        "連羽 ×2 → 11,192 ＋ 11,192 ダメージ",
+        "敵の反撃 → 346",
+        "圧壊の残響：重圧を受けた",
+        "防御：被ダメージ70%軽減",
+        "敵の反撃 → 104",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP414回復・斬撃／権能の蓄勢",
+        "破壊の権能 → 11,805 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 346",
+        "圧壊の残響：重圧を受けた",
+        "蓄勢を解放した",
+        "防御：被ダメージ70%軽減",
+        "敵の重撃 → 179",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP414回復・斬撃／権能の蓄勢"
+      ],
+      "lastDamage": 0,
+      "enemyDamage": 179,
+      "enemyStop": 0,
+      "events": [],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 16,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 2616632494,
+        "applied": false,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "guard",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 3,
+        "turnDisplay": 7,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 3607,
+          "guard": 0,
+          "power": 11805
+        },
+        "received": 450,
+        "guardHeal": 414,
+        "focusUses": 2,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.8573232908458863,
+        "finalHPRatio": 0.9471958285052142,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3269.7199999999993,
+        "startEnemyHP": 9311,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "volley",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "volley": 1
+        },
+        "damageByAction": {
+          "volley": 11192
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.9575550405561992,
+        "finalHPRatio": 0.9575550405561992,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3305.4799999999996,
+        "startEnemyHP": 9311,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "pierce",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "pierce": 1
+        },
+        "damageByAction": {
+          "pierce": 25185
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.9575550405561992,
+        "finalHPRatio": 0.9575550405561992,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3305.4799999999996,
+        "startEnemyHP": 9311,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "ultimate",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "ultimate": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "ultimate": 7814,
+          "power": 9995
+        },
+        "received": 346,
+        "guardHeal": 0,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 26,
+        "minHP": 0.8573232908458863,
+        "finalHPRatio": 0.8573232908458863,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 2959.4799999999996,
+        "startEnemyHP": 9311,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 11805
+        },
+        "received": 104,
+        "guardHeal": 251,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 9311,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  },
+  {
+    "category": "ultimateReady",
+    "profile": "wingJudge",
+    "marks": "none",
+    "floor": 16,
+    "policy": "defensive",
+    "starting": {
+      "mode": "normal",
+      "floor": 16,
+      "difficulty": "NORMAL",
+      "test": false,
+      "character": "irena",
+      "build": {
+        "version": 5,
+        "started": true,
+        "level": 46,
+        "floor": 16,
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "p": 130,
+        "sp": 0,
+        "stats": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "powers": {
+          "abyss": 5,
+          "wing": 5,
+          "fallen": 5,
+          "king": 5,
+          "judge": 5
+        },
+        "fragments": {
+          "abyss": 76,
+          "fallen": 76,
+          "wing": 76,
+          "king": 76,
+          "judge": 76
+        },
+        "powerHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "maxHistory": [
+          "abyss",
+          "wing",
+          "fallen",
+          "king",
+          "judge"
+        ],
+        "equipped": [
+          "wing",
+          "judge"
+        ],
+        "resonance": {},
+        "recipes": [],
+        "resShards": 45,
+        "marks": [
+          "split",
+          "starfall"
+        ],
+        "markEquip": [],
+        "markUsed": [],
+        "talent": 11,
+        "skills": {
+          "feather": 8,
+          "destruction": 3,
+          "ultimate": 3
+        },
+        "achieved": [
+          "A0",
+          "A3",
+          "C1",
+          "A6",
+          "B0",
+          "B4",
+          "A7",
+          "B6",
+          "A1",
+          "A8",
+          "A4",
+          "A9",
+          "B5",
+          "B7"
+        ],
+        "claimed": [],
+        "badge": null,
+        "summons": 0,
+        "collection": [],
+        "summonHistory": [],
+        "flags": {
+          "lv100": false,
+          "reward100": false,
+          "stella": false,
+          "warp": false,
+          "ex": false,
+          "exReward": false,
+          "stellaClear": false,
+          "final": false,
+          "finalClear": false
+        },
+        "counts": {
+          "wins": 15,
+          "streak": 15,
+          "special": 30,
+          "ultimate": 1,
+          "raid": 0
+        },
+        "records": {
+          "fast": true,
+          "nopower": false,
+          "basic": false,
+          "expert": false,
+          "starfinish": false,
+          "low": false,
+          "nomark": true,
+          "endure": false
+        },
+        "finalBuild": {
+          "points": 150,
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spd": 0
+        },
+        "awakening": 0,
+        "godMaterials": 0,
+        "godUnique": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "medals": 0,
+        "gauntlet": null,
+        "dev": null,
+        "savedAt": null,
+        "route20": 1,
+        "legacyCleared": []
+      },
+      "replay": [
+        {
+          "action": "feather",
+          "rolls": [
+            0.6261689309030771,
+            0.07577941729687154
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.9706440479494631
+          ]
+        },
+        {
+          "action": "power",
+          "rolls": [
+            0.5199810529593378,
+            0.698245114646852
+          ]
+        },
+        {
+          "action": "guard",
+          "rolls": [
+            0.6855255241971463
+          ]
+        }
+      ],
+      "base": {
+        "hp": 3452,
+        "atk": 1289,
+        "def": 367,
+        "spd": 169
+      },
+      "hp": 3305.4799999999996,
+      "enemy": {
+        "name": "深淵の狭間",
+        "base": {
+          "hp": 43500,
+          "atk": 713,
+          "def": 260,
+          "spd": 135
+        },
+        "hp": 15199,
+        "phase": 1,
+        "buffs": [],
+        "statuses": {
+          "campaignSever": 1
+        },
+        "markTurns": 4
+      },
+      "turn": 5,
+      "gauge": 100,
+      "balance": 0,
+      "cd": {
+        "power": 1
+      },
+      "buffs": [
+        {
+          "id": "campaignFocus",
+          "remaining": 3,
+          "mul": {}
+        }
+      ],
+      "statuses": {},
+      "erosion": 0,
+      "stacks": {
+        "judge": 2
+      },
+      "lives": 0,
+      "markLife": 0,
+      "godThresholds": [],
+      "rebirths": 0,
+      "meteor": false,
+      "phaseTurns": 0,
+      "powers": [
+        "wing",
+        "judge"
+      ],
+      "marks": [],
+      "used": {
+        "special": 2,
+        "ultimate": 0,
+        "marks": [],
+        "endure": false,
+        "low": false
+      },
+      "result": null,
+      "settled": false,
+      "lastFeather": "feather",
+      "log": [
+        "再誕の物語 — 第16階層",
+        "黒翼・羽弾 → 17,425 ダメージ",
+        "敵の反撃 → 346",
+        "圧壊の残響：重圧を受けた",
+        "防御：被ダメージ70%軽減",
+        "敵の反撃 → 104",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP414回復・斬撃／権能の蓄勢",
+        "破壊の権能 → 10,876 ダメージ",
+        "権能の傷痕：敵の再生を一時的に封じた",
+        "敵の反撃 → 346",
+        "圧壊の残響：重圧を受けた",
+        "蓄勢を解放した",
+        "防御：被ダメージ70%軽減",
+        "敵の重撃 → 179",
+        "圧壊の残響：重圧を受けた",
+        "防御：重圧解除・HP414回復・斬撃／権能の蓄勢"
+      ],
+      "lastDamage": 0,
+      "enemyDamage": 179,
+      "enemyStop": 0,
+      "events": [],
+      "noBuff": 0,
+      "noPressure": 0,
+      "ignoreDefense": 0,
+      "campaign": {
+        "kind": "campaign20",
+        "floor": 16,
+        "mode": "normal",
+        "variant": "tempo",
+        "random": 2944309707,
+        "applied": false,
+        "settled": false
+      },
+      "main20": true,
+      "lastAction": "guard",
+      "markState": {
+        "kingUsed": false,
+        "kingShield": false,
+        "counterReady": false,
+        "judgeReadyTurn": 0
+      }
+    },
+    "results": [
+      {
+        "first": "slash",
+        "result": "win",
+        "steps": 3,
+        "turnDisplay": 7,
+        "win": true,
+        "uses": {
+          "slash": 1,
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "slash": 14536,
+          "guard": 0,
+          "power": 10876
+        },
+        "received": 450,
+        "guardHeal": 414,
+        "focusUses": 2,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.8573232908458863,
+        "finalHPRatio": 0.9471958285052142,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3269.7199999999993,
+        "startEnemyHP": 15199,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 1
+      },
+      {
+        "first": "feather",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "feather": 1
+        },
+        "damageByAction": {
+          "feather": 58697
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 0.9575550405561992,
+        "finalHPRatio": 0.9575550405561992,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3305.4799999999996,
+        "startEnemyHP": 15199,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "ultimate",
+        "result": "win",
+        "steps": 1,
+        "turnDisplay": 5,
+        "win": true,
+        "uses": {
+          "ultimate": 1
+        },
+        "damageByAction": {
+          "ultimate": 27158
+        },
+        "received": 0,
+        "guardHeal": 0,
+        "focusUses": 0,
+        "armorBreaks": 0,
+        "severApplications": 0,
+        "gaugeReached": 0,
+        "gaugeUnused": 0,
+        "minHP": 0.9575550405561992,
+        "finalHPRatio": 0.9575550405561992,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3305.4799999999996,
+        "startEnemyHP": 15199,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      },
+      {
+        "first": "guard",
+        "result": "win",
+        "steps": 2,
+        "turnDisplay": 6,
+        "win": true,
+        "uses": {
+          "guard": 1,
+          "power": 1
+        },
+        "damageByAction": {
+          "guard": 0,
+          "power": 36346
+        },
+        "received": 104,
+        "guardHeal": 251,
+        "focusUses": 1,
+        "armorBreaks": 0,
+        "severApplications": 1,
+        "gaugeReached": 0,
+        "gaugeUnused": 100,
+        "minHP": 1,
+        "finalHPRatio": 1,
+        "startHP": 3305.4799999999996,
+        "finalInternalHP": 3452,
+        "startEnemyHP": 15199,
+        "remainingEnemyHP": 0,
+        "startGauge": 100,
+        "livesLeft": 0,
+        "markLivesLeft": 0,
+        "forcedSlash": 0,
+        "voluntarySlash": 0
+      }
+    ]
+  }
+]

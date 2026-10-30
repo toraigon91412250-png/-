@@ -1,0 +1,17 @@
+{
+  "passed": 11,
+  "checks": [
+    "live exact tested HTML",
+    "redundant B comparison entry absent",
+    "other independent trials remain",
+    "main B opening shell",
+    "all commands fit",
+    "main B power breach exposes2T",
+    "flow cutin runs on live action",
+    "main B victory",
+    "normal rewards/unlock",
+    "same root save format",
+    "no JS errors"
+  ],
+  "errors": []
+}

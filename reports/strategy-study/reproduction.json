@@ -1,0 +1,8 @@
+{
+  "campaign-balance.json": {
+    "semanticEqual": true
+  },
+  "main-balance.json": {
+    "semanticEqual": true
+  }
+}

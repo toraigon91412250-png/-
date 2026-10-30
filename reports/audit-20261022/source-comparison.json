@@ -1,0 +1,56 @@
+{
+  "basis": "irena-REBORN-20261022-latest-handoff-compact.zip",
+  "preChangeCommit": "61fb4ac56a9db010f863da327009e212dd4ac03d",
+  "files": [
+    {
+      "file": "irena-reborn/package.json",
+      "sha256": "b19a4568dbdec0b67efb1a0d135583ec5c6674c1f2b4ac31ff508ae5a13cc45b",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/components/App.js",
+      "sha256": "2e33c964fb608b3268e35730d46d1d875a7d9b4548a23c1f56fe1e436d71cf14",
+      "vs_recovery": "changed"
+    },
+    {
+      "file": "irena-reborn/web/src/components/campaign20View.js",
+      "sha256": "b317ca811a774c80fd1bf9092582ad0ca5647046a378b7f30209cd103b53b947",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/components/game.css",
+      "sha256": "adabc171d74ff9145a26fde4eae61524939902498237ddac1b9063535b12d3ee",
+      "vs_recovery": "changed"
+    },
+    {
+      "file": "irena-reborn/web/src/data/config.js",
+      "sha256": "c2257de7871e2be8c4a0bd10746c11ec36242c9a2dc1813c1ab16da020c0ee26",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/utils/campaign20.js",
+      "sha256": "4861a2bf982fd03cdfb424708cd3e0e414bfa687afc37ee1289e6696fbb59bf5",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/utils/gameCore.js",
+      "sha256": "1a46858acdbcacb4ccbac8a8e58ee1f2f5e093bb2e3fbc427453c646c9542569",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/utils/progression.js",
+      "sha256": "8ad7032fe4358d8fbb715fdd7f39989069161f243b6823ec15ce162b8f930d21",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/utils/storage.js",
+      "sha256": "e7c2006c1e2901aeb9f30ba0c5906826a97e0f926c1e90e13d1b95b34665dc86",
+      "vs_recovery": "identical"
+    },
+    {
+      "file": "irena-reborn/web/src/utils/threePhase.js",
+      "sha256": "19703203b62cf58fa180a1cb204bb0c8445d99e17cd93a96db64059c760cd3e0",
+      "vs_recovery": "identical"
+    }
+  ]
+}

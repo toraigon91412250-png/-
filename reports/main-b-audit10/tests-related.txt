@@ -1,0 +1,26 @@
+✔ lab B exact research rules, selected opening shells, no HP/ATK inflation (336.685242ms)
+✔ missed breach keeps shell; landed power/ultimate removes shell before damage and exposure ticks (678.908303ms)
+✔ defense/focus and shell reformation preserve campaign behavior (2.071672ms)
+✔ same-build feather attenuation, pre-adoption comparison retains its original multipliers (1.709819ms)
+✔ full20 routes match research B every input, growth, rewards, failed routes too (212.292691ms)
+✔ victory, defeat, training, equipment never mutate main JSON; stale/reward duplicate rejected (5.002894ms)
+✔ main defaults to unchanged adopted B at all20 floors; explicit old comparison is kept (7.241959ms)
+✔ main B matches played lab B per input across full20 routes, same rewards and final unlocks (90.773858ms)
+✔ legacy/current active battle replay stays in its own rules without changing root save version (8.792553ms)
+✔ EX/Stella/final/raid and original old lab campaign receive no main B rules (4.721015ms)
+✔ legacy conversion is one-time, keeps possessions and flags, maps 51→11 and never grants P/SP (15.947954ms)
+✔ legacy unlocked content cannot relock; missing reward marker does not regrant legacy50 SP (7.271272ms)
+✔ load backs up exact old JSON once; JSON import/export does not remigrate or duplicate rewards (6.218938ms)
+✔ new route uses save version5 so audit4 cannot silently overwrite it with 100-floor data (14.998135ms)
+✔ all20 main floors are playable with adopted training pace; unlock warp once and keep full EX/Stella/final (55.30891ms)
+✔ main20 checkpoint preserves armor/focus/RNG and prevents mark charge reset across save/reload (3.564301ms)
+✔ legacy automatic authority reward is not granted again; purchased powers keep their level (1.284009ms)
+✔ loss, retreat and developer tests cannot advance route or grant first rewards; lab duplicate entry removed (5.511154ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7502.196192

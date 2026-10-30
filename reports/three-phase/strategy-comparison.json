@@ -1,0 +1,629 @@
+{
+  "experimental": true,
+  "seeds": 200,
+  "conditions": "同じ黒翼＋堕天王固定ビルド、同じ倍率、同じseed群。CT中は明示した斬撃/防御で進行。予測情報を戦略に使用しない。",
+  "strategies": {
+    "featherSlash": {
+      "wins": 0,
+      "losses": 200,
+      "meanRemainingHP": 0,
+      "meanTurns": 16.725,
+      "deadlineLosses": 120,
+      "sample": {
+        "result": "lose",
+        "turns": 21,
+        "phase": 3,
+        "phaseHistory": [
+          1,
+          2,
+          3
+        ],
+        "remainingHP": 0,
+        "actions": {
+          "feather": 10,
+          "slash": 11
+        },
+        "deadline": false,
+        "rounds": [
+          {
+            "turn": 2,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 196640,
+            "action": "feather"
+          },
+          {
+            "turn": 3,
+            "phase": 1,
+            "hp": 15996,
+            "enemyHP": 193936,
+            "action": "slash"
+          },
+          {
+            "turn": 4,
+            "phase": 1,
+            "hp": 15317,
+            "enemyHP": 144253,
+            "action": "feather"
+          },
+          {
+            "turn": 5,
+            "phase": 1,
+            "hp": 14079,
+            "enemyHP": 141549,
+            "action": "slash"
+          },
+          {
+            "turn": 6,
+            "phase": 1,
+            "hp": 13400,
+            "enemyHP": 91866,
+            "action": "feather"
+          },
+          {
+            "turn": 7,
+            "phase": 2,
+            "hp": 12171,
+            "enemyHP": 89660,
+            "action": "slash"
+          },
+          {
+            "turn": 8,
+            "phase": 2,
+            "hp": 10942,
+            "enemyHP": 81772,
+            "action": "feather"
+          },
+          {
+            "turn": 9,
+            "phase": 2,
+            "hp": 8961,
+            "enemyHP": 81771,
+            "action": "slash"
+          },
+          {
+            "turn": 10,
+            "phase": 2,
+            "hp": 7732,
+            "enemyHP": 73883,
+            "action": "feather"
+          },
+          {
+            "turn": 11,
+            "phase": 2,
+            "hp": 6503,
+            "enemyHP": 73882,
+            "action": "slash"
+          },
+          {
+            "turn": 12,
+            "phase": 2,
+            "hp": 5274,
+            "enemyHP": 73881,
+            "action": "slash"
+          },
+          {
+            "turn": 13,
+            "phase": 2,
+            "hp": 3293,
+            "enemyHP": 65993,
+            "action": "feather"
+          },
+          {
+            "turn": 14,
+            "phase": 2,
+            "hp": 2064,
+            "enemyHP": 68942,
+            "action": "slash"
+          },
+          {
+            "turn": 15,
+            "phase": 2,
+            "hp": 835,
+            "enemyHP": 64003,
+            "action": "feather"
+          },
+          {
+            "turn": 16,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 64002,
+            "action": "slash"
+          },
+          {
+            "turn": 17,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 56114,
+            "action": "feather"
+          },
+          {
+            "turn": 18,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 56113,
+            "action": "slash"
+          },
+          {
+            "turn": 19,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 48225,
+            "action": "feather"
+          },
+          {
+            "turn": 20,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 48224,
+            "action": "slash"
+          },
+          {
+            "turn": 21,
+            "phase": 3,
+            "hp": 1,
+            "enemyHP": 40336,
+            "action": "feather"
+          },
+          {
+            "turn": 21,
+            "phase": 3,
+            "hp": 0,
+            "enemyHP": 40336,
+            "action": "slash"
+          }
+        ]
+      }
+    },
+    "featherGuard": {
+      "wins": 21,
+      "losses": 179,
+      "meanRemainingHP": 1563.13,
+      "meanTurns": 15.895,
+      "deadlineLosses": 179,
+      "sample": {
+        "result": "lose",
+        "turns": 15,
+        "phase": 3,
+        "phaseHistory": [
+          1,
+          2,
+          3
+        ],
+        "remainingHP": 0,
+        "actions": {
+          "feather": 8,
+          "guard": 7
+        },
+        "deadline": true,
+        "rounds": [
+          {
+            "turn": 2,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 196640,
+            "action": "feather"
+          },
+          {
+            "turn": 3,
+            "phase": 1,
+            "hp": 17354,
+            "enemyHP": 196640,
+            "action": "guard"
+          },
+          {
+            "turn": 4,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 146957,
+            "action": "feather"
+          },
+          {
+            "turn": 5,
+            "phase": 1,
+            "hp": 17354,
+            "enemyHP": 146957,
+            "action": "guard"
+          },
+          {
+            "turn": 6,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 97274,
+            "action": "feather"
+          },
+          {
+            "turn": 7,
+            "phase": 2,
+            "hp": 17354,
+            "enemyHP": 100224,
+            "action": "guard"
+          },
+          {
+            "turn": 8,
+            "phase": 2,
+            "hp": 16125,
+            "enemyHP": 58456,
+            "action": "feather"
+          },
+          {
+            "turn": 9,
+            "phase": 3,
+            "hp": 17354,
+            "enemyHP": 58456,
+            "action": "guard"
+          },
+          {
+            "turn": 10,
+            "phase": 3,
+            "hp": 15684,
+            "enemyHP": 50568,
+            "action": "feather"
+          },
+          {
+            "turn": 11,
+            "phase": 3,
+            "hp": 17265,
+            "enemyHP": 53517,
+            "action": "guard"
+          },
+          {
+            "turn": 12,
+            "phase": 3,
+            "hp": 15595,
+            "enemyHP": 37714,
+            "action": "feather"
+          },
+          {
+            "turn": 13,
+            "phase": 3,
+            "hp": 16905,
+            "enemyHP": 37714,
+            "action": "guard"
+          },
+          {
+            "turn": 14,
+            "phase": 3,
+            "hp": 15235,
+            "enemyHP": 21911,
+            "action": "feather"
+          },
+          {
+            "turn": 15,
+            "phase": 3,
+            "hp": 16816,
+            "enemyHP": 21911,
+            "action": "guard"
+          },
+          {
+            "turn": 15,
+            "phase": 3,
+            "hp": 0,
+            "enemyHP": 6108,
+            "action": "feather"
+          }
+        ]
+      }
+    },
+    "mixed": {
+      "wins": 200,
+      "losses": 0,
+      "meanRemainingHP": 8743.575,
+      "meanTurns": 7.605,
+      "deadlineLosses": 0,
+      "sample": {
+        "result": "win",
+        "turns": 8,
+        "phase": 3,
+        "phaseHistory": [
+          1,
+          2,
+          3
+        ],
+        "remainingHP": 8162,
+        "actions": {
+          "feather": 4,
+          "slash": 1,
+          "ultimate": 2,
+          "power": 1
+        },
+        "deadline": false,
+        "rounds": [
+          {
+            "turn": 2,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 196640,
+            "action": "feather"
+          },
+          {
+            "turn": 3,
+            "phase": 1,
+            "hp": 15996,
+            "enemyHP": 193936,
+            "action": "slash"
+          },
+          {
+            "turn": 4,
+            "phase": 1,
+            "hp": 15317,
+            "enemyHP": 144253,
+            "action": "feather"
+          },
+          {
+            "turn": 5,
+            "phase": 1,
+            "hp": 14079,
+            "enemyHP": 110407,
+            "action": "ultimate"
+          },
+          {
+            "turn": 6,
+            "phase": 2,
+            "hp": 14079,
+            "enemyHP": 60724,
+            "action": "feather"
+          },
+          {
+            "turn": 7,
+            "phase": 3,
+            "hp": 12409,
+            "enemyHP": 55248,
+            "action": "power"
+          },
+          {
+            "turn": 8,
+            "phase": 3,
+            "hp": 10739,
+            "enemyHP": 13480,
+            "action": "feather"
+          },
+          {
+            "turn": 8,
+            "phase": 3,
+            "hp": 8162,
+            "enemyHP": 0,
+            "action": "ultimate"
+          }
+        ]
+      }
+    },
+    "defensive": {
+      "wins": 200,
+      "losses": 0,
+      "meanRemainingHP": 10859.015,
+      "meanTurns": 9.86,
+      "deadlineLosses": 0,
+      "sample": {
+        "result": "win",
+        "turns": 12,
+        "phase": 3,
+        "phaseHistory": [
+          1,
+          2,
+          3
+        ],
+        "remainingHP": 9655,
+        "actions": {
+          "feather": 4,
+          "slash": 1,
+          "ultimate": 2,
+          "power": 3,
+          "guard": 2
+        },
+        "deadline": false,
+        "rounds": [
+          {
+            "turn": 2,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 196640,
+            "action": "feather"
+          },
+          {
+            "turn": 3,
+            "phase": 1,
+            "hp": 15996,
+            "enemyHP": 193936,
+            "action": "slash"
+          },
+          {
+            "turn": 4,
+            "phase": 1,
+            "hp": 15317,
+            "enemyHP": 144253,
+            "action": "feather"
+          },
+          {
+            "turn": 5,
+            "phase": 1,
+            "hp": 14079,
+            "enemyHP": 110407,
+            "action": "ultimate"
+          },
+          {
+            "turn": 6,
+            "phase": 2,
+            "hp": 14079,
+            "enemyHP": 60724,
+            "action": "feather"
+          },
+          {
+            "turn": 7,
+            "phase": 3,
+            "hp": 12409,
+            "enemyHP": 55248,
+            "action": "power"
+          },
+          {
+            "turn": 8,
+            "phase": 3,
+            "hp": 13990,
+            "enemyHP": 55248,
+            "action": "guard"
+          },
+          {
+            "turn": 9,
+            "phase": 3,
+            "hp": 11413,
+            "enemyHP": 47360,
+            "action": "feather"
+          },
+          {
+            "turn": 10,
+            "phase": 3,
+            "hp": 9743,
+            "enemyHP": 29016,
+            "action": "power"
+          },
+          {
+            "turn": 11,
+            "phase": 3,
+            "hp": 11325,
+            "enemyHP": 29016,
+            "action": "guard"
+          },
+          {
+            "turn": 12,
+            "phase": 3,
+            "hp": 9655,
+            "enemyHP": 7940,
+            "action": "ultimate"
+          },
+          {
+            "turn": 12,
+            "phase": 3,
+            "hp": 9655,
+            "enemyHP": 0,
+            "action": "power"
+          }
+        ]
+      }
+    },
+    "reserveUltimate": {
+      "wins": 200,
+      "losses": 0,
+      "meanRemainingHP": 6422.95,
+      "meanTurns": 9.8,
+      "deadlineLosses": 0,
+      "sample": {
+        "result": "win",
+        "turns": 14,
+        "phase": 3,
+        "phaseHistory": [
+          1,
+          2,
+          3
+        ],
+        "remainingHP": 1623,
+        "actions": {
+          "feather": 6,
+          "slash": 5,
+          "power": 2,
+          "ultimate": 1
+        },
+        "deadline": false,
+        "rounds": [
+          {
+            "turn": 2,
+            "phase": 1,
+            "hp": 16675,
+            "enemyHP": 196640,
+            "action": "feather"
+          },
+          {
+            "turn": 3,
+            "phase": 1,
+            "hp": 15996,
+            "enemyHP": 193936,
+            "action": "slash"
+          },
+          {
+            "turn": 4,
+            "phase": 1,
+            "hp": 15317,
+            "enemyHP": 144253,
+            "action": "feather"
+          },
+          {
+            "turn": 5,
+            "phase": 1,
+            "hp": 14079,
+            "enemyHP": 141549,
+            "action": "slash"
+          },
+          {
+            "turn": 6,
+            "phase": 1,
+            "hp": 13400,
+            "enemyHP": 91866,
+            "action": "feather"
+          },
+          {
+            "turn": 7,
+            "phase": 2,
+            "hp": 12171,
+            "enemyHP": 89660,
+            "action": "slash"
+          },
+          {
+            "turn": 8,
+            "phase": 2,
+            "hp": 10942,
+            "enemyHP": 81772,
+            "action": "feather"
+          },
+          {
+            "turn": 9,
+            "phase": 2,
+            "hp": 8961,
+            "enemyHP": 76296,
+            "action": "power"
+          },
+          {
+            "turn": 10,
+            "phase": 2,
+            "hp": 7732,
+            "enemyHP": 68408,
+            "action": "feather"
+          },
+          {
+            "turn": 11,
+            "phase": 2,
+            "hp": 6503,
+            "enemyHP": 68407,
+            "action": "slash"
+          },
+          {
+            "turn": 12,
+            "phase": 2,
+            "hp": 5274,
+            "enemyHP": 68406,
+            "action": "slash"
+          },
+          {
+            "turn": 13,
+            "phase": 2,
+            "hp": 3293,
+            "enemyHP": 62930,
+            "action": "power"
+          },
+          {
+            "turn": 14,
+            "phase": 3,
+            "hp": 1623,
+            "enemyHP": 36225,
+            "action": "ultimate"
+          },
+          {
+            "turn": 14,
+            "phase": 3,
+            "hp": 1623,
+            "enemyHP": 0,
+            "action": "feather"
+          }
+        ]
+      }
+    }
+  }
+}

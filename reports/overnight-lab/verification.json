@@ -1,0 +1,69 @@
+{
+  "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849",
+  "htmlBytes": 15425543,
+  "unit": {
+    "pass": 191,
+    "fail": 0,
+    "skip": 0
+  },
+  "syntax": {
+    "files": 31,
+    "result": "passed"
+  },
+  "build": {
+    "result": "passed",
+    "embeddedImages": 29
+  },
+  "browser": {
+    "campaignChromium": {
+      "pass": 109,
+      "fail": 0,
+      "file": "reports/overnight-lab/chromium/results.json",
+      "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849"
+    },
+    "campaignWebKit": {
+      "pass": 109,
+      "fail": 0,
+      "file": "reports/overnight-lab/webkit/results.json",
+      "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849"
+    },
+    "existingBrowser": {
+      "pass": 119,
+      "fail": 0,
+      "file": "reports/browser-results.json",
+      "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849"
+    },
+    "existingUI": {
+      "pass": 389,
+      "fail": 0,
+      "file": "reports/ui-review/ui-regression-results.json",
+      "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849"
+    },
+    "threePhase": {
+      "pass": 103,
+      "fail": 0,
+      "file": "reports/three-phase/chromium/results.json",
+      "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849"
+    }
+  },
+  "mainSaveFormatChanged": false,
+  "mainEngineChanged": false,
+  "realIPhoneTested": false,
+  "fileURLTested": false,
+  "deployed": false,
+  "baselineSourceHTML": "18a38832d87ed6094556c181a1617169411b694f03efa482c636d32a8159fbef",
+  "sourceRecovery": {
+    "pass": 5,
+    "fail": 0,
+    "checks": [
+      "all web/assets/tools/tests byte-identical to ZIP recovery tested copy",
+      "recovered source check31",
+      "recovered source test191/191",
+      "recovered source build passed",
+      "recovered HTML SHA256 byte-identical"
+    ],
+    "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849",
+    "recoveryPath": "/workspace/scratch/irena-overnight-recovery/irena-reborn",
+    "sourceArchiveContainsGeneratedHTML": false
+  }
+}

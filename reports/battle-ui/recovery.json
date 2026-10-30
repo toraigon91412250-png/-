@@ -1,0 +1,43 @@
+{
+  "zipCRC": "passed",
+  "commands": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "tail": [
+        "ℹ tests 174",
+        "ℹ suites 0",
+        "ℹ pass 174",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 788.477776"
+      ]
+    },
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "tail": [
+        "",
+        "> irena-reborn@4.0.0 check",
+        "> node tools/check.mjs",
+        "",
+        "Syntax OK: 28 files"
+      ]
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "tail": [
+        "",
+        "> irena-reborn@4.0.0 build",
+        "> node tools/build.mjs",
+        "",
+        "Build successful: dist/index.html + irena-play.html (8961993 bytes; 26 embedded images)"
+      ]
+    }
+  ],
+  "rebuiltHTMLByteIdentical": true,
+  "htmlSHA256": "18a38832d87ed6094556c181a1617169411b694f03efa482c636d32a8159fbef"
+}

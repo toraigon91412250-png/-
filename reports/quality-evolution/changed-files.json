@@ -1,0 +1,40 @@
+{
+  "changed": [
+    "README.md",
+    "assets/media-manifest.json",
+    "docs/PROVENANCE.md",
+    "tests/campaign.test.js",
+    "tests/core.test.js",
+    "tools/browser-e2e.mjs",
+    "tools/iphone-qa.mjs",
+    "tools/lab-retry-check.mjs",
+    "tools/package.py",
+    "tools/quality-review.mjs",
+    "tools/ui-regression.mjs",
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/data/config.js",
+    "web/src/utils/gameCore.js"
+  ],
+  "added": [
+    "assets/supplied-20261020/genesis-cutin.jpg",
+    "assets/supplied-20261020/kaiser-ex.jpg",
+    "assets/supplied-20261020/kaiser-normal.jpg",
+    "tests/reward-summary.test.js",
+    "tools/browser-actions.mjs",
+    "tools/quality-baseline.json",
+    "tools/quality-evolution.mjs"
+  ],
+  "removed": [],
+  "originalImagesUnchanged": 21,
+  "protectedExactFiles": [
+    "web/src/utils/progression.js",
+    "web/src/utils/storage.js",
+    "package.json",
+    "package-lock.json",
+    "tests/combat-feedback.test.js",
+    "tests/visual-effects.test.js"
+  ],
+  "mainJS": "web/src/components/App.js",
+  "resumedProductionChange": "結果レベルをライブ状態の範囲から勝利時に確定した増加量の表示へ修正"
+}

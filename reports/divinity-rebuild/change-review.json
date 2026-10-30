@@ -1,0 +1,36 @@
+{
+  "originalBehaviorTestsModified": [],
+  "removedTrackedFiles": [],
+  "baseline": "2252d7c21a448e6aa9633ca28faeae5fb0167344",
+  "modifiedOriginalFiles": [
+    "dist/BUILD.json",
+    "dist/index.html",
+    "irena-play.html",
+    "tests/audit-baseline.js",
+    "tools/build.mjs",
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/utils/battleCheckpoint.js",
+    "web/src/utils/campaign20.js",
+    "web/src/utils/gameCore.js",
+    "web/src/utils/main20.js",
+    "web/src/utils/mirrorTrial.js",
+    "web/src/utils/progression.js",
+    "web/src/utils/storage.js"
+  ],
+  "build": {
+    "version": "4.0.0",
+    "built": "2026-10-28T07:09:37.511Z",
+    "source": "仕様書からの新規復元",
+    "standalone": true
+  },
+  "newSourceHashes": {
+    "web/src/components/divinityView.js": "aa4b44fc436f3795408a2b271eaaa325833858a5d77883f4cd2476d9a96710bb",
+    "web/src/utils/divinitySave.js": "5cacee2e6af530bc79d19173cfb07cbcf0bfc89dbdb13b725394bdc5bb22cd39",
+    "web/src/utils/divinityProgress.js": "dbf03a4f976f85a16c821a9bd9e8fedbf02db2cb33561950e50333d7512cf197",
+    "web/src/utils/divinityTrials.js": "f5bba083ae6c329dffde1d149d7cf70f301c841d352799dd4dc6fec4750d427c",
+    "web/src/utils/divinityCombat.js": "c79088a6ab07a9552bbe1b3970a76a4a07b76c5a3f4092e807ca9ce9286a855e",
+    "web/src/data/divinity.js": "d057be692aab93472480a65a047117347e7cac323be5a288f2a27da0954a2541",
+    "tests/divinity-rebuild.test.js": "c1d6beb30ab97e5a1f99a7d01f6ea130213f17aec2d886804cd84632749a6d23"
+  }
+}

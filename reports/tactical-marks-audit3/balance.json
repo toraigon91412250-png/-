@@ -1,0 +1,1149 @@
+{
+  "battles": 72,
+  "regressionBattles": 12,
+  "comparedTurns": 60,
+  "nonfinite": 0,
+  "unfinished": 0,
+  "build": "Lv100/才能10/技7/通常権能Lv5/HP20P・攻30P/覚醒0・徽章なし/seed1〜3",
+  "summaries": [
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 5,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 44466
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 9,
+      "peak": 42926
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 42926
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 14,
+      "peak": 42926
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 67234
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 3,
+      "peak": 49802
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 4,
+      "peak": 67234
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 77886
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 57693
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 10,
+      "peak": 65365
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 9,
+      "peak": 51643
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 4,
+      "peak": 52613
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 117267
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 7,
+      "peak": 67764
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 0,
+      "total": 3,
+      "meanTurns": 5,
+      "peak": 73291
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 6,
+      "peak": 132006
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 17.7,
+      "peak": 29879
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 8,
+      "peak": 23827
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 12,
+      "peak": 32167
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "feather",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 16,
+      "peak": 52584
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "mixed",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 8,
+      "peak": 74205
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "guard",
+      "wins": 3,
+      "total": 3,
+      "meanTurns": 12,
+      "peak": 122985
+    }
+  ],
+  "rows": [
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 5,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 5,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 5,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 3,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 3,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 3,
+      "peak": 44466,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 6,
+      "peak": 44466,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 6,
+      "peak": 44466,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 6,
+      "peak": 44466,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 9,
+      "peak": 42926,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 9,
+      "peak": 42926,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 9,
+      "peak": 42926,
+      "used": [
+        "endure"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 7,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 7,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 7,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 1,
+      "result": "lose",
+      "turns": 14,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 2,
+      "result": "lose",
+      "turns": 14,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "旧3種",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 3,
+      "result": "lose",
+      "turns": 14,
+      "peak": 42926,
+      "used": [
+        "endure",
+        "starfall"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 3,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 3,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 3,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 3,
+      "peak": 49802,
+      "used": [
+        "wind"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 3,
+      "peak": 49802,
+      "used": [
+        "wind"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 3,
+      "peak": 49802,
+      "used": [
+        "wind"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 4,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 4,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 4,
+      "peak": 67234,
+      "used": [
+        "wind",
+        "iron"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 7,
+      "peak": 77886,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 7,
+      "peak": 77886,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 7,
+      "peak": 77886,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 7,
+      "peak": 57693,
+      "used": [
+        "wind",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 7,
+      "peak": 57693,
+      "used": [
+        "wind",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 7,
+      "peak": 57693,
+      "used": [
+        "wind",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 10,
+      "peak": 65365,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 10,
+      "peak": 65365,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "羽弾・反攻",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 10,
+      "peak": 65365,
+      "used": [
+        "wind",
+        "iron",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 9,
+      "peak": 51643,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 9,
+      "peak": 51643,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 9,
+      "peak": 51643,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 4,
+      "peak": 52613,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 4,
+      "peak": 52613,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 4,
+      "peak": 52613,
+      "used": [
+        "abyssmark",
+        "moon",
+        "life"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 6,
+      "peak": 117267,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 6,
+      "peak": 117267,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 6,
+      "peak": 117267,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 1,
+      "result": "lose",
+      "turns": 7,
+      "peak": 67764,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 2,
+      "result": "lose",
+      "turns": 7,
+      "peak": 67764,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 3,
+      "result": "lose",
+      "turns": 7,
+      "peak": 67764,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "lose",
+      "turns": 5,
+      "peak": 73291,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "lose",
+      "turns": 5,
+      "peak": 73291,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "lose",
+      "turns": 5,
+      "peak": 73291,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 6,
+      "peak": 132006,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 6,
+      "peak": 132006,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "断罪・侵食",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 6,
+      "peak": 132006,
+      "used": [
+        "abyssmark",
+        "moon"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 17,
+      "peak": 29879,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 19,
+      "peak": 29879,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 17,
+      "peak": 29879,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 8,
+      "peak": 23827,
+      "used": []
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 8,
+      "peak": 23827,
+      "used": []
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 8,
+      "peak": 23827,
+      "used": []
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 12,
+      "peak": 32167,
+      "used": [
+        "iron"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 12,
+      "peak": 32167,
+      "used": [
+        "iron"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "normal",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 12,
+      "peak": 32167,
+      "used": [
+        "iron"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 1,
+      "result": "win",
+      "turns": 16,
+      "peak": 52584,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 2,
+      "result": "win",
+      "turns": 16,
+      "peak": 52584,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "feather",
+      "seed": 3,
+      "result": "win",
+      "turns": 16,
+      "peak": 52584,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 1,
+      "result": "win",
+      "turns": 8,
+      "peak": 74205,
+      "used": [
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 2,
+      "result": "win",
+      "turns": 8,
+      "peak": 74205,
+      "used": [
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "mixed",
+      "seed": 3,
+      "result": "win",
+      "turns": 8,
+      "peak": 74205,
+      "used": [
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 1,
+      "result": "win",
+      "turns": 12,
+      "peak": 100176,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 2,
+      "result": "win",
+      "turns": 12,
+      "peak": 122985,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    },
+    {
+      "profile": "瀕死・耐久",
+      "mode": "ex",
+      "policy": "guard",
+      "seed": 3,
+      "result": "win",
+      "turns": 12,
+      "peak": 100176,
+      "used": [
+        "iron",
+        "fire"
+      ]
+    }
+  ]
+}

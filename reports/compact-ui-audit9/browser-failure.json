@@ -1,0 +1,260 @@
+{
+  "error": "AssertionError [ERR_ASSERTION]: 320x480/split HP panels inside cards\n    at ok (file:///workspace/irena-audit9-compact/irena-reborn/reports/compact-ui-audit9/browser.mjs:2:96)\n    at file:///workspace/irena-audit9-compact/irena-reborn/reports/compact-ui-audit9/browser.mjs:3:1735",
+  "checks": [
+    "320x480/default no page scrolling",
+    "320x480/default all commands in viewport",
+    "320x480/default portraits separated from HP",
+    "320x480/default HP panels inside cards",
+    "320x480/default visible stage",
+    "320x480/default navigation hidden",
+    "320x480/default all command images decoded",
+    "320x480/default real one turn",
+    "320x480/default info dialog usable",
+    "320x480/default navigation restored",
+    "320x480/split no page scrolling",
+    "320x480/split all commands in viewport",
+    "320x480/split portraits separated from HP"
+  ],
+  "geometry": [
+    {
+      "tag": "320x480/default",
+      "height": 480,
+      "scroll": 480,
+      "overflow": false,
+      "commands": [
+        {
+          "id": "slash",
+          "x": 6,
+          "y": 300,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 344,
+          "right": 158.5
+        },
+        {
+          "id": "feather",
+          "x": 161.5,
+          "y": 300,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 344,
+          "right": 314
+        },
+        {
+          "id": "power",
+          "x": 6,
+          "y": 347,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 391,
+          "right": 158.5
+        },
+        {
+          "id": "ultimate",
+          "x": 6,
+          "y": 394,
+          "w": 308,
+          "h": 44,
+          "bottom": 438,
+          "right": 314
+        },
+        {
+          "id": "guard",
+          "x": 161.5,
+          "y": 347,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 391,
+          "right": 314
+        }
+      ],
+      "fighters": [
+        {
+          "portrait": {
+            "x": 7,
+            "y": 152.5,
+            "w": 131.578125,
+            "h": 82.5,
+            "bottom": 235,
+            "right": 138.578125
+          },
+          "info": {
+            "x": 147.75,
+            "y": 172.5,
+            "w": 159.25,
+            "h": 34,
+            "bottom": 206.5,
+            "right": 307
+          },
+          "panel": {
+            "x": 6,
+            "y": 151.5,
+            "w": 308,
+            "h": 84.5,
+            "bottom": 236,
+            "right": 314
+          }
+        },
+        {
+          "portrait": {
+            "x": 7,
+            "y": 63,
+            "w": 131.578125,
+            "h": 82.5,
+            "bottom": 145.5,
+            "right": 138.578125
+          },
+          "info": {
+            "x": 147.75,
+            "y": 83,
+            "w": 159.25,
+            "h": 50,
+            "bottom": 133,
+            "right": 307
+          },
+          "panel": {
+            "x": 6,
+            "y": 62,
+            "w": 308,
+            "h": 84.5,
+            "bottom": 146.5,
+            "right": 314
+          }
+        }
+      ],
+      "stage": {
+        "x": 6,
+        "y": 62,
+        "w": 308,
+        "h": 174,
+        "bottom": 236,
+        "right": 314
+      }
+    },
+    {
+      "tag": "320x480/split",
+      "height": 480,
+      "scroll": 480,
+      "overflow": false,
+      "commands": [
+        {
+          "id": "slash",
+          "x": 6,
+          "y": 253,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 297,
+          "right": 158.5
+        },
+        {
+          "id": "pierce",
+          "x": 161.5,
+          "y": 253,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 297,
+          "right": 314
+        },
+        {
+          "id": "volley",
+          "x": 6,
+          "y": 300,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 344,
+          "right": 158.5
+        },
+        {
+          "id": "power",
+          "x": 161.5,
+          "y": 300,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 344,
+          "right": 314
+        },
+        {
+          "id": "ultimate",
+          "x": 6,
+          "y": 394,
+          "w": 308,
+          "h": 44,
+          "bottom": 438,
+          "right": 314
+        },
+        {
+          "id": "guard",
+          "x": 161.5,
+          "y": 347,
+          "w": 152.5,
+          "h": 44,
+          "bottom": 391,
+          "right": 314
+        }
+      ],
+      "fighters": [
+        {
+          "portrait": {
+            "x": 7,
+            "y": 129,
+            "w": 131.578125,
+            "h": 59,
+            "bottom": 188,
+            "right": 138.578125
+          },
+          "info": {
+            "x": 147.75,
+            "y": 149,
+            "w": 159.25,
+            "h": 34,
+            "bottom": 183,
+            "right": 307
+          },
+          "panel": {
+            "x": 6,
+            "y": 128,
+            "w": 308,
+            "h": 61,
+            "bottom": 189,
+            "right": 314
+          }
+        },
+        {
+          "portrait": {
+            "x": 7,
+            "y": 63,
+            "w": 131.578125,
+            "h": 59,
+            "bottom": 122,
+            "right": 138.578125
+          },
+          "info": {
+            "x": 147.75,
+            "y": 83,
+            "w": 159.25,
+            "h": 50,
+            "bottom": 133,
+            "right": 307
+          },
+          "panel": {
+            "x": 6,
+            "y": 62,
+            "w": 308,
+            "h": 61,
+            "bottom": 123,
+            "right": 314
+          }
+        }
+      ],
+      "stage": {
+        "x": 6,
+        "y": 62,
+        "w": 308,
+        "h": 127,
+        "bottom": 189,
+        "right": 314
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,65 @@
+{
+  "passed": 42,
+  "checks": [
+    "320 new final art loaded",
+    "320 locked gates preserved",
+    "320 finale no horizontal overflow",
+    "320 replacement offers exactly occupied slots",
+    "320 selected slot replaced without losing items/P",
+    "320 equipped multiplier on feather command",
+    "320 all combat commands fit",
+    "320 true victory and action recap",
+    "320 post-battle preparation route",
+    "320 next floor starts with selected loadout and no repeat reward",
+    "390 new final art loaded",
+    "390 locked gates preserved",
+    "390 finale no horizontal overflow",
+    "390 replacement offers exactly occupied slots",
+    "390 selected slot replaced without losing items/P",
+    "390 equipped multiplier on feather command",
+    "390 all combat commands fit",
+    "390 true victory and action recap",
+    "390 post-battle preparation route",
+    "390 next floor starts with selected loadout and no repeat reward",
+    "430 new final art loaded",
+    "430 locked gates preserved",
+    "430 finale no horizontal overflow",
+    "430 replacement offers exactly occupied slots",
+    "430 selected slot replaced without losing items/P",
+    "430 equipped multiplier on feather command",
+    "430 all combat commands fit",
+    "430 true victory and action recap",
+    "430 post-battle preparation route",
+    "430 next floor starts with selected loadout and no repeat reward",
+    "mark replacement offers 3 slots",
+    "mark replacement preserves ownership and flags",
+    "ex dedicated sortie has new art",
+    "ex one 1200ms transition",
+    "ex starts turn1 without committing combat",
+    "stella dedicated sortie has new art",
+    "stella one 1200ms transition",
+    "stella starts turn1 without committing combat",
+    "final dedicated sortie has new art",
+    "final one 1200ms transition",
+    "final starts turn1 without committing combat",
+    "no JS errors"
+  ],
+  "errors": [],
+  "sorties": [
+    {
+      "mode": "ex",
+      "start": 4235.0999999940395,
+      "end": 5436.399999991059
+    },
+    {
+      "mode": "stella",
+      "start": 6077.20000000298,
+      "end": 7278
+    },
+    {
+      "mode": "final",
+      "start": 8286.70000000298,
+      "end": 9488.20000000298
+    }
+  ]
+}

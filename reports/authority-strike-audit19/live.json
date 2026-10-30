@@ -1,0 +1,16 @@
+{
+  "passed": 10,
+  "checks": [
+    "public HTML equals tested build",
+    "wing command identifies first slot",
+    "wing matching original image displays before impact",
+    "wing one real impact follows reveal and clears all VFX",
+    "wing repeated taps advance exactly one turn",
+    "king command identifies first slot",
+    "king matching original image displays before impact",
+    "king one real impact follows reveal and clears all VFX",
+    "king repeated taps advance exactly one turn",
+    "no uncaught JavaScript errors"
+  ],
+  "errors": []
+}

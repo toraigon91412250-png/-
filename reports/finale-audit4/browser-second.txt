@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: 320 reveal skip at modal top-right
+    at ok (file:///workspace/irena-finale-audit4/irena-reborn/reports/finale-audit4/browser.mjs:4:129)
+    at file:///workspace/irena-finale-audit4/irena-reborn/reports/finale-audit4/browser.mjs:26:799
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:502:9) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -1,0 +1,827 @@
+{
+  "train": {
+    "n": 4800,
+    "gainedEX": 33,
+    "lostEX": 1,
+    "gained20": 0,
+    "lost20": 0,
+    "normalRoundDeltaCommonComplete": -4547,
+    "commonComplete": 4063,
+    "changes": [
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21001
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21002
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21006
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21014
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21018
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 21023
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21001
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21002
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21006
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21014
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21018
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 21023
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "none",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21001
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "none",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21018
+        },
+        "beforeEX": true,
+        "afterEX": false
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "none",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21025
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21002
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21003
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21005
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21009
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21010
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21011
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21014
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21015
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21016
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21017
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21020
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21021
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21022
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21024
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21026
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21027
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21030
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 21031
+        },
+        "beforeEX": false,
+        "afterEX": true
+      }
+    ]
+  },
+  "holdout": {
+    "n": 4800,
+    "gainedEX": 39,
+    "lostEX": 0,
+    "gained20": 0,
+    "lost20": 0,
+    "normalRoundDeltaCommonComplete": -4546,
+    "commonComplete": 4067,
+    "changes": [
+      {
+        "scenario": {
+          "profile": "wing-abyss",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 41008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-abyss",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 41008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41009
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "guard",
+          "seed": 41007
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 41003
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 41007
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 41008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "standard",
+          "strategy": "adaptive",
+          "seed": 41009
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "guard",
+          "seed": 41007
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 41003
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 41007
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 41008
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "wing-king",
+          "mark": "none",
+          "tier": "high",
+          "strategy": "adaptive",
+          "seed": 41009
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41001
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41003
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41004
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41005
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41006
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41007
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41009
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41010
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41011
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41013
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41015
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41016
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41017
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41018
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41019
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41020
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41022
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41023
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41024
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41026
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41027
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41029
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41030
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41031
+        },
+        "beforeEX": false,
+        "afterEX": true
+      },
+      {
+        "scenario": {
+          "profile": "judge-abyss",
+          "mark": "split",
+          "tier": "low",
+          "strategy": "adaptive",
+          "seed": 41032
+        },
+        "beforeEX": false,
+        "afterEX": true
+      }
+    ]
+  }
+}

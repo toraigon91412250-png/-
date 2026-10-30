@@ -1,0 +1,209 @@
+[
+  {
+    "order": [
+      "abyss",
+      "fallen",
+      "judge",
+      "king"
+    ],
+    "floorTurns": [
+      3,
+      3,
+      3,
+      5,
+      3,
+      5,
+      5,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5
+    ],
+    "truth": {
+      "result": "win",
+      "turns": 9
+    },
+    "infinite": {
+      "result": "win",
+      "turns": 14
+    },
+    "bosses": [
+      {
+        "mode": "ex",
+        "result": "win",
+        "turns": 3
+      },
+      {
+        "mode": "raid",
+        "result": "win",
+        "turns": 2
+      },
+      {
+        "mode": "stella",
+        "result": "win",
+        "turns": 23
+      },
+      {
+        "mode": "final",
+        "result": "win",
+        "turns": 13
+      },
+      {
+        "mode": "god",
+        "result": "win",
+        "turns": 2
+      }
+    ],
+    "mirror": {
+      "result": "win",
+      "turns": 8,
+      "seals": 0
+    }
+  },
+  {
+    "order": [
+      "king",
+      "judge",
+      "fallen",
+      "abyss"
+    ],
+    "floorTurns": [
+      3,
+      3,
+      3,
+      5,
+      3,
+      5,
+      5,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5
+    ],
+    "truth": {
+      "result": "win",
+      "turns": 9
+    },
+    "infinite": {
+      "result": "win",
+      "turns": 14
+    },
+    "bosses": [
+      {
+        "mode": "ex",
+        "result": "win",
+        "turns": 3
+      },
+      {
+        "mode": "raid",
+        "result": "win",
+        "turns": 2
+      },
+      {
+        "mode": "stella",
+        "result": "win",
+        "turns": 23
+      },
+      {
+        "mode": "final",
+        "result": "win",
+        "turns": 13
+      },
+      {
+        "mode": "god",
+        "result": "win",
+        "turns": 2
+      }
+    ],
+    "mirror": {
+      "result": "win",
+      "turns": 8,
+      "seals": 0
+    }
+  },
+  {
+    "order": [
+      "fallen",
+      "abyss",
+      "king",
+      "judge"
+    ],
+    "floorTurns": [
+      3,
+      3,
+      3,
+      5,
+      3,
+      5,
+      5,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5
+    ],
+    "truth": {
+      "result": "win",
+      "turns": 9
+    },
+    "infinite": {
+      "result": "win",
+      "turns": 14
+    },
+    "bosses": [
+      {
+        "mode": "ex",
+        "result": "win",
+        "turns": 3
+      },
+      {
+        "mode": "raid",
+        "result": "win",
+        "turns": 2
+      },
+      {
+        "mode": "stella",
+        "result": "win",
+        "turns": 23
+      },
+      {
+        "mode": "final",
+        "result": "win",
+        "turns": 13
+      },
+      {
+        "mode": "god",
+        "result": "win",
+        "turns": 2
+      }
+    ],
+    "mirror": {
+      "result": "win",
+      "turns": 8,
+      "seals": 0
+    }
+  }
+]

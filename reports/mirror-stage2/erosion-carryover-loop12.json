@@ -1,0 +1,390 @@
+{
+  "rule": "mirror-phase1-to-phase2 erosion carryover cap",
+  "baselineObserved": {
+    "builds": 24,
+    "erosionBefore": 0.95,
+    "phase2HpRatio": 0.05,
+    "oneFeatherOutcomeAcross24Builds": "not measured before the cap; the reported player build did advance to phase 3 in one feather"
+  },
+  "current": {
+    "cap": 0.35,
+    "builds": [
+      {
+        "label": "arrival-wing-judge",
+        "level": 61,
+        "powers": [
+          "wing",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-wing-king",
+        "level": 61,
+        "powers": [
+          "wing",
+          "king"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-fallen-judge",
+        "level": 61,
+        "powers": [
+          "fallen",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-king-abyss",
+        "level": 61,
+        "powers": [
+          "king",
+          "abyss"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.41
+      },
+      {
+        "label": "arrival-judge-wing",
+        "level": 61,
+        "powers": [
+          "judge",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-abyss-wing",
+        "level": 61,
+        "powers": [
+          "abyss",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.41
+      },
+      {
+        "label": "arrival-bare",
+        "level": 61,
+        "powers": [],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-fallen-wing",
+        "level": 61,
+        "powers": [
+          "fallen",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "arrival-king-judge",
+        "level": 61,
+        "powers": [
+          "king",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-wing-judge",
+        "level": 80,
+        "powers": [
+          "wing",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-wing-king",
+        "level": 80,
+        "powers": [
+          "wing",
+          "king"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-fallen-judge",
+        "level": 80,
+        "powers": [
+          "fallen",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-king-abyss",
+        "level": 80,
+        "powers": [
+          "king",
+          "abyss"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.41
+      },
+      {
+        "label": "trained-judge-wing",
+        "level": 80,
+        "powers": [
+          "judge",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-abyss-wing",
+        "level": 80,
+        "powers": [
+          "abyss",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.41
+      },
+      {
+        "label": "trained-bare",
+        "level": 80,
+        "powers": [],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-fallen-wing",
+        "level": 80,
+        "powers": [
+          "fallen",
+          "wing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "trained-king-judge",
+        "level": 80,
+        "powers": [
+          "king",
+          "judge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "fused-god",
+        "level": 80,
+        "powers": [
+          "god"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "fused-fallenwing",
+        "level": 80,
+        "powers": [
+          "fallenwing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "fused-abyssking",
+        "level": 80,
+        "powers": [
+          "abyssking"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.43999999999999995
+      },
+      {
+        "label": "fused-judgewing",
+        "level": 80,
+        "powers": [
+          "judgewing"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.35
+      },
+      {
+        "label": "fused-abyssjudge",
+        "level": 80,
+        "powers": [
+          "abyssjudge"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.43999999999999995
+      },
+      {
+        "label": "fresh",
+        "level": 1,
+        "powers": [
+          "wing",
+          "abyss"
+        ],
+        "transition": {
+          "phase": 2,
+          "erosion": 0.35,
+          "hpRatio": 0.65,
+          "capEvent": true
+        },
+        "phaseAfterOneFeather": 2,
+        "erosionAfterOneFeather": 0.41
+      }
+    ],
+    "phase2StartsAtHpRatio": 0.65,
+    "oneFeatherTransitionsToPhase3": 0
+  },
+  "note": "Deterministic transition fixtures, not an overall campaign win-rate estimate."
+}

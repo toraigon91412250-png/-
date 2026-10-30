@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "standalone HTML opens and begins",
+    "normal checkpoint written",
+    "main HP and gauge restored exactly",
+    "retreat clears checkpoint",
+    "ex UI and action work",
+    "stella UI and action work",
+    "final UI and action work",
+    "zero JavaScript errors"
+  ],
+  "errors": [],
+  "unverified": [
+    "file:// blocked by browser environment policy in the preceding attempt"
+  ]
+}

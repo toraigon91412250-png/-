@@ -1,0 +1,169 @@
+{
+  "rows": [
+    {
+      "mode": "normal",
+      "character": "irena",
+      "enemy": "カイザー Lv.100",
+      "enemyBase": {
+        "hp": 98320,
+        "atk": 1230,
+        "def": 308,
+        "spd": 198
+      },
+      "reward": {
+        "p": 535,
+        "fragments": 14,
+        "bonusP": 0,
+        "sp": 50,
+        "levels": 1,
+        "resShards": 3,
+        "achievements": [
+          "A0",
+          "A3",
+          "A11",
+          "B2",
+          "B4",
+          "B5",
+          "C1"
+        ],
+        "unlocks": [
+          "fallen",
+          "king",
+          "judge",
+          "mystery"
+        ]
+      },
+      "changedFlags": {
+        "lv100": true,
+        "reward100": true
+      },
+      "note": "Code-derived fixture at floor100; not a naturally played save."
+    },
+    {
+      "mode": "ex",
+      "character": "irena",
+      "enemy": "EX カイザー",
+      "enemyBase": {
+        "hp": 196640,
+        "atk": 2460,
+        "def": 616,
+        "spd": 396
+      },
+      "reward": {
+        "p": 1135,
+        "fragments": 14,
+        "bonusP": 100,
+        "sp": 0,
+        "levels": 0,
+        "resShards": 3,
+        "achievements": [
+          "A0",
+          "A3",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "unlocks": [
+          "god"
+        ]
+      },
+      "changedFlags": {
+        "ex": true,
+        "exReward": true
+      },
+      "note": "Code-derived fixture at floor100; not a naturally played save."
+    },
+    {
+      "mode": "stella",
+      "character": "stella",
+      "enemy": "終焉のカイザー",
+      "enemyBase": {
+        "hp": 30000,
+        "atk": 440,
+        "def": 180,
+        "spd": 65
+      },
+      "reward": {
+        "p": 1335,
+        "fragments": 14,
+        "bonusP": 0,
+        "sp": 0,
+        "levels": 0,
+        "resShards": 3,
+        "achievements": [
+          "A0",
+          "A3",
+          "C1",
+          "C3"
+        ],
+        "unlocks": [
+          "final"
+        ]
+      },
+      "changedFlags": {
+        "stellaClear": true,
+        "final": true
+      },
+      "note": "Code-derived fixture at floor100; not a naturally played save."
+    },
+    {
+      "mode": "final",
+      "character": "final",
+      "enemy": "創世を喰らうカイザー",
+      "enemyBase": {
+        "hp": 85000,
+        "atk": 2200,
+        "def": 1200,
+        "spd": 320
+      },
+      "reward": {
+        "p": 1735,
+        "fragments": 14,
+        "bonusP": 0,
+        "sp": 0,
+        "levels": 0,
+        "resShards": 3,
+        "achievements": [
+          "A0",
+          "A3",
+          "C1"
+        ],
+        "unlocks": []
+      },
+      "changedFlags": {
+        "finalClear": true
+      },
+      "note": "Code-derived fixture at floor100; not a naturally played save."
+    }
+  ],
+  "beforeWarp": {
+    "ex": false,
+    "stella": false,
+    "final": false
+  },
+  "afterWarp": {
+    "ex": true,
+    "stella": true,
+    "final": false,
+    "exFlag": false
+  },
+  "threePhase": {
+    "mode": "ex",
+    "test": true,
+    "character": "irena",
+    "trial": {
+      "kind": "three-phase",
+      "phase": 1,
+      "applied": false,
+      "phaseHistory": [
+        1
+      ]
+    },
+    "experiment": {
+      "atk": 1,
+      "hp": 1,
+      "kind": "three-phase"
+    },
+    "enemy": "EXカイザー・三相決戦"
+  }
+}

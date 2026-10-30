@@ -1,0 +1,14 @@
+{
+  "existingFilesChanged": [
+    "web/src/components/App.js",
+    "web/src/components/game.css"
+  ],
+  "newAssets": [
+    "03_abyss_raid.jpg",
+    "02_engraving_equipment.jpg",
+    "04_upgrade_equipment.jpg",
+    "01_blackwing_summon.jpg"
+  ],
+  "battleResumeBranchIdentical": true,
+  "allOtherExistingRuntimeToolsTestsAssetsIdentical": true
+}

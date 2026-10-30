@@ -1,0 +1,51 @@
+{
+  "version": "20261023-audit4-finale",
+  "base": "20261023-audit3-marks",
+  "baselineZIP_SHA256": "618e3c3910cb6caa184c261007e49eeb989e7c1eef585a55553594dae52deb0a",
+  "tests": {
+    "passed": 307,
+    "failed": 0,
+    "skipped": 0,
+    "baselinePassed": 291,
+    "new": 16
+  },
+  "syntaxFiles": 41,
+  "build": {
+    "passed": true,
+    "bytes": 23258049,
+    "embeddedImages": 43,
+    "sha256": "62d5ad565d48e40e94029ee9cbc3b682c8a325aaf73cbf476c3424e60087ec6c"
+  },
+  "browser": {
+    "passed": 69,
+    "failed": 0,
+    "errors": [],
+    "widths": [
+      320,
+      390,
+      430,
+      1280
+    ],
+    "engine": "Chromium"
+  },
+  "trial": {
+    "battles": 9,
+    "featherWins": 0,
+    "mixedWins": 3,
+    "guardWins": 3,
+    "nonfinite": 0,
+    "unfinished": 0,
+    "mainSaveChanges": 0,
+    "browserVictoryTurn": 41
+  },
+  "recovery": {
+    "syntaxFiles": 41,
+    "testsPassed": 307,
+    "testsFailed": 0,
+    "buildPassed": true,
+    "HTMLIdentical": true
+  },
+  "iPhoneHardware": "not verified",
+  "SafariWebKit": "not verified",
+  "publicSiteUpdated": false
+}

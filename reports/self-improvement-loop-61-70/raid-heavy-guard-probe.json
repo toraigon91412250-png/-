@@ -1,0 +1,3140 @@
+{
+  "generatedAt": "2026-10-26T16:38:19.336Z",
+  "purpose": "Tests exact heavy-turn guarding as a tactic in the existing Raid NIGHTMARE without scaling.",
+  "source": {
+    "gameCoreSHA256": "8c3db3d1068188d222e499cbca79849558bd5340700ce538a9f99be18b6f9c52",
+    "runner": "production startBattle / act / settle",
+    "testFlag": false
+  },
+  "coverage": {
+    "profiles": 7,
+    "policies": [
+      "feather",
+      "mixed",
+      "guard",
+      "guardHeavy"
+    ],
+    "seeds": [
+      700001,
+      700019,
+      700046,
+      700091,
+      700123,
+      700177,
+      700211,
+      700307
+    ],
+    "seedsPerBuildPolicy": 8,
+    "conditions": 28,
+    "trials": 224,
+    "actionLimit": 200
+  },
+  "groups": {
+    "feather": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 5.29,
+      "meanDamageReceived": 3302,
+      "meanWinningHP": 5086
+    },
+    "mixed": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4,
+      "meanDamageReceived": 2888.2,
+      "meanWinningHP": 5801
+    },
+    "guard": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.43,
+      "meanDamageReceived": 2964.3,
+      "meanWinningHP": 5419
+    },
+    "guardHeavy": {
+      "trials": 56,
+      "wins": 56,
+      "losses": 0,
+      "winRate": 1,
+      "meanActions": 4.61,
+      "meanDamageReceived": 2785.4,
+      "meanWinningHP": 6043
+    }
+  },
+  "byProfile": {
+    "wing_abyss": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      }
+    },
+    "king_judge": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 12
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 8
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 10
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 9
+      }
+    },
+    "fallen_abyss": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 10
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 6
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 7
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 6.13
+      }
+    },
+    "wing_fallen": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 5
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 5
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 5
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 6.13
+      }
+    },
+    "res_judgewing": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 1
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 1
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 1
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 1
+      }
+    },
+    "res_god": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 5
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 4
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 4
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 6
+      }
+    },
+    "res_abyssjudge": {
+      "feather": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "mixed": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "guard": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      },
+      "guardHeavy": {
+        "wins": 8,
+        "losses": 0,
+        "meanActions": 2
+      }
+    }
+  },
+  "rows": [
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_abyss",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 5553,
+      "damageReceived": 1256,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 12,
+      "playerHP": 1,
+      "damageReceived": 8840,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 4389,
+      "damageReceived": 6465,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 4498,
+      "damageReceived": 6465,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 8,
+      "playerHP": 3546,
+      "damageReceived": 7417,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2003,
+      "damageReceived": 7790,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2470,
+      "damageReceived": 6371,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 765,
+      "damageReceived": 8076,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 6131,
+      "damageReceived": 5784,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5800,
+      "damageReceived": 6224,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "king_judge",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 9,
+      "playerHP": 5288,
+      "damageReceived": 6736,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2412,
+      "damageReceived": 3780,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2597,
+      "damageReceived": 3595,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2375,
+      "damageReceived": 4128,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2597,
+      "damageReceived": 3596,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2374,
+      "damageReceived": 4131,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2374,
+      "damageReceived": 4130,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2597,
+      "damageReceived": 3595,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 10,
+      "playerHP": 2375,
+      "damageReceived": 4128,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2414,
+      "damageReceived": 3777,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2599,
+      "damageReceived": 3592,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2376,
+      "damageReceived": 4126,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2599,
+      "damageReceived": 3592,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2376,
+      "damageReceived": 4127,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2376,
+      "damageReceived": 4127,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2599,
+      "damageReceived": 3592,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2376,
+      "damageReceived": 4126,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2414,
+      "damageReceived": 3777,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1835,
+      "damageReceived": 4356,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1836,
+      "damageReceived": 4355,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1835,
+      "damageReceived": 4356,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1835,
+      "damageReceived": 4356,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1836,
+      "damageReceived": 4355,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1835,
+      "damageReceived": 4356,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 1836,
+      "damageReceived": 4355,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 2663,
+      "damageReceived": 3527,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3753,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2599,
+      "damageReceived": 3592,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3753,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3753,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3752,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3753,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "fallen_abyss",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 2532,
+      "damageReceived": 3753,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3525,
+      "damageReceived": 4509,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 4278,
+      "damageReceived": 3756,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3525,
+      "damageReceived": 4509,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 4278,
+      "damageReceived": 3756,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 2273,
+      "damageReceived": 5761,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3525,
+      "damageReceived": 4509,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 3149,
+      "damageReceived": 4885,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 7,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "wing_fallen",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 3676,
+      "damageReceived": 4359,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_judgewing",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 1,
+      "playerHP": 8964,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 7140,
+      "damageReceived": 2721,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 8549,
+      "damageReceived": 1312,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 5,
+      "playerHP": 6484,
+      "damageReceived": 3377,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 8549,
+      "damageReceived": 1312,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 8549,
+      "damageReceived": 1312,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 8549,
+      "damageReceived": 1312,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 8549,
+      "damageReceived": 1312,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 4,
+      "playerHP": 7893,
+      "damageReceived": 1968,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 7470,
+      "damageReceived": 2391,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 7470,
+      "damageReceived": 2391,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_god",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 6,
+      "playerHP": 6814,
+      "damageReceived": 3047,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "feather",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "mixed",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guard",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700001,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700019,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700046,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700091,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700123,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700177,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700211,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9861,
+      "damageReceived": 0,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    },
+    {
+      "profile": "res_abyssjudge",
+      "policy": "guardHeavy",
+      "seed": 700307,
+      "result": "win",
+      "actions": 2,
+      "playerHP": 9013,
+      "damageReceived": 848,
+      "reward": {
+        "p": 715,
+        "resShards": 25
+      }
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "method": "Cloud Chrome UI via CUA; a same-origin iframe sets CSS viewport width; 15px desktop scrollbar. Not iPhone hardware or Safari/WebKit.",
+  "rows": [
+    {
+      "frameWidth": 320,
+      "contentWidth": 305,
+      "scrollWidth": 305,
+      "section": "権能",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 320,
+      "contentWidth": 305,
+      "scrollWidth": 305,
+      "section": "刻印",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 320,
+      "contentWidth": 305,
+      "scrollWidth": 305,
+      "section": "権能共鳴",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 320,
+      "contentWidth": 305,
+      "scrollWidth": 305,
+      "section": "才能＆技",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 320,
+      "contentWidth": 305,
+      "scrollWidth": 305,
+      "section": "黒翼召喚",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 375,
+      "contentWidth": 360,
+      "scrollWidth": 360,
+      "section": "権能",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 375,
+      "contentWidth": 360,
+      "scrollWidth": 360,
+      "section": "刻印",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 375,
+      "contentWidth": 360,
+      "scrollWidth": 360,
+      "section": "権能共鳴",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 375,
+      "contentWidth": 360,
+      "scrollWidth": 360,
+      "section": "才能＆技",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 375,
+      "contentWidth": 360,
+      "scrollWidth": 360,
+      "section": "黒翼召喚",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 390,
+      "contentWidth": 375,
+      "scrollWidth": 375,
+      "section": "権能",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 390,
+      "contentWidth": 375,
+      "scrollWidth": 375,
+      "section": "刻印",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 390,
+      "contentWidth": 375,
+      "scrollWidth": 375,
+      "section": "権能共鳴",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 390,
+      "contentWidth": 375,
+      "scrollWidth": 375,
+      "section": "才能＆技",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 390,
+      "contentWidth": 375,
+      "scrollWidth": 375,
+      "section": "黒翼召喚",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 430,
+      "contentWidth": 415,
+      "scrollWidth": 415,
+      "section": "権能",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 430,
+      "contentWidth": 415,
+      "scrollWidth": 415,
+      "section": "刻印",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 430,
+      "contentWidth": 415,
+      "scrollWidth": 415,
+      "section": "権能共鳴",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 430,
+      "contentWidth": 415,
+      "scrollWidth": 415,
+      "section": "才能＆技",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    },
+    {
+      "frameWidth": 430,
+      "contentWidth": 415,
+      "scrollWidth": 415,
+      "section": "黒翼召喚",
+      "brokenImages": 0,
+      "backBottom": 768,
+      "navTop": 768
+    }
+  ],
+  "powerCardButtonMinHeight": 44,
+  "detail320": {
+    "width": 277,
+    "scrollWidth": 260,
+    "clientWidth": 260,
+    "clientHeight": 810,
+    "scrollHeight": 952
+  },
+  "actualActions": [
+    "new game -> home",
+    "upgrade -> all five categories",
+    "normal level1 feather -> victory -> 40P +4 fragments +3 resonance +1 level",
+    "persistent reload retains level2/220P/3 achievements",
+    "developer independent data activation",
+    "final fallen -> balance -15 and turn2",
+    "annihilate -> stun1",
+    "wait -> turn4 and available actions return"
+  ],
+  "consoleNote": "Observed errors came from chrome-extension browser metadata messages; not reported as game errors. No game exception observed in these flows."
+}

@@ -1,0 +1,10 @@
+{
+  "archive": "/workspace/scratch/irena-resume-recovery/checkpoint-source.zip",
+  "bytes": 13973079,
+  "sha256": "11e12e9fa2ac96634d7eba1c805c1e1640b109f9f1698d8cbdc0744bfc2d0ddd",
+  "entries": 190,
+  "crc": "passed",
+  "paths": "passed",
+  "symbolicLinks": "none",
+  "extract": "/workspace/scratch/irena-resume-recovery/extracted/irena-reborn"
+}

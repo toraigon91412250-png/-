@@ -1,0 +1,65 @@
+{
+  "finalHTMLSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+  "unit": {
+    "pass": 147,
+    "fail": 0,
+    "skip": 0
+  },
+  "relatedUnitSubset": {
+    "pass": 8,
+    "fail": 0
+  },
+  "additionalBrowser": {
+    "after-chromium": {
+      "pass": 267,
+      "fail": 0,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "observations": []
+    },
+    "after-webkit": {
+      "pass": 267,
+      "fail": 0,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "observations": []
+    },
+    "stress-chromium": {
+      "pass": 365,
+      "fail": 0,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "observations": [
+        {
+          "case": "continuous120rounds",
+          "rounds": 120,
+          "durationMs": 55578,
+          "animationsEnabled": true,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "realIPhoneTested": false
+        }
+      ]
+    },
+    "stress-webkit": {
+      "pass": 365,
+      "fail": 0,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "observations": [
+        {
+          "case": "continuous120rounds",
+          "rounds": 120,
+          "durationMs": 52454,
+          "animationsEnabled": true,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "realIPhoneTested": false
+        }
+      ]
+    }
+  },
+  "realIPhoneTested": false,
+  "fileSchemeTested": false,
+  "deploymentPerformed": false
+}

@@ -1,0 +1,28 @@
+{
+  "changedFiles": [
+    "web/src/utils/combatObservation.js",
+    "web/src/utils/gameCore.js",
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/components/combatPresentation.js",
+    "web/src/components/combatEffectFacts.js",
+    "web/src/components/sanctuaryPolish.js",
+    "tools/build.mjs",
+    "tests/audit-baseline.js",
+    "tests/authority-tactics.test.js"
+  ],
+  "protectedIdentical": [
+    "web/src/data/config.js",
+    "web/src/utils/authorityStrike.js",
+    "web/src/utils/progression.js",
+    "web/src/utils/storage.js",
+    "web/src/utils/battleCheckpoint.js",
+    "web/src/utils/main20.js",
+    "web/src/utils/tacticalMarks.js"
+  ],
+  "allAssetsIdentical": true,
+  "hostedStandaloneEquivalent": true,
+  "standaloneBytes": 33139780,
+  "hostedBytes": 25775089,
+  "SHA256": "bbe79553d1f569720257302a0d0fe79bb193e2a579cd878c570619f1dcfd6590"
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "old": "import {startThreePhase,actThreePhase,retryThreePhase} from '../utils/threePhase.js';",
+    "new": "import {startThreePhase,actThreePhase,retryThreePhase} from '../utils/threePhase.js';\nimport {createCampaign,startCampaignBattle,actCampaign,settleCampaign,campaignTrain,campaignEquip,campaignUpgrade,campaignBuyMark} from '../utils/campaign20.js';\nimport {campaignEntry,campaignLobby,campaignResult,CAMPAIGN_ART} from './campaign20View.js';"
+  },
+  {
+    "old": "let s=fresh(),sandbox=null,battle=null",
+    "new": "let campaign=null;\nlet s=fresh(),sandbox=null,battle=null"
+  },
+  {
+    "old": "function render(){syncCombatBusy();const a=current();",
+    "new": "function render(){syncCombatBusy();const campaignScreen=page==='campaign'||page==='battle'&&battle?.campaign;const a=campaignScreen?campaign.build:current();"
+  },
+  {
+    "old": "${sandbox?`<div class=\"test-banner\">",
+    "new": "${campaignScreen?'<div class=\"test-banner\">20階層【試作】・本編非反映・再読込でリセット</div>':''}${sandbox?`<div class=\"test-banner\">"
+  },
+  {
+    "old": "${page==='home'?home(a):page==='upgrade'?upgrade(a)",
+    "new": "${page==='campaign'?campaignLobby(campaign,button):page==='home'?home(a):page==='upgrade'?upgrade(a)"
+  },
+  {
+    "old": "function enemyArt(b){const src=ENEMIES[b.mode];",
+    "new": "function enemyArt(b){if(b.campaign&&['normal','ex'].includes(b.mode))return `<img class=\"sprite portrait enemy-portrait\" src=\"${CAMPAIGN_ART[b.mode]}\" alt=\"${b.mode==='ex'?'EXカイザー':'カイザー'}の提供透過立ち絵\">`;const src=ENEMIES[b.mode];"
+  },
+  {
+    "old": "function resultView(a,b){",
+    "new": "function resultView(a,b){if(b.campaign)return campaignResult(campaign,b,button);"
+  },
+  {
+    "old": "function lab(a){return `",
+    "new": "function lab(a){return `${campaignEntry(campaign,button)}"
+  },
+  {
+    "old": "if(b.trial)actThreePhase(b,id,{route});else act(b,id,{route});",
+    "new": "if(b.campaign)actCampaign(b,id,{route});else if(b.trial)actThreePhase(b,id,{route});else act(b,id,{route});"
+  },
+  {
+    "old": "b.reward=settle(current(),b);",
+    "new": "b.reward=b.campaign?settleCampaign(campaign,b):settle(current(),b);"
+  },
+  {
+    "old": "case 'retreat':battle.result='lose';battle.reward=settle(a,battle);",
+    "new": "case 'retreat':battle.result='lose';battle.reward=battle.campaign?settleCampaign(campaign,battle):settle(a,battle);"
+  },
+  {
+    "old": "case 'finish':battle=null;page='home';",
+    "new": "case 'finish':if(battle?.campaign){battle=null;page='campaign';render();window.scrollTo(0,0);break;}battle=null;page='home';"
+  },
+  {
+    "old": "case 'retry':{const old=battle;",
+    "new": "case 'retry':{if(battle?.campaign){battle=null;page='campaign';render();window.scrollTo(0,0);break;}const old=battle;"
+  },
+  {
+    "old": "case 'labstart':{",
+    "new": "case 'campaignOpen':if(battle&&!battle.result)throw Error('先に現在の戦闘を終了してください');campaign ||= createCampaign();page='campaign';render();window.scrollTo(0,0);break;\n case 'campaignLobby':if(battle&&!battle.result)throw Error('先に現在の戦闘を終了してください');battle=null;page='campaign';render();window.scrollTo(0,0);break;\n case 'campaignFight':if(battle&&!battle.result)throw Error('先に現在の戦闘を終了してください');battle=startCampaignBattle(campaign);page='battle';render();window.scrollTo(0,0);break;\n case 'campaignTrain':campaignTrain(campaign,id);render();break;\n case 'campaignPower':campaignEquip(campaign,id,'power');render();break;\n case 'campaignUpgrade':campaignUpgrade(campaign,id);render();break;\n case 'campaignMark':campaignEquip(campaign,id,'mark');render();break;\n case 'campaignBuyMark':campaignBuyMark(campaign,id);render();break;\n case 'campaignAskReset':confirmDialog('試作を最初から','20階層試作の進行だけをリセットします。本編データは変更しません。','campaignReset','');break;\n case 'campaignReset':campaign=createCampaign();close();page='campaign';render();break;\n case 'labstart':{"
+  },
+  {
+    "old": "b.trial?'軽減70%・ゲージ＋18・HP12%回復'",
+    "new": "b.trial||b.campaign?'軽減70%・ゲージ＋18・HP12%回復'"
+  },
+  {
+    "old": "${b.trial?`<small class=\"actual-enemy-state\">",
+    "new": "${b.campaign?`<small class=\"actual-enemy-state\">${b.enemy.statuses.campaignArmor?'黒晶殻 ':''}${b.enemy.statuses.campaignSever?'権能の傷痕':''}</small>`:''}${b.trial?`<small class=\"actual-enemy-state\">"
+  },
+  {
+    "old": "trialFocus:'蓄勢'",
+    "new": "trialFocus:'蓄勢',campaignFocus:'蓄勢'"
+  },
+  {
+    "old": "<section class=\"battle-stage ${b.character",
+    "new": "<section ${b.campaign&&b.character==='irena'?`style=\"--campaign-background:url('${CAMPAIGN_ART.background}')\"`:''} class=\"battle-stage ${b.campaign&&b.character==='irena'?'campaign-stage':''} ${b.character"
+  },
+  {
+    "old": "if(!b.test||sandbox)persist();",
+    "new": "if(!b.campaign&&(!b.test||sandbox))persist();"
+  },
+  {
+    "old": "if(!battle.test||sandbox)persist();",
+    "new": "if(!battle.campaign&&(!battle.test||sandbox))persist();"
+  },
+  {
+    "old": "${saveError?'保存要確認':'● '+(sandbox?'試験データ':'AUTO SAVE')}",
+    "new": "${campaignScreen?'試作・一時データ':saveError?'保存要確認':'● '+(sandbox?'試験データ':'AUTO SAVE')}"
+  }
+]

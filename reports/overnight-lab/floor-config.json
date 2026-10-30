@@ -1,0 +1,182 @@
+[
+  {
+    "floor": 1,
+    "name": "境界の入口",
+    "kind": "plain",
+    "hp": 374.4,
+    "atk": 32.3,
+    "def": 10,
+    "spd": 18
+  },
+  {
+    "floor": 2,
+    "name": "翼の記憶",
+    "kind": "plain",
+    "hp": 720,
+    "atk": 45.9,
+    "def": 16,
+    "spd": 22
+  },
+  {
+    "floor": 3,
+    "name": "神殿の回廊",
+    "kind": "plain",
+    "hp": 1044,
+    "atk": 59.5,
+    "def": 22,
+    "spd": 26
+  },
+  {
+    "floor": 4,
+    "name": "崩れた玉座",
+    "kind": "plain",
+    "hp": 1440,
+    "atk": 73.1,
+    "def": 30,
+    "spd": 30
+  },
+  {
+    "floor": 5,
+    "name": "最初の守護者",
+    "kind": "armor",
+    "hp": 2448,
+    "atk": 93.5,
+    "def": 42,
+    "spd": 35
+  },
+  {
+    "floor": 6,
+    "name": "黒晶の門",
+    "kind": "armor",
+    "hp": 4600,
+    "atk": 140,
+    "def": 55,
+    "spd": 40
+  },
+  {
+    "floor": 7,
+    "name": "深淵の風",
+    "kind": "pressure",
+    "hp": 5800,
+    "atk": 175,
+    "def": 65,
+    "spd": 48
+  },
+  {
+    "floor": 8,
+    "name": "回帰する影",
+    "kind": "renewal",
+    "hp": 7000,
+    "atk": 210,
+    "def": 75,
+    "spd": 55
+  },
+  {
+    "floor": 9,
+    "name": "折れた王冠",
+    "kind": "armor",
+    "hp": 8500,
+    "atk": 245,
+    "def": 90,
+    "spd": 62
+  },
+  {
+    "floor": 10,
+    "name": "王権の残響",
+    "kind": "pressure",
+    "hp": 11000,
+    "atk": 290,
+    "def": 110,
+    "spd": 70
+  },
+  {
+    "floor": 11,
+    "name": "黒晶の聖堂",
+    "kind": "armor",
+    "hp": 21025,
+    "atk": 390.99999999999994,
+    "def": 135,
+    "spd": 80
+  },
+  {
+    "floor": 12,
+    "name": "再生の庭",
+    "kind": "renewal",
+    "hp": 24650,
+    "atk": 448.49999999999994,
+    "def": 155,
+    "spd": 90
+  },
+  {
+    "floor": 13,
+    "name": "無音の崩落",
+    "kind": "pressure",
+    "hp": 28275,
+    "atk": 511.74999999999994,
+    "def": 180,
+    "spd": 100
+  },
+  {
+    "floor": 14,
+    "name": "王の防壁",
+    "kind": "armor",
+    "hp": 32625,
+    "atk": 575,
+    "def": 205,
+    "spd": 110
+  },
+  {
+    "floor": 15,
+    "name": "断罪の記憶",
+    "kind": "renewal",
+    "hp": 38425,
+    "atk": 644,
+    "def": 235,
+    "spd": 120
+  },
+  {
+    "floor": 16,
+    "name": "深淵の狭間",
+    "kind": "pressure",
+    "hp": 43500,
+    "atk": 713,
+    "def": 260,
+    "spd": 135
+  },
+  {
+    "floor": 17,
+    "name": "砕ける神域",
+    "kind": "armor",
+    "hp": 49300,
+    "atk": 787.7499999999999,
+    "def": 290,
+    "spd": 150
+  },
+  {
+    "floor": 18,
+    "name": "再誕の残火",
+    "kind": "renewal",
+    "hp": 55100,
+    "atk": 862.4999999999999,
+    "def": 320,
+    "spd": 165
+  },
+  {
+    "floor": 19,
+    "name": "最後の回廊",
+    "kind": "pressure",
+    "hp": 61625,
+    "atk": 942.9999999999999,
+    "def": 350,
+    "spd": 180
+  },
+  {
+    "floor": 20,
+    "name": "カイザー・境界の王",
+    "kind": "armor",
+    "hp": 72500,
+    "atk": 1035,
+    "def": 390,
+    "spd": 200
+  }
+]

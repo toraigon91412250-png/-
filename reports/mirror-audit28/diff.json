@@ -1,0 +1,42 @@
+{
+  "changed": [
+    "web/src/utils/combatObservation.js",
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/components/combatPresentation.js",
+    "tools/build.mjs",
+    "tests/audit-baseline.js"
+  ],
+  "new": [
+    "web/src/utils/mirrorMemory.js",
+    "web/src/utils/mirrorTrial.js",
+    "web/src/components/mirrorView.js",
+    "tests/mirror-trial.test.js",
+    "assets/mirror/release.webp",
+    "assets/mirror/cutin.webp",
+    "assets/mirror/release-sprite.webp",
+    "assets/mirror/red.webp",
+    "assets/mirror/phase2.webp",
+    "assets/mirror/gold.webp",
+    "assets/mirror/phase2-cutin.webp",
+    "assets/mirror/beyond.webp",
+    "assets/mirror/cathedral.webp",
+    "assets/mirror/collision.webp",
+    "assets/mirror/originals/beyond.png",
+    "assets/mirror/originals/red.png",
+    "assets/mirror/originals/cutin.png",
+    "assets/mirror/originals/cathedral.png",
+    "assets/mirror/originals/gold.png"
+  ],
+  "removed": [],
+  "protectedByteIdentical": {
+    "web/src/utils/gameCore.js": "22537179586beeab53e1fd8378472ab4428c7aa7c49861f5b7287eba4cbc42dc",
+    "web/src/utils/progression.js": "c2e774e87541bdfd94beaf3b994a3d1cb223835a0b0acc20a0199c1bca630701",
+    "web/src/utils/storage.js": "864586b7c77ac8ec2dcfae302f4f2b5d0f7fe3cedbac80064b3ac8e21254074a",
+    "web/src/utils/main20.js": "1002a887a2ecbc5e13a3a4dc9ca0553512197034793740d2d3448711b5ac9b3f",
+    "web/src/utils/battleCheckpoint.js": "48beee8c2345fc30ef919c94351cc701746b8a3c5f2942dc939f1368c672c827",
+    "web/src/utils/tacticalMarks.js": "307025722f50d6b4b0c72028ac8c73ca5c952c06461723ebd00b0d74606e1cbe",
+    "web/src/utils/authorityStrike.js": "f29f45a04406a93962e9b5dde918063a937819b0ada46afeec8318ee661c19af",
+    "web/src/data/config.js": "a98a09246fde7ddac6b520ce3fbc6a775fc95e19b1077602e0fa29a2fd3c818f"
+  }
+}

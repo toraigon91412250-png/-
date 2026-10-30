@@ -1,0 +1,5 @@
+{
+  "passed": [],
+  "errors": [],
+  "error": "response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache\n    at captureBuild (/workspace/irena-overnight/irena-reborn/tools/browser-actions.mjs:11:67)\n    at openGame (/workspace/irena-overnight/irena-reborn/tools/browser-actions.mjs:14:142)\n    at async file:///workspace/irena-overnight/irena-reborn/tools/browser-e2e.mjs:17:333"
+}

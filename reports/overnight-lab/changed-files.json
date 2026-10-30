@@ -1,0 +1,21 @@
+{
+  "modified": [
+    "web/src/components/game.css",
+    "web/src/components/App.js",
+    "tools/build.mjs",
+    "tools/three-phase-browser.mjs",
+    "tools/ui-regression.mjs",
+    "tools/browser-actions.mjs",
+    "tests/home-ui.test.js",
+    "irena-play.html"
+  ],
+  "added": [
+    "web/src/components/campaign20View.js",
+    "web/src/utils/campaign20.js",
+    "tests/campaign20.test.js",
+    "assets/overnight-lab/moon-temple.jpg",
+    "assets/overnight-lab/kaiser-normal.webp",
+    "assets/overnight-lab/kaiser-ex.png"
+  ],
+  "mainEngineAndConfigPreserved": true
+}

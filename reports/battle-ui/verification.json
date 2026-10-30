@@ -1,0 +1,32 @@
+{
+  "htmlSHA256": "18a38832d87ed6094556c181a1617169411b694f03efa482c636d32a8159fbef",
+  "unitPass": 174,
+  "unitFail": 0,
+  "syntaxFiles": 28,
+  "buildBytes": 8961993,
+  "embeddedImages": 26,
+  "browsers": {
+    "chromium": {
+      "pass": 98,
+      "fail": 0,
+      "errors": []
+    },
+    "webkit": {
+      "pass": 98,
+      "fail": 0,
+      "errors": []
+    },
+    "existingBrowser": {
+      "pass": 119,
+      "fail": 0,
+      "errors": []
+    },
+    "existingUI": {
+      "pass": 389,
+      "fail": 0,
+      "errors": []
+    }
+  },
+  "realIPhoneTested": false,
+  "deployed": false
+}

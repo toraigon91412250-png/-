@@ -1,0 +1,6 @@
+locator.tap: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('[data-action="combat"][data-id="feather"]').filter({ visible: true }).first()[22m
+
+    at actionClick (/workspace/irena-audit11-combat-direction/irena-reborn/tools/browser-actions.mjs:34:35)
+    at async file:///workspace/irena-audit11-combat-direction/irena-reborn/reports/combat-direction-audit11/browser.mjs:14:2

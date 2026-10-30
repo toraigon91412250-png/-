@@ -1,0 +1,13 @@
+✔ five supplied authority PNGs map to their exact IDs and preserve original bytes (33.679337ms)
+✔ commands and artwork select first slot exclusively, including reversed order (5.583051ms)
+✔ resonance, star, empty and invalid first slot never borrow the second authority (0.45526ms)
+✔ power hit follows 920ms artwork reveal and shell break, without changing fact order (0.946634ms)
+✔ enemy-first, miss, death, recovery and reduced motion retain ordered factual frames (0.729873ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 234.457166

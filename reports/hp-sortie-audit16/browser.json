@@ -1,0 +1,60 @@
+{
+  "passed": 25,
+  "checks": [
+    "320 source art decoded and fully contained",
+    "320 one sortie and approximately 750ms",
+    "320 no hidden turn advance",
+    "320 no horizontal overflow",
+    "320 current HP and afterimage both present",
+    "320 restore does not replay sortie",
+    "390 source art decoded and fully contained",
+    "390 one sortie and approximately 750ms",
+    "390 no hidden turn advance",
+    "390 no horizontal overflow",
+    "390 current HP and afterimage both present",
+    "390 restore does not replay sortie",
+    "430 source art decoded and fully contained",
+    "430 one sortie and approximately 750ms",
+    "430 no hidden turn advance",
+    "430 no horizontal overflow",
+    "430 current HP and afterimage both present",
+    "430 restore does not replay sortie",
+    "milestone5 has no sortie",
+    "real DOM immediate",
+    "real DOM repeated",
+    "real DOM heal",
+    "real DOM zero",
+    "real DOM cancel",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "width": 320,
+      "sessions": [
+        {
+          "start": 5143.80000000447,
+          "end": 5896.89999999851
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "sessions": [
+        {
+          "start": 3075.7000000029802,
+          "end": 3827.8000000044703
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "sessions": [
+        {
+          "start": 5621.29999999702,
+          "end": 6375.79999999702
+        }
+      ]
+    }
+  ]
+}

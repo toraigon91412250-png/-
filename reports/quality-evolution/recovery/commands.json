@@ -1,0 +1,46 @@
+[
+  {
+    "command": "npm test",
+    "cwd": "/workspace/scratch/irena-resume-recovery/extracted/irena-reborn",
+    "exitCode": 0,
+    "log": "unit.txt",
+    "tail": [
+      "✔ double inputs during cinematic cannot trigger multiple turns (1.088503ms)",
+      "✔ white strike renders only on attacking actions and cleans up automatically (2.98627ms)",
+      "ℹ tests 147",
+      "ℹ suites 0",
+      "ℹ pass 147",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 2798.043236"
+    ]
+  },
+  {
+    "command": "npm run check",
+    "cwd": "/workspace/scratch/irena-resume-recovery/extracted/irena-reborn",
+    "exitCode": 0,
+    "log": "syntax.txt",
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 check",
+      "> node tools/check.mjs",
+      "",
+      "Syntax OK: 21 files"
+    ]
+  },
+  {
+    "command": "npm run build",
+    "cwd": "/workspace/scratch/irena-resume-recovery/extracted/irena-reborn",
+    "exitCode": 0,
+    "log": "build.txt",
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 build",
+      "> node tools/build.mjs",
+      "",
+      "Build successful: dist/index.html + irena-play.html (5232605 bytes; 19 embedded images)"
+    ]
+  }
+]

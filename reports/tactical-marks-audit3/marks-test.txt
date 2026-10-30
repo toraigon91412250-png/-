@@ -1,0 +1,440 @@
+✔ ten IDs, old three complete definitions and all prices retained (100.565621ms)
+✔ fallen mark HP boundary 0.500001 (151.391277ms)
+✔ fallen mark HP boundary 0.5 (4.734256ms)
+✔ fallen mark HP boundary 0.499999 (3.200813ms)
+✔ fallen mark HP boundary 0.250001 (3.321311ms)
+✔ fallen mark HP boundary 0.25 (0.576257ms)
+✔ fallen mark HP boundary 0.249999 (6.737521ms)
+✔ fallen mark HP boundary 0.100001 (5.140354ms)
+✔ fallen mark HP boundary 0.1 (5.961061ms)
+✔ fallen mark HP boundary 0.099999 (1.328396ms)
+✔ fallen mark applies to classified special feather (4.254305ms)
+✔ fallen mark applies to classified special pierce (0.485762ms)
+✔ fallen mark applies to classified special volley (1.358474ms)
+✔ fallen mark applies to classified special power (1.778927ms)
+✔ fallen mark does not apply to slash (1.322974ms)
+✔ fallen mark does not apply to ultimate (0.184851ms)
+✔ fire requires exact authority and does not activate from resonance (1.50852ms)
+✔ wind requires exact authority and does not activate from resonance (7.658142ms)
+✔ moon requires exact authority and does not activate from resonance (2.458409ms)
+✔ abyssmark requires exact authority and does not activate from resonance (7.931749ms)
+✔ king mark requires king endurance, not unyielding or resonance lives (9.064464ms)
+✔ king mark heals12% once, shields NEXT hit20%, never adds endurance (2.334144ms)
+✔ king shield survives invulnerability and zero-damage contacts (3.691711ms)
+✔ king mark plus fallen uses normalized HP and clamps healing (9.872754ms)
+✔ judge: 2 hit stacks, triple damage60% ignore; only attack component gains20% (2.894719ms)
+✔ judge interval uses full turn difference3: T1 yes T2/T3 no T4 yes (1.66342ms)
+✔ judge misses neither spend interval nor advance stacks (1.143675ms)
+✔ abyss mark starts on third round, same-target phases retain count; new target resets (25.251775ms)
+✔ wing mark final12% on feather after defense and wing5x (2.024419ms)
+✔ wing mark final12% on pierce after defense and wing5x (2.08105ms)
+✔ wing mark final12% on volley after defense and wing5x (4.0882ms)
+✔ wing mark excludes slash (2.088489ms)
+✔ wing mark excludes power (1.607657ms)
+✔ wing mark excludes ultimate (3.845396ms)
+✔ counter persists through waits/repeated guards; one attack consumes it without stacking (3.792246ms)
+✔ guard without counter mark never arms counter (2.68633ms)
+✔ counter consumed on missed attack, not on invalid CT or stun wait (7.770622ms)
+✔ counter affects both volley shots once and is not consumed if enemy first kills player (7.602553ms)
+✔ ending boundary 0.250001 uses attack-start HP, no stacking or instant kill (2.854237ms)
+✔ ending boundary 0.25 uses attack-start HP, no stacking or instant kill (1.554738ms)
+✔ ending boundary 0.249999 uses attack-start HP, no stacking or instant kill (2.495713ms)
+✔ ending boundary 0.100001 uses attack-start HP, no stacking or instant kill (4.283805ms)
+✔ ending boundary 0.1 uses attack-start HP, no stacking or instant kill (7.915598ms)
+✔ ending boundary 0.099999 uses attack-start HP, no stacking or instant kill (3.457747ms)
+✔ three mark slots combine once: wing/ending/counter multiplies after defense (8.846644ms)
+✔ new mark bonuses retain damage safety cap under extreme stats (2.078483ms)
+✔ new marks remain isolated from stella/final characters (6.613997ms)
+✔ old save irena-reborn-v1 keeps all ten owned IDs, 3 slots and activation history (16.597586ms)
+✔ old save irena-reborn-v2 keeps all ten owned IDs, 3 slots and activation history (2.727854ms)
+✔ old save irena-reborn-v3 keeps all ten owned IDs, 3 slots and activation history (3.610449ms)
+✔ buy, equip, unequip preserve cost, ownership, three slots, no duplicates (3.893058ms)
+✖ localStorage/JSON replay retains counter, CT, HP, mark history and enemy turn; no build recursion (53.244843ms)
+✖ king once-only heal and next-hit shield survive reload; judge interval does too (9.767395ms)
+✖ replayed combat resumes same result/reward once; terminal checkpoints removed (16.184839ms)
+✔ invalid checkpoint data is rejected, never silently resets an active battle (13.859145ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 52
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1852.993464
+
+✖ failing tests:
+
+test at tests/tactical-marks.test.js:45:1
+✖ localStorage/JSON replay retains counter, CT, HP, mark history and enemy turn; no build recursion (53.244843ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      balance: 0,
+      base: {
+        atk: 1813,
+        def: 836,
+  ...
+      build: {
+  +     achieved: [
+  +       'A6',
+  +       'A7',
+  +       'A8',
+  +       'A9',
+  +       'A10',
+  +       'A11',
+  +       'B4',
+  +       'B5',
+  +       'B6',
+  +       'B7',
+  +       'C2',
+  +       'C3',
+  +       'C7',
+  +       'C8',
+  +       'C9'
+  +     ],
+  -     achieved: [],
+        awakening: 0,
+        badge: null,
+        claimed: [],
+        cleared: [
+          1,
+  ...
+        ],
+  +     maxHistory: [
+  +       'abyss',
+  +       'fallen',
+  +       'wing',
+  +       'king',
+  +       'judge'
+  +     ],
+  -     maxHistory: [],
+        medals: 0,
+        p: 999999,
+        powerHistory: [
+          'abyss',
+          'wing',
+  +       'fallen',
+  +       'king',
+  +       'judge'
+        ],
+        powers: {
+          abyss: 5,
+          fallen: 5,
+          judge: 5,
+  
+      at TestContext.<anonymous> (file:///workspace/irena-tactical-marks-audit3/irena-reborn/tests/tactical-marks.test.js:45:255)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { mode: 'ex', floor: 100, difficulty: 'NORMAL', test: false, character: 'irena', build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [Array], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [Array], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null }, replay: [ [Object] ], base: { hp: 7428, atk: 1813, def: 836, spd: 299 }, hp: 6941, enemy: { name: 'EX カイザー', base: [Object], hp: 196640, phase: 1, buffs: [], statuses: {}, markTurns: 1 }, turn: 2, gauge: 18, balance: 0, cd: {}, buffs: [], statuses: {}, erosion: 0, stacks: {}, lives: 5, markLife: 0, godThresholds: [], rebirths: 0, meteor: false, phaseTurns: 0, powers: [ 'king', 'judge' ], marks: [ 'iron', 'moon', 'crown' ], used: { special: 0, ultimate: 0, marks: [], endure: false, low: false }, result: null, settled: false, lastFeather: null, log: [ '境界に立つ者よ、失われた力を取り戻せ。', '敵の反撃 → 487', '反攻の刻印：次の攻撃＋35%', '防御：被ダメージ70%軽減' ], lastDamage: 0, enemyDamage: 487, enemyStop: 0, events: [], noBuff: 0, noPressure: 0, ignoreDefense: 0, lastAction: 'guard', markState: { kingUsed: false, kingShield: false, counterReady: true, judgeReadyTurn: 0 } },
+    expected: { mode: 'ex', floor: 100, difficulty: 'NORMAL', test: false, character: 'irena', build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null }, replay: [ [Object] ], base: { hp: 7428, atk: 1813, def: 836, spd: 299 }, hp: 6941, enemy: { name: 'EX カイザー', base: [Object], hp: 196640, phase: 1, buffs: [], statuses: {}, markTurns: 1 }, turn: 2, gauge: 18, balance: 0, cd: {}, buffs: [], statuses: {}, erosion: 0, stacks: {}, lives: 5, markLife: 0, godThresholds: [], rebirths: 0, meteor: false, phaseTurns: 0, powers: [ 'king', 'judge' ], marks: [ 'iron', 'moon', 'crown' ], used: { special: 0, ultimate: 0, marks: [], endure: false, low: false }, result: null, settled: false, lastFeather: null, log: [ '境界に立つ者よ、失われた力を取り戻せ。', '敵の反撃 → 487', '反攻の刻印：次の攻撃＋35%', '防御：被ダメージ70%軽減' ], lastDamage: 0, enemyDamage: 487, enemyStop: 0, events: [], noBuff: 0, noPressure: 0, ignoreDefense: 0, lastAction: 'guard', markState: { kingUsed: false, kingShield: false, counterReady: true, judgeReadyTurn: 0 } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/tactical-marks.test.js:46:1
+✖ king once-only heal and next-hit shield survive reload; judge interval does too (9.767395ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      balance: 0,
+      base: {
+        atk: 1813,
+        def: 836,
+  ...
+      build: {
+  +     achieved: [
+  +       'A6',
+  +       'A7',
+  +       'A8',
+  +       'A9',
+  +       'A10',
+  +       'A11',
+  +       'B4',
+  +       'B5',
+  +       'B6',
+  +       'B7',
+  +       'C2',
+  +       'C3',
+  +       'C7',
+  +       'C8',
+  +       'C9'
+  +     ],
+  -     achieved: [],
+        awakening: 0,
+        badge: null,
+        claimed: [],
+        cleared: [
+          1,
+  ...
+        ],
+  +     maxHistory: [
+  +       'abyss',
+  +       'fallen',
+  +       'wing',
+  +       'king',
+  +       'judge'
+  +     ],
+  -     maxHistory: [],
+        medals: 0,
+        p: 999999,
+        powerHistory: [
+          'abyss',
+          'wing',
+  +       'fallen',
+  +       'king',
+  +       'judge'
+        ],
+        powers: {
+          abyss: 5,
+          fallen: 5,
+          judge: 5,
+  
+      at TestContext.<anonymous> (file:///workspace/irena-tactical-marks-audit3/irena-reborn/tests/tactical-marks.test.js:46:311)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { mode: 'ex', floor: 100, difficulty: 'NORMAL', test: false, character: 'irena', build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [Array], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [Array], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null }, replay: [ [Object], [Object], [Object], [Object], [Object] ], base: { hp: 7428, atk: 1813, def: 836, spd: 299 }, hp: 892.36, enemy: { name: 'EX カイザー', base: [Object], hp: 146772, phase: 1, buffs: [], statuses: {}, markTurns: 5 }, turn: 6, gauge: 100, balance: 0, cd: {}, buffs: [], statuses: {}, erosion: 0, stacks: { judge: 2 }, lives: 4, markLife: 0, godThresholds: [], rebirths: 0, meteor: false, phaseTurns: 0, powers: [ 'king', 'judge' ], marks: [ 'crown', 'moon', 'iron' ], used: { special: 0, ultimate: 0, marks: [Array], endure: false, low: true }, result: null, settled: false, lastFeather: null, log: [ '境界に立つ者よ、失われた力を取り戻せ。', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ', '敵の反撃 → 1,624', '断罪発動：敵の攻撃前現在HP20%を加算', '断罪の刻印：強化攻撃＋20%', '斬撃 → 45,080 ダメージ', '敵の重撃 → 2,485', '斬撃 → 1,197 ダメージ', '堕天王：HP1で耐えた / 残り4回', '堕天王の刻印：最大HP12%回復・次の被ダメージ20%軽減', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ' ], lastDamage: 1197, enemyDamage: 70, enemyStop: 0, events: [ [Object] ], noBuff: 0, noPressure: 0, ignoreDefense: 0, lastAction: 'slash', markState: { kingUsed: true, kingShield: true, counterReady: false, judgeReadyTurn: 6 } },
+    expected: { mode: 'ex', floor: 100, difficulty: 'NORMAL', test: false, character: 'irena', build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null }, replay: [ [Object], [Object], [Object], [Object], [Object] ], base: { hp: 7428, atk: 1813, def: 836, spd: 299 }, hp: 892.36, enemy: { name: 'EX カイザー', base: [Object], hp: 146772, phase: 1, buffs: [], statuses: {}, markTurns: 5 }, turn: 6, gauge: 100, balance: 0, cd: {}, buffs: [], statuses: {}, erosion: 0, stacks: { judge: 2 }, lives: 4, markLife: 0, godThresholds: [], rebirths: 0, meteor: false, phaseTurns: 0, powers: [ 'king', 'judge' ], marks: [ 'crown', 'moon', 'iron' ], used: { special: 0, ultimate: 0, marks: [Array], endure: false, low: true }, result: null, settled: false, lastFeather: null, log: [ '境界に立つ者よ、失われた力を取り戻せ。', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ', '敵の反撃 → 1,624', '断罪発動：敵の攻撃前現在HP20%を加算', '断罪の刻印：強化攻撃＋20%', '斬撃 → 45,080 ダメージ', '敵の重撃 → 2,485', '斬撃 → 1,197 ダメージ', '堕天王：HP1で耐えた / 残り4回', '堕天王の刻印：最大HP12%回復・次の被ダメージ20%軽減', '敵の反撃 → 1,624', '斬撃 → 1,197 ダメージ' ], lastDamage: 1197, enemyDamage: 70, enemyStop: 0, events: [ [Object] ], noBuff: 0, noPressure: 0, ignoreDefense: 0, lastAction: 'slash', markState: { kingUsed: true, kingShield: true, counterReady: false, judgeReadyTurn: 6 } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/tactical-marks.test.js:47:1
+✖ replayed combat resumes same result/reward once; terminal checkpoints removed (16.184839ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      balance: 0,
+      base: {
+        atk: 1813,
+        def: 836,
+  ...
+      build: {
+  +     achieved: [
+  +       'A6',
+  +       'A7',
+  +       'A8',
+  +       'A9',
+  +       'A10',
+  +       'A11',
+  +       'B4',
+  +       'B5',
+  +       'B6',
+  +       'B7',
+  +       'C2',
+  +       'C3',
+  +       'C7',
+  +       'C8',
+  +       'C9'
+  +     ],
+  -     achieved: [],
+        awakening: 0,
+        badge: null,
+        claimed: [],
+        cleared: [
+          1,
+  ...
+        ],
+  +     maxHistory: [
+  +       'abyss',
+  +       'fallen',
+  +       'wing',
+  +       'king',
+  +       'judge'
+  +     ],
+  -     maxHistory: [],
+        medals: 0,
+        p: 999999,
+        powerHistory: [
+          'abyss',
+          'wing',
+  +       'fallen',
+  +       'king',
+  +       'judge'
+        ],
+        powers: {
+          abyss: 5,
+          fallen: 5,
+          judge: 5,
+  
+      at TestContext.<anonymous> (file:///workspace/irena-tactical-marks-audit3/irena-reborn/tests/tactical-marks.test.js:47:310)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: {
+      mode: 'normal',
+      floor: 100,
+      difficulty: 'NORMAL',
+      test: false,
+      character: 'irena',
+      build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [Array], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [Array], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null },
+      replay: [
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object]
+      ],
+      base: { hp: 7428, atk: 1813, def: 836, spd: 299 },
+      hp: 577.1599999999999,
+      enemy: { name: 'カイザー Lv.100', base: [Object], hp: 0, phase: 1, buffs: [], statuses: {}, markTurns: 18 },
+      turn: 18,
+      gauge: 100,
+      balance: 0,
+      cd: {},
+      buffs: [],
+      statuses: {},
+      erosion: 0,
+      stacks: { judge: 2 },
+      lives: 4,
+      markLife: 0,
+      godThresholds: [],
+      rebirths: 0,
+      meteor: false,
+      phaseTurns: 0,
+      powers: [ 'king', 'judge' ],
+      marks: [ 'iron', 'moon', 'crown' ],
+      used: { special: 0, ultimate: 0, marks: [Array], endure: false, low: true },
+      result: 'win',
+      settled: false,
+      lastFeather: null,
+      log: [
+        '境界に立つ者よ、失われた力を取り戻せ。',             '反攻の刻印：次の攻撃＋35%',
+        '防御：被ダメージ70%軽減',                            '敵の反撃 → 118',
+        '斬撃 → 2,031 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 25,335 ダメージ',                             '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 19,666 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 15,131 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の重撃 → 824',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 11,503 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 8,600 ダメージ',                              '堕天王：HP1で耐えた / 残り4回',
+        '堕天王の刻印：最大HP12%回復・次の被ダメージ20%軽減', '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '堕天王の刻印：被ダメージ20%軽減',
+        '敵の反撃 → 394',                                     '斬撃 → 1,505 ダメージ',
+        'VICTORY — 再誕への一歩'
+      ],
+      lastDamage: 1505,
+      enemyDamage: 0,
+      enemyStop: 0,
+      events: [ [Object] ],
+      noBuff: 0,
+      noPressure: 0,
+      ignoreDefense: 0,
+      lastAction: 'slash',
+      markState: { kingUsed: true, kingShield: false, counterReady: false, judgeReadyTurn: 19 }
+    },
+    expected: {
+      mode: 'normal',
+      floor: 100,
+      difficulty: 'NORMAL',
+      test: false,
+      character: 'irena',
+      build: { version: 4, started: true, level: 100, floor: 100, cleared: [Array], p: 999999, sp: 1000, stats: [Object], powers: [Object], fragments: [Object], powerHistory: [Array], maxHistory: [], equipped: [Array], resonance: [Object], recipes: [], resShards: 99999, marks: [Array], markEquip: [Array], markUsed: [], talent: 1, skills: [Object], achieved: [], claimed: [], badge: null, summons: 0, collection: [], summonHistory: [], flags: [Object], counts: [Object], records: [Object], finalBuild: [Object], awakening: 0, godMaterials: 999, godUnique: [Array], medals: 0, gauntlet: null, dev: null, savedAt: null },
+      replay: [
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object],
+        [Object], [Object], [Object]
+      ],
+      base: { hp: 7428, atk: 1813, def: 836, spd: 299 },
+      hp: 577.1599999999999,
+      enemy: { name: 'カイザー Lv.100', base: [Object], hp: 0, phase: 1, buffs: [], statuses: {}, markTurns: 18 },
+      turn: 18,
+      gauge: 100,
+      balance: 0,
+      cd: {},
+      buffs: [],
+      statuses: {},
+      erosion: 0,
+      stacks: { judge: 2 },
+      lives: 4,
+      markLife: 0,
+      godThresholds: [],
+      rebirths: 0,
+      meteor: false,
+      phaseTurns: 0,
+      powers: [ 'king', 'judge' ],
+      marks: [ 'iron', 'moon', 'crown' ],
+      used: { special: 0, ultimate: 0, marks: [Array], endure: false, low: true },
+      result: 'win',
+      settled: false,
+      lastFeather: null,
+      log: [
+        '境界に立つ者よ、失われた力を取り戻せ。',             '反攻の刻印：次の攻撃＋35%',
+        '防御：被ダメージ70%軽減',                            '敵の反撃 → 118',
+        '斬撃 → 2,031 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 25,335 ダメージ',                             '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 19,666 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 15,131 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の重撃 → 824',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 11,503 ダメージ',                             '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '斬撃 → 1,505 ダメージ',                              '敵の反撃 → 394',
+        '断罪発動：敵の攻撃前現在HP20%を加算',                '断罪の刻印：強化攻撃＋20%',
+        '斬撃 → 8,600 ダメージ',                              '堕天王：HP1で耐えた / 残り4回',
+        '堕天王の刻印：最大HP12%回復・次の被ダメージ20%軽減', '敵の重撃 → 824',
+        '斬撃 → 1,505 ダメージ',                              '堕天王の刻印：被ダメージ20%軽減',
+        '敵の反撃 → 394',                                     '斬撃 → 1,505 ダメージ',
+        'VICTORY — 再誕への一歩'
+      ],
+      lastDamage: 1505,
+      enemyDamage: 0,
+      enemyStop: 0,
+      events: [ [Object] ],
+      noBuff: 0,
+      noPressure: 0,
+      ignoreDefense: 0,
+      lastAction: 'slash',
+      markState: { kingUsed: true, kingShield: false, counterReady: false, judgeReadyTurn: 19 }
+    },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

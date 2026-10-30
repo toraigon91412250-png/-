@@ -1,0 +1,72 @@
+{
+  "browser": "Chromium",
+  "viewport": {
+    "width": 667,
+    "height": 375
+  },
+  "modes": 5,
+  "checks": 20,
+  "errors": [],
+  "results": [
+    {
+      "name": "raid",
+      "difficulty": "NIGHTMARE",
+      "actualHP": "220,236 / 220,236",
+      "badge": 1,
+      "size": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    },
+    {
+      "name": "god",
+      "difficulty": "NIGHTMARE",
+      "actualHP": "72,000 / 72,000",
+      "badge": 1,
+      "size": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    },
+    {
+      "name": "EX",
+      "difficulty": "NIGHTMARE",
+      "actualHP": "314,624 / 314,624",
+      "badge": 1,
+      "size": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    },
+    {
+      "name": "Stella",
+      "difficulty": "NIGHTMARE",
+      "actualHP": "48,000 / 48,000",
+      "badge": 1,
+      "size": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    },
+    {
+      "name": "final Irena",
+      "difficulty": "NIGHTMARE",
+      "actualHP": "136,000 / 136,000",
+      "badge": 1,
+      "size": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    }
+  ]
+}

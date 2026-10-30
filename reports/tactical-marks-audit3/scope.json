@@ -1,0 +1,25 @@
+{
+  "changedFunctions": {
+    "web/src/utils/gameCore.js": [
+      "baseStats",
+      "startBattle",
+      "dealPlayer",
+      "passiveStart",
+      "attack",
+      "act"
+    ],
+    "web/src/components/App.js": [
+      "persist",
+      "marksView",
+      "doCombat",
+      "importFile"
+    ],
+    "web/src/utils/storage.js": [
+      "validateSave"
+    ]
+  },
+  "startup": "restore optional main mark battle after load",
+  "config": "MARKS only",
+  "css": "unchanged",
+  "assets": "unchanged"
+}

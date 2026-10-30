@@ -1,0 +1,47 @@
+{
+  "version": "20261023-audit2-art",
+  "baseline": {
+    "testsPass": 232,
+    "testsFail": 0,
+    "syntaxFiles": 35,
+    "buildSuccess": true
+  },
+  "current": {
+    "testsPass": 236,
+    "testsFail": 0,
+    "testsSkipped": 0,
+    "syntaxFiles": 36,
+    "buildSuccess": true
+  },
+  "browser": {
+    "engine": "Chromium",
+    "pass": 398,
+    "fail": 0,
+    "errors": [],
+    "widths": [
+      320,
+      375,
+      390,
+      430,
+      1280
+    ],
+    "standaloneEmbeddedExact": true,
+    "sourceEntryAndImageFailure": true
+  },
+  "imageOriginalsAndCopiesIdentical": true,
+  "protectedBaselineFiles": 83,
+  "htmlSHA256": "67136646eb771ff900d2886470045441b29c4481d4bd892c08d9c9555dec6176",
+  "htmlBytes": 21064599,
+  "recovery": {
+    "testsPass": 236,
+    "testsFail": 0,
+    "syntaxFiles": 36,
+    "buildSuccess": true,
+    "htmlByteIdentical": true,
+    "htmlSHA256": "67136646eb771ff900d2886470045441b29c4481d4bd892c08d9c9555dec6176"
+  },
+  "webKit": "unavailable: executable absent",
+  "realIPhone": "not tested for this version",
+  "deployed": false,
+  "inputZIPAndBackupSHA256": "f123a0629f45c3d9c26358c788ab926b9ce7960434918247fa79cda3c3ffbb2b"
+}

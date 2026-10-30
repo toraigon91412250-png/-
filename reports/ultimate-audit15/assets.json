@@ -1,0 +1,53 @@
+[
+  {
+    "id": "hero",
+    "originalSize": [
+      1536,
+      1024
+    ],
+    "displaySize": [
+      1152,
+      768
+    ],
+    "mode": "RGB",
+    "alpha": null,
+    "webpBytes": 334226,
+    "originalSHA256": "9c4357a0af00b33a14400feaaf8bc6f720d552a65cfab7feb31fbfb3a0974e24"
+  },
+  {
+    "id": "eclipse",
+    "originalSize": [
+      1254,
+      1254
+    ],
+    "displaySize": [
+      640,
+      640
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "webpBytes": 163938,
+    "originalSHA256": "30f274b4bd10cdcdf808c4a71a5175f5819dbe9b553a59d9e80b2a9f79d3da8e"
+  },
+  {
+    "id": "impact",
+    "originalSize": [
+      1024,
+      1536
+    ],
+    "displaySize": [
+      576,
+      864
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      254
+    ],
+    "webpBytes": 232852,
+    "originalSHA256": "3e04a6e5c3fb8a3e825b6e12aefc29d56f45d038e28bf320087208de9e55b22e"
+  }
+]

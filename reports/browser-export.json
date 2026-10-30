@@ -1,0 +1,111 @@
+{
+  "game": "irena-reborn",
+  "version": 4,
+  "state": {
+    "version": 4,
+    "started": true,
+    "level": 2,
+    "floor": 2,
+    "cleared": [
+      1
+    ],
+    "p": 220,
+    "sp": 0,
+    "stats": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spd": 0
+    },
+    "powers": {
+      "abyss": 1,
+      "wing": 1
+    },
+    "fragments": {
+      "abyss": 4,
+      "fallen": 4,
+      "wing": 4,
+      "king": 4,
+      "judge": 4
+    },
+    "powerHistory": [
+      "abyss",
+      "wing"
+    ],
+    "maxHistory": [],
+    "equipped": [
+      "wing",
+      "abyss"
+    ],
+    "resonance": {},
+    "recipes": [],
+    "resShards": 3,
+    "marks": [],
+    "markEquip": [],
+    "markUsed": [],
+    "talent": 1,
+    "skills": {
+      "feather": 1,
+      "destruction": 1,
+      "ultimate": 1
+    },
+    "achieved": [
+      "A0",
+      "A3",
+      "C1"
+    ],
+    "claimed": [],
+    "badge": null,
+    "summons": 0,
+    "collection": [],
+    "summonHistory": [],
+    "flags": {
+      "lv100": false,
+      "reward100": false,
+      "stella": false,
+      "warp": false,
+      "ex": false,
+      "exReward": false,
+      "stellaClear": false,
+      "final": false,
+      "finalClear": false
+    },
+    "counts": {
+      "wins": 1,
+      "streak": 0,
+      "special": 1,
+      "ultimate": 0,
+      "raid": 0
+    },
+    "records": {
+      "fast": true,
+      "nopower": false,
+      "basic": false,
+      "expert": false,
+      "starfinish": false,
+      "low": false,
+      "nomark": true,
+      "endure": false
+    },
+    "finalBuild": {
+      "points": 150,
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spd": 0
+    },
+    "awakening": 0,
+    "godMaterials": 0,
+    "godUnique": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "medals": 0,
+    "gauntlet": null,
+    "dev": null,
+    "savedAt": "2026-10-22T06:21:04.387Z"
+  }
+}

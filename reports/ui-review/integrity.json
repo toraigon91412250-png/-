@@ -1,0 +1,17 @@
+{
+  "finalHTMLSHA256": "ce4ba92a7c375bb4c9823ea3f158302f957a8d77309824b678fd61bf31dd1c23",
+  "unchanged": {
+    "web/src/utils/gameCore.js": true,
+    "web/src/utils/progression.js": true,
+    "web/src/utils/storage.js": true,
+    "web/src/data/config.js": true,
+    "tests/core.test.js": true,
+    "tests/campaign.test.js": true
+  },
+  "verifiedScreens": {
+    "before": 27,
+    "after": 27,
+    "iphoneChromium": 100,
+    "iphoneWebKit": 100
+  }
+}

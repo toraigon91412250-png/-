@@ -1,0 +1,38 @@
+{
+  "browser": "Chromium",
+  "viewport": 390,
+  "checks": 15,
+  "errors": [],
+  "results": [
+    {
+      "label": "raid",
+      "heading": "TURN 1 / 深淵レイド / ",
+      "enemyHP": 220236,
+      "viewport": 390
+    },
+    {
+      "label": "god",
+      "heading": "TURN 1 / 神域連戦 / ",
+      "enemyHP": 72000,
+      "viewport": 390
+    },
+    {
+      "label": "EX",
+      "heading": "TURN 1 / EXカイザー戦 / ",
+      "enemyHP": 314624,
+      "viewport": 390
+    },
+    {
+      "label": "Stella",
+      "heading": "BATTLE / TURN 1 / 境界の戦い / ",
+      "enemyHP": 48000,
+      "viewport": 390
+    },
+    {
+      "label": "final Irena",
+      "heading": "BATTLE / TURN 1 / 境界の戦い / ",
+      "enemyHP": 136000,
+      "viewport": 390
+    }
+  ]
+}

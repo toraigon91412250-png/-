@@ -1,0 +1,1954 @@
+[
+  {
+    "profile": "wingAbyss",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "abyss"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 46,
+        "ultimate": 4,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingAbyss",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "abyss"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A9",
+        "B5",
+        "B7",
+        "A4",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 39,
+        "ultimate": 0,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingKing",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "king"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 48,
+        "ultimate": 5,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingKing",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "king"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A9",
+        "B5",
+        "B7",
+        "A4",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 39,
+        "ultimate": 1,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingFallen",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "fallen"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 48,
+        "ultimate": 5,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingFallen",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "fallen"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A9",
+        "B5",
+        "B7",
+        "A4",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 39,
+        "ultimate": 1,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingJudge",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "judge"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 45,
+        "ultimate": 1,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "wingJudge",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "wing",
+        "judge"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A9",
+        "B5",
+        "B7",
+        "A4",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 37,
+        "ultimate": 0,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "judgeAbyss",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "judge",
+        "abyss"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 50,
+        "ultimate": 5,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "judgeAbyss",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "judge",
+        "abyss"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A9",
+        "B5",
+        "B7",
+        "A4",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 37,
+        "ultimate": 3,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "abyssKing",
+    "marks": "none",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 165,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "abyss",
+        "king"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [],
+      "markUsed": [],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 4
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "C1",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A5",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 78,
+        "ultimate": 16,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": true,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  },
+  {
+    "profile": "abyssKing",
+    "marks": "split",
+    "state": {
+      "version": 5,
+      "started": true,
+      "level": 61,
+      "floor": 20,
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "p": 110,
+      "sp": 50,
+      "stats": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "powers": {
+        "abyss": 5,
+        "wing": 5,
+        "fallen": 5,
+        "king": 5,
+        "judge": 5
+      },
+      "fragments": {
+        "abyss": 148,
+        "fallen": 148,
+        "wing": 148,
+        "king": 148,
+        "judge": 148
+      },
+      "powerHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "maxHistory": [
+        "abyss",
+        "wing",
+        "fallen",
+        "king",
+        "judge"
+      ],
+      "equipped": [
+        "abyss",
+        "king"
+      ],
+      "resonance": {},
+      "recipes": [],
+      "resShards": 60,
+      "marks": [
+        "split",
+        "starfall",
+        "endure"
+      ],
+      "markEquip": [
+        "split"
+      ],
+      "markUsed": [
+        "split"
+      ],
+      "talent": 13,
+      "skills": {
+        "feather": 10,
+        "destruction": 4,
+        "ultimate": 3
+      },
+      "achieved": [
+        "A0",
+        "A3",
+        "A6",
+        "B0",
+        "B4",
+        "A7",
+        "B6",
+        "A1",
+        "A8",
+        "A4",
+        "A9",
+        "B5",
+        "B7",
+        "A5",
+        "A10",
+        "A11"
+      ],
+      "claimed": [],
+      "badge": null,
+      "summons": 0,
+      "collection": [],
+      "summonHistory": [],
+      "flags": {
+        "lv100": true,
+        "reward100": true,
+        "stella": false,
+        "warp": false,
+        "ex": false,
+        "exReward": false,
+        "stellaClear": false,
+        "final": false,
+        "finalClear": false
+      },
+      "counts": {
+        "wins": 20,
+        "streak": 20,
+        "special": 70,
+        "ultimate": 15,
+        "raid": 0
+      },
+      "records": {
+        "fast": true,
+        "nopower": false,
+        "basic": false,
+        "expert": false,
+        "starfinish": false,
+        "low": false,
+        "nomark": false,
+        "endure": false
+      },
+      "finalBuild": {
+        "points": 150,
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "spd": 0
+      },
+      "awakening": 0,
+      "godMaterials": 0,
+      "godUnique": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "medals": 0,
+      "gauntlet": null,
+      "dev": null,
+      "savedAt": null,
+      "route20": 1,
+      "legacyCleared": []
+    }
+  }
+]
