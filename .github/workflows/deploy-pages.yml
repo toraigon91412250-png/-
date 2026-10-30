@@ -29,6 +29,11 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Stage original test assets
+        run: |
+          cp -R migration-inputs/assets-to-integrate ../assets-to-integrate
+          cp -R migration-inputs/combat-ui-user-input ../combat-ui-user-input
+          cp -R migration-inputs/supplied-raid ../supplied-raid
       - name: Run tests
         run: npm test
       - name: Check JavaScript syntax
