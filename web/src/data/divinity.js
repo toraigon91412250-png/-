@@ -8,7 +8,7 @@ export const DIV_STAGES=[
  {name:'神翼の胎動',effect:'異なる権能の専用技を続けると連携1.35倍。戦闘中に2枠目の権能を呼び戻せる。',memory:'深淵にも、玉座にも、同じ言葉を残していた。「私に、選び直す時間を」。'},
  {name:'神威の顕現',effect:'浄化：状態異常解除・HP25%回復。CT5。',memory:'力があれば全て救えると信じた。けれど、私が決めた幸福に、皆の声はなかった。'},
  {name:'神域の再臨',effect:'一戦一度、致死ダメージからHP40%で再起。',memory:'神々は私の力を奪わなかった。自ら封じる私を見届け、帰還の試練を預かったのだ。'},
- {name:'真・神格解放',effect:'全権能統合・全能力3倍を4行動。終極の専用技を解放。',memory:'未来をひとつに固定する力を、私は自ら封じた。今度は誰かの選択を守るために。この力を、私の意思で取り戻す。'}
+ {name:'真・神格解放',effect:'五権能との協力によって、全権委任Xへと至る。',memory:'未来をひとつに固定する力を、私は自ら封じた。今度は誰かの選択を守るために。この力を、私の意思で取り戻す。'}
 ];
 export const DIV_BRANCHES={
  wing:[['assault','烈翼','羽弾系・翼嵐の威力1.3倍'],['shelter','羽衣','防御・羽衣でHP12%回復、羽を追加で1蓄積']],
@@ -30,8 +30,8 @@ export const DIV_SKILLS={
  royalGuard:{name:'王権・受け流し',power:'king',level:1,ct:2,guard:true,text:'防御＋障壁25%。予告重撃に反撃準備 / CT2'},
  royalReturn:{name:'王権・反照',power:'king',level:5,ct:3,base:'power',text:'防御の反撃蓄積を解き放ちHP20%回復 / CT3'},
  purify:{name:'神威・浄化',stage:3,ct:5,text:'異常解除・HP25%回復 / CT5'},
- apotheosis:{name:'真・神格解放',stage:5,ct:8,text:'全権能統合・全能力3倍・4行動 / CT8'},
- convergence:{name:'万象・帰還',stage:5,ct:2,base:'ultimate',text:'解放中専用。五権能の記憶を重ねる一撃 / CT2'}
+ apotheosis:{name:'全権委任X・零域全解放',stage:0,ct:0,text:'五権能の協力率51%以上・1戦1回。全能力3倍で2行動'},
+ convergence:{name:'万象・帰還',stage:0,ct:2,base:'ultimate',text:'零域全解放中専用。五権能の力を重ねる一撃 / CT2'}
 };
 for(const id of DIV_IDS)DIV_SKILLS['attune_'+id]={name:DIV_NAMES[id]+'を呼び戻す',stage:2,attune:id,ct:2,text:'1行動で2枠目を変更。敵の応答あり / CT2'};
 export const DIV_TRIALS={

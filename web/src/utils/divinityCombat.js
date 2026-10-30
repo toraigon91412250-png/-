@@ -1,5 +1,6 @@
 import {DIV_IDS,DIV_SKILLS} from '../data/divinity.js';
 import {RECIPES} from '../data/config.js';
+import {cooperationEnabled,canZeroRelease,cooperationStrikeMultiplier,registerCooperationAction,cooperationDialogue} from './divinityCooperation.js';
 import {hasDivinity} from './divinityProgress.js';
 import {attack,buff,heal,log,playerStats,baseStats} from './gameCore.js';
 export const isDivinityBattle=b=>b?.character==='irena'&&hasDivinity(b.build);
@@ -15,7 +16,11 @@ export function divinityAvailable(b,action){
  const row=DIV_SKILLS[action],d=divBattleState(b);
  if(row){
   if(row.attune){if(!b.build.divinity.reclaimed.includes(row.attune))return '未奪還の権能です';if(d.unified)return '統合中は全権能を使用できます';if(b.powers.includes(row.attune))return '既に装備しています';}
-  if(row.stage&&b.build.awakening<row.stage)return `神格第${row.stage}段階で解放`;
+  if(action==='apotheosis'&&cooperationEnabled(b.build)){
+   if(d.unifiedUsed)return '零域全解放は1戦闘1回';
+   if(!canZeroRelease(b.build))return '全5権能の協力率51%以上が必要';
+  }
+  if(row.stage&&b.build.awakening<row.stage&&!(cooperationEnabled(b.build)&&row.attune))return `神格第${row.stage}段階で解放`;
   if(row.power&&(!divHasPower(b,row.power)||divPowerLevel(b,row.power)<row.level))return `${row.power}権能を装備・Lv.${row.level}で解放`;
   if(action==='fallenEnd'&&b.hp/b.base.hp>.25)return 'HP25%以下で使用可能';
   if(action==='judgment'&&d.proof<2)return '異なる攻撃で証を2つ蓄積';
@@ -30,6 +35,7 @@ export function divinityAvailable(b,action){
 export const divinityIsGuard=(b,action)=>isDivinityBattle(b)&&!!DIV_SKILLS[action]?.guard;
 export function divinityTrialFloor(b){
  const t=b.trial;if(t?.kind!=='divinity')return 0;
+ if(t.cooperation)return t.proven?0:.1;
  if(t.id==='truth')return !t.heavyGuarded||t.seen.length<3?.15:0;
  if(t.id==='infinite')return [0,.15,.45,.75][t.seals];
  return !t.awakened?.45:!t.used?.1:0;
@@ -55,7 +61,7 @@ export function divinityStrikeProfile(b,action){
  d.attackWasGuarded=d.guarded;
  if(d.guarded&&b.build.awakening>=1){mult*=1.35;d.guarded=false;log(b,'神性の反撃：次の攻撃＋35%');}
  if(row?.power&&d.lastPower&&d.lastPower!==row.power&&(b.build.awakening>=2||divPowerLevel(b,row.power)>=4)){mult*=b.build.awakening>=2?1.35:1.2;d.links++;log(b,'権能連携：異なる記憶が重なった');b.events.push({type:'divinityLink',from:d.lastPower,to:row.power});}
- if(row?.power)d.lastPower=row.power;
+ if(row?.power){d.lastPower=row.power;mult*=cooperationStrikeMultiplier(b.build,row.power);}
  if(['feather','pierce','volley'].includes(action)&&branch.wing==='assault')mult*=1.3;
  if(['plume','thousandWings'].includes(b.lastAction)){mult*=1+d.feathers*(b.lastAction==='thousandWings'?.4:.25);d.feathers=0;}
  if(b.lastAction==='abyssEnd')mult*=2+b.erosion*5;
@@ -73,10 +79,10 @@ export function divinityStrikeProfile(b,action){
 export function performDivinityAction(b,action,rng,damageGate){
  if(!isDivinityBattle(b)||!DIV_SKILLS[action])return false;
  const row=DIV_SKILLS[action],d=divBattleState(b);
- if(row.attune){const ratio=b.hp/b.base.hp;b.powers=b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
+ if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
  else if(action==='purify'){b.statuses={};heal(b,.25);log(b,'神威・浄化：異常解除・HP25%回復');}
  else if(action==='apotheosis'){
-  d.unified=4;d.freshUnified=true;d.savedPowers=[...b.powers];b.powers=[...new Set([...b.powers,...DIV_IDS])];syncDivinityLives(b);buff(b,'divineUnified',5,{hp:3,atk:3,def:3,spd:3});b.gauge=100;log(b,'真・神格解放 — 五つの力を、私の意思で');b.events.push({type:'apotheosis'});
+  d.unified=cooperationEnabled(b.build)?2:4;d.freshUnified=true;d.unifiedUsed=cooperationEnabled(b.build)||d.unifiedUsed;d.savedPowers=[...b.powers];b.powers=[...new Set([...b.powers,...DIV_IDS])];syncDivinityLives(b);buff(b,'divineUnified',5,{hp:3,atk:3,def:3,spd:3});b.gauge=100;log(b,cooperationEnabled(b.build)?'全権委任X — 零域全解放、五つの力が同調する':'真・神格解放 — 五つの力を、私の意思で');b.events.push({type:'apotheosis'});
  }else if(row.guard){b.gauge=Math.min(100,b.gauge+18);log(b,row.name+'：受け流す');}
  else {
   if(row.power==='abyss'){
@@ -97,6 +103,7 @@ export function performDivinityAction(b,action,rng,damageGate){
 }
 export function divinityAfter(b,action){
  if(!isDivinityBattle(b)||b.hp<=0)return;const d=divBattleState(b),guard=d.guardAction;
+ registerCooperationAction(b,action);d.line=cooperationDialogue(b);
  if(guard){
   d.guarded=true;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
   if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
