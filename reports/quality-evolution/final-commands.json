@@ -1,0 +1,56 @@
+[
+  {
+    "command": "node --test tests/reward-summary.test.js",
+    "exitCode": 0,
+    "log": "reports/quality-evolution/resume-related-unit.txt",
+    "tail": [
+      "ℹ tests 8",
+      "ℹ suites 0",
+      "ℹ pass 8",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 97.217181"
+    ]
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "log": "reports/quality-evolution/final-unit.txt",
+    "tail": [
+      "ℹ tests 147",
+      "ℹ suites 0",
+      "ℹ pass 147",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 483.884813"
+    ]
+  },
+  {
+    "command": "npm run check",
+    "exitCode": 0,
+    "log": "reports/quality-evolution/final-syntax.txt",
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 check",
+      "> node tools/check.mjs",
+      "",
+      "Syntax OK: 21 files"
+    ]
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "log": "reports/quality-evolution/final-build.txt",
+    "tail": [
+      "",
+      "> irena-reborn@4.0.0 build",
+      "> node tools/build.mjs",
+      "",
+      "Build successful: dist/index.html + irena-play.html (5232605 bytes; 19 embedded images)"
+    ]
+  }
+]

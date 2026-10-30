@@ -1,0 +1,15 @@
+{
+  "coreSaveAndAssetsUnchanged": true,
+  "hostedAndStandaloneEquivalent": true,
+  "standaloneBytes": 27775620,
+  "hostedBytes": 25759620,
+  "changedFiles": [
+    "web/src/components/App.js",
+    "web/src/components/game.css",
+    "web/src/components/combatReadability.js",
+    "tools/build.mjs",
+    "tests/combat-readability.test.js",
+    "tests/battle-ui.test.js",
+    "tests/audit-baseline.js"
+  ]
+}

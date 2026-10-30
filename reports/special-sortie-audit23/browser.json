@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "mode": "ex",
+      "width": 320,
+      "height": 480,
+      "view": {
+        "w": 941,
+        "h": 1672,
+        "fit": "contain",
+        "left": 0,
+        "right": 320,
+        "top": 0,
+        "bottom": 480,
+        "viewport": [
+          320,
+          480
+        ],
+        "title": 0,
+        "label": "EXカイザー戦へ出撃",
+        "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA60AAAaICAMAAABYIsjPAAABgFBMVEUCAQMFAwgHBg0JCBQKCh0NCQ"
+      },
+      "sessions": [
+        {
+          "start": 8301.79999999702,
+          "end": 9804.59999999404
+        }
+      ]
+    },
+    {
+      "mode": "stella",
+      "width": 390,
+      "height": 664,
+      "view": {
+        "w": 941,
+        "h": 1672,
+        "fit": "contain",
+        "left": 0,
+        "right": 390,
+        "top": 0,
+        "bottom": 664,
+        "viewport": [
+          390,
+          664
+        ],
+        "title": 0,
+        "label": "ステラでEXカイザー戦へ出撃",
+        "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA60AAAaICAMAAABYIsjPAAACQFBMVEUWHTsbGysdJUYeIDMgIzsiK0"
+      },
+      "sessions": [
+        {
+          "start": 4868.79999999702,
+          "end": 6370.399999991059
+        }
+      ]
+    },
+    {
+      "mode": "final",
+      "width": 430,
+      "height": 740,
+      "view": {
+        "w": 941,
+        "h": 1671,
+        "fit": "contain",
+        "left": 0,
+        "right": 430,
+        "top": 0,
+        "bottom": 740,
+        "viewport": [
+          430,
+          740
+        ],
+        "title": 0,
+        "label": "専用いれーなでEXカイザー最終決戦へ出撃",
+        "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA60AAAaHCAMAAACpdHoaAAABgFBMVEUDAAEJAgMPAgQQBwkWAgYXCw"
+      },
+      "sessions": [
+        {
+          "start": 4181.9000000059605,
+          "end": 5684.29999999702
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

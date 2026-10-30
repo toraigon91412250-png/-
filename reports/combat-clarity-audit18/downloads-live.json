@@ -1,0 +1,13 @@
+{
+  "passed": 7,
+  "checks": [
+    "390 latest release only",
+    "390 bottom artwork preserved",
+    "390 no overflow",
+    "play browser assembled file SHA256",
+    "play download controls recover",
+    "published source parts reconstruct exact ZIP",
+    "no JS errors"
+  ],
+  "errors": []
+}

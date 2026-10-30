@@ -1,0 +1,12 @@
+{
+  "pwaSimulated": {
+    "width": 390,
+    "height": 844,
+    "top": 47,
+    "bottom": 34
+  },
+  "commands": 30,
+  "domCountConstant": 228,
+  "errors": [],
+  "device": "Chromium; not iPhone hardware"
+}

@@ -1,0 +1,134 @@
+{
+  "reports/strategy-study/A-32-21001/routes.jsonl": {
+    "bytes": 72443559,
+    "sha256": "0ac7d3c84b04251278585005270b68b58a84aca686bfc9fcf2c610508ad90825"
+  },
+  "reports/strategy-study/B-32-21001/routes.jsonl": {
+    "bytes": 72464630,
+    "sha256": "88627e49d14ce899994c37e70bb72bc88c31d786ffa7ac64f06f852bc851faf6"
+  },
+  "reports/strategy-study/C-32-21001/routes.jsonl": {
+    "bytes": 72445018,
+    "sha256": "54d8e725b79cfdc6a24a21ad350f238fc45c586886f608f9f6f06b983805596e"
+  },
+  "reports/strategy-study/final-runtime/routes.jsonl": {
+    "bytes": 77537232,
+    "sha256": "f18fcd6ac628848b59ecbd052bd25a80e5ca4f79a53f49ea51dce960a067384d"
+  },
+  "reports/strategy-study/guard-metrics/routes.jsonl": {
+    "bytes": 80240079,
+    "sha256": "8c81e7ca2e787f5a878cdf66e90487b9931f57e9cb5136289b542c76f4c89407"
+  },
+  "reports/strategy-study/holdout-A/routes.jsonl": {
+    "bytes": 72444267,
+    "sha256": "eca35c120a35c7ce034263c3cb1f5c5ca6e2d4b880952023e8a4c333f570c76f"
+  },
+  "reports/strategy-study/holdout-B/routes.jsonl": {
+    "bytes": 72462696,
+    "sha256": "a8dc865ae4835824b270a4d888bb09d3c4c869505b4a03242f9b5b17882a54d6"
+  },
+  "reports/strategy-study/paired.jsonl": {
+    "bytes": 41991996,
+    "sha256": "fa7c0c5495acc2fd4f3286395d5e865f8071089205ffd3540bed4f7c8813852d"
+  },
+  "reports/strategy-study/raw-32-21001/routes.jsonl": {
+    "bytes": 72443515,
+    "sha256": "a148e86826d06c8552b4e345f9225b31d1d26fed63f01e8272f4fb331c88ac73"
+  },
+  "reports/strategy-study/A-32-21001/summary.csv": {
+    "bytes": 22138,
+    "sha256": "2811a1ba60df0db0827454fd7f45adf5ce2fc8328c91dd6204f5fb3b6b817b97"
+  },
+  "reports/strategy-study/A-32-21001/summary.json": {
+    "bytes": 377622,
+    "sha256": "6910a598942a5d79c7945682b915b1f2046f37272ef6996c4e5a8d74101f5616"
+  },
+  "reports/strategy-study/B-32-21001/summary.csv": {
+    "bytes": 22134,
+    "sha256": "b779766a97a25008215ffcb26715a1c8b0cde96f6c503641c697f02111a9b623"
+  },
+  "reports/strategy-study/B-32-21001/summary.json": {
+    "bytes": 373007,
+    "sha256": "9afed293114a6714131cb28e6d354cdd347866f298e7fafd8156dfce7036d206"
+  },
+  "reports/strategy-study/C-32-21001/summary.csv": {
+    "bytes": 22223,
+    "sha256": "15c5da13b88fb1d5e699ba78f5fc3146c4afd53cbf30d4449d6d7403400491a0"
+  },
+  "reports/strategy-study/C-32-21001/summary.json": {
+    "bytes": 377720,
+    "sha256": "e3440d63950736cf3abfbaf18f25f52faf3c8c6ba5e1ca2c7eb8c7d0bf91134d"
+  },
+  "reports/strategy-study/final-runtime/summary.csv": {
+    "bytes": 22134,
+    "sha256": "b779766a97a25008215ffcb26715a1c8b0cde96f6c503641c697f02111a9b623"
+  },
+  "reports/strategy-study/final-runtime/summary.json": {
+    "bytes": 381863,
+    "sha256": "053726f0e697b13170e6be054eac7e3a3e122263ed332d84702925527579cb86"
+  },
+  "reports/strategy-study/guard-metrics/summary.csv": {
+    "bytes": 22134,
+    "sha256": "b779766a97a25008215ffcb26715a1c8b0cde96f6c503641c697f02111a9b623"
+  },
+  "reports/strategy-study/guard-metrics/summary.json": {
+    "bytes": 381417,
+    "sha256": "06ece4a0552af5055e6153a48e9b9837ae3353e0478317d08809f5b89b2dea1f"
+  },
+  "reports/strategy-study/holdout-A/summary.csv": {
+    "bytes": 22054,
+    "sha256": "48d59037b7dd988f4cd2c0f83282afdd5a42812fa7dfa6ade845d39fc11473ce"
+  },
+  "reports/strategy-study/holdout-A/summary.json": {
+    "bytes": 377483,
+    "sha256": "e2be38b8b772d1dde5a8009f9072e5c5ac07e2ba0e290bc394d6fa57f778d716"
+  },
+  "reports/strategy-study/holdout-B/summary.csv": {
+    "bytes": 22051,
+    "sha256": "a91d4f23b98d9000aae0f230cefc130176fb809067812a495a569d97968a8f4e"
+  },
+  "reports/strategy-study/holdout-B/summary.json": {
+    "bytes": 371829,
+    "sha256": "e5df789bb11f8b999ddfd30497b35d992f47ed18f2795929d598aa7ed8ff7c1e"
+  },
+  "reports/strategy-study/raw-32-21001/summary.csv": {
+    "bytes": 22161,
+    "sha256": "a540889a0cdc457dadbba17d07339dceed38a1787c78140904b4082dfe3a7be5"
+  },
+  "reports/strategy-study/raw-32-21001/summary.json": {
+    "bytes": 377730,
+    "sha256": "223e36692af942646d75fc94d786eb1c73ec39d13080504710bd6ce5db06522d"
+  },
+  "reports/strategy-study/study-config.json": {
+    "bytes": 2163,
+    "sha256": "9f4e5687b7144864eeec7876c6ce818c28172b03fd64312456f0ea2b2063b8a0"
+  },
+  "reports/strategy-study/candidates.json": {
+    "bytes": 671,
+    "sha256": "60aacae98d87f8b9a130da7e031cdede782a8555afd56b80ebea227a98d7821a"
+  },
+  "reports/strategy-study/baseline-campaign20.txt": {
+    "bytes": 7433,
+    "sha256": "3b57160fb61283d4248ce07223e6ab67cf8ad74bd50258f48aeed0610bd63342"
+  },
+  "reports/strategy-study/REPRODUCE.md": {
+    "bytes": 1880,
+    "sha256": "e1a34d45c33f442115fb5047edf203c62ff571776750643259ac2017274fdd1b"
+  },
+  "reports/strategy-study/selection-route-pairs.json": {
+    "bytes": 18428,
+    "sha256": "2090c60f8bce46cf2eca15ad9b88177db67da4afa3c58e52538192c4c958a9b5"
+  },
+  "reports/strategy-study/paired-summary.json": {
+    "bytes": 477178,
+    "sha256": "e8382f384ed486ef4c30a36bdf8a68cc1b8ada8bdd820697ad73685d2db9aebb"
+  },
+  "reports/strategy-study/analysis.json": {
+    "bytes": 190265,
+    "sha256": "d47e3d87e8777fdb95420ad472e96a04ddeca571db4efe4126b82e743ea4ee99"
+  },
+  "reports/strategy-study/actions.csv": {
+    "bytes": 297084,
+    "sha256": "781b2a37fafc6f24b0d7bfa9216527440c7bf5f074703e48144bf4b50aa56dfc"
+  }
+}

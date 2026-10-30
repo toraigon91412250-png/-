@@ -1,0 +1,41 @@
+{
+  "runtimeSourceCommit": "7f06330bf7bba657116264539d99822a1db1fdd4",
+  "files": {
+    "web/src/utils/mirrorTrial.js": {
+      "bytes": 19475,
+      "sha256": "b99ec222f47deac3a14923cf3f0013b122ed67d04286851723bdc2d873bbd7a1"
+    },
+    "web/src/utils/gameCore.js": {
+      "bytes": 25727,
+      "sha256": "8c3db3d1068188d222e499cbca79849558bd5340700ce538a9f99be18b6f9c52"
+    },
+    "web/src/utils/main20.js": {
+      "bytes": 6357,
+      "sha256": "27d4396561619985eb33d2027fdbc430308f4ebaec2dbf66b2967f21b6097bff"
+    },
+    "web/src/data/config.js": {
+      "bytes": 8291,
+      "sha256": "a98a09246fde7ddac6b520ce3fbc6a775fc95e19b1077602e0fa29a2fd3c818f"
+    },
+    "web/src/components/App.js": {
+      "bytes": 107056,
+      "sha256": "1a200e72fa2ab8a395a6b6684e68a01d9c8fc1ef4751d486e7b6d9ebadbdf92e"
+    },
+    "dist/index.html": {
+      "bytes": 25841627,
+      "sha256": "f4524f08df4ab42c1d1a3829fe4663900b9fa2cd45b21700ae1e826471eb37b8"
+    },
+    "irena-play.html": {
+      "bytes": 50766818,
+      "sha256": "7947897bc4019d6031621698297e037e13ce8a97fe0c8e106796b20dc862b1dd"
+    }
+  },
+  "browserChecks": 170,
+  "simulatedBattles": 13128,
+  "publicTarget": {
+    "project_id": "appgprj_6ada04c83c3481918dbc196414e270c5",
+    "static": {
+      "directory": "dist"
+    }
+  }
+}

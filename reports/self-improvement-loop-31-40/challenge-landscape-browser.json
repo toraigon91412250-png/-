@@ -1,0 +1,32 @@
+{
+  "browser": "Chromium",
+  "viewport": {
+    "width": 667,
+    "height": 375
+  },
+  "checks": [
+    {
+      "lobby": true,
+      "ariaLabel": "通常20階層の難易度",
+      "dimensions": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 1421
+      }
+    },
+    {
+      "battle": true,
+      "savedDifficulty": "NIGHTMARE",
+      "visibleBadge": 1,
+      "enemyHP": "725,000 / 725,000",
+      "dimensions": {
+        "innerWidth": 667,
+        "scrollWidth": 667,
+        "innerHeight": 375,
+        "scrollHeight": 375
+      }
+    }
+  ],
+  "errors": []
+}

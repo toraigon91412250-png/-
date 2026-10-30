@@ -1,0 +1,90 @@
+[
+  {
+    "file": "10-irena-final-balance-standing.jpg",
+    "type": "portrait",
+    "use": "最終決戦・神と堕天の中間状態の立ち絵",
+    "character": "いれーな",
+    "notes": "最終決戦用いれーなの中間状態。ゲージ中央付近で使用。"
+  },
+  {
+    "file": "11-irena-normal-victory.jpg",
+    "type": "victory",
+    "use": "通常戦闘の勝利画面用画像",
+    "character": "いれーな",
+    "notes": "Victory画面のメイン画像として使用。"
+  },
+  {
+    "file": "12-hadan-cutin.jpg",
+    "type": "cutin",
+    "use": "羽弾の専用カットイン",
+    "character": "いれーな",
+    "notes": "この画像を使用し「羽弾」の文字を世界観に合う形で自然に入れる。"
+  },
+  {
+    "file": "13-stella-standing.jpg",
+    "type": "portrait",
+    "use": "ステラの戦闘立ち絵",
+    "character": "ステラ",
+    "notes": "ステラ戦や関連画面の敵立ち絵として使用。"
+  },
+  {
+    "file": "14-stella-cutin.jpg",
+    "type": "cutin",
+    "use": "ステラの専用カットイン",
+    "character": "ステラ",
+    "notes": "ステラの技・演出用カットインとして使用。"
+  },
+  {
+    "file": "15-fallen-crest.jpg",
+    "type": "crest",
+    "use": "最終決戦・堕天側の紋章",
+    "character": "いれーな・最終決戦",
+    "notes": "原画像。ゲーム内演出用の軽量透過版は assets/runtime/crest-fallen.webp。"
+  },
+  {
+    "file": "16-divine-crest.jpg",
+    "type": "crest",
+    "use": "最終決戦・神側の紋章",
+    "character": "いれーな・最終決戦",
+    "notes": "原画像。ゲーム内演出用の軽量透過版は assets/runtime/crest-divine.webp。"
+  },
+  {
+    "file": "assets/supplied-20261020/kaiser-normal.jpg",
+    "originalAttachment": "1-写真1.jpg",
+    "type": "portrait",
+    "use": "通常カイザーの立ち絵",
+    "runtime": "assets/supplied-20261020/kaiser-normal.jpg",
+    "sha256": "fa2bdbe6e10f7fcf564856d0adef172a920d3b9d32c0ebfeef97181e060afe66",
+    "dimensions": [
+      853,
+      1280
+    ],
+    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
+  },
+  {
+    "file": "assets/supplied-20261020/kaiser-ex.jpg",
+    "originalAttachment": "2-写真2.jpg",
+    "type": "portrait",
+    "use": "EXカイザーの立ち絵",
+    "runtime": "assets/supplied-20261020/kaiser-ex.jpg",
+    "sha256": "174e0ccd2207c015f89ad4bd8437dea6bd9c4032dbbb885dc084fbece04854e4",
+    "dimensions": [
+      818,
+      1280
+    ],
+    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
+  },
+  {
+    "file": "assets/supplied-20261020/genesis-cutin.jpg",
+    "originalAttachment": "3-写真3.jpg",
+    "type": "cutin",
+    "use": "神側究極技「創世」の専用カットイン",
+    "runtime": "assets/supplied-20261020/genesis-cutin.jpg",
+    "sha256": "699324c892fbfb13add577b9e8d4f2811decfaa1026be8a30d71e84c354e99d3",
+    "dimensions": [
+      1280,
+      720
+    ],
+    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
+  }
+]

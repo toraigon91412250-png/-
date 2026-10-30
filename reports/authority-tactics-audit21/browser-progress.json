@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "320 swaps slots with single tap and only equipment changes",
+    "320 swap touch target and no overflow",
+    "320 slots explicitly identify active and passive role",
+    "320 swapped order survives reload",
+    "390 swaps slots with single tap and only equipment changes",
+    "390 swap touch target and no overflow",
+    "390 slots explicitly identify active and passive role",
+    "390 swapped order survives reload",
+    "king displays actual positive recovery",
+    "recovery label stays inside stage",
+    "swap disabled during active battle",
+    "forged active-battle swap rejected without changing save",
+    "swap reenabled after retreat",
+    "430 swaps slots with single tap and only equipment changes",
+    "430 swap touch target and no overflow",
+    "430 slots explicitly identify active and passive role",
+    "430 swapped order survives reload",
+    "1280 swaps slots with single tap and only equipment changes",
+    "1280 swap touch target and no overflow",
+    "1280 slots explicitly identify active and passive role",
+    "1280 swapped order survives reload",
+    "wing shows actual bonus constrained by100 cap",
+    "abyss shows actual6 cumulative12 and maxHP reduction",
+    "enemy HP phase line retains actual cumulative erosion",
+    "no JavaScript errors"
+  ],
+  "errors": []
+}

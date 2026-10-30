@@ -1,0 +1,15 @@
+{
+  "unchanged": {
+    "web/src/utils/main20.js": "ad1202d48746588ecd7bb9db2efe2612e7a6ab78dc29dd608c3406eda245f9fe",
+    "web/src/utils/campaign20.js": "d1122a14de1aabff30f32bf52820b39d9bddf94403b0f8b89dc002302d173571",
+    "web/src/utils/storage.js": "864586b7c77ac8ec2dcfae302f4f2b5d0f7fe3cedbac80064b3ac8e21254074a",
+    "web/src/utils/progression.js": "c2e774e87541bdfd94beaf3b994a3d1cb223835a0b0acc20a0199c1bca630701",
+    "web/src/utils/tacticalMarks.js": "307025722f50d6b4b0c72028ac8c73ca5c952c06461723ebd00b0d74606e1cbe",
+    "web/src/utils/threePhase.js": "e2cb819b7f54b04c60391b0f7641fd2bf9b47b8b15261bad11ff1a02e6905f2b",
+    "web/src/utils/guardBreakTrial.js": "4966fd96d5fd032c9c9b6080022b02251ea38ebc1c65b81c1477a7de86e914c9",
+    "web/src/utils/battleCheckpoint.js": "3e04e5229fcba9a017d29ca1564d7e769f7281ecfc858e127562cdf5fab7e37b",
+    "web/src/data/config.js": "a98a09246fde7ddac6b520ce3fbc6a775fc95e19b1077602e0fa29a2fd3c818f",
+    "web/src/components/game.css": "4d880b86f21a61deed40bb6f838c3b3375f054aad97bf04363f55ec77e535386"
+  },
+  "allAssetsUnchanged": true
+}

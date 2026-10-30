@@ -1,0 +1,79 @@
+{
+  "browser": "Chromium",
+  "viewports": [
+    1440,
+    320
+  ],
+  "checks": 12,
+  "errors": [],
+  "results": [
+    {
+      "width": 1440,
+      "complete": false,
+      "disabled": true
+    },
+    {
+      "width": 1440,
+      "complete": true,
+      "disabled": false
+    },
+    {
+      "width": 1440,
+      "checkpointResumed": true,
+      "turn": 2,
+      "gauge": "18%"
+    },
+    {
+      "width": 1440,
+      "guideAccurate": true
+    },
+    {
+      "width": 1440,
+      "started": true,
+      "title": "TURN 1\nカイザー戦\n\n通常攻略 / NIGHTMARE\n\nTHE FALLEN STAR",
+      "hp": "725,000 / 725,000",
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "retry": true,
+      "resultTag": "BATTLE RESULT · NIGHTMARE",
+      "retryTitle": "TURN 1\nカイザー戦\n\n通常攻略 / NIGHTMARE\n\nTHE FALLEN STAR",
+      "retryHp": "725,000 / 725,000"
+    },
+    {
+      "width": 320,
+      "complete": false,
+      "disabled": true
+    },
+    {
+      "width": 320,
+      "complete": true,
+      "disabled": false
+    },
+    {
+      "width": 320,
+      "checkpointResumed": true,
+      "turn": 2,
+      "gauge": "18%"
+    },
+    {
+      "width": 320,
+      "guideAccurate": true
+    },
+    {
+      "width": 320,
+      "started": true,
+      "title": "TURN 1\nカイザー戦\n\n通常攻略 / NIGHTMARE",
+      "hp": "725,000 / 725,000",
+      "noOverflow": true
+    },
+    {
+      "width": 320,
+      "retry": true,
+      "resultTag": "BATTLE RESULT · NIGHTMARE",
+      "retryTitle": "TURN 1\nカイザー戦\n\n通常攻略 / NIGHTMARE",
+      "retryHp": "725,000 / 725,000"
+    }
+  ]
+}

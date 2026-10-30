@@ -1,0 +1,24 @@
+{
+  "polish-training": {
+    "routes": 4800,
+    "exImproved": 0,
+    "exRegressed": 0,
+    "clear20Improved": 0,
+    "clear20Regressed": 0,
+    "commonCompleteTurnsBefore": 482937,
+    "commonCompleteTurnsAfter": 480461,
+    "commonCompleteRoutes": 4063,
+    "regressions": []
+  },
+  "polish-holdout": {
+    "routes": 4800,
+    "exImproved": 0,
+    "exRegressed": 0,
+    "clear20Improved": 0,
+    "clear20Regressed": 0,
+    "commonCompleteTurnsBefore": 483305,
+    "commonCompleteTurnsAfter": 480679,
+    "commonCompleteRoutes": 4067,
+    "regressions": []
+  }
+}

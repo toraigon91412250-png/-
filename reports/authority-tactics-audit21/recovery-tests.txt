@@ -1,0 +1,16 @@
+✔ swap changes only the two authority positions and restores exactly on second use (10.697636ms)
+✔ swap rejects active battle, one slot, unowned and duplicate authorities atomically (2.241966ms)
+✔ saved swapped order persists and ongoing battle snapshot never changes (2.461252ms)
+✔ healing labels use actual visible gain, zero at cap, enemy target and max-HP transitions (31.485906ms)
+✔ erosion labels distinguish additional/cumulative amount and maxHP lost at cap (0.249651ms)
+✔ wing actual extra20 is separated from regular26 and lost bonus at cap (4.045901ms)
+✔ all display instrumentation preserves complete audit20 main/ex/raid/god combat and RNG state (37.089494ms)
+✔ erosion facts report actual stats without mutating state when observer throws (1.492734ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 328.223465

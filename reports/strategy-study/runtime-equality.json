@@ -1,0 +1,8 @@
+{
+  "routes": 4800,
+  "candidateBMatchesActualRuntime": true,
+  "ignoredFields": [
+    "measurement-only guardProbe",
+    "additional ending-state diagnostics"
+  ]
+}

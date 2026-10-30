@@ -1,0 +1,19 @@
+{
+  "passed": 12,
+  "checks": [
+    "public tested artifact SHA256",
+    "390 new final art loaded",
+    "390 locked gates preserved",
+    "390 finale no horizontal overflow",
+    "390 replacement offers exactly occupied slots",
+    "390 selected slot replaced without losing items/P",
+    "390 equipped multiplier on feather command",
+    "390 all combat commands fit",
+    "390 true victory and action recap",
+    "390 post-battle preparation route",
+    "390 next floor starts with selected loadout and no repeat reward",
+    "no JS errors"
+  ],
+  "errors": [],
+  "sorties": []
+}

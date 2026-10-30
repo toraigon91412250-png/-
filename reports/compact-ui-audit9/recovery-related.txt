@@ -1,0 +1,22 @@
+✔ combat UI source changes are approved and the audit5 source remains recoverable (233.825911ms)
+✔ main20 gameplay, saves, configured skills and all assets are untouched (21.742941ms)
+✔ live combat hides only the global navigation and retains the battle-only exit (1.652637ms)
+✔ normal Irena controls keep real availability and put ultimate in a full-width final row (3.15625ms)
+✔ Irena-only portrait cards separate enemy and player gauges with transparent supplied art (3.727613ms)
+✔ compact interface keeps gameplay/save and earlier experiments unchanged (4.270179ms)
+✔ each supplied PNG remains exact; display derivatives have valid WebP headers (63.456374ms)
+✔ actual viewport, readable touch controls, alpha portraits and on-demand details wired (7.422843ms)
+✔ lab B exact research rules, selected opening shells, no HP/ATK inflation (34.132423ms)
+✔ missed breach keeps shell; landed power/ultimate removes shell before damage and exposure ticks (69.670285ms)
+✔ defense/focus and shell reformation preserve campaign behavior (5.546238ms)
+✔ same-build feather attenuation, baseline/main never gets B multipliers (5.072534ms)
+✔ full20 routes match research B every input, growth, rewards, failed routes too (343.044533ms)
+✔ victory, defeat, training, equipment never mutate main JSON; stale/reward duplicate rejected (7.517166ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2487.064614

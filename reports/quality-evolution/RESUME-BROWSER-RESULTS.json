@@ -1,0 +1,106 @@
+{
+  "status": "passed",
+  "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+  "productionSourceEditedByThisAgent": false,
+  "toolChanged": "tools/quality-evolution.mjs",
+  "newRegression": "First real victory earns +1 Lv; later real paid training reaches Lv3; the historical victory reward remains unchanged. Tested at320/390/768.",
+  "tests": [
+    {
+      "engine": "chromium",
+      "browser": "154.0.8037.57",
+      "pass": 267,
+      "fail": 0,
+      "durationMs": 164487,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "htmlBytes": 5232605,
+      "loadedDocumentSHA256": [
+        "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+      ],
+      "observations": [],
+      "realIPhoneTested": false,
+      "screens": 67,
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/quality-evolution.mjs after chromium"
+    },
+    {
+      "engine": "webkit",
+      "browser": "26.0",
+      "pass": 267,
+      "fail": 0,
+      "durationMs": 333983,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "htmlBytes": 5232605,
+      "loadedDocumentSHA256": [
+        "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+      ],
+      "observations": [],
+      "realIPhoneTested": false,
+      "screens": 67,
+      "command": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/quality-evolution.mjs after webkit"
+    },
+    {
+      "engine": "chromium",
+      "browser": "154.0.8037.57",
+      "pass": 365,
+      "fail": 0,
+      "durationMs": 61766,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "htmlBytes": 5232605,
+      "loadedDocumentSHA256": [
+        "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+      ],
+      "observations": [
+        {
+          "case": "continuous120rounds",
+          "rounds": 120,
+          "durationMs": 55578,
+          "animationsEnabled": true,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "realIPhoneTested": false
+        }
+      ],
+      "realIPhoneTested": false,
+      "screens": 1,
+      "command": "GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/quality-evolution.mjs after chromium --stress-only"
+    },
+    {
+      "engine": "webkit",
+      "browser": "26.0",
+      "pass": 365,
+      "fail": 0,
+      "durationMs": 58298,
+      "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+      "htmlBytes": 5232605,
+      "loadedDocumentSHA256": [
+        "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+      ],
+      "observations": [
+        {
+          "case": "continuous120rounds",
+          "rounds": 120,
+          "durationMs": 52454,
+          "animationsEnabled": true,
+          "viewport": {
+            "width": 390,
+            "height": 664
+          },
+          "realIPhoneTested": false
+        }
+      ],
+      "realIPhoneTested": false,
+      "screens": 1,
+      "command": "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 GAME_URL=http://127.0.0.1:4180/irena-play.html node tools/quality-evolution.mjs after webkit --stress-only"
+    }
+  ],
+  "unverified": [
+    "Physical iPhone Safari hardware",
+    "file:// direct navigation"
+  ],
+  "notes": [
+    "Actual HTTP response hashes verified at every goto/reload; all loaded documents match the final artifact.",
+    "Previous result JSON snapshots preserved under history/resume-before-level-display-fix.",
+    "Host dependency precheck bypass for local WebKit libraries; no game test or assertion skipped."
+  ]
+}

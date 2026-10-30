@@ -1,0 +1,52 @@
+[
+  {
+    "stage": 1,
+    "source": "3-写真3.jpg",
+    "original": "assets/divinity/originals/stage-1.jpg",
+    "runtime": "assets/divinity/stage-1.webp",
+    "size": [
+      853,
+      1280
+    ]
+  },
+  {
+    "stage": 2,
+    "source": "5-写真5.jpg",
+    "original": "assets/divinity/originals/stage-2.jpg",
+    "runtime": "assets/divinity/stage-2.webp",
+    "size": [
+      856,
+      1280
+    ]
+  },
+  {
+    "stage": 3,
+    "source": "2-写真2.jpg",
+    "original": "assets/divinity/originals/stage-3.jpg",
+    "runtime": "assets/divinity/stage-3.webp",
+    "size": [
+      710,
+      1026
+    ]
+  },
+  {
+    "stage": 4,
+    "source": "4-写真4.jpg",
+    "original": "assets/divinity/originals/stage-4.jpg",
+    "runtime": "assets/divinity/stage-4.webp",
+    "size": [
+      851,
+      1280
+    ]
+  },
+  {
+    "stage": 5,
+    "source": "1-写真1.jpg",
+    "original": "assets/divinity/originals/stage-5.jpg",
+    "runtime": "assets/divinity/stage-5.webp",
+    "size": [
+      853,
+      1280
+    ]
+  }
+]

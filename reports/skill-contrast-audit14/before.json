@@ -1,0 +1,83 @@
+{
+  "checks": [
+    "pierce has real hit count",
+    "pierce projectile count matches actual hits",
+    "pierce finishes with no VFX",
+    "pierce commands fit viewport",
+    "volley has real hit count",
+    "volley projectile count matches actual hits",
+    "volley finishes with no VFX",
+    "volley commands fit viewport",
+    "no JS errors"
+  ],
+  "passed": 9,
+  "errors": [],
+  "runs": [
+    {
+      "action": "pierce",
+      "seen": [
+        {
+          "cls": "vfx vfx-cutin",
+          "text": "穿羽",
+          "time": 7755.39999999851,
+          "width": "374px",
+          "height": "179.188px"
+        },
+        {
+          "cls": "vfx vfx-projectile",
+          "text": "",
+          "time": 8234.09999999404,
+          "width": "374px",
+          "height": "71.6719px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0",
+          "text": "667",
+          "time": 8372.89999999851,
+          "width": "32.5625px",
+          "height": "21.0625px"
+        }
+      ]
+    },
+    {
+      "action": "volley",
+      "seen": [
+        {
+          "cls": "vfx vfx-cutin",
+          "text": "連羽",
+          "time": 6849.69999999553,
+          "width": "374px",
+          "height": "179.188px"
+        },
+        {
+          "cls": "vfx vfx-projectile",
+          "text": "",
+          "time": 7275.29999999702,
+          "width": "374px",
+          "height": "71.6719px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0",
+          "text": "1",
+          "time": 7508.5,
+          "width": "8.54688px",
+          "height": "21.0625px"
+        },
+        {
+          "cls": "vfx vfx-projectile",
+          "text": "",
+          "time": 7524.5999999940395,
+          "width": "374px",
+          "height": "71.6719px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-1",
+          "text": "1",
+          "time": 7670.19999999553,
+          "width": "8.54688px",
+          "height": "21.0625px"
+        }
+      ]
+    }
+  ]
+}

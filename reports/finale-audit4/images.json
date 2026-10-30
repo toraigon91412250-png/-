@@ -1,0 +1,32 @@
+[
+  {
+    "runtime": "assets/raid/dragon-embers.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "format": "PNG",
+    "mode": "P",
+    "alphaExtrema": [
+      0,
+      252
+    ],
+    "bytes": 852887,
+    "sha256": "0d2cc2b585fb7a5c861c271ccf1b0720e2fdd8df8f7723041144e243c2d7e4c5"
+  },
+  {
+    "runtime": "assets/raid/dragon-roar.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "format": "PNG",
+    "mode": "P",
+    "alphaExtrema": [
+      0,
+      253
+    ],
+    "bytes": 781727,
+    "sha256": "1f1048528e5b3218fc318687bd933385835162a7ee485814283a03908eb3957a"
+  }
+]

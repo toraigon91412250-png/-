@@ -1,0 +1,10 @@
+{
+  "tests/campaign20.test.js": {
+    "beforeSHA256": "cd95311b27e7cdea5d4e81d05df94e3c60eb4663f465a8c39b5cc097b79e7b88",
+    "afterSHA256": "a33db92d9fad17367eba0d90c6d3883c16d305d5eaffca75dd4055075cbef095"
+  },
+  "tests/home-ui.test.js": {
+    "beforeSHA256": "bb7a08d1af377b1b7e6fb7a4252416979da2aa7417ed55389c33c11edf9a2b81",
+    "afterSHA256": "5a8ecc212765161f66308bc49937fee129ecfb4e352ca59ebfb8085bc21c1878"
+  }
+}

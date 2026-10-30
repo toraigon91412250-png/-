@@ -1,0 +1,33 @@
+✔ fallen active exact boundary 0.500001 (48.900154ms)
+✔ fallen active exact boundary 0.5 (0.566039ms)
+✔ fallen active exact boundary 0.499999 (1.241065ms)
+✔ fallen active exact boundary 0.250001 (0.7499ms)
+✔ fallen active exact boundary 0.25 (0.745579ms)
+✔ fallen active exact boundary 0.249999 (1.196309ms)
+✔ fallen active exact boundary 0.100001 (0.932525ms)
+✔ fallen active exact boundary 0.1 (1.149046ms)
+✔ fallen active exact boundary 0.099999 (0.996068ms)
+✔ king heals12% once per landed power, caps HP, does not replenish lives or mark endurance (2.486465ms)
+✔ judge active60% ignores no additional defense on third-hit passive and keeps20% HP extra separate (2.171409ms)
+✔ abyss active erosion follows hit, changes all enemy stats and caps at95% (1.285216ms)
+✔ wing adds20 to regular26 only on hit, with100 cap, and never changes feather5x (6.119238ms)
+✔ king missed power has no heal, erosion, bonus gauge or charge; second slot has no active effect (1.21585ms)
+✔ abyss missed power has no heal, erosion, bonus gauge or charge; second slot has no active effect (0.708004ms)
+✔ wing missed power has no heal, erosion, bonus gauge or charge; second slot has no active effect (1.026788ms)
+✔ judge missed power has no heal, erosion, bonus gauge or charge; second slot has no active effect (0.400063ms)
+✔ fallen missed power has no heal, erosion, bonus gauge or charge; second slot has no active effect (0.24351ms)
+✔ first-slot effect and second-slot passives compose without new duplicate application (0.781916ms)
+✔ B armor breaks before judge active damage and guard focus/counter mark stack once (6.941728ms)
+✔ new current checkpoint preserves effects, state and RNG through repeated save/load (28.920824ms)
+✔ old saved power replays and continued combat stay exactly audit19, then a new fight uses new rules (30.08515ms)
+✔ final and Stella have no authority active effect; resonance/star remain unchanged (0.98485ms)
+✔ current-rule observer preserves full legal20 route state and rewards with and without observation (46.929305ms)
+✔ command names slot, active effects and CT without altering battle (2.303972ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 481.527699

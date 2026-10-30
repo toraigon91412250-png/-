@@ -1,0 +1,38 @@
+[
+  {
+    "file": "web/src/components/App.js",
+    "kind": "modified"
+  },
+  {
+    "file": "web/src/components/game.css",
+    "kind": "modified"
+  },
+  {
+    "file": "tests/authority-art.test.js",
+    "kind": "added"
+  },
+  {
+    "file": "tests/audit-baseline.js",
+    "kind": "modified"
+  },
+  {
+    "file": "assets/upgrade-ui/authority-unlock/abyss.png",
+    "kind": "added"
+  },
+  {
+    "file": "assets/upgrade-ui/authority-unlock/wing.png",
+    "kind": "added"
+  },
+  {
+    "file": "assets/upgrade-ui/authority-unlock/king.png",
+    "kind": "added"
+  },
+  {
+    "file": "assets/upgrade-ui/authority-unlock/judge.png",
+    "kind": "added"
+  },
+  {
+    "file": "assets/upgrade-ui/authority-unlock/fallen.png",
+    "kind": "added"
+  }
+]

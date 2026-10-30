@@ -1,0 +1,22 @@
+{
+  "changedFiles": [
+    "web/src/components/App.js",
+    "web/src/components/authorityStrikeVisuals.js",
+    "web/src/components/game.css",
+    "web/src/components/combatPresentation.js",
+    "assets/combat-vfx/authority-v1/abyss.png",
+    "assets/combat-vfx/authority-v1/wing.png",
+    "assets/combat-vfx/authority-v1/king.png",
+    "assets/combat-vfx/authority-v1/judge.png",
+    "assets/combat-vfx/authority-v1/fallen.png",
+    "tools/build.mjs",
+    "tests/authority-strike.test.js",
+    "tests/battle-ui.test.js",
+    "tests/audit-baseline.js"
+  ],
+  "allCoreSaveConfigIdenticalToAudit18": true,
+  "hostedStandaloneEquivalent": true,
+  "fiveOriginalImagesEmbeddedExactly": true,
+  "standaloneBytes": 33132580,
+  "hostedBytes": 25767889
+}

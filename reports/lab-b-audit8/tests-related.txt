@@ -1,0 +1,14 @@
+✔ lab B exact research rules, selected opening shells, no HP/ATK inflation (14.245028ms)
+✔ missed breach keeps shell; landed power/ultimate removes shell before damage and exposure ticks (47.23587ms)
+✔ defense/focus and shell reformation preserve campaign behavior (3.075725ms)
+✔ same-build feather attenuation, baseline/main never gets B multipliers (2.021999ms)
+✔ full20 routes match research B every input, growth, rewards, failed routes too (186.284168ms)
+✔ victory, defeat, training, equipment never mutate main JSON; stale/reward duplicate rejected (5.70244ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 519.797393

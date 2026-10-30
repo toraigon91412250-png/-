@@ -1,0 +1,17 @@
+{
+ "campaignVariant":"tempo",
+ "profiles":{"wing-abyss":["wing","abyss"],"wing-king":["wing","king"],"judge-abyss":["judge","abyss"],"wing-fallen":["wing","fallen"],"abyss-king":["abyss","king"]},
+ "tiers":["low","standard","high"],
+ "marks":["none","split"],
+ "strategies":["feather","mixed","guard","slash","adaptive"],
+ "seeds":{"trainingStart":21001,"trainingSamples":32,"screenSamples":8,"holdoutStart":41001,"holdoutSamples":32},
+ "roundLimit":200,
+ "splitAcquisition":"Buy at floor1 for160P before training; otherwise receive free after8 if not already owned. Never equip duplicate marks.",
+ "powerAcquisition":"Start wing+abyss; transition requested pair only after all parts owned: fallen after5, king after10, judge after15. No buyPower UI exists in prototype; do not grant missing powers.",
+ "low":"Training cumulative spend <=20% of legitimately earned P including initial180; one pass talent/feather/destruction/ultimate per floor, no minimum reserve. Power fragment upgrades stop atLv2. Mark purchase160 is included in total investment but not training budget.",
+ "standard":"Previous growth: owned powers as affordable toLv5; one training pass talent/feather/destruction/ultimate if P > cost+100. Split is purchased before growth.",
+ "high":"Owned powers as affordable toLv5; repeated balanced round-robin talent/feather/destruction/ultimate training while affordable, reserve0; no extra P/claims/grinding.",
+ "allRoutes":"Fresh local campaign; no developer flags, no main resource transfer; stop on first defeat/timeout. No retries counted as wins. Every result and unspent resources retained.",
+ "randomness":"Runtime seeded PRNG is used, including real floor and Stella/EX offsets. Same route seed across equipment/tier/strategy/variant. Paired counterfactual branches replay their starting PRNG, never use future RNG in action selection.",
+ "damage":"Received is sum engine enemyDamage (may include lethal overkill); HP loss recorded independently as 1-final internal HP/base HP. Guard heal is rounded internal vitality from actual log, not displayed maxHP under fallen multiplier. Prevented damage not inferred by reversing rounded damage."
+}

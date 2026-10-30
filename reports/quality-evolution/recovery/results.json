@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "archiveStage": "checkpoint; final repackage may add only reports without changing the validated54 editable files",
+  "sourceArchiveSHA256": "11e12e9fa2ac96634d7eba1c805c1e1640b109f9f1698d8cbdc0744bfc2d0ddd",
+  "archiveCRC": "passed",
+  "archivePaths": "passed",
+  "editableFilesByteIdentical": 54,
+  "unit": {
+    "pass": 147,
+    "fail": 0,
+    "skip": 0
+  },
+  "syntax": {
+    "files": 21,
+    "status": "passed"
+  },
+  "build": {
+    "status": "passed",
+    "bytes": 5232605,
+    "embeddedImages": 19,
+    "sha256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e"
+  },
+  "rebuiltHTMLMatchesProjectAndPackagedHTML": true,
+  "otherCheckpointArtifacts": {
+    "irena-deploy.zip": {
+      "crc": "passed",
+      "entries": 3,
+      "bytes": 3888277,
+      "indexHTMLMatchesStandalone": true
+    },
+    "irena-review.zip": {
+      "crc": "passed",
+      "entries": 560,
+      "bytes": 42665631
+    }
+  },
+  "realIPhoneTested": false,
+  "fileSchemeTested": false,
+  "runnerNote": "Initial temporary logging-path AttributeError corrected; game/test commands rerun successfully. See runner-history.txt."
+}

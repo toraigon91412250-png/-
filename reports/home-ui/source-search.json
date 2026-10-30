@@ -1,0 +1,18 @@
+[
+  {
+    "archive": "/workspace/shared/downloads/irena-source.zip",
+    "threePhaseSHA256": null
+  },
+  {
+    "archive": "/workspace/shared/downloads/irena-quality-20261020/irena-source.zip",
+    "threePhaseSHA256": null
+  },
+  {
+    "archive": "/workspace/shared/downloads/irena-three-phase/irena-source.zip",
+    "threePhaseSHA256": "19703203b62cf58fa180a1cb204bb0c8445d99e17cd93a96db64059c760cd3e0"
+  },
+  {
+    "archive": "/workspace/shared/downloads/irena-quality-20261020/checkpoint/irena-source.zip",
+    "threePhaseSHA256": null
+  }
+]

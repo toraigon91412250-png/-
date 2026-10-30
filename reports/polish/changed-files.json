@@ -1,0 +1,9 @@
+[
+  "web/src/components/game.css",
+  "web/src/components/App.js",
+  "web/src/utils/campaign20.js",
+  "tests/strategy-study.test.js",
+  "tests/campaign20.test.js",
+  "tests/home-ui.test.js",
+  "tests/polish.test.js"
+]

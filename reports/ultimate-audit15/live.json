@@ -1,0 +1,88 @@
+{
+  "passed": 9,
+  "checks": [
+    "public exact tested artifact",
+    "390 hero decoded",
+    "390 actual single ultimate damage",
+    "390 no reused feather VFX",
+    "390 effects clean up",
+    "390 all commands fit",
+    "390 no horizontal overflow",
+    "390 eclipse and impact emitted",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "width": 390,
+      "reduced": false,
+      "fx": [
+        {
+          "cls": "vfx vfx-number vfx-in",
+          "text": "−371",
+          "time": 13436.60000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻形成",
+          "time": 13557.39999999851
+        },
+        {
+          "cls": "vfx vfx-apocalypse-veil",
+          "text": "",
+          "time": 13678.5
+        },
+        {
+          "cls": "vfx vfx-apocalypse-halo",
+          "text": "",
+          "time": 13678.5
+        },
+        {
+          "cls": "vfx vfx-apocalypse-hero",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 13880.29999999702
+        },
+        {
+          "cls": "vfx-apocalypse-title",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 13880.29999999702
+        },
+        {
+          "cls": "vfx vfx-apocalypse-eclipse",
+          "text": "",
+          "time": 15305.70000000298
+        },
+        {
+          "cls": "vfx vfx-apocalypse-descent",
+          "text": "",
+          "time": 15860.10000000149
+        },
+        {
+          "cls": "vfx vfx-crystal",
+          "text": "",
+          "time": 16026.29999999702
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻解除",
+          "time": 16026.29999999702
+        },
+        {
+          "cls": "vfx vfx-apocalypse-impact",
+          "text": "",
+          "time": 16112.70000000298
+        },
+        {
+          "cls": "vfx vfx-apocalypse-shock",
+          "text": "",
+          "time": 16112.79999999702
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0 vfx-ultimate-number",
+          "text": "3,805",
+          "time": 16112.79999999702
+        }
+      ]
+    }
+  ]
+}

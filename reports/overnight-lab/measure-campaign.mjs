@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import {createCampaign,startCampaignBattle,actCampaign,settleCampaign,campaignNext,campaignTrain,campaignUpgrade} from '../../web/src/utils/campaign20.js';
+import {seeded,fightMeasured} from './measure-main.mjs';
+import {campaignGrowth} from './growth.mjs';
+const result=[];const runs=[];
+for(const variant of ['swift','tactical','endurance','tempo'])for(const strategy of ['feather','slash','mixed','guard'])for(let sample=0;sample<32;sample++){
+ const run=createCampaign({variant,seed:21001+sample});const fights=[];let invested=0;
+ for(let i=0;i<22;i++){const before=run.build.p;campaignGrowth(run);invested+=before-run.build.p;const b=startCampaignBattle(run);const m=fightMeasured(b,strategy,seeded(21001+sample+i*997),actCampaign);settleCampaign(run,b);fights.push({floor:b.floor,mode:b.mode,...m});if(!m.win)break;}
+ runs.push({variant,strategy,sample,clears:run.cleared.length,stella:run.stella,ex:run.ex,invested,fights});
+}
+for(const variant of ['swift','tactical','endurance','tempo'])for(const strategy of ['feather','slash','mixed','guard']){const rows=runs.filter(x=>x.variant===variant&&x.strategy===strategy),normal=rows.flatMap(x=>x.fights.filter(y=>y.mode==='normal')),wins=normal.filter(x=>x.win);result.push({variant,strategy,samples:rows.length,campaignWins:rows.filter(x=>x.clears===20).length,stellaWins:rows.filter(x=>x.stella).length,exWins:rows.filter(x=>x.ex).length,meanClears:rows.reduce((n,x)=>n+x.clears,0)/rows.length,normalWins:wins.length,normalBattles:normal.length,meanTurns:normal.reduce((n,x)=>n+x.turns,0)/normal.length,maxTurns:Math.max(...normal.map(x=>x.turns)),meanReceived:normal.reduce((n,x)=>n+x.received,0)/normal.length,meanInvestment:rows.reduce((n,x)=>n+x.invested,0)/rows.length,uses:normal.reduce((o,x)=>{for(const [id,n]of Object.entries(x.uses))o[id]=(o[id]||0)+n;return o;},{})});}
+fs.writeFileSync('reports/overnight-lab/campaign-balance.json',JSON.stringify({conditions:'32 runs per strategy/variant. Seeds21001..21032. Same growth policy, no grinding/claims/bonus equipment. Engine rng seeded separately for each floor. Each run stops on first loss; no hidden retry. Growth and choice in versioned scripts.',result,runs},null,2));console.table(result.map(({variant,strategy,campaignWins,exWins,meanTurns,maxTurns,meanClears,uses})=>({variant,strategy,campaignWins,exWins,meanTurns:meanTurns.toFixed(2),maxTurns,meanClears,ult:uses.ultimate||0,guard:uses.guard||0})));

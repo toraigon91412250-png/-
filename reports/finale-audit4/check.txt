@@ -1,0 +1,5 @@
+
+> irena-reborn@4.0.0 check
+> node tools/check.mjs
+
+Syntax OK: 41 files

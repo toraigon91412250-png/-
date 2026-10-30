@@ -1,0 +1,50 @@
+[
+  {
+    "file": "README.md",
+    "change": "modified"
+  },
+  {
+    "file": "tests/combat-feedback.test.js",
+    "change": "modified"
+  },
+  {
+    "file": "tests/three-phase.test.js",
+    "change": "added"
+  },
+  {
+    "file": "tools/build.mjs",
+    "change": "modified"
+  },
+  {
+    "file": "tools/package.py",
+    "change": "modified"
+  },
+  {
+    "file": "tools/three-phase-browser.mjs",
+    "change": "added"
+  },
+  {
+    "file": "tools/three-phase-sim.mjs",
+    "change": "added"
+  },
+  {
+    "file": "tools/ui-regression.mjs",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/components/App.js",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/components/game.css",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/utils/gameCore.js",
+    "change": "modified"
+  },
+  {
+    "file": "web/src/utils/threePhase.js",
+    "change": "added"
+  }
+]

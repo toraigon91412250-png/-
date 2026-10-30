@@ -1,0 +1,248 @@
+--- audit10/web/src/utils/campaign20.js
++++ audit11/web/src/utils/campaign20.js
+@@ -1,3 +1,4 @@
++import {combatNotice} from './combatObservation.js';
+ import {fresh,clone,train,upgradePower,equip,buyMark} from './progression.js';
+ import {startBattle,act,available,enemyTurn,buff,heal,log} from './gameCore.js';
+ 
+@@ -34,7 +35,7 @@
+  run.attempt++;
+  log(b,'20階層キャンペーン【試作・本編非反映】');return b;
+ }
+-function removeCampaignArmor(b){const had=b.enemy.buffs.some(x=>x.id==='campaignArmor');b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');delete b.enemy.statuses.campaignArmor;if(had)log(b,'黒晶殻を破壊した：敵防御が元に戻った');}
++function removeCampaignArmor(b){const had=b.enemy.buffs.some(x=>x.id==='campaignArmor');b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');delete b.enemy.statuses.campaignArmor;if(had)combatNotice(b,'armorBreak');if(had)log(b,'黒晶殻を破壊した：敵防御が元に戻った');}
+ function campaignLanded(b){
+  if(b.campaign.applied||b.lastDamage<=0)return;b.campaign.applied=true;
+  if(['power','ultimate'].includes(b.lastAction)){removeCampaignArmor(b);b.enemy.statuses.campaignSever=3;log(b,'権能の傷痕：敵の再生を一時的に封じた');}
+@@ -43,9 +44,9 @@
+  campaignLanded(b);const couldAttack=b.hp>0&&b.enemy.hp>0&&!b.enemyStop&&!b.enemy.statuses.stun;enemyTurn(b,guard,rng);
+  if(b.campaign.mode!=='normal'||b.result||b.hp<=0||b.enemy.hp<=0||(!couldAttack||b.log.at(-1)?.startsWith('速度優位：')||!b.log.slice(-3).some(x=>/^敵の(重撃|反撃)/.test(x))))return;
+  const kind=CAMPAIGN_FLOORS[b.floor-1].kind;
+- if(kind==='armor'&&!b.enemy.statuses.campaignSever){b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');b.enemy.buffs.push({id:'campaignArmor',mul:{def:CAMPAIGN_RULES.armor},remaining:9999});b.enemy.statuses.campaignArmor=9999;log(b,'黒晶殻が形成された：敵の防御力が上昇');}
++ if(kind==='armor'&&!b.enemy.statuses.campaignSever){b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');b.enemy.buffs.push({id:'campaignArmor',mul:{def:CAMPAIGN_RULES.armor},remaining:9999});b.enemy.statuses.campaignArmor=9999;combatNotice(b,'armorForm');log(b,'黒晶殻が形成された：敵の防御力が上昇');}
+  if(kind==='pressure'){b.statuses.pressure=3;log(b,'圧壊の残響：重圧を受けた');}
+- if(kind==='renewal'&&!b.enemy.statuses.campaignSever){const before=b.enemy.hp;b.enemy.hp=Math.min(b.enemy.base.hp*(1-b.erosion),b.enemy.hp+b.enemy.base.hp*CAMPAIGN_RULES.renewal);log(b,`再生：敵HPが${Math.max(0,Math.floor(b.enemy.hp-before))}回復`);}
++ if(kind==='renewal'&&!b.enemy.statuses.campaignSever){const before=b.enemy.hp;b.enemy.hp=Math.min(b.enemy.base.hp*(1-b.erosion),b.enemy.hp+b.enemy.base.hp*CAMPAIGN_RULES.renewal);combatNotice(b,'heal',{target:'enemy'});log(b,`再生：敵HPが${Math.max(0,Math.floor(b.enemy.hp-before))}回復`);}
+ }
+ export function actCampaign(b,action,options={}){
+  if((!b.test&&!b.main20)||b.campaign?.kind!=='campaign20')throw Error('20階層試作専用です');
+--- audit10/web/src/utils/gameCore.js
++++ audit11/web/src/utils/gameCore.js
+@@ -1,3 +1,4 @@
++import {combatNotice} from './combatObservation.js';
+ import {markState,markGuard,beginMarkAttack,judgeMarkMultiplier,reduceKingMarkHit,triggerKingMark} from './tacticalMarks.js';
+ import {BALANCE,RECIPES,MARKS,GODS,FINAL_SKILLS} from '../data/config.js';
+ import {clamp,clone,achievements,badgeRank,powerGrowth,midgameUnlocked} from './progression.js';
+@@ -54,10 +55,10 @@
+ export function enemyStats(b){const factor=Math.max(.05,1-b.erosion),v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*factor)]));for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
+ export function damage(atk,def,{mult=1,ignore=0,final=1,extra=0,minimum=1}={}){const safe=(v,max=1e15)=>Number.isNaN(v)?0:Math.max(0,Math.min(max,v));const base=Math.max(1,safe(atk)*safe(mult,1e12)-safe(def)*(1-clamp(ignore,0,1)));return Math.floor(Math.min(1e15,Math.max(safe(minimum),base*safe(final,1e12)+safe(extra))));}
+ export function buff(b,id,duration,mul={},extra={}){b.buffs=b.buffs.filter(x=>x.id!==id);b.buffs.push({id,remaining:duration,mul,...extra});}
+-export function dealPlayer(b,amount){const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;return amount;}}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;return amount;}}
+- b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;triggerKingMark(b,kingEndured);return actual;
++export function dealPlayer(b,amount){const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');combatNotice(b,'incomingHit',{damage:0});return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}else if(b.lives>0){b.lives--;kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}
++ b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;combatNotice(b,'incomingHit',{damage:Math.floor(actual)});const beforeMarkHeal=b.hp;triggerKingMark(b,kingEndured);if(b.hp!==beforeMarkHeal)combatNotice(b,'heal',{target:'player'});return actual;
+ }
+-export function heal(b,fraction){b.hp=Math.min(b.base.hp,b.hp+b.base.hp*fraction);}
++export function heal(b,fraction){b.hp=Math.min(b.base.hp,b.hp+b.base.hp*fraction);combatNotice(b,'heal',{target:'player'});}
+ function markUsed(b,id){if(b.marks.includes(id)&&!b.used.marks.includes(id))b.used.marks.push(id);}
+ function tickMap(map){for(const k in map){map[k]--;if(map[k]<=0)delete map[k];}}
+ function erosion(b,amount){b.erosion=clamp(b.erosion+amount,0,.95);b.enemy.hp=Math.min(b.enemy.hp,enemyStats(b).hp);}
+@@ -91,9 +92,9 @@
+  let total=0,hit=false;const hits=action==='volley'?2:1,parts=[];
+  for(let shot=0;shot<hits&&b.enemy.hp>0;shot++){
+   const landed=rng()>=clamp((e.spd-p.spd)/Math.max(1,e.spd)*.12,0,.12);hit ||= landed;let shotMult=mult,shotIgnore=ignore,shotExtra=extra,judgeTriggered=false;
+-  if(landed){if(tacticalRules&&b.enemy.statuses.campaignArmor&&['power','ultimate'].includes(action)){b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');delete b.enemy.statuses.campaignArmor;b.enemy.statuses.campaignSever=tacticalRules.duration;b.enemy.statuses.researchExposed=tacticalRules.duration;e=enemyStats(b);final*=tacticalRules.exposed;}for(const id of judges){if((b.stacks[id]||0)>=2){if(id==='judge')judgeTriggered=true;shotMult*=id==='fallenjudge'?4:3;shotIgnore=Math.max(shotIgnore,id==='fallenjudge'?.9:.6);shotExtra+=b.enemy.hp*.2;if(id==='abyssjudge')shotMult*=1+b.erosion+Object.keys(b.enemy.statuses).length*.1;b.stacks[id]=0;log(b,'断罪発動：敵の攻撃前現在HP20%を加算');}else b.stacks[id]=(b.stacks[id]||0)+1;}}
++  if(landed){if(tacticalRules&&b.enemy.statuses.campaignArmor&&['power','ultimate'].includes(action)){b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');delete b.enemy.statuses.campaignArmor;b.enemy.statuses.campaignSever=tacticalRules.duration;b.enemy.statuses.researchExposed=tacticalRules.duration;e=enemyStats(b);final*=tacticalRules.exposed;combatNotice(b,'armorBreak');}for(const id of judges){if((b.stacks[id]||0)>=2){if(id==='judge')judgeTriggered=true;shotMult*=id==='fallenjudge'?4:3;shotIgnore=Math.max(shotIgnore,id==='fallenjudge'?.9:.6);shotExtra+=b.enemy.hp*.2;if(id==='abyssjudge')shotMult*=1+b.erosion+Object.keys(b.enemy.statuses).length*.1;b.stacks[id]=0;log(b,'断罪発動：敵の攻撃前現在HP20%を加算');}else b.stacks[id]=(b.stacks[id]||0)+1;}}
+   const judgeMark=judgeMarkMultiplier(b,judgeTriggered);const minimum=Math.max(1,...b.buffs.map(x=>x.minimum||1));const d=landed?damage(p.atk,e.def,{mult:shotMult,ignore:Math.max(shotIgnore,b.ignoreDefense?1:0),final:final*markMultiplier*judgeMark,extra:shotExtra*markMultiplier,minimum}):0;
+-  b.enemy.hp=Math.max(0,b.enemy.hp-d);total+=d;parts.push(d);b.events.push({type:'hit',damage:d});
++  b.enemy.hp=Math.max(0,b.enemy.hp-d);total+=d;parts.push(d);b.events.push({type:'hit',damage:d});combatNotice(b,'hit',{damage:d,hitIndex:shot,landed});
+  }
+  b.lastDamage=total;log(b,`${action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
+  if(hit&&feather&&b.powers.includes('abysswing'))erosion(b,.09);
+@@ -104,19 +105,20 @@
+  const skill=FINAL_SKILLS[action];if(skill?.side&&skill.mul){buff(b,action,skill.duration,skill.mul,{minimum:skill.minimum||0});b.cd[action]=skill.ct;if(action==='dominion')b.statuses={};if(action==='release')b.hp=Math.max(1,b.hp-b.base.hp*.12);log(b,skill.name+' 発動');return;}
+  if(action==='transcend'){buff(b,action,3,skill.mul);b.cd[action]=4;log(b,'絶界昇華：三大権能を封鎖');return;}
+  if(action==='grasp'){b.hp=b.base.hp;delete b.statuses.pressure;buff(b,'grasp',Infinity,{spd:1000,atk:b.turn<=3?.6:Math.min(5,1+b.turn*.16)});b.enemyStop=Math.max(b.enemyStop,1);b.cd.annihilate=0;b.cd.grasp=FINAL_SKILLS.grasp.ct;log(b,'理外掌握：全回復・敵停止・発動時攻撃倍率固定');return;}
+- let min=action==='annihilate'?5000:2000,p=playerStats(b),e=enemyStats(b);const d=damage(p.atk,e.def,{mult:action==='annihilate'?5:3,ignore:action==='annihilate'||b.ignoreDefense?1:0,minimum:Math.max(min,...b.buffs.map(x=>x.minimum||1))});b.enemy.hp=Math.max(0,b.enemy.hp-d);b.lastDamage=d;log(b,`${action==='annihilate'?'終極殲滅':action==='genesis'?'創世':'終焉'} ${d.toLocaleString()} ダメージ`);
++ let min=action==='annihilate'?5000:2000,p=playerStats(b),e=enemyStats(b);const d=damage(p.atk,e.def,{mult:action==='annihilate'?5:3,ignore:action==='annihilate'||b.ignoreDefense?1:0,minimum:Math.max(min,...b.buffs.map(x=>x.minimum||1))});b.enemy.hp=Math.max(0,b.enemy.hp-d);b.lastDamage=d;combatNotice(b,'hit',{damage:d,hitIndex:0,landed:true});log(b,`${action==='annihilate'?'終極殲滅':action==='genesis'?'創世':'終焉'} ${d.toLocaleString()} ダメージ`);
+  if(action==='annihilate'){b.cd.annihilate=5;b.pendingStun=1;b.statuses.slow=3;return;}
+  b.cd[action]=5;
+  if(action==='genesis'){if(route==='A')buff(b,'divineMight',2,{atk:3,def:3,spd:3});if(route==='B')b.enemyStop=Math.max(b.enemyStop,1);if(route==='C')b.cd={};}
+  else{if(route==='A')b.ignoreDefense=3;if(route==='B'){b.enemy.buffs=[];b.noBuff=10;}if(route==='C'){delete b.statuses.pressure;b.noPressure=5;}}
+  log(b,`ルート ${route} 解決（追加攻撃なし）`);
+ }
+-function phase(b){if(!['ex','stella','final','god'].includes(b.mode))return;const ratio=b.enemy.hp/b.enemy.base.hp,newPhase=ratio<=.33?3:ratio<=.67?2:1;if(newPhase>b.enemy.phase){b.enemy.phase=newPhase;if(newPhase===3)b.phaseTurns=0;log(b,`第${newPhase}形態へ移行。HPは継続`);if(newPhase>=2&&!b.noBuff)b.enemy.buffs=[{mul:{atk:1.2},remaining:9999}];}}
++function phase(b){if(!['ex','stella','final','god'].includes(b.mode))return;const ratio=b.enemy.hp/b.enemy.base.hp,newPhase=ratio<=.33?3:ratio<=.67?2:1;if(newPhase>b.enemy.phase){b.enemy.phase=newPhase;if(newPhase===3)b.phaseTurns=0;log(b,`第${newPhase}形態へ移行。HPは継続`);if(newPhase>=2&&!b.noBuff)b.enemy.buffs=[{mul:{atk:1.2},remaining:9999}];combatNotice(b,'phaseChange');}}
+ export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
+- if(b.enemyStop>0){b.enemyStop--;log(b,'敵の通常行動を停止');return;}
+- if(b.enemy.statuses.stun){log(b,'敵はスタンしている');return;}
++ combatNotice(b,'enemyAction');
++ if(b.enemyStop>0){b.enemyStop--;combatNotice(b,'enemyStopped');log(b,'敵の通常行動を停止');return;}
++ if(b.enemy.statuses.stun){combatNotice(b,'enemyStopped');log(b,'敵はスタンしている');return;}
+  const p=playerStats(b),e=enemyStats(b),evasion=clamp((p.spd/e.spd-1)*.06,0,.65);
+- if(rng()<evasion){log(b,'速度優位：敵の攻撃を回避');return;}
++ if(rng()<evasion){combatNotice(b,'enemyMiss');log(b,'速度優位：敵の攻撃を回避');return;}
+  let raw=b.mode==='stella'?[440,640,880][b.enemy.phase-1]:e.atk*(b.enemy.phase===2?1.12:b.enemy.phase===3?1.35:1);
+  let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});if(guard)d=Math.max(1,Math.round(d*.3));if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
+  b.enemyDamage=Math.floor(dealPlayer(b,d));log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
+@@ -126,30 +128,31 @@
+ }
+ export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn}={}){
+  const reason=available(b,action,route);if(reason)throw Error(reason);const rolls=[],originalRng=rng;rng=()=>{const value=originalRng();rolls.push(value);return value;};b.events=[];b.lastDamage=0;b.enemyDamage=0;b.lastAction=action;
+- if(b.character==='irena'){markState(b);b.enemy.markTurns=(b.enemy.markTurns||0)+1;}passiveStart(b);b.used.low ||= b.hp/b.base.hp<=.1;
++ if(b.character==='irena'){markState(b);b.enemy.markTurns=(b.enemy.markTurns||0)+1;}passiveStart(b);combatNotice(b,'passive');b.used.low ||= b.hp/b.base.hp<=.1;
+  const early=enemyStats(b).spd>playerStats(b).spd;
+  // Enemy-first turns allow immortality/guard to resolve defensively before incoming damage.
+  if(action==='immortal')b.statuses.invulnerable=1;
+  if(early)enemyAction(b,action==='guard',rng);
+- if(b.hp>0){if(action==='wait'){log(b,'反動で行動できない');}
++ if(b.hp>0){combatNotice(b,'playerAction',{action});if(action==='wait'){log(b,'反動で行動できない');}
+  else if(action==='guard'){markGuard(b);b.gauge=Math.min(100,b.gauge+18);log(b,'防御：被ダメージ70%軽減');}
+  else if(b.character==='final'&&!['slash'].includes(action))finalAction(b,action,route);
+  else if(b.character==='stella'){
+  if(action==='immortal'){b.cd.immortal=4;log(b,'不滅：このターン完全無敵');}
+  else if(action==='rebirth'){const fractions=[1,.5,.25];heal(b,fractions[b.rebirths]);log(b,`再誕 ${Math.round(fractions[b.rebirths]*100)}%回復`);b.rebirths++;}
+- else if(action==='meteor'){b.enemy.hp=Math.max(0,b.enemy.hp-5000);b.lastDamage=5000;b.meteor=true;b.used.special++;log(b,'天象支配：隕石 5,000 ダメージ');}
++ else if(action==='meteor'){b.enemy.hp=Math.max(0,b.enemy.hp-5000);b.lastDamage=5000;b.meteor=true;b.used.special++;combatNotice(b,'hit',{damage:5000,hitIndex:0,landed:true});log(b,'天象支配：隕石 5,000 ダメージ');}
+  else attack(b,'slash',rng);
+  }else attack(b,action,rng);}
+  phase(b);
+  if(!early&&b.hp>0&&b.enemy.hp>0)enemyAction(b,action==='guard',rng);
+  // Phase deadlines are measured in full rounds, irrespective of speed and normal-action stops.
+- if(['ex','final'].includes(b.mode)&&b.enemy.phase===3&&b.enemy.hp>0){b.phaseTurns++;if(b.phaseTurns>=BALANCE.exLimit){b.hp=0;log(b,'終末判定：通常停止・無敵・耐性を貫通');}}
++ if(['ex','final'].includes(b.mode)&&b.enemy.phase===3&&b.enemy.hp>0){b.phaseTurns++;if(b.phaseTurns>=BALANCE.exLimit){b.hp=0;combatNotice(b,'deadline');log(b,'終末判定：通常停止・無敵・耐性を貫通');}}
+  if(b.enemy.hp<=0&&b.hp>0)b.result='win';else if(b.hp<=0)b.result='lose';
+  tickMap(b.cd);tickMap(b.statuses);tickMap(b.enemy.statuses);if(b.noBuff)b.noBuff--;if(b.noPressure)b.noPressure--;if(b.ignoreDefense)b.ignoreDefense--;
+  const ended=[];b.buffs=b.buffs.filter(x=>{x.remaining--;if(x.remaining<=0){ended.push(x.id);return false;}return true;});
+  if(ended.includes('transcend')){b.pendingStun=1;b.statuses.fragile=3;log(b,'絶界昇華の反動：次ターン停止・防御半減');}if(ended.includes('sovereignty'))b.pendingStun=1;
+  if(b.pendingStun){b.statuses.stun=b.pendingStun;delete b.pendingStun;}
+  if(b.result)log(b,b.result==='win'?'VICTORY — 再誕への一歩':'DEFEAT — 力を整え、再び');else b.turn++;
++ combatNotice(b,'turnEnd');
+  if(!b.test&&b.character==='irena')b.replay.push({action,rolls});
+  return b;
+ }
+--- audit10/web/src/components/App.js
++++ audit11/web/src/components/App.js
+@@ -1,3 +1,5 @@
++import {combatFrame,observeCombat} from '../utils/combatObservation.js';
++import {preloadCombatVfx,playCombatPresentation} from './combatPresentation.js';
+ import {createLab20,startLab20,actLab20,settleLab20,editLab20} from '../utils/lab20B.js';
+ import {lab20Entry,lab20Lobby,lab20Result} from './lab20BView.js';
+ import {freshMain20,loadMain20,validateMain20,startMainBattle,actMainBattle,settleMainBattle,main20Limit,main20Milestones} from '../utils/main20.js';
+@@ -164,7 +166,7 @@
+ function awakeningView(a){return `${heading('失われた神格','新たな力ではない。かつての自分を、取り戻す。','DIVINE / REAWAKENING')}<div class="grid"><section class="card"><div class="tag">STAGE ${a.awakening} / 5</div><h2>${AWAKENINGS[a.awakening]}</h2><img class="awakening-art" src="${MEDIA.keyArt}" alt="ユーザー提供の共通キービジュアル（覚醒段階別ではありません）"><div class="levelsteps">${Array.from({length:5},(_,i)=>`<i class="${i<a.awakening?'on':''}"></i>`).join('')}</div><p class="small">各段階で通常基礎能力＋18%（補完）。共通キービジュアルを表示しています。5段階の専用絵とMP4は未提供です。</p></section><div class="stack"><section class="card"><h3>神格を取り戻す</h3><p class="small">共通神素材 ${a.godMaterials} / 神域の勲章 ${a.medals}<br>固有素材：${GODS.map((x,i)=>x+' '+a.godUnique[i]).join(' / ')}</p><p>${a.awakening<5?`次：${AWAKENINGS[a.awakening+1]}<br><span class="small">共通素材 ${(a.awakening+1)*5} ＋ ${GODS[a.awakening]}の固有素材1</span>`:'神格は完全に再生された。'}</p><div class="row">${button('手動で覚醒する','awaken','','primary',a.awakening>=5||a.godMaterials<(a.awakening+1)*5||a.godUnique[a.awakening]<1)}</div></section><section class="card"><h3>神域連戦</h3><p class="small">EX撃破後に解放。固定5連戦・各戦全回復。素材は全突破まで仮獲得。敗北・撤退で今回の進行と素材を失います。</p>${a.gauntlet?`<p>第${a.gauntlet.index+1}戦 / 仮素材 ${a.gauntlet.materials}</p>`:''}<div class="row">${button(a.gauntlet?'連戦を続ける':'神域へ挑戦','fight','god','ghost',!a.flags.ex)}</div></section><section class="card"><h3>第5段階の演出基盤</h3><p class="small">専用MP4の再生に対応。現在は10秒のCSS代替演出を使用します。元の覚醒ムービーではありません。</p>${button('代替演出をプレビュー','movie','','ghost')}</section></div></div>`;}
+ function lab(a){return `${lab20Entry(button)}${heading('境界の実験場','本編の保存データから独立した、戦闘検証空間。','EXPERIMENT / SANDBOX')}<div class="notice">ここで始めた戦闘はすべて試験扱いです。報酬、実績、通常の解放フラグを更新しません。</div><section class="card stack"><h2>戦闘パラメータ</h2><div class="selectline"><label>モード<select id="labmode"><option value="normal">通常いれーな</option><option value="ex">EXカイザー</option><option value="three-phase">EXカイザー・三相決戦【試作】</option><option value="guard-break">熾竜・崩鎧試練【試作】</option><option value="stella">ステラ</option><option value="final">最終決戦いれーな</option></select></label><label>基礎攻撃倍率 <input id="labatk" type="number" value="1" min="0.1" max="20" step=".1"></label><label>基礎HP倍率 <input id="labhp" type="number" value="1" min="0.1" max="20" step=".1"></label></div><p class="small">全育成状態の試験キャラクターを使用。倍率はこの戦闘だけに適用します。三相決戦は黒翼＋堕天王の固定ビルドで開始。第二相から敵が硬化・重圧・回復を発動。破壊の権能・必殺で黒晶殻を解除、防御で重圧を解除、HP12%を回復して蓄勢を獲得。蓄勢は斬撃・破壊の権能を一回強化します。崩鎧試練は固定育成・刻印なしで開始。破壊の権能／必殺の命中で竜の鎧を解除、防御でHP12%回復と次の斬撃／権能の攻撃力3倍を獲得。鎧は実際の被弾3回で再形成されます。羽弾だけでは鎧を崩せません。数値は実験用です。</p>${button('独立試験を開始','labstart','','primary')}</section><div class="section-head"><h2>計算仕様</h2></div><section class="card"><p class="small">基本ダメージ = max(1, 攻撃×技倍率 − 防御×(1−無視率)) × 最終補正 ＋ 現在HP追加。最低保証は最後に適用。低HP倍率は排他的。深淵は基礎値から毎ターン6%の線形減少、下限5%。<br>堕天によるHP倍率は内部の生命割合を維持するため、倍率切替だけでは回復しません。羽弾と断罪の乗算・追加は別枠です。</p></section>`;}
+ function dev(a){return `${heading('観測者の書架','全機能を検証するための、独立した試験用セーブ。','DEVELOPER / CONTROL')}<div class="notice">「全機能開放」は本編のコピーから試験データを作成します。テスト戦の勝利は実績・初回報酬を付与しません。本編へ戻ると元の進行をそのまま再開できます。天星覇権はここでも36実績条件を維持します。</div><section class="card"><h2>全機能開放</h2><p class="small">全階層、ステラ、EX、最終決戦、共鳴10種、刻印、育成・素材を開放。試験用セーブは独立キーに保存。</p><div class="row">${button(sandbox?'試験データを再作成':'全機能開放','enabledev','','primary')}${sandbox?button('本編へ戻る','exitdev','','ghost'):button('保存済み試験データを開く','resumedev','','ghost')}</div>${sandbox?`<div class="dev-buttons">${[['normal','通常第20階層'],['ex','EXカイザー'],['stella','ステラ最終決戦'],['final','専用いれーな'],['god','神域連戦']].map(([id,title])=>button(title,'fight',id)).join('')}</div>`:''}</section><div class="section-head"><h2>セーブ管理</h2></div><section class="card"><div class="row">${button('JSONバックアップ','export','','ghost')}${button('JSONを読み込む','import','','ghost')}${button('タイトルへ','title','','ghost')}${button('本編を初期化','askReset','','danger')}</div><p class="footnote">保存キー：irena-reborn-v3 / 旧v1・v2キーも検索。未知の旧スキーマは推測して変換せず、エラーを表示します。</p></section>`;}
+-function tone(kind='hit'){if(!sound)return;try{audio ||= new (window.AudioContext||window.webkitAudioContext)();audio.resume();const osc=audio.createOscillator(),g=audio.createGain();osc.connect(g);g.connect(audio.destination);osc.type=kind==='ultimate'?'sawtooth':'sine';osc.frequency.setValueAtTime(kind==='ultimate'?330:620,audio.currentTime);osc.frequency.exponentialRampToValueAtTime(80,audio.currentTime+.18);g.gain.setValueAtTime(.05,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.22);osc.start();osc.stop(audio.currentTime+.25);}catch{sound=false;}}
++function tone(kind='hit'){if(!sound)return;try{audio ||= new (window.AudioContext||window.webkitAudioContext)();audio.resume();const osc=audio.createOscillator(),g=audio.createGain();osc.connect(g);g.connect(audio.destination);osc.type=['ultimate','break'].includes(kind)?'sawtooth':'sine';osc.frequency.setValueAtTime(kind==='ultimate'?330:kind==='break'?180:kind==='guard'?420:kind==='incoming'?150:620,audio.currentTime);osc.frequency.exponentialRampToValueAtTime(80,audio.currentTime+.18);g.gain.setValueAtTime(.05,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.22);osc.start();osc.stop(audio.currentTime+.25);}catch{sound=false;}}
+ function cinema(type,title,sub,done,duration=2400,art=null){
+  if(combatAnimating)return;
+  const el=$('#cinema');let completed=false;
+@@ -214,7 +216,7 @@
+ }
+ function beginFight(mode,options={}){const a=current();if(battle&&!battle.result)throw Error('進行中の戦闘があります。先に戦闘画面から撤退してください。');if(mode==='god'&&!a.gauntlet)startGauntlet(a);const floor=options.floor??(mode==='normal'?a.floor:100);battle=startMainBattle(a,{mode,floor,difficulty:mode==='normal'?difficulty:'NORMAL',test:!!sandbox,...options});selectedFloor=floor;page='battle';persist();render();window.scrollTo(0,0);}
+ function doCombat(id,route='A'){
+- const b=battle;if(!b||b.result)return;
++ const b=battle;if(!b||b.result)return;if(b.character==='irena')return doPresentedCombat(b,id,route);
+  combatRecovering=true;clearTimeout(combatReleaseTimer);syncCombatBusy();
+  try{
+   const previousPhase=b.enemy.phase;if(b.lab20)actLab20(b,id,{route});else if(b.main20)actMainBattle(b,id,{route});else if(b.campaign)actCampaign(b,id,{route});else if(b.trial?.kind==='guard-break')actGuardBreakTrial(b,id,{route});else if(b.trial)actThreePhase(b,id,{route});else act(b,id,{route});b.lastAction=id;
+@@ -227,6 +229,30 @@
+   syncCombatBusy();
+   combatReleaseTimer=setTimeout(()=>{combatRecovering=false;syncCombatBusy();},matchMedia('(prefers-reduced-motion: reduce)').matches?60:280);
+  }
++}
++// Render only committed facts; the retained DOM is a temporary visual snapshot.
++const combatVfxReady=preloadCombatVfx();
++function showCombatFrame(frame){
++ const arena=$('.battle-stage');if(!arena)return;
++ for(const side of ['player','enemy']){const fighter=arena.querySelector('.fighter-'+side),v=frame[side];if(!fighter||!v)continue;
++  const num=fighter.querySelector('.hpnum'),bar=fighter.querySelector('.health span');if(num)num.textContent=n(v.hp)+' / '+n(v.max);if(bar)bar.style.width=Math.max(0,Math.min(100,v.hp/v.max*100))+'%';
++ }
++ const state=arena.querySelector('.actual-enemy-state');if(state)state.textContent=frame.armor?'黒晶殻'+(frame.tactical?' ／ 羽弾系×0.35':''):frame.exposed?'殻解除・露出 '+frame.exposed+'T（最終補正×1.6）':'殻なし';
++ const phase=arena.querySelector('.fighter-enemy .info>small');if(phase)phase.textContent='第'+frame.phase+'形態';
++ const gauge=$('.battle-charge .gaugebar span');if(gauge)gauge.style.width=frame.gauge+'%';const value=$('.battle-charge .gold');if(value)value.textContent=frame.gauge+'%';
++}
++async function doPresentedCombat(b,id,route){
++ if(combatRecovering||b!==battle||b.result)return;
++ combatRecovering=true;clearTimeout(combatReleaseTimer);syncCombatBusy();const controller=new AbortController(),events=[];
++ try{
++  const before=combatFrame(b);
++  observeCombat(b,e=>events.push(e),()=>{if(b.lab20)actLab20(b,id,{route});else if(b.main20)actMainBattle(b,id,{route});else if(b.campaign)actCampaign(b,id,{route});else if(b.trial?.kind==='guard-break')actGuardBreakTrial(b,id,{route});else if(b.trial)actThreePhase(b,id,{route});else act(b,id,{route});});b.lastAction=id;
++  if(b.result){b.reward=b.lab20?settleLab20(lab20Run,b):b.main20?settleMainBattle(current(),b):b.campaign?settleCampaign(campaign,b):settle(current(),b);if(!b.test&&b.result==='win'&&id==='ultimate'&&b.used.marks.includes('starfall')){current().records.starfinish=true;achievements(current());}if(!b.lab20&&(!b.campaign||b.main20)&&(!b.test||sandbox))persist();}
++  if(!b.result&&!b.test)persist();
++  await combatVfxReady;showCombatFrame(before);
++  const presentation=playCombatPresentation({arena:$('.battle-stage'),events,action:id,onFrame:showCombatFrame,onSound:tone,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,signal:controller.signal});await presentation.done;
++ }catch(e){console.error('Combat presentation failed',e);toast('戦闘表示を復帰しました：'+e.message);}
++ finally{controller.abort();combatRecovering=false;if(b===battle)render();syncCombatBusy();}
+ }
+ function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+ function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const data=validateMain20(JSON.parse(await file.text()));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=sandbox?null:restoreMarkBattle(s.markBattle,validateSave);page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
+@@ -262,7 +288,7 @@
+  case 'summon':if($('#modal').open&&summonSession)return;lastSummon=summon(a,Number(id));persist();render();tone();summonSession={results:lastSummon,revealed:0};summonCinema();break;
+  case 'summonReveal':case 'summonAll':if(!summonSession||!$('#modal').open)return;summonSession.revealed=action==='summonAll'?summonSession.results.length:Math.min(summonSession.results.length,summonSession.revealed+1);summonPresentation();break;
+  case 'fight':{if(id==='selected'){const f=Number($('#floor').value);if(!Number.isInteger(f))throw Error('階層は整数で入力してください');difficulty=$('#difficulty').value;beginFight('normal',{floor:f});}else beginFight(id);break;}
+- case 'combat':if(['divine','fallen'].includes(id)){alignmentShift(id);}else if(['genesis','ending'].includes(id)){const reason=available(battle,id);if(reason)throw Error(reason);const routes=id==='genesis'?[['A','神威','攻防速3倍・2ターン'],['B','静寂','敵の通常行動を1回停止'],['C','再臨','すべてのCTをリセット']]:[['A','崩壊','防御無効化3ターン'],['B','断絶','敵強化解除・10ターン禁止'],['C','消滅','重圧解除・5ターン無効']];modal(id==='genesis'?'創世 — ルート選択':'終焉 — ルート選択',`<div class="stack route-choices">${routes.map(([r,title,desc])=>button(title,'route',id+':'+r,'ghost')).join('')}</div>`);}else if(['feather','ultimate','meteor','annihilate'].includes(id)){if(available(battle,id))throw Error(available(battle,id));const isFeather=id==='feather',isStella=id==='meteor';cinema('cut',isFeather?'羽弾':isStella?'天象支配':id==='ultimate'?'超堕天撃':'終極殲滅',isFeather?'黒翼の弾幕、解き放つ。':isStella?'星々よ、我が意志に従え。':'その一撃が、境界を砕く。',()=>doCombat(id),isFeather?1000:isStella?1200:750,isFeather?SCENES.feather:isStella?SCENES.meteor:null);}else doCombat(id);break;
++ case 'combat':if(['divine','fallen'].includes(id)){alignmentShift(id);}else if(['genesis','ending'].includes(id)){const reason=available(battle,id);if(reason)throw Error(reason);const routes=id==='genesis'?[['A','神威','攻防速3倍・2ターン'],['B','静寂','敵の通常行動を1回停止'],['C','再臨','すべてのCTをリセット']]:[['A','崩壊','防御無効化3ターン'],['B','断絶','敵強化解除・10ターン禁止'],['C','消滅','重圧解除・5ターン無効']];modal(id==='genesis'?'創世 — ルート選択':'終焉 — ルート選択',`<div class="stack route-choices">${routes.map(([r,title,desc])=>button(title,'route',id+':'+r,'ghost')).join('')}</div>`);}else if(battle?.character==='irena'){doCombat(id);}else if(['feather','ultimate','meteor','annihilate'].includes(id)){if(available(battle,id))throw Error(available(battle,id));const isFeather=id==='feather',isStella=id==='meteor';cinema('cut',isFeather?'羽弾':isStella?'天象支配':id==='ultimate'?'超堕天撃':'終極殲滅',isFeather?'黒翼の弾幕、解き放つ。':isStella?'星々よ、我が意志に従え。':'その一撃が、境界を砕く。',()=>doCombat(id),isFeather?1000:isStella?1200:750,isFeather?SCENES.feather:isStella?SCENES.meteor:null);}else doCombat(id);break;
+  case 'route':{const [skill,route]=id.split(':');close();cinema('cut',skill==='genesis'?'創世':'終焉','ULTIMATE AUTHORITY',()=>doCombat(skill,route),800,skill==='ending'?MEDIA.fallenSkills.ending:SCENES.genesis);break;}
+  case 'askRetreat':confirmDialog('撤退しますか','この戦闘は敗北になります。神域連戦の場合、今回の進行と仮素材を失います。','retreat','');break;
+  case 'retreat':battle.result='lose';battle.reward=battle.lab20?settleLab20(lab20Run,battle):battle.main20?settleMainBattle(a,battle):battle.campaign?settleCampaign(campaign,battle):settle(a,battle);if(!battle.lab20&&(!battle.campaign||battle.main20)&&(!battle.test||sandbox))persist();close();render();break;
+--- audit10/web/src/components/game.css
++++ audit11/web/src/components/game.css
+@@ -944,3 +944,27 @@
+  #app.combat-live .combat-page .battle-stage .fighter .info{padding:1px 5px}
+  #app.combat-live .combat-page .battle-stage .fighter small{line-height:8px;min-height:0}
+ }
++
++/* audit11: local presentation layers never participate in the compact layout. */
++.battle-stage .vfx{position:absolute;pointer-events:none;z-index:6;display:block}
++.battle-stage .vfx img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
++.vfx-cutin{inset:0;margin:auto;width:min(100%,calc(var(--combat-vh,100dvh) * .55));height:100%;max-height:100%;z-index:7!important;display:grid!important;place-items:center}
++.vfx-cutin img{object-fit:contain!important}
++.vfx-projectile{left:30%;top:30%;width:42%;height:40%;transform-origin:50% 50%}
++.vfx-crest{inset:0;margin:auto;width:45%;height:85%;opacity:.7}
++.vfx-ultimate{width:75%;height:100%}
++.vfx-crystal{inset:6%;width:88%;height:88%}
++.fighter .portrait-frame{isolation:isolate}
++.fighter .info{z-index:12}
++.vfx-number{left:50%;top:35%;font:bold clamp(17px,4.7vw,30px)/1.15 Georgia,serif;white-space:nowrap;text-shadow:0 1px 3px #000,0 0 8px #000;color:#fff0e5;z-index:15!important;font-variant-numeric:tabular-nums}
++.vfx-shot-1{margin-left:8px;top:48%}.vfx-shot-0{margin-left:-4px}
++.vfx-number.vfx-in{color:#ff9eac}.vfx-number.vfx-label{font:600 12px/1.3 -apple-system,sans-serif;color:#f4bbd7;top:15%}.vfx-number.vfx-zero{font:600 14px/1.3 -apple-system,sans-serif;color:#d4d2e4}.vfx-number.vfx-heal{font-size:13px;color:#a7edc9;top:62%}
++.vfx-strike{left:12%;right:12%;top:45%;height:3px;background:#fff0e5;box-shadow:0 0 8px #c82a52;transform-origin:50% 50%}
++.vfx-fallback{border-top:2px solid #f0d9e8;border-radius:50%}
++.vfx-guarding .fighter-player .portrait-frame:after{content:'';position:absolute;inset:8%;border:2px solid #c6cfe4;border-radius:45% 45% 50% 50%;opacity:.65;pointer-events:none;z-index:5}
++@media(prefers-reduced-motion:reduce){.vfx-strike{box-shadow:none}.vfx-cutin,.vfx-projectile{display:none!important}}
++.vfx-playing .health span{transition:width .1s linear}
++.vfx-ultimate-casting .fighter-player .portrait{filter:brightness(1.13);transition:filter .18s}
++.vfx-finisher{height:5px;left:0;right:0}
++@media(prefers-reduced-motion:reduce){.vfx-playing .health span{transition:none}.vfx-ultimate-casting .fighter-player .portrait{filter:none}}
++.vfx-shield{inset:10%;border:2px solid #c6cfe4;border-radius:45% 45% 50% 50%;opacity:.65;box-shadow:inset 0 0 12px #b4c7eb22}
+--- audit10/tools/build.mjs
++++ audit11/tools/build.mjs
+@@ -1,7 +1,7 @@
+ import fs from 'node:fs';
+ import path from 'node:path';
+ const root=process.cwd(),out=path.join(root,'dist');fs.mkdirSync(out,{recursive:true});
+-const files=['web/src/data/config.js','web/src/utils/progression.js','web/src/utils/storage.js','web/src/utils/tacticalMarks.js','web/src/utils/gameCore.js','web/src/utils/battleCheckpoint.js','web/src/utils/threePhase.js','web/src/utils/guardBreakTrial.js','web/src/utils/campaign20.js','web/src/utils/main20.js','web/src/utils/lab20B.js','web/src/components/lab20BView.js','web/src/components/campaign20View.js','web/src/components/App.js'];
++const files=['web/src/data/config.js','web/src/utils/combatObservation.js','web/src/components/combatPresentation.js','web/src/utils/progression.js','web/src/utils/storage.js','web/src/utils/tacticalMarks.js','web/src/utils/gameCore.js','web/src/utils/battleCheckpoint.js','web/src/utils/threePhase.js','web/src/utils/guardBreakTrial.js','web/src/utils/campaign20.js','web/src/utils/main20.js','web/src/utils/lab20B.js','web/src/components/lab20BView.js','web/src/components/campaign20View.js','web/src/components/App.js'];
+ const css=fs.readFileSync('web/src/components/game.css','utf8');
+ const mime={svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp'};const embedded=new Map();
+ const js=files.map(f=>fs.readFileSync(f,'utf8').replace(/^import .*?;\s*$/gm,'').replace(/\bexport (?=(const|function|class|let)\b)/g,'')).join('\n').replace(/(['"])(assets\/[^'"\n]+\.(svg|png|jpe?g|webp))\1/g,(_match,_quote,file,ext)=>{if(!embedded.has(file))embedded.set(file,'data:'+mime[ext]+';base64,'+fs.readFileSync(file).toString('base64'));return JSON.stringify(embedded.get(file));});
+--- audit10/tests/audit-baseline.js
++++ audit11/tests/audit-baseline.js
+@@ -8,8 +8,14 @@
+ const root=fileURLToPath(new URL('../',import.meta.url));
+ const manifest=JSON.parse(fs.readFileSync(new URL('../reports/audit-20261022/authorized-changes.json',import.meta.url),'utf8'));
+ const sha=x=>createHash('sha256').update(x).digest('hex');
++export function presentationBaselineRead(file,encoding){
++ const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
++ const record=JSON.parse(fs.readFileSync(new URL('../reports/combat-direction-audit11/authorized-changes.json',import.meta.url),'utf8'))[key];
++ if(record){assert.equal(sha(bytes),record.afterSHA256,key+' exact authorized presentation edits');assert.equal(sha(record.before),record.beforeSHA256,key+' preserved audit10');bytes=Buffer.from(record.before);}
++ return encoding?bytes.toString(encoding):bytes;
++}
+ export function mainBBaselineRead(file,encoding){
+- const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
++ const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=presentationBaselineRead(file);
+  const record=JSON.parse(fs.readFileSync(new URL('../reports/main-b-audit10/authorized-changes.json',import.meta.url),'utf8'))[key];
+  if(record){assert.equal(sha(bytes),record.afterSHA256,key+' exact B adoption changes');assert.equal(sha(record.before),record.beforeSHA256,key+' preserved audit9');bytes=Buffer.from(record.before);}
+  return encoding?bytes.toString(encoding):bytes;

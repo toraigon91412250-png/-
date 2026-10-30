@@ -1,0 +1,18 @@
+{
+  "passed": 12,
+  "checks": [
+    "public exact tested build",
+    "wing current slot effect explained without new action buttons",
+    "wing gains46 gauge on actual landed power",
+    "wing commands fit and touch targets remain44px",
+    "current checkpoint reload keeps gauge HP and A1",
+    "king current slot effect explained without new action buttons",
+    "king actual recovery recorded",
+    "king commands fit and touch targets remain44px",
+    "old saved battle announces old effects, without save error",
+    "old saved battle continues with26 instead of46 (total88)",
+    "old battle keeps old rule after another reload",
+    "no uncaught JavaScript errors"
+  ],
+  "errors": []
+}

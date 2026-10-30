@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "320 swaps slots with single tap and only equipment changes",
+    "320 swap touch target and no overflow",
+    "320 slots explicitly identify active and passive role",
+    "320 swapped order survives reload",
+    "390 swaps slots with single tap and only equipment changes",
+    "390 swap touch target and no overflow",
+    "390 slots explicitly identify active and passive role",
+    "390 swapped order survives reload"
+  ],
+  "errors": []
+}

@@ -1,0 +1,27 @@
+{
+  "tests": {
+    "passed": 439,
+    "failed": 0
+  },
+  "syntaxFiles": 75,
+  "build": "success",
+  "recoveredZIPTests": {
+    "passed": 439,
+    "failed": 0
+  },
+  "recoveredBuild": "success",
+  "standaloneSHA256": "6197f87dba79ba554f8d6b176dd8a866001bce115e3125ec769800d7a899b460",
+  "recoveredStandaloneIdentical": true,
+  "browserReport": "browser.json",
+  "simulations": 864,
+  "mainProtectedFiles": 8,
+  "publicStatus": "succeeded",
+  "mainBrowserRegression": "normal reload exact HP/gauge; ex,stella,final start/action/retreat; zero JS errors",
+  "publicVersion": 24,
+  "publicURL": "https://irena-reborn-play-20261022.mossyelk258.chatgpt.site/?v=audit28",
+  "publicBrowserChecks": 6,
+  "publicJSErrors": 0,
+  "standaloneBrowserChecks": 6,
+  "mainBrowserChecks": 8,
+  "notes": "最終報告のみ再展開検証後に追記。ゲーム・素材・テスト・ビルドコードは再検証版と同一。iPhone実機未確認。"
+}

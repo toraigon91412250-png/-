@@ -1,0 +1,47 @@
+[
+  {
+    "file": "action-zangeki.png",
+    "originalBytes": 530490,
+    "displaySize": [
+      384,
+      384
+    ],
+    "displayBytes": 184942
+  },
+  {
+    "file": "action-chou-datengeki-wide.png",
+    "originalBytes": 567133,
+    "displaySize": [
+      768,
+      256
+    ],
+    "displayBytes": 300500
+  },
+  {
+    "file": "action-hakai-no-kennou.png",
+    "originalBytes": 701894,
+    "displaySize": [
+      384,
+      384
+    ],
+    "displayBytes": 231156
+  },
+  {
+    "file": "action-bougyo.png",
+    "originalBytes": 547692,
+    "displaySize": [
+      384,
+      384
+    ],
+    "displayBytes": 176594
+  },
+  {
+    "file": "action-kokuyoku-hadan.png",
+    "originalBytes": 611976,
+    "displaySize": [
+      384,
+      384
+    ],
+    "displayBytes": 206774
+  }
+]

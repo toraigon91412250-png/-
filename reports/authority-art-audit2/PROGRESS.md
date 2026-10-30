@@ -1,0 +1,1 @@
+20261023-audit2-art完了。入力audit1とbackup同一SHA。実行時変更App/CSSのみ＋5原画コピー。EX/最終決戦は調査だけ。236テスト/構文36/ビルド/Chromium398成功。ZIP復元後236/構文36/再ビルド成功、HTML同一SHA。WebKit実行ファイルなし、iPhone実機/file://未確認。公開なし。納品先/workspace/shared/downloads/irena-20261023-audit2-art。

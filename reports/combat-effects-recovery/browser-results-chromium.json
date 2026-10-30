@@ -1,0 +1,25 @@
+{
+  "engine": "chromium",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "reducedMotion": "no-preference",
+  "checks": [
+    "iPhone-width trial no horizontal scroll",
+    "iPhone-width trial no vertical scroll",
+    "iPhone-width trial all commands visible",
+    "combat awakening uses the existing stage illustration",
+    "plume command unlocked during the trial",
+    "existing authority-specific cut-in is reused",
+    "large damage number appears on the enemy side",
+    "wide slash appears in the compact arena",
+    "hit-stop and screen shake play on impact",
+    "iPhone-width during combat no horizontal scroll",
+    "iPhone-width during combat no vertical scroll",
+    "iPhone-width during combat all commands visible",
+    "combat returns to usable commands",
+    "no page exceptions"
+  ],
+  "errors": []
+}

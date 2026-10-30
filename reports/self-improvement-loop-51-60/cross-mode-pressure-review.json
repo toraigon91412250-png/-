@@ -1,0 +1,456 @@
+{
+  "generatedAt": "2026-10-26T16:26:37.113Z",
+  "inputs": [
+    "reports/endgame-pressure-nightmare-loop20.json",
+    "reports/raid-gauntlet-nightmare-loop19.json"
+  ],
+  "method": "Recomputed cross-mode comparison from stored engine-run summaries. No source changes or campaign/progression state modifications.",
+  "experimentalCoverage": {
+    "endgame": {
+      "profiles": 7,
+      "tactics": 3,
+      "difficulties": 3,
+      "seedsPerCondition": 4,
+      "conditions": 63,
+      "summaryRows": 252
+    },
+    "raidAndGauntlet": {
+      "profiles": 7,
+      "tactics": 3,
+      "seedsPerProfileTactic": 4,
+      "conditions": 21,
+      "rows": 84
+    }
+  },
+  "endgameNightmare": {
+    "ex": {
+      "trials": 84,
+      "wins": 43,
+      "losses": 41,
+      "timeouts": 0,
+      "winRate": 0.512,
+      "meanActions": 4.71,
+      "nightmareByProfile": {
+        "wing_abyss": {
+          "trials": 36,
+          "wins": 4,
+          "losses": 32,
+          "winRate": 0.111,
+          "meanActions": 3.56
+        },
+        "king_judge": {
+          "trials": 36,
+          "wins": 16,
+          "losses": 20,
+          "winRate": 0.444,
+          "meanActions": 9.33
+        },
+        "fallen_abyss": {
+          "trials": 36,
+          "wins": 33,
+          "losses": 3,
+          "winRate": 0.917,
+          "meanActions": 4.92
+        },
+        "wing_fallen": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 3.67
+        },
+        "res_judgewing": {
+          "trials": 36,
+          "wins": 29,
+          "losses": 7,
+          "winRate": 0.806,
+          "meanActions": 3.14
+        },
+        "res_god": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 4.56
+        },
+        "res_abyssjudge": {
+          "trials": 36,
+          "wins": 29,
+          "losses": 7,
+          "winRate": 0.806,
+          "meanActions": 3.72
+        }
+      },
+      "nightmareByTactic": {
+        "burst": {
+          "trials": 84,
+          "wins": 65,
+          "losses": 19,
+          "winRate": 0.774,
+          "meanActions": 4.2
+        },
+        "balanced": {
+          "trials": 84,
+          "wins": 61,
+          "losses": 23,
+          "winRate": 0.726,
+          "meanActions": 4.92
+        },
+        "guard": {
+          "trials": 84,
+          "wins": 57,
+          "losses": 27,
+          "winRate": 0.679,
+          "meanActions": 4.98
+        }
+      }
+    },
+    "stella": {
+      "trials": 84,
+      "wins": 84,
+      "losses": 0,
+      "timeouts": 0,
+      "winRate": 1,
+      "meanActions": 28.32,
+      "nightmareByProfile": {
+        "wing_abyss": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.89
+        },
+        "king_judge": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.61
+        },
+        "fallen_abyss": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.06
+        },
+        "wing_fallen": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.22
+        },
+        "res_judgewing": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.17
+        },
+        "res_god": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.19
+        },
+        "res_abyssjudge": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 21.17
+        }
+      },
+      "nightmareByTactic": {
+        "burst": {
+          "trials": 84,
+          "wins": 84,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 20.96
+        },
+        "balanced": {
+          "trials": 84,
+          "wins": 84,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 20.79
+        },
+        "guard": {
+          "trials": 84,
+          "wins": 84,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 22.24
+        }
+      }
+    },
+    "final": {
+      "trials": 84,
+      "wins": 52,
+      "losses": 32,
+      "timeouts": 0,
+      "winRate": 0.619,
+      "meanActions": 20.12,
+      "nightmareByProfile": {
+        "wing_abyss": {
+          "trials": 36,
+          "wins": 29,
+          "losses": 7,
+          "winRate": 0.806,
+          "meanActions": 13.64
+        },
+        "king_judge": {
+          "trials": 36,
+          "wins": 23,
+          "losses": 13,
+          "winRate": 0.639,
+          "meanActions": 29.44
+        },
+        "fallen_abyss": {
+          "trials": 36,
+          "wins": 29,
+          "losses": 7,
+          "winRate": 0.806,
+          "meanActions": 16.33
+        },
+        "wing_fallen": {
+          "trials": 36,
+          "wins": 33,
+          "losses": 3,
+          "winRate": 0.917,
+          "meanActions": 16.69
+        },
+        "res_judgewing": {
+          "trials": 36,
+          "wins": 30,
+          "losses": 6,
+          "winRate": 0.833,
+          "meanActions": 14.22
+        },
+        "res_god": {
+          "trials": 36,
+          "wins": 36,
+          "losses": 0,
+          "winRate": 1,
+          "meanActions": 18.33
+        },
+        "res_abyssjudge": {
+          "trials": 36,
+          "wins": 28,
+          "losses": 8,
+          "winRate": 0.778,
+          "meanActions": 16.17
+        }
+      },
+      "nightmareByTactic": {
+        "burst": {
+          "trials": 84,
+          "wins": 72,
+          "losses": 12,
+          "winRate": 0.857,
+          "meanActions": 17.82
+        },
+        "balanced": {
+          "trials": 84,
+          "wins": 66,
+          "losses": 18,
+          "winRate": 0.786,
+          "meanActions": 17.73
+        },
+        "guard": {
+          "trials": 84,
+          "wins": 70,
+          "losses": 14,
+          "winRate": 0.833,
+          "meanActions": 17.95
+        }
+      }
+    }
+  },
+  "raidNightmare": {
+    "runs": 84,
+    "wins": 84,
+    "losses": 0,
+    "timeouts": 0,
+    "winRate": 1,
+    "meanTurns": 5.3,
+    "byTactic": {
+      "burst": {
+        "runs": 28,
+        "wins": 28,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 4.43,
+        "meanActions": 4.43
+      },
+      "balanced": {
+        "runs": 28,
+        "wins": 28,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 5.71,
+        "meanActions": 5.71
+      },
+      "guard": {
+        "runs": 28,
+        "wins": 28,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 5.75,
+        "meanActions": 5.75
+      }
+    },
+    "byProfile": {
+      "wing_abyss": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 6,
+        "meanActions": 6
+      },
+      "king_judge": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 8.67,
+        "meanActions": 8.67
+      },
+      "fallen_abyss": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 5.08,
+        "meanActions": 5.08
+      },
+      "wing_fallen": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 6.33,
+        "meanActions": 6.33
+      },
+      "res_judgewing": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 2,
+        "meanActions": 2
+      },
+      "res_god": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 5.33,
+        "meanActions": 5.33
+      },
+      "res_abyssjudge": {
+        "runs": 12,
+        "wins": 12,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 3.67,
+        "meanActions": 3.67
+      }
+    },
+    "meanActions": 5.3
+  },
+  "gauntletNightmare": {
+    "runs": 84,
+    "fullClears": 75,
+    "clearRate": 0.893,
+    "stagesReached": {
+      "1": 83,
+      "2": 83,
+      "3": 83,
+      "4": 80,
+      "5": 76
+    },
+    "byTactic": {
+      "burst": 0.857,
+      "balanced": 0.857,
+      "guard": 0.964
+    },
+    "byProfile": {
+      "wing_abyss": 0.333,
+      "king_judge": 0.917,
+      "fallen_abyss": 1,
+      "wing_fallen": 1,
+      "res_judgewing": 1,
+      "res_god": 1,
+      "res_abyssjudge": 1
+    },
+    "byGod": {
+      "1": {
+        "runs": 83,
+        "wins": 83,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 2.41,
+        "meanActions": 2.41
+      },
+      "2": {
+        "runs": 83,
+        "wins": 83,
+        "losses": 0,
+        "timeouts": 0,
+        "winRate": 1,
+        "meanTurns": 2.72,
+        "meanActions": 2.72
+      },
+      "3": {
+        "runs": 83,
+        "wins": 80,
+        "losses": 3,
+        "timeouts": 0,
+        "winRate": 0.964,
+        "meanTurns": 3.07,
+        "meanActions": 3.07
+      },
+      "4": {
+        "runs": 80,
+        "wins": 76,
+        "losses": 4,
+        "timeouts": 0,
+        "winRate": 0.95,
+        "meanTurns": 3.5,
+        "meanActions": 3.5
+      },
+      "5": {
+        "runs": 76,
+        "wins": 75,
+        "losses": 1,
+        "timeouts": 0,
+        "winRate": 0.987,
+        "meanTurns": 3.64,
+        "meanActions": 3.64
+      }
+    }
+  },
+  "interpretation": {
+    "ex": "Keep current optional difficulty; win rate 51.2% across high-investment profiles is already severe.",
+    "stella": "Do not increase based only on the prior 84/84 sample; a separate 16-seed scalar probe is stored.",
+    "final": "Keep; 61.9% win rate and seven phase-deadline losses indicate substantial pressure.",
+    "raid": "All 84 prior runs won in mean 5.30 actions; broadened simulation is warranted before raising multipliers.",
+    "gauntlet": "Current full-clear rate 89.3%, with guard tactics outperforming burst by about 10.7 percentage points."
+  }
+}

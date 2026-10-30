@@ -1,0 +1,20 @@
+{
+  "release": "audit17",
+  "gameURL": "https://irena-reborn-play-20261022.mossyelk258.chatgpt.site/?v=audit17",
+  "downloadsURL": "https://irena-audit4-downloads-20261023.mossyelk258.chatgpt.site/?v=audit17",
+  "tests": {
+    "passed": 364,
+    "failed": 0,
+    "syntaxFiles": 60,
+    "build": "success",
+    "localBrowser": 42,
+    "publicGame": 12,
+    "localDownloads": 14,
+    "publicDownloads": 7
+  },
+  "sourceZIPBytes": 62449434,
+  "standaloneBytes": 27771410,
+  "coreAndSaveUnchanged": true,
+  "iPhoneHardwareTested": false,
+  "downloadDeployment": "appgdep_6adbdd745c1c81919a9400f81049e6a7"
+}

@@ -1,0 +1,9 @@
+[
+  "web/src/components/App.js",
+  "web/src/components/game.css",
+  "web/src/components/battleVisuals.js",
+  "tools/build.mjs",
+  "tests/hp-sortie.test.js",
+  "tests/audit-baseline.js",
+  "assets/sortie/sortie-normal-final.png"
+]

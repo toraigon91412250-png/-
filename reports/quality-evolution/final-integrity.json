@@ -1,0 +1,55 @@
+{
+  "htmlSHA256": "0e1c46474e94d489f810a164b513ad7a9cd3e17c6c4ce08b8c1d1789baf0c58e",
+  "htmlBytes": 5232605,
+  "embeddedImageCount": 19,
+  "runtimeImagesExist": [
+    "assets/icons/fallen-skill-1.webp",
+    "assets/icons/fallen-skill-2.webp",
+    "assets/icons/fallen-skill-3.webp",
+    "assets/icons/fallen-ultimate.webp",
+    "assets/irena-key-art.webp",
+    "assets/irena-placeholder.svg",
+    "assets/runtime/crest-divine.webp",
+    "assets/runtime/crest-fallen.webp",
+    "assets/runtime/hadan-cutin.webp",
+    "assets/runtime/irena-final-divine.webp",
+    "assets/runtime/irena-final-fallen.webp",
+    "assets/runtime/irena-final-neutral.webp",
+    "assets/runtime/irena-normal.webp",
+    "assets/runtime/irena-victory.webp",
+    "assets/runtime/stella-cutin.webp",
+    "assets/runtime/stella-standing.webp",
+    "assets/supplied-20261020/genesis-cutin.jpg",
+    "assets/supplied-20261020/kaiser-ex.jpg",
+    "assets/supplied-20261020/kaiser-normal.jpg"
+  ],
+  "newImages": [
+    {
+      "file": "assets/supplied-20261020/kaiser-normal.jpg",
+      "sha256": "fa2bdbe6e10f7fcf564856d0adef172a920d3b9d32c0ebfeef97181e060afe66",
+      "matchesRecordedAttachment": true
+    },
+    {
+      "file": "assets/supplied-20261020/kaiser-ex.jpg",
+      "sha256": "174e0ccd2207c015f89ad4bd8437dea6bd9c4032dbbb885dc084fbece04854e4",
+      "matchesRecordedAttachment": true
+    },
+    {
+      "file": "assets/supplied-20261020/genesis-cutin.jpg",
+      "sha256": "699324c892fbfb13add577b9e8d4f2811decfaa1026be8a30d71e84c354e99d3",
+      "matchesRecordedAttachment": true
+    }
+  ],
+  "unchangedProtectedFiles": {
+    "web/src/utils/progression.js": "8ad7032fe4358d8fbb715fdd7f39989069161f243b6823ec15ce162b8f930d21",
+    "web/src/utils/storage.js": "e7c2006c1e2901aeb9f30ba0c5906826a97e0f926c1e90e13d1b95b34665dc86",
+    "package.json": "b19a4568dbdec0b67efb1a0d135583ec5c6674c1f2b4ac31ff508ae5a13cc45b",
+    "package-lock.json": "67b9d427cdcf68bc4579ecb08919d8016768da9df4e1b4fb5a4a4cfdb4160b91",
+    "tests/combat-feedback.test.js": "5f21bfb8d5f95d6107ee6192cc4b82e4113b60a1805029daf75aa7c312245504",
+    "tests/visual-effects.test.js": "6adc879a41700ed22dae0b7ea6b4cb50241020733f71d587b833ffa3bac805fc"
+  },
+  "removedFiles": [],
+  "originalImageFilesUnchanged": 21,
+  "deploymentPerformed": false,
+  "realIPhoneTested": false
+}

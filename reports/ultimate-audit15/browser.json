@@ -1,0 +1,206 @@
+{
+  "passed": 20,
+  "checks": [
+    "390 hero decoded",
+    "390 actual single ultimate damage",
+    "390 no reused feather VFX",
+    "390 effects clean up",
+    "390 all commands fit",
+    "390 no horizontal overflow",
+    "390 eclipse and impact emitted",
+    "320 hero decoded",
+    "320 actual single ultimate damage",
+    "320 no reused feather VFX",
+    "320 effects clean up",
+    "320 all commands fit",
+    "320 no horizontal overflow",
+    "320 eclipse and impact emitted",
+    "430 actual single ultimate damage",
+    "430 no reused feather VFX",
+    "430 effects clean up",
+    "430 all commands fit",
+    "430 no horizontal overflow",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "runs": [
+    {
+      "width": 390,
+      "reduced": false,
+      "fx": [
+        {
+          "cls": "vfx vfx-number vfx-in",
+          "text": "−371",
+          "time": 18864.60000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻形成",
+          "time": 19129.80000000447
+        },
+        {
+          "cls": "vfx vfx-apocalypse-veil",
+          "text": "",
+          "time": 19251
+        },
+        {
+          "cls": "vfx vfx-apocalypse-halo",
+          "text": "",
+          "time": 19251
+        },
+        {
+          "cls": "vfx vfx-apocalypse-hero",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 19451.39999999851
+        },
+        {
+          "cls": "vfx-apocalypse-title",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 19451.39999999851
+        },
+        {
+          "cls": "vfx vfx-apocalypse-eclipse",
+          "text": "",
+          "time": 20944.10000000149
+        },
+        {
+          "cls": "vfx vfx-apocalypse-descent",
+          "text": "",
+          "time": 21434.30000000447
+        },
+        {
+          "cls": "vfx vfx-crystal",
+          "text": "",
+          "time": 21593.10000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻解除",
+          "time": 21593.10000000149
+        },
+        {
+          "cls": "vfx vfx-apocalypse-impact",
+          "text": "",
+          "time": 21678.10000000149
+        },
+        {
+          "cls": "vfx vfx-apocalypse-shock",
+          "text": "",
+          "time": 21678.10000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0 vfx-ultimate-number",
+          "text": "3,805",
+          "time": 21678.10000000149
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "reduced": false,
+      "fx": [
+        {
+          "cls": "vfx vfx-number vfx-in",
+          "text": "−371",
+          "time": 13203.69999999553
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻形成",
+          "time": 13325.5
+        },
+        {
+          "cls": "vfx vfx-apocalypse-veil",
+          "text": "",
+          "time": 13518.59999999404
+        },
+        {
+          "cls": "vfx vfx-apocalypse-halo",
+          "text": "",
+          "time": 13518.59999999404
+        },
+        {
+          "cls": "vfx vfx-apocalypse-hero",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 13718.89999999851
+        },
+        {
+          "cls": "vfx-apocalypse-title",
+          "text": "THE FALLEN STAR超堕天撃",
+          "time": 13719
+        },
+        {
+          "cls": "vfx vfx-apocalypse-eclipse",
+          "text": "",
+          "time": 15137.59999999404
+        },
+        {
+          "cls": "vfx vfx-apocalypse-descent",
+          "text": "",
+          "time": 15759.29999999702
+        },
+        {
+          "cls": "vfx vfx-crystal",
+          "text": "",
+          "time": 16064.5
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻解除",
+          "time": 16064.59999999404
+        },
+        {
+          "cls": "vfx vfx-apocalypse-impact",
+          "text": "",
+          "time": 16205.09999999404
+        },
+        {
+          "cls": "vfx vfx-apocalypse-shock",
+          "text": "",
+          "time": 16205.09999999404
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0 vfx-ultimate-number",
+          "text": "3,805",
+          "time": 16205.09999999404
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "reduced": true,
+      "fx": [
+        {
+          "cls": "vfx vfx-number vfx-in",
+          "text": "−371",
+          "time": 23390.40000000596
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻形成",
+          "time": 23451
+        },
+        {
+          "cls": "vfx vfx-apocalypse-reduced",
+          "text": "超堕天撃",
+          "time": 23552.20000000298
+        },
+        {
+          "cls": "vfx vfx-crystal",
+          "text": "",
+          "time": 23713.60000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-label",
+          "text": "殻解除",
+          "time": 23713.60000000149
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0 vfx-ultimate-number",
+          "text": "3,805",
+          "time": 23777.90000000596
+        }
+      ]
+    }
+  ]
+}

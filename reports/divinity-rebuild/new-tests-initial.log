@@ -1,0 +1,109 @@
+✔ new journey has no authority or special commands; legacy factory stays intact (5.716694ms)
+✔ floor 1 is winnable with attack and guard and discovers only the wing trial (25.907584ms)
+✔ free reclaim order: abyss → fallen → judge → king (6.649231ms)
+✔ free reclaim order: abyss → fallen → king → judge (4.753894ms)
+✔ free reclaim order: abyss → judge → fallen → king (2.240385ms)
+✔ free reclaim order: abyss → judge → king → fallen (2.453956ms)
+✔ free reclaim order: abyss → king → fallen → judge (4.966661ms)
+✔ free reclaim order: abyss → king → judge → fallen (1.94836ms)
+✔ free reclaim order: fallen → abyss → judge → king (2.210496ms)
+✔ free reclaim order: fallen → abyss → king → judge (2.327271ms)
+✔ free reclaim order: fallen → judge → abyss → king (2.664395ms)
+✔ free reclaim order: fallen → judge → king → abyss (1.703938ms)
+✔ free reclaim order: fallen → king → abyss → judge (1.617584ms)
+✔ free reclaim order: fallen → king → judge → abyss (2.899444ms)
+✔ free reclaim order: judge → abyss → fallen → king (2.633528ms)
+✔ free reclaim order: judge → abyss → king → fallen (1.180638ms)
+✔ free reclaim order: judge → fallen → abyss → king (0.963843ms)
+✔ free reclaim order: judge → fallen → king → abyss (1.710752ms)
+✔ free reclaim order: judge → king → abyss → fallen (1.002377ms)
+✔ free reclaim order: judge → king → fallen → abyss (0.988979ms)
+✔ free reclaim order: king → abyss → fallen → judge (1.001771ms)
+✔ free reclaim order: king → abyss → judge → fallen (1.752287ms)
+✔ free reclaim order: king → fallen → abyss → judge (0.942726ms)
+✔ free reclaim order: king → fallen → judge → abyss (1.208628ms)
+✔ free reclaim order: king → judge → abyss → fallen (1.330517ms)
+✔ free reclaim order: king → judge → fallen → abyss (2.295402ms)
+✔ in-battle awakening unlocks a command before victory; defeat keeps original state (1.08613ms)
+✔ sealed trial cannot be skipped by extreme attack power (0.386027ms)
+✔ trial victory commits once and grants only the reclaimed authority fragments (0.453309ms)
+✔ authority growth and divinity growth are independent; branching is reversible (3.832051ms)
+✔ new campaign milestones grant no automatic purchased authorities (0.705491ms)
+✔ new resonance retains both Lv5 sources and legacy fusion remains consumptive (1.08944ms)
+✔ wing feathers grow by defense and are consumed by offensive skills (1.594595ms)
+✔ different authority skills link while repeated same authority does not (1.685138ms)
+✔ branch damage and healing differ without weakening existing multipliers (1.056711ms)
+✖ fallen oath triggers low HP style and defensive branch grants a shield (4.067939ms)
+✔ judge proof is based on attack order, then spent on a penetrating verdict (0.459836ms)
+✔ king guard blocks enemy-first attacks and prepares counter (0.296131ms)
+✔ purification removes seal and recovers health (0.330134ms)
+✔ stage4 survives a lethal strike only once (0.329643ms)
+✔ true divinity integrates five powers for four subsequent actions then restores loadout (0.521833ms)
+✔ recalling an authority is an action and never duplicates the first slot (0.333688ms)
+✔ truth trial uses three authorities and unlocks final divinity (1.054149ms)
+✔ ultimate challenge is winnable with tactical build wing/judge (1.954791ms)
+✔ ultimate challenge is winnable with tactical build wing/king (11.030298ms)
+✔ ultimate challenge is winnable with tactical build king/judge (2.058351ms)
+✔ ultimate challenge is winnable with tactical build fallen/king (1.509601ms)
+✔ ultimate challenge cannot be brute-forced without dealing with seals (2.443458ms)
+✔ legacy migration preserves progression, currencies and consumed resonance sources (2.282066ms)
+✔ legacy raw JSON is backed up; invalid/future divinity never silently resets (2.827564ms)
+✔ divinity saves round trip all branches, levels, memories and completion (0.757451ms)
+✖ new actions resume exactly from checkpoint including attunement and unified state (3.379029ms)
+✔ transient authority trial cannot be resumed or persist temporary power (0.505109ms)
+✔ five stage illustrations have preserved originals and optimized derivatives (7.433084ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 52
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.442748
+
+✖ failing tests:
+
+test at tests/divinity-rebuild.test.js:30:1
+✖ fallen oath triggers low HP style and defensive branch grants a shield (4.067939ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 0.45000000000000007
+  - 0.45
+        ^
+
+      at TestContext.<anonymous> (file:///workspace/irena-divinity-rebuild/tests/divinity-rebuild.test.js:30:196)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0.45000000000000007,
+    expected: 0.45,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/divinity-rebuild.test.js:43:1
+✖ new actions resume exactly from checkpoint including attunement and unified state (3.379029ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'lose' !== null
+
+      at TestContext.<anonymous> (file:///workspace/irena-divinity-rebuild/tests/divinity-rebuild.test.js:43:316)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'lose',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

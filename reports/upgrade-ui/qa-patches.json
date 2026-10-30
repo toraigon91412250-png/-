@@ -1,0 +1,76 @@
+{
+  "tools/browser-e2e.mjs": {
+    "patches": [
+      {
+        "old": "it nav(p,'upgrade');for(const id of ['po",
+        "new": "it nav(p,'upgrade');ok(`${width} five upgrade categories`,await p.locator('.upgrade-category').count()===5);for(const id of ['po"
+      },
+      {
+        "old": "`${width} tab ${id}`);}\n await nav(p,'ho",
+        "new": "`${width} tab ${id}`);ok(`${width} fixed back button`,await p.locator('.upgrade-fixed-back button').isVisible());await click(p,'upgradeBack');}\n await nav(p,'ho"
+      },
+      {
+        "old": ",(await p.locator('.power-card').last().innerText()).includes('Lv. 5'));\n  await nav(p,",
+        "new": ",(await p.locator('.upgrade-power-card').last().innerText()).includes('Lv.5/5'));\n  await nav(p,"
+      }
+    ],
+    "beforeSHA256": "fcab68f508058cc89dc64dd28a1b3a7644bc494a622f85130671833c373ad258",
+    "afterSHA256": "aedd654e9a8ae6de77a5dd45b539b0c6fa112d1bf17694c34cbf701d24386e87"
+  },
+  "tools/home-ui-browser.mjs": {
+    "patches": [
+      {
+        "old": "pgrade destination',await p.locator('.tabs .active').innerText()===tab);await click",
+        "new": "pgrade destination',id==='powers'?(await p.locator('.upgrade-powers-header h2').innerText())==='権能一覧':(await p.locator('.upgrade-subtitle').innerText())===tab);await click"
+      }
+    ],
+    "beforeSHA256": "38df319bc491bdf3fad1aa9113bf71a31862a1bee990270e91690b6b7d18ff8c",
+    "afterSHA256": "50a2bfbdc0b0922b0e44650b9999c366e834cb48d4c155d5f1caaede14629e59"
+  },
+  "tools/quality-review.mjs": {
+    "patches": [
+      {
+        "old": "b);await shot(name);}\nawait nav('lab');a",
+        "new": "b);await shot(name);await click('upgradeBack');}\nawait nav('lab');a"
+      },
+      {
+        "old": "ment');await click('tab','resonance');await shot('15-resonance-unlocked');await click('tab'",
+        "new": "ment');await click('upgradeBack');await click('tab','resonance');await shot('15-resonance-unlocked');await click('upgradeBack');await click('tab'"
+      }
+    ],
+    "beforeSHA256": "2ad43923373f0c2fe48d707a922fdfe20e93ba28e66dca5725865e5120c3c49a",
+    "afterSHA256": "e042f0763710a81c2f17ffd39f0a4a41f9d4e483da3198ab68960835065214cf"
+  },
+  "tools/quality-evolution.mjs": {
+    "patches": [
+      {
+        "old": "',await p.locator('.power-card.selected').allTextContents().then(xs=>xs.some(x=>x.includes('堕天'))));\n  for(const [tab,label",
+        "new": "',await p.locator('.upgrade-power-card.equipped').allTextContents().then(xs=>xs.some(x=>x.includes('堕天'))));\n  await press(p,'upgradeBack');for(const [tab,label"
+      },
+      {
+        "old": "t(p,prefix+'-'+label);}\n  await press(p,",
+        "new": "t(p,prefix+'-'+label);await press(p,'upgradeBack');}\n  await press(p,"
+      }
+    ],
+    "beforeSHA256": "42c50851524fda789159650c68c05276da75213bfa7ace3599dcffcb8d777ab6",
+    "afterSHA256": "7fff81a6a93b3d28c37504e7663a556a0e9d6d73052f8413ed2a92043997ec4a"
+  },
+  "tools/iphone-qa.mjs": {
+    "patches": [
+      {
+        "old": "ands strong,.hpnum,.power-card p,.next-step p')].map",
+        "new": "ands strong,.hpnum,.upgrade-power-effect,.next-step p')].map"
+      },
+      {
+        "old": ");await check(name);}\nawait tap('nav','l",
+        "new": ");await check(name);await tap('upgradeBack');}\nawait tap('nav','l"
+      },
+      {
+        "old": "ipment');await tap('tab','resonance');await check('11-resonance-unlocked');await tap('tab','",
+        "new": "ipment');await tap('upgradeBack');await tap('tab','resonance');await check('11-resonance-unlocked');await tap('upgradeBack');await tap('tab','"
+      }
+    ],
+    "beforeSHA256": "b175e8c2132f08446bf8ea24e920ff16dcc553a6107b3836ea5911c5e7cfc6c9",
+    "afterSHA256": "7d986513e7ae567985767eb9d838bc735b496a3088b42b426b6d7b47119b1dc7"
+  }
+}

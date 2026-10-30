@@ -1,0 +1,128 @@
+[
+  {
+    "profile": "wingAbyss",
+    "audit19Mean": 36.5,
+    "audit20Mean": 36.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "wingKing",
+    "audit19Mean": 38.5,
+    "audit20Mean": 38.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "wingJudge",
+    "audit19Mean": 35.5,
+    "audit20Mean": 35.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "judgeAbyss",
+    "audit19Mean": 46.5,
+    "audit20Mean": 46.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      5,
+      5,
+      5,
+      5
+    ]
+  },
+  {
+    "profile": "abyssKing",
+    "audit19Mean": 97.5,
+    "audit20Mean": 96.5,
+    "allCleared": true,
+    "powers": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "ultimates": [
+      18,
+      18,
+      18,
+      18
+    ]
+  },
+  {
+    "profile": "kingWing",
+    "audit19Mean": 38.5,
+    "audit20Mean": 38.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "fallenWing",
+    "audit19Mean": 38.5,
+    "audit20Mean": 38.5,
+    "allCleared": true,
+    "powers": [
+      8,
+      8,
+      9,
+      9
+    ],
+    "ultimates": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "version": "20261023-audit3-marks",
+  "baselineZIP": "irena-REBORN-20261023-audit2-art-source.zip",
+  "baselineSHA256": "9a891dd9c1629b13af0652c05bf9a09d3d639d8566fb6adacb7bf02685430173",
+  "baselineTests": 236,
+  "tests": {
+    "passed": 291,
+    "failed": 0,
+    "skipped": 0
+  },
+  "relatedTests": {
+    "passed": 60,
+    "failed": 0
+  },
+  "syntaxFiles": 39,
+  "html": {
+    "bytes": 21070662,
+    "sha256": "39f3e43557f613114b119db43d9d3eb145df1dd030d1d058dbbe12a90fbb73ed",
+    "embeddedImages": 41
+  },
+  "browser": {
+    "passed": 33,
+    "failed": 0,
+    "engine": "Chromium",
+    "widths": [
+      320,
+      390
+    ],
+    "errors": 0
+  },
+  "balance": {
+    "battles": 72,
+    "nonfinite": 0,
+    "unfinished": 0,
+    "previousEngineRegressionBattles": 12,
+    "identicalTurns": 60
+  },
+  "recovery": {
+    "testsPassed": 291,
+    "testsFailed": 0,
+    "syntaxFiles": 39,
+    "build": "passed",
+    "htmlIdentical": true
+  },
+  "iPhoneHardware": "not tested",
+  "SafariWebKit": "not tested",
+  "deployed": false
+}

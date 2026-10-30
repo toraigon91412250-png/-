@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": {
+    "syntaxFiles": 32,
+    "unitPass": 208,
+    "unitFail": 0,
+    "build": true,
+    "rebuiltHTMLIdentical": true,
+    "runtimePayloadIdentical": true
+  },
+  "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+  "recoveryPath": "/workspace/scratch/irena-strategy-recovery/irena-reborn",
+  "sourceArchiveContainsGeneratedHTML": false,
+  "sourceArchiveRequiresRawDataForBuildOrUnit": false
+}

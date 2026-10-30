@@ -1,0 +1,8 @@
+[
+  "web/src/utils/campaign20.js",
+  "web/src/utils/gameCore.js",
+  "web/src/components/App.js",
+  "web/src/components/game.css",
+  "tools/build.mjs",
+  "tests/audit-baseline.js"
+]

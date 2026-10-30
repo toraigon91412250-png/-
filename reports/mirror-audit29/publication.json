@@ -1,0 +1,32 @@
+{
+  "game": {
+    "id": "appgdep_6addb1db84a08191a7b8a54321d2e8a1",
+    "project_id": "appgprj_6ada04c83c3481918dbc196414e270c5",
+    "title": "いれーな REBORN",
+    "version_id": "appgprj_6ada04c83c3481918dbc196414e270c5~appgver_b5d2c4a6c65c819197274eec984c131c",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://irena-reborn-play-20261022.mossyelk258.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "site---6ada04c83c3481918dbc196414e270c5",
+    "failure_message": null,
+    "env_set_revision": 0,
+    "updated_at": "2026-10-25T07:38:22.639961+00:00"
+  },
+  "downloads": {
+    "id": "appgdep_6addb27472d48191a0b51b43378e565e",
+    "project_id": "appgprj_6adab3fa91c48191921b946a085c433d",
+    "title": "いれーな REBORN｜audit4 ダウンロード",
+    "version_id": "appgprj_6adab3fa91c48191921b946a085c433d~appgver_578c91115bac81918fa4e23bf367e7a2",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://irena-audit4-downloads-20261023.mossyelk258.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "site---6adab3fa91c48191921b946a085c433d",
+    "failure_message": null,
+    "env_set_revision": 0,
+    "updated_at": "2026-10-25T07:41:31.015486+00:00"
+  }
+}

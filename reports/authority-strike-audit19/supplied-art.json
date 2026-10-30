@@ -1,0 +1,62 @@
+{
+  "wing": {
+    "originalName": "1-黒翼.png",
+    "path": "assets/combat-vfx/authority-v1/wing.png",
+    "sha256": "f7596858de34398792dc3341d5ae859df0c5043050be9d4f1bb3ef30f5c55ed6",
+    "bytes": 709063,
+    "size": [
+      1672,
+      941
+    ],
+    "format": "PNG",
+    "mode": "P"
+  },
+  "judge": {
+    "originalName": "2-断罪.png",
+    "path": "assets/combat-vfx/authority-v1/judge.png",
+    "sha256": "fcf3306940cbb633ceff5b05214b911b2d34dd9de0f49f84a4377fdff112cd6f",
+    "bytes": 806769,
+    "size": [
+      1672,
+      941
+    ],
+    "format": "PNG",
+    "mode": "P"
+  },
+  "abyss": {
+    "originalName": "3-深淵.png",
+    "path": "assets/combat-vfx/authority-v1/abyss.png",
+    "sha256": "8e98e72095d69b05d6b39c3e87ea848596720aabad5103cf97ba694b680650fc",
+    "bytes": 842422,
+    "size": [
+      1672,
+      941
+    ],
+    "format": "PNG",
+    "mode": "P"
+  },
+  "fallen": {
+    "originalName": "4-堕天.png",
+    "path": "assets/combat-vfx/authority-v1/fallen.png",
+    "sha256": "2b6502edd75369c72dd085e33802c7abe9e5d5db75b93b10ad1e7430e0fa488e",
+    "bytes": 854511,
+    "size": [
+      1672,
+      941
+    ],
+    "format": "PNG",
+    "mode": "P"
+  },
+  "king": {
+    "originalName": "5-堕天王.png",
+    "path": "assets/combat-vfx/authority-v1/king.png",
+    "sha256": "8864e0d30fb0bbdd0b607879bc03bc90d8a625bd7ebf7b76116ad35332a37d0d",
+    "bytes": 798814,
+    "size": [
+      1672,
+      941
+    ],
+    "format": "PNG",
+    "mode": "P"
+  }
+}

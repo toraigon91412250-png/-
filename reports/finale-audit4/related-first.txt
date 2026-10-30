@@ -1,0 +1,29 @@
+✔ final hub preserves independent gates, EX is central, rendering never changes save (7.711407ms)
+✔ EX, Stella and dedicated Irena show the SAME EX opponent; trial and campaign retain own names (3.53665ms)
+✔ home and battle lobby route to common finale; old scattered final entrance removed (1.156822ms)
+✔ cinema cut: skip only for summon; completes exactly once (3.700964ms)
+✔ cinema warp: skip only for summon; completes exactly once (3.068749ms)
+✔ cinema movie: skip only for summon; completes exactly once (3.274023ms)
+✔ cinema summon: skip only for summon; completes exactly once (5.020231ms)
+✔ summon skip styling is top-right, 48px, safe-area aware and scoped (1.825972ms)
+✔ main raid, combat arithmetic, save, flags, marks and all other original assets stay byte identical (549.522483ms)
+✔ provided dragon PNG bytes/alpha-palette are preserved; dedicated raid slots selected (53.168733ms)
+✔ new trial is only test:true, fixed build and not persistent; retry clears local states (41.978337ms)
+✔ trial dispatch rejects main raid and foreign experiments; invalid CT is atomic (2.000268ms)
+✔ feather cannot break armor; only actually landed power/ultimate can (3.569734ms)
+✔ trial armor reforms after 3 ACTUAL damaging responses, not stopped/evasive turns (1.066087ms)
+✔ guard heals12%, caps HP and gives one nonstacking focus consumed by slash/power (1.94522ms)
+✔ trial save/JSON cannot leak local armor/focus or any reward/progress into main save (3.342768ms)
+✔ final battle portrait changes from neutral at the first ±15 visual alignment, without changing numerical stages (3.966847ms)
+✔ fallen waits 200ms before resolving enemy turn, then reveals user crest and portrait (5.536332ms)
+✔ divine shows opposite crest with no skip UI and commits exactly once on natural completion (3.213128ms)
+✔ double inputs during cinematic cannot trigger multiple turns (2.54347ms)
+✔ white strike renders only on attacking actions and cleans up automatically (2.991344ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2922.641661

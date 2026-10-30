@@ -1,0 +1,30 @@
+{
+  "passed": 24,
+  "checks": [
+    "wing current slot effect explained without new action buttons",
+    "wing browser actual damage HP gauge RNG equal engine result",
+    "wing gains46 gauge on actual landed power",
+    "wing commands fit and touch targets remain44px",
+    "current checkpoint reload keeps gauge HP and A1",
+    "king current slot effect explained without new action buttons",
+    "king browser actual damage HP gauge RNG equal engine result",
+    "king actual recovery recorded",
+    "king commands fit and touch targets remain44px",
+    "judge current slot effect explained without new action buttons",
+    "judge browser actual damage HP gauge RNG equal engine result",
+    "judge commands fit and touch targets remain44px",
+    "abyss current slot effect explained without new action buttons",
+    "abyss browser actual damage HP gauge RNG equal engine result",
+    "abyss commands fit and touch targets remain44px",
+    "fallen current slot effect explained without new action buttons",
+    "fallen browser actual damage HP gauge RNG equal engine result",
+    "fallen commands fit and touch targets remain44px",
+    "320 new descriptions preserve one-screen commands",
+    "430 new descriptions preserve one-screen commands",
+    "old saved battle announces old effects, without save error",
+    "old saved battle continues with26 instead of46 (total88)",
+    "old battle keeps old rule after another reload",
+    "no uncaught JavaScript errors"
+  ],
+  "errors": []
+}

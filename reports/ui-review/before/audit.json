@@ -1,0 +1,772 @@
+{
+  "phase": "before",
+  "records": [
+    {
+      "screen": "00-title",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 844,
+      "buttons": 2,
+      "disabled": 0,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": []
+    },
+    {
+      "screen": "01-home",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 2180,
+      "buttons": 24,
+      "disabled": 5,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": []
+    },
+    {
+      "screen": "02-battle-lobby",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1214,
+      "buttons": 18,
+      "disabled": 5,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "03-normal-battle",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1432,
+      "buttons": 18,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "04-normal-action",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1494,
+      "buttons": 18,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "05-powers",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 2478,
+      "buttons": 27,
+      "disabled": 3,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "06-marks",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 2762,
+      "buttons": 29,
+      "disabled": 5,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "07-resonance",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 3481,
+      "buttons": 29,
+      "disabled": 10,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "08-training",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1596,
+      "buttons": 33,
+      "disabled": 4,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "09-summon",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1574,
+      "buttons": 21,
+      "disabled": 1,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "10-lab",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 974,
+      "buttons": 15,
+      "disabled": 0,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "11-lab-battle",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1516,
+      "buttons": 22,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "pierce",
+          "disabled": false,
+          "text": "↟\n穿羽\n羽弾1.3倍 / CT3",
+          "description": true
+        },
+        {
+          "id": "volley",
+          "disabled": false,
+          "text": "⋈\n連羽\n0.7倍 × 2 / CT2",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "12-developer",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 909,
+      "buttons": 20,
+      "disabled": 0,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "13-all-unlocked",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1118,
+      "buttons": 26,
+      "disabled": 0,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "14-equipment",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 2768,
+      "buttons": 30,
+      "disabled": 0,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "15-resonance-unlocked",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 3488,
+      "buttons": 40,
+      "disabled": 10,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "16-summon-result",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1779,
+      "buttons": 21,
+      "disabled": 0,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "17-raid",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1480,
+      "buttons": 20,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "18-gauntlet",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1480,
+      "buttons": 21,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "19-ex",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1480,
+      "buttons": 21,
+      "disabled": 1,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n通常攻撃 / ゲージ＋26",
+          "description": true
+        },
+        {
+          "id": "feather",
+          "disabled": false,
+          "text": "✦\n黒翼・羽弾\n1.95倍 / ゲージ＋39",
+          "description": true
+        },
+        {
+          "id": "power",
+          "disabled": false,
+          "text": "◈\n破壊の権能\n装備権能の力で攻撃 / CT3",
+          "description": true
+        },
+        {
+          "id": "ultimate",
+          "disabled": true,
+          "text": "✺\n超堕天撃\n必殺ゲージ100%必要",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減 / ＋18",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "20-stella",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1361,
+      "buttons": 21,
+      "disabled": 0,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "✧\n星の斬撃\nステラの通常攻撃",
+          "description": true
+        },
+        {
+          "id": "immortal",
+          "disabled": false,
+          "text": "◇\n不滅\n発動ターン完全無敵 / CT4",
+          "description": true
+        },
+        {
+          "id": "rebirth",
+          "disabled": false,
+          "text": "❀\n再誕\n最大HP100%回復 / 残り3回",
+          "description": true
+        },
+        {
+          "id": "meteor",
+          "disabled": false,
+          "text": "✺\n天象支配\n隕石5,000 / 1戦闘1回",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "21-final-zero",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1946,
+      "buttons": 31,
+      "disabled": 8,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n専用いれーなの通常攻撃",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減",
+          "description": true
+        },
+        {
+          "id": "divine",
+          "disabled": false,
+          "text": "✧\n神化\n＋15 / 攻撃せず1ターン使用",
+          "description": true
+        },
+        {
+          "id": "fallen",
+          "disabled": false,
+          "text": "♜\n堕天\n−15 / 攻撃せず1ターン使用",
+          "description": true
+        },
+        {
+          "id": "godspeed",
+          "disabled": true,
+          "text": "✧\n神域の速度\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "omnipotent",
+          "disabled": true,
+          "text": "✧\n全能降臨\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "dominion",
+          "disabled": true,
+          "text": "✧\n万象支配\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "erosion",
+          "disabled": true,
+          "text": "♜\n堕天侵食\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "release",
+          "disabled": true,
+          "text": "♜\n深淵解放\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "sovereignty",
+          "disabled": true,
+          "text": "♜\n堕天王権\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "annihilate",
+          "disabled": false,
+          "text": "◈\n終極殲滅\n防御無視・最低5000。次ターン停止・速度反動",
+          "description": true
+        },
+        {
+          "id": "transcend",
+          "disabled": false,
+          "text": "◈\n絶界昇華\n全能力3倍 / 3T。権能禁止、終了後停止・防御半減",
+          "description": true
+        },
+        {
+          "id": "grasp",
+          "disabled": false,
+          "text": "◈\n理外掌握\n全回復・重圧解除・速度1000倍永続・敵1回停止。終極殲滅CTのみ解除。攻撃倍率を発動ターンで固定 / CT8（補完）",
+          "description": true
+        },
+        {
+          "id": "genesis",
+          "disabled": true,
+          "text": "✺\n創世\n対応ゲージ100が必要",
+          "description": true
+        },
+        {
+          "id": "ending",
+          "disabled": true,
+          "text": "✺\n終焉\n対応ゲージ100が必要",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "22-final-fallen-stage1",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 2097,
+      "buttons": 31,
+      "disabled": 8,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": [
+        {
+          "id": "slash",
+          "disabled": false,
+          "text": "⚔\n斬撃\n専用いれーなの通常攻撃",
+          "description": true
+        },
+        {
+          "id": "guard",
+          "disabled": false,
+          "text": "⬡\n防御\n被ダメージ70%軽減",
+          "description": true
+        },
+        {
+          "id": "divine",
+          "disabled": false,
+          "text": "✧\n神化\n＋15 / 攻撃せず1ターン使用",
+          "description": true
+        },
+        {
+          "id": "fallen",
+          "disabled": false,
+          "text": "♜\n堕天\n−15 / 攻撃せず1ターン使用",
+          "description": true
+        },
+        {
+          "id": "godspeed",
+          "disabled": true,
+          "text": "✧\n神域の速度\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "omnipotent",
+          "disabled": true,
+          "text": "✧\n全能降臨\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "dominion",
+          "disabled": true,
+          "text": "✧\n万象支配\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "erosion",
+          "disabled": false,
+          "text": "♜\n堕天侵食\n補完：攻2.2・防0.85倍 / 3T",
+          "description": true
+        },
+        {
+          "id": "release",
+          "disabled": true,
+          "text": "♜\n深淵解放\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "sovereignty",
+          "disabled": true,
+          "text": "♜\n堕天王権\n対応する側の段階が不足",
+          "description": true
+        },
+        {
+          "id": "annihilate",
+          "disabled": false,
+          "text": "◈\n終極殲滅\n防御無視・最低5000。次ターン停止・速度反動",
+          "description": true
+        },
+        {
+          "id": "transcend",
+          "disabled": false,
+          "text": "◈\n絶界昇華\n全能力3倍 / 3T。権能禁止、終了後停止・防御半減",
+          "description": true
+        },
+        {
+          "id": "grasp",
+          "disabled": true,
+          "text": "◈\n理外掌握　CT 5\nCT 5",
+          "description": true
+        },
+        {
+          "id": "genesis",
+          "disabled": true,
+          "text": "✺\n創世\n対応ゲージ100が必要",
+          "description": true
+        },
+        {
+          "id": "ending",
+          "disabled": true,
+          "text": "✺\n終焉\n対応ゲージ100が必要",
+          "description": true
+        }
+      ]
+    },
+    {
+      "screen": "23-awakening",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1485,
+      "buttons": 18,
+      "disabled": 0,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": []
+    },
+    {
+      "screen": "24-awakened",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 1485,
+      "buttons": 18,
+      "disabled": 0,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": []
+    },
+    {
+      "screen": "25-achievements",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "height": 4522,
+      "buttons": 54,
+      "disabled": 22,
+      "images": [],
+      "combat": []
+    },
+    {
+      "screen": "26-home-desktop",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "height": 1621,
+      "buttons": 27,
+      "disabled": 0,
+      "images": [
+        {
+          "src": "embedded",
+          "loaded": true,
+          "fit": "contain"
+        }
+      ],
+      "combat": []
+    }
+  ],
+  "errors": [],
+  "htmlSHA256": "a8c9d7bdc58a0773c5d18e25dea33aada715be0d4de50d9c0baa4617bc995d36"
+}

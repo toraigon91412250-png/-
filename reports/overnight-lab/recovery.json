@@ -1,0 +1,14 @@
+{
+  "pass": 5,
+  "fail": 0,
+  "checks": [
+    "all web/assets/tools/tests byte-identical to ZIP recovery tested copy",
+    "recovered source check31",
+    "recovered source test191/191",
+    "recovered source build passed",
+    "recovered HTML SHA256 byte-identical"
+  ],
+  "htmlSHA256": "857c6b85a01cff78bccdb6b3dcd853778e7a052d872d5502b0168e8db3c8b849",
+  "recoveryPath": "/workspace/scratch/irena-overnight-recovery/irena-reborn",
+  "sourceArchiveContainsGeneratedHTML": false
+}

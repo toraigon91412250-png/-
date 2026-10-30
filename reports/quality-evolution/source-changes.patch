@@ -1,0 +1,1519 @@
+--- a/README.md
++++ b/README.md
+@@ -1,122 +1,54 @@
+-# いれーな REBORN — 新規復元版 v4.0
++# いれーな REBORN — 品質進化版 (2026-10-20)
+ 
+-提供仕様書に基づき制作した、ブラウザだけで動くターン制RPGです。
+-指定された旧HTML・manifest JSON・元画像は環境に存在せず、コードの再利用はしていません。
+-ゲーム本編の進行と主要システムを実装しましたが、元資料との完全一致は証明できません。
++今回の正本は添付された `irena-REBORN-Codex-light.zip` です。ゲーム本体は同梱のJavaScriptとCSSで動作し、実行時の外部依存はありません。
+ 
+-今回、提供されたUI見本・キービジュアル・堕天アイコンを組み込み、iPhoneを優先してUIを改善しました。
+-最終決戦では現在使える技のみを表示し、技の説明文を除いています。
+-変更・検証・未確認点は `reports/ui-review/DELIVERY-REPORT.md` を参照してください。
++今回の変更・検証結果・未確認事項は `reports/quality-evolution/DELIVERY-REPORT.md`、進捗は同フォルダの `PROGRESS.md` を参照してください。以前の reports は履歴として残してあります。
+ 
+-## 遊び方
++## 今回の改善
+ 
+-配布版は `irena-play.html` 1ファイルです。通常のブラウザで開くか、静的ホストへ配置します。
+-iPhoneでは、公開用ZIPの `index.html` を静的ホスティングへ配置し、SafariでそのURLを開く方法を推奨します。
+-外部公開は本制作環境では行っていません。GitHubや追加アプリはゲームの実行に不要です。
+-端末のファイルプレビューがJavaScriptを許可するかは環境によります。
++- 全カットインと神化/堕天の入力を管理し、連打・スキップ・自然終了で重複ターンが発生しないよう修正。
++- 理外掌握は負のゲージ（堕天側）のみ使用可能。全回復・速度1000倍等の効果を保持。
++- 実際に増えたP・欠片・共鳴片・レベル・SP、実績と新たな解放を結果画面で確認可能。
++- スマホは「戦場へ／技を選ぶ」で表示位置を移動。通常・神・堕天・中間・ステラ立ち絵と既存カットインを保持。
++- JSON復元後の端末保存に失敗した場合、成功と表示せず未保存であることを案内。
+ 
+-1. タイトルから開始し、黒翼・羽弾でカイザーに挑戦。
+-2. 新しい階層の初回勝利で次の階層と基礎レベルが進行。Pと欠片で才能・技・権能を育成。
+-3. 権能2枠・刻印3枠・徽章1枠を組み替える。再戦で素材を集めることも可能。
+-4. 通常Lv.50撃破で共鳴と深淵レイドが解放。
+-5. 通常Lv.100撃破で50ステータスPを一度だけ獲得。「？？？？？」からワープ。
+-6. ステラが解放され、EXへ挑戦可能。EX初勝利で追加100P。
+-7. ステラ最終決戦で勝利すると専用いれーなを解放。専用育成150Pは通常版と独立。
+-8. 専用いれーなは神化・堕天を1回15ずつ選び、30/60/100で段階解放。
+-9. EX後は神域5連戦へ。全突破で素材を確定し、手動で5段階覚醒。
+-10. 実績アーカイブで報酬を手動受取。36件全達成で天星覇権Lv.5。
++## 遊び方と配布物
+ 
+-開発者の全機能開放と実験場は、通常データに影響しない試験用領域です。
+-音はオプションの合成SE。ロードが必要な音源や外部サービスはありません。
++`irena-play.html` はCSS・JavaScript・使用する19画像を統合した単体HTMLです。`irena-deploy.zip` は静的ホスティング用の `index.html` を含みます。今回Webへの公開やデプロイは行っていません。
+ 
+-## 保存
++iPhoneではSafariでHTTP/HTTPS配信したHTMLを開く方法を推奨します。ファイルアプリのプレビューがJavaScriptを許可するかは端末環境に依存します。iPhone実機での確認は行っていません。
+ 
+-通常キー：`irena-reborn-v3`（データversion 4）。旧v1/v2キーも検索します。
+-試験キー：`irena-reborn-lab-v4`。試験戦では本編報酬・実績を付与しません。
+-自動保存の失敗は画面へ通知します。ホームまたは開発者画面でJSONを書き出してください。
+-JSON復元は上書き確認の後に行います。不正JSON、未知の将来バージョンは拒否します。
+-未知の項目・未所持装備・不正数値は安全に除外します。
+-戦闘途中の一時状態は保存せず、再起動すると戦闘開始前の永続進行へ戻ります。
++通常カイザーを攻略し、Pと欠片で育成。権能2枠・刻印3枠・徽章1枠を組み替えます。通常Lv.50撃破で共鳴・レイド、Lv.100撃破でSP50と「？？？？？」が解放され、ワープでステラ、その後EXへ挑戦できます。ステラ最終決戦クリアで専用いれーな、EX撃破で神域連戦。全36実績で天星覇権Lv.5です。
+ 
+-旧セーブの実体は未取得です。同一フィールドを持つ旧形式は移行できますが、
+-未知の旧構造を推測で復元することはしていません。ロードに失敗した既存データは自動上書きしません。
++最終決戦では使用可能な技のみ表示し、技ボタンと究極技ルートの説明文は付けていません。通常カイザー/EXの立ち絵と「創世」の専用カットインは2026-10-20の追加添付を使用します。深淵レイド・神域・専用ボスは既存の代替紋章、覚醒段階の専用絵と第5段階MP4は未提供です。CSS代替演出を完成ムービーとは扱いません。
+ 
+-## 開発・検証
++## セーブ
+ 
+-Node.js 20以降、ZIP生成はPython 3標準ライブラリのみ。
+-ゲームとビルドにランタイム依存はありません。TypeScriptは使用していません。
++`irena-reborn-v3`（version 4）へ自動保存し、旧v1/v2キーも検索します。既存の保存形式は変更していません。未知の旧構造を推測変換することはできません。
++
++JSON書き出し/読み込みはlocalStorageと独立して利用できます。読み込みは上書き確認付き。不正データ・未対応の将来バージョンは拒否します。保存失敗時は画面に通知し、JSONバックアップを利用できます。戦闘途中の一時状態は再起動でリセットされます。開発者・実験場の試験戦闘は本編の進行/報酬/実績を更新しません。
++
++## 開発と検証
++
++Node.js20以降、Python3（ZIP生成）。ブラウザ検証のみ任意のPlaywright開発依存を使用します。
+ 
+ ```sh
+ npm run check
+ npm test
+ npm run build
++npm run dev
++# 別ターミナル: GAME_URL=http://127.0.0.1:4173/irena-play.html npm run test:browser
++node tools/lab-retry-check.mjs
++node tools/ui-regression.mjs
++node tools/iphone-qa.mjs chromium
++node tools/iphone-qa.mjs webkit
++node tools/quality-evolution.mjs after chromium
++node tools/quality-evolution.mjs after webkit
+ npm run package
+ ```
+ 
+-編集時のプレビュー：
++全ブラウザツールは `GAME_URL`、Chromiumは `CHROMIUM_PATH` を指定可能です。Playwrightがなければ `npm install`、各ブラウザは `npx playwright install chromium webkit` で導入してください。Linux WebKitの検証とiPhone実機の確認は別です。
+ 
+-```sh
+-npm run dev
+-# http://localhost:4173/
+-```
++`web/src/data/config.js` に能力設定、`utils/gameCore.js` に戦闘、`utils/progression.js` に育成/進行、`utils/storage.js` に保存、`components/` にUIがあります。`assets/runtime/` が表示用画像です。今回提供された素材を再生成・再圧縮していません。画像の役割はApp.jsのPORTRAITS/SCENESとassets/media-manifest.jsonを参照してください。
+ 
+-ブラウザ検証のみ、任意の開発依存Playwrightを使用します。
+-
+-```sh
+-npm install
+-npx playwright install chromium
+-# 別ターミナルで npm run dev を起動してから
+-npm run test:browser
+-```
+-
+-`CHROMIUM_PATH`で任意のChromiumを指定可能。`GAME_URL`で検証URLを指定できます。
+-`npm test`はブラウザ検証に使う正常な通し攻略セーブもreportsへ生成します。
+-Playwrightコードの環境内パスへのフォールバックは本制作環境用で、通常はnpmパッケージを優先します。
+-
+-## 構成
+-
+-- `web/src/data/config.js`：確定権能、共鳴10種、刻印10種、実績36件、専用技設定
+-- `web/src/utils/gameCore.js`：独立した戦闘・ダメージ・報酬・敵・ターン処理
+-- `web/src/utils/progression.js`：育成・装備・共鳴・実績・召喚・進行
+-- `web/src/utils/storage.js`：検証付き保存・読み込み・移行
+-- `web/src/components/`：UI・レスポンシブCSS
+-- `assets/irena-placeholder.svg`：新規制作した共通代替ビジュアル
+-- `tests/`：数値テストと新規開始からの通し攻略テスト
+-- `tools/`：ビルド・検証・配布ZIP生成
+-- `reports/`：実行ログ、ブラウザ結果、スクリーンショット
+-- `docs/PROVENANCE.md`：確定仕様と補完仕様の区別
+-- `reports/FINAL-REPORT.md`：最終検証と制約
+-
+-ビルド出力は `irena-play.html` と `dist/index.html`。
+-`artifacts/` にソースZIP・公開用ZIP・単体HTML・SHA256一覧を生成します。
+-
+-## 素材と未完の再現部分
+-
+-未提供の通常立ち絵・ステラ・敵画像は代替SVGです。
+-ホーム、タイトル、共通カットイン、堕天必殺のカットインには今回提供された画像を使用しています。
+-覚醒段階の専用5種画像は未実装で、同じ代替絵と発光表現を使います。
+-第5覚醒は10秒のCSS代替演出。10秒MP4・1080p・60fpsの専用ムービーは未制作です。
+-App.jsのMEDIA.awakeningMovieへ実際のMP4を指定すれば再生できます。
+-ホームとタイトルはユーザー提供キービジュアル、堕天側3技能と終焉は提供アイコンを使用します。
+-元ファイルはassets/supplied、使用箇所とSHA256はassets/media-manifest.jsonにあります。
+-単体HTMLには使用する6画像を自動で埋め込みます（tools/build.mjs）。
+-使用しない原本や監査スクリーンショットはゲームの起動時には読み込みません。
+-監査の全画像はirena-review.zipへ分け、ソースZIPにはコード・原画像・検証記録を保持します。
+-
+-
+-## UI・iPhone向け追加検証
+-
+-```sh
+-node tools/lab-retry-check.mjs
+-node tools/ui-regression.mjs
+-node tools/iphone-qa.mjs chromium
+-npx playwright install --with-deps webkit
+-node tools/iphone-qa.mjs webkit
+-node tools/quality-review.mjs after
+-```
+-
+-いずれも `npm run dev` とビルド済みHTMLを使用します。
+-WebKitのLinux上の検証はiPhone Safari実機の検証とは異なります。
+-入力欄は16px、主要ボタンと補助ボタンは高さ44px以上です。
+-Safariの表示領域を考慮し、390×664を含む複数サイズで確認しています。
+-OSのアドレスバー、キーボード、音声出力などは実機での確認が必要です。
++ソースZIPは編集用コード・素材・テスト・結果メタデータを含み、監査スクリーンショットは別の `irena-review.zip` に保存します。公開用ZIPにサーバーやAPIキーは不要です。
+--- a/assets/media-manifest.json
++++ b/assets/media-manifest.json
+@@ -47,5 +47,44 @@
+     "use": "最終決戦・神側の紋章",
+     "character": "いれーな・最終決戦",
+     "notes": "原画像。ゲーム内演出用の軽量透過版は assets/runtime/crest-divine.webp。"
++  },
++  {
++    "file": "assets/supplied-20261020/kaiser-normal.jpg",
++    "originalAttachment": "1-写真1.jpg",
++    "type": "portrait",
++    "use": "通常カイザーの立ち絵",
++    "runtime": "assets/supplied-20261020/kaiser-normal.jpg",
++    "sha256": "fa2bdbe6e10f7fcf564856d0adef172a920d3b9d32c0ebfeef97181e060afe66",
++    "dimensions": [
++      853,
++      1280
++    ],
++    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
++  },
++  {
++    "file": "assets/supplied-20261020/kaiser-ex.jpg",
++    "originalAttachment": "2-写真2.jpg",
++    "type": "portrait",
++    "use": "EXカイザーの立ち絵",
++    "runtime": "assets/supplied-20261020/kaiser-ex.jpg",
++    "sha256": "174e0ccd2207c015f89ad4bd8437dea6bd9c4032dbbb885dc084fbece04854e4",
++    "dimensions": [
++      818,
++      1280
++    ],
++    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
++  },
++  {
++    "file": "assets/supplied-20261020/genesis-cutin.jpg",
++    "originalAttachment": "3-写真3.jpg",
++    "type": "cutin",
++    "use": "神側究極技「創世」の専用カットイン",
++    "runtime": "assets/supplied-20261020/genesis-cutin.jpg",
++    "sha256": "699324c892fbfb13add577b9e8d4f2811decfaa1026be8a30d71e84c354e99d3",
++    "dimensions": [
++      1280,
++      720
++    ],
++    "processing": "添付のJPEGをバイト一致で保持。再生成・再圧縮・切り抜きなし。"
+   }
+ ]
+--- a/docs/PROVENANCE.md
++++ b/docs/PROVENANCE.md
+@@ -1,4 +1,17 @@
+ # 再現根拠と補完仕様
++
++## 2026-10-20 品質進化パスの追記
++
++以下の過去の調査記録は制作時点の履歴です。今回の正本はユーザーが添付した
++`irena-REBORN-Codex-light.zip`（SHA256 `4f5723705eec13c67dc7eb02594fdca652d966c0bfd750aba83e97c0d286806d`）です。
++通常・神・堕天・中間状態・ステラの立ち絵、羽弾/ステラのカットイン、勝利絵、神/堕天の紋章はこのZIPにあり、実際に接続されています。
++今回それらの画像ファイルは変更していません。追加添付の通常カイザー・EXカイザー・創世の3画像を原本のまま組み込みました。深淵レイド・神域・専用ボスの代替紋章、覚醒段階の専用画像・専用MP4の不足は残っています。
++
++最新の明示指示に従い、理外掌握は堕天側（ゲージが負）の専用技へ修正しました。
++段階条件は追加せず、回復・速度1000倍・通常行動停止・終極殲滅CT解除などの効果を保持しています。
++初回EXを含む報酬の表示データ、入力管理、移動補助、保存失敗案内を改善しましたが、
++既存の倍率・報酬量・敵AI・解放条件・セーブ形式は変更していません。
++詳細は `reports/quality-evolution/DELIVERY-REPORT.md` を参照してください。
+ 
+ ## 調査の結果
+ 
+--- a/tests/campaign.test.js
++++ b/tests/campaign.test.js
+@@ -11,7 +11,7 @@
+ function growth(s){for(const id of ['wing','abyss','king','fallen','judge'])if(s.powers[id])while(s.powers[id]<5&&s.fragments[id]>=s.powers[id]*8)upgradePower(s,id);while(s.talent<20&&s.p>=s.talent*30+300)train(s,'talent');for(const id of ['feather','ultimate','destruction'])while(s.skills[id]<10&&s.p>=s.skills[id]*35+400)train(s,id);for(const id of s.achieved)if(!s.claimed.includes(id))claim(s,id);}
+ let campaign;
+ test('REAL campaign: new game, ordinary100 floors without dev flags or forced wins',()=>{let s=fresh();s.started=true;const summaries=[];for(let floor=1;floor<=100;floor++){growth(s);const b=fight(s);summaries.push({floor,turn:b.turn,result:b.result,hp:Math.round(playerStats(b).current)});assert.equal(b.result,'win',`floor ${floor}: ${b.log.slice(-6).join(';')}`);assert.ok(s.cleared.includes(floor));s=validateSave(JSON.parse(exportSave(s)));}assert.equal(s.cleared.length,100);assert.equal(s.sp,50);assert.ok(s.flags.lv100);assert.equal(s.flags.stella,false);campaign=s;fs.writeFileSync('reports/pre-warp-save.json',exportSave(s));console.log('Campaign: 100 wins, max rounds '+Math.max(...summaries.map(x=>x.turn))+'; final '+JSON.stringify(summaries.at(-1)));});
+-test('REAL campaign: warp before EX, Stella boss and dedicated final victory',()=>{const s=campaign;assert.ok(s);warp(s);growth(s);for(let i=0;i<50;i++)allocate(s,'atk');const ex=fight(s,'ex');assert.equal(ex.result,'win',ex.log.join('\n'));assert.ok(s.flags.ex);const stella=fight(s,'stella');assert.equal(stella.result,'win',stella.log.join('\n'));assert.ok(s.flags.final);for(let i=0;i<150;i++)allocate(s,'atk',true);const final=fight(s,'final',b=>{if(b.statuses.stun)return 'wait';if(!b.buffs.some(x=>x.id==='grasp'))return 'grasp';if(b.balance<30)return 'divine';if(!b.buffs.some(x=>x.id==='godspeed')&&!available(b,'godspeed'))return 'godspeed';if(!available(b,'annihilate'))return 'annihilate';return 'slash';});assert.equal(final.result,'win',final.log.join('\n'));assert.ok(s.flags.finalClear);console.log(`Bosses: EX ${ex.turn}T, Stella ${stella.turn}T, final ${final.turn}T`);});
++test('REAL campaign: warp before EX, Stella boss and dedicated final victory',()=>{const s=campaign;assert.ok(s);warp(s);growth(s);for(let i=0;i<50;i++)allocate(s,'atk');const ex=fight(s,'ex');assert.equal(ex.result,'win',ex.log.join('\n'));assert.ok(s.flags.ex);const stella=fight(s,'stella');assert.equal(stella.result,'win',stella.log.join('\n'));assert.ok(s.flags.final);for(let i=0;i<150;i++)allocate(s,'atk',true);const final=fight(s,'final',b=>{if(b.statuses.stun)return 'wait';if(!b.buffs.some(x=>x.id==='grasp'))return b.balance<0?'grasp':'fallen';if(b.balance<30)return 'divine';if(!b.buffs.some(x=>x.id==='godspeed')&&!available(b,'godspeed'))return 'godspeed';if(!available(b,'annihilate'))return 'annihilate';return 'slash';});assert.equal(final.result,'win',final.log.join('\n'));assert.ok(s.flags.finalClear);console.log(`Bosses: EX ${ex.turn}T, Stella ${stella.turn}T, final ${final.turn}T`);});
+ test('REAL campaign: raid10, summon50, all marks collected and equipped',()=>{const s=campaign;s.equipped=['wing','abyss'];growth(s);for(let i=0;i<10;i++)assert.equal(fight(s,'raid').result,'win');for(let i=0;i<5;i++)summon(s,10,()=>.5);const ids=['split','starfall','endure','abyssmark','wind','iron','fire','moon','crown','life'];for(const id of ids)if(!s.marks.includes(id))buyMark(s,id);for(const group of [['split','starfall','endure'],['abyssmark','wind','iron'],['fire','moon','crown'],['life']]){s.markEquip=[];for(const id of group)equip(s,id,'mark');const b=startBattle(s,{floor:1});while(!b.result){const skill=group.includes('split')&&!available(b,'pierce')?'pierce':group.includes('fire')&&!available(b,'feather')?'feather':'slash';act(b,skill,{rng});}settle(s,b);}assert.equal(s.collection.length,6);assert.equal(s.counts.raid,10);assert.equal(s.marks.length,10);assert.ok(s.markUsed.includes('life'));assert.ok(s.achieved.includes('C10'));});
+ test('REAL campaign: five-god sequence clears and awakens manually',()=>{const s=campaign;growth(s);startGauntlet(s);for(let i=0;i<5;i++){const b=fight(s,'god');assert.equal(b.result,'win',`${i}: ${b.log.join('\n')}`);}assert.equal(s.gauntlet,null);assert.ok(s.godMaterials>=30);assert.equal(awaken(s),1);assert.equal(s.awakening,1);});
+ 
+--- a/tests/core.test.js
++++ b/tests/core.test.js
+@@ -7,6 +7,7 @@
+ const hit=()=>.99,avoid=()=>0;
+ function plain(powers=[]){const s=fresh();s.equipped=powers;for(const id of powers)s.powers[id]=1;return startBattle(s);}
+ function final(){const s=developerState(fresh());return startBattle(s,{mode:'final',test:true});}
++function fallenFinal(){const b=final();b.balance=-15;return b;}
+ function stella(){return startBattle(developerState(fresh()),{mode:'stella',test:true});}
+ function weakEnemy(b){b.enemy.base.atk=1;b.enemy.base.spd=1;b.enemy.base.hp=1e8;b.enemy.hp=1e8;return b;}
+ function won(b){b.result='win';return b;}
+@@ -69,6 +70,9 @@
+ test('final gauge starts0 and stance +/-15 does not attack/reset buffs/CT',()=>{const b=weakEnemy(final());assert.equal(b.balance,0);b.cd.annihilate=4;buff(b,'test',5,{atk:2});const hp=b.enemy.hp;act(b,'divine',{rng:hit});assert.equal(b.balance,15);assert.equal(b.enemy.hp,hp);assert.equal(b.cd.annihilate,3);assert.equal(b.buffs[0].remaining,4);act(b,'fallen',{rng:hit});assert.equal(b.balance,0);});
+ for(const [action,end]of [['divine',100],['fallen',-100]])test(`gauge clamped ${end}`,()=>{const b=weakEnemy(final());for(let i=0;i<10;i++)act(b,action,{rng:hit});assert.equal(b.balance,end);});
+ test('sides and stages are isolated',()=>{const b=final();b.balance=30;assert.equal(available(b,'godspeed'),null);assert.ok(available(b,'erosion'));assert.ok(available(b,'omnipotent'));b.balance=-60;assert.equal(available(b,'release'),null);assert.ok(available(b,'omnipotent'));});
++for(const balance of [-100,-60,-30,-15,-1])test(`grasp is available on fallen side ${balance} without an invented stage requirement`,()=>{const b=final();b.balance=balance;assert.equal(available(b,'grasp'),null);});
++for(const balance of [0,1,15,30,60,100])test(`grasp is rejected at neutral or divine balance ${balance} without changing battle state`,()=>{const b=final();b.balance=balance;const before=JSON.stringify(b);assert.ok(available(b,'grasp'));assert.throws(()=>act(b,'grasp'));assert.equal(JSON.stringify(b),before);});
++test('reaching fallen side for grasp costs a real nonattacking turn',()=>{const b=weakEnemy(final()),enemyHP=b.enemy.hp;assert.ok(available(b,'grasp'));act(b,'fallen',{rng:hit});assert.equal(b.balance,-15);assert.equal(b.turn,2);assert.equal(b.enemy.hp,enemyHP);assert.equal(available(b,'grasp'),null);b.hp=10;act(b,'grasp',{rng:hit});assert.equal(b.turn,3);assert.equal(b.hp,b.base.hp);assert.equal(playerStats(b).spd,b.base.spd*1000);assert.equal(b.enemyStop,0);assert.equal(b.enemyDamage,0);});
+ for(const id of ['godspeed','omnipotent','dominion'])test(`${id} exact multipliers and duration includes cast turn`,()=>{const b=weakEnemy(final()),config=FINAL_SKILLS[id];b.balance=100;const base=playerStats(b);act(b,id,{rng:hit});for(const [k,v]of Object.entries(config.mul))assert.equal(playerStats(b)[k],base[k]*v);assert.equal(b.buffs.find(x=>x.id===id).remaining,config.duration-1);});
+ test('dominion clears statuses and slash guarantees3000 after defense',()=>{const b=weakEnemy(final());b.balance=100;b.statuses.pressure=3;act(b,'dominion',{rng:hit});assert.equal(b.statuses.pressure,undefined);b.enemy.base.def=1e15;b.base.atk=1;act(b,'slash',{rng:hit});assert.equal(b.lastDamage,3000);});
+ for(const skill of ['genesis','ending'])test(`${skill} locked until exact signed100, guarantees2000`,()=>{const b=weakEnemy(final());b.balance=skill==='genesis'?99:-99;assert.throws(()=>act(b,skill));b.balance=skill==='genesis'?100:-100;b.base.atk=1;b.enemy.base.def=1e12;act(b,skill,{route:'A',rng:hit});assert.equal(b.lastDamage,2000);});
+@@ -80,9 +84,9 @@
+ test('ending C cleanses pressure and provides5 round immunity',()=>{const b=weakEnemy(final());b.balance=-100;b.statuses.pressure=5;act(b,'ending',{route:'C',rng:hit});assert.equal(b.statuses.pressure,undefined);assert.equal(b.noPressure,4);});
+ test('annihilation ignores defense, minimum5000, CT5 and next turn stun',()=>{const b=weakEnemy(final());b.base.atk=1;b.enemy.base.def=1e12;act(b,'annihilate',{rng:hit});assert.equal(b.lastDamage,5000);assert.equal(b.cd.annihilate,4);assert.equal(b.statuses.stun,1);assert.ok(available(b,'slash'));act(b,'wait',{rng:hit});assert.equal(b.statuses.stun,undefined);});
+ test('transcend3x for3 turns blocks powers and has end recoil',()=>{const b=weakEnemy(final());act(b,'transcend',{rng:hit});assert.equal(playerStats(b).atk,b.base.atk*3);assert.ok(available(b,'annihilate'));act(b,'guard',{rng:hit});act(b,'guard',{rng:hit});assert.equal(b.statuses.stun,1);assert.equal(b.statuses.fragile,3);});
+-test('grasp heals, spd1000 permanent, fixed turn atk, only annihilate CT reset',()=>{const b=weakEnemy(final());b.turn=6;b.hp=10;b.statuses.pressure=3;b.cd.annihilate=4;b.cd.godspeed=4;act(b,'grasp',{rng:hit});assert.equal(b.hp,b.base.hp);assert.equal(b.statuses.pressure,undefined);assert.equal(b.cd.annihilate,undefined);assert.equal(b.cd.godspeed,3);assert.equal(playerStats(b).spd,b.base.spd*1000);const atk=playerStats(b).atk;act(b,'guard',{rng:hit});assert.equal(playerStats(b).atk,atk);});
+-test('early grasp has fixed attack penalty',()=>{const b=weakEnemy(final());act(b,'grasp',{rng:hit});assert.equal(playerStats(b).atk,b.base.atk*.6);});
+-test('final special deadline bypasses grasp action stop',()=>{const b=weakEnemy(final());b.enemy.phase=3;b.enemy.hp=b.enemy.base.hp*.2;b.phaseTurns=8;act(b,'grasp',{rng:hit});assert.equal(b.result,'lose');});
++test('grasp heals, spd1000 permanent, fixed turn atk, only annihilate CT reset',()=>{const b=weakEnemy(fallenFinal());b.turn=6;b.hp=10;b.statuses.pressure=3;b.cd.annihilate=4;b.cd.godspeed=4;act(b,'grasp',{rng:hit});assert.equal(b.hp,b.base.hp);assert.equal(b.statuses.pressure,undefined);assert.equal(b.cd.annihilate,undefined);assert.equal(b.cd.godspeed,3);assert.equal(playerStats(b).spd,b.base.spd*1000);const atk=playerStats(b).atk;act(b,'guard',{rng:hit});assert.equal(playerStats(b).atk,atk);});
++test('early grasp has fixed attack penalty',()=>{const b=weakEnemy(fallenFinal());act(b,'grasp',{rng:hit});assert.equal(playerStats(b).atk,b.base.atk*.6);});
++test('final special deadline bypasses grasp action stop',()=>{const b=weakEnemy(fallenFinal());b.enemy.phase=3;b.enemy.hp=b.enemy.base.hp*.2;b.phaseTurns=8;act(b,'grasp',{rng:hit});assert.equal(b.result,'lose');});
+ test('normal character cannot access final or Stella skills',()=>{const b=plain();for(const id of ['divine','grasp','genesis','immortal','meteor'])assert.ok(available(b,id));});
+ // Achievements
+  test('exact36 achievements and12 per category',()=>{assert.equal(ACHIEVEMENTS.length,36);for(const cat of ['A','B','C'])assert.equal(ACHIEVEMENTS.filter(x=>x.cat===cat).length,12);});
+@@ -106,6 +110,6 @@
+ 
+ test('volley resolves two independent hits and only actual hits accumulate',()=>{const s=fresh();s.equipped=['judgewing'];s.resonance.judgewing=1;s.markEquip=['split'];const b=weakEnemy(startBattle(s));act(b,'volley',{rng:hit});assert.equal(b.events.filter(x=>x.type==='hit').length,2);assert.equal(b.stacks.judgewing,2);});
+ 
+-test('grasp cooldown8 is supplemental; permanent speed never expires',()=>{const b=weakEnemy(final());act(b,'grasp',{rng:hit});assert.equal(b.cd.grasp,7);assert.equal(b.buffs.find(x=>x.id==='grasp').remaining,Infinity);});
++test('grasp cooldown8 is supplemental; permanent speed never expires',()=>{const b=weakEnemy(fallenFinal());act(b,'grasp',{rng:hit});assert.equal(b.cd.grasp,7);assert.equal(b.buffs.find(x=>x.id==='grasp').remaining,Infinity);});
+ for(const [phase,counter]of [[1,440],[2,640],[3,880]])test(`stella phase${phase} exact fixed counter${counter}`,()=>{const b=stella();b.enemy.phase=phase;const hp=b.hp;act(b,'slash',{rng:hit});assert.equal(hp-b.hp,counter);assert.equal(b.enemyDamage,counter);});
+ test('EX second phase actually seals authorities on round5',()=>{const b=weakEnemy(startBattle(developerState(fresh()),{mode:'ex',test:true}));b.enemy.hp=b.enemy.base.hp*.6;for(let i=0;i<5;i++)act(b,'guard',{rng:hit});assert.equal(b.enemy.phase,2);assert.equal(b.statuses.seal,1);assert.ok(available(b,'feather'));assert.equal(available(b,'slash'),null);});
+--- a/tools/browser-e2e.mjs
++++ b/tools/browser-e2e.mjs
+@@ -1,24 +1,25 @@
++import {combatReady,actionClick,skipOrFinishCinema,openGame,reloadGame,testedHTMLSHA256} from './browser-actions.mjs';
+ import fs from 'node:fs';
+ import assert from 'node:assert/strict';
+ import {createRequire} from 'node:module';
+ const require=createRequire(import.meta.url);let chromium;
+ try{({chromium}=await import('playwright'));}catch{({chromium}=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs'));}
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),headless:true,args:['--no-sandbox']});
+-const checks=[],errors=[],unverified=[];const url=process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html';
++const checks=[],errors=[],unverified=[];const url=process.env.GAME_URL||(process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html');
+ const ok=(name,value=true)=>{assert.ok(value,name);checks.push(name);};
+-const click=async(p,act,id)=>{const loc=p.locator(`[data-action="${act}"]${id!==undefined?`[data-id="${id}"]`:''}`).filter({visible:true});await loc.first().click();};
++const click=async(p,act,id)=>actionClick(p,act,id,{waitForCombat:!['feather','ultimate','meteor','annihilate','genesis','ending'].includes(id)});
+ const nav=async(p,id)=>click(p,'nav',id);
+ async function noOverflow(p,label){const d=await p.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));ok(label+' fits viewport',d.scroll<=d.width);}
+-async function skip(p){await p.locator('#cinema.active').waitFor({state:'visible'});await p.locator('#skipCinema').click();await p.locator('#cinema.active').waitFor({state:'hidden'});}
++async function skip(p){await skipOrFinishCinema(p);}
+ async function importSave(p,file){const chooser=p.waitForEvent('filechooser');await click(p,'import');await (await chooser).setFiles(file);await p.locator('#modal[open]').waitFor();await click(p,'confirmImport');await p.locator('#modal[open]').waitFor({state:'hidden'});}
+ try{
+ for(const width of [1440,768,390,320]){
+- const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:1,isMobile:width<700,hasTouch:width<700,reducedMotion:'reduce'});const p=await context.newPage();p.on('pageerror',e=>errors.push(`${width}: ${e.message}`));p.on('console',m=>{if(m.type()==='error')errors.push(`${width} console: ${m.text()}`);});await p.goto(url);ok(`${width} title starts`,await p.locator('h1').innerText()==='いれーな');await click(p,'begin');ok(`${width} home renders`,await p.locator('h1').innerText()==='帰還の聖域');await noOverflow(p,`${width} home`);
++ const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:1,isMobile:width<700,hasTouch:width<700,reducedMotion:'reduce'});const p=await context.newPage();p.on('pageerror',e=>errors.push(`${width}: ${e.message}`));p.on('console',m=>{if(m.type()==='error')errors.push(`${width} console: ${m.text()}`);});await openGame(p,url);ok(`${width} title starts`,await p.locator('h1').innerText()==='いれーな');await click(p,'begin');ok(`${width} home renders`,await p.locator('h1').innerText()==='帰還の聖域');await noOverflow(p,`${width} home`);
+  for(const id of ['upgrade','battle','lab','dev']){await nav(p,id);await noOverflow(p,`${width} ${id}`);ok(`${width} navigation ${id}`,!!(await p.locator('h1').innerText()));}
+  await nav(p,'upgrade');for(const id of ['powers','marks','resonance','training','summon']){await click(p,'tab',id);await noOverflow(p,`${width} tab ${id}`);}
+  await nav(p,'home');await click(p,'nav','archive');await noOverflow(p,`${width} achievements`);ok(`${width} 36 achievement cards`,await p.locator('.achievement').count()===36);
+- await nav(p,'home');await click(p,'fight','normal');await noOverflow(p,`${width} fight`);ok(`${width} battle buttons enabled`,await p.locator('[data-action="combat"][data-id="slash"]').isEnabled());await click(p,'combat','feather');ok(`${width} feather cut-in renders`,await p.locator('#cinema.active.cut .cinema-copy h2').innerText()==='羽弾');await skip(p);ok(`${width} actual battle win`,await p.locator('.result h2').innerText()==='VICTORY');await click(p,'retry');ok(`${width} next floor`,await p.locator('.fighter h3').last().innerText()==='カイザー Lv.2');await click(p,'askRetreat');await click(p,'retreat');await click(p,'finish');
+- await nav(p,'home');await p.reload();ok(`${width} reload retains progression`,(await p.locator('.hero button[data-action="fight"]').innerText()).includes('Lv.2'));
++ await nav(p,'home');await click(p,'fight','normal');await noOverflow(p,`${width} fight`);ok(`${width} battle buttons enabled`,await p.locator('[data-action="combat"][data-id="slash"]').isEnabled());await p.evaluate(()=>{window.__cutInTitles=[];window.__cutInObserver=new MutationObserver(()=>{const title=document.querySelector('#cinema.active.cut .cinema-copy h2');if(title)window.__cutInTitles.push(title.textContent);});window.__cutInObserver.observe(document.querySelector('#cinema'),{childList:true,subtree:true,attributes:true});});await click(p,'combat','feather');await p.waitForFunction(()=>window.__cutInTitles.includes('羽弾'));ok(`${width} feather cut-in renders`,await p.evaluate(()=>window.__cutInTitles.includes('羽弾')));await p.evaluate(()=>window.__cutInObserver.disconnect());await skip(p);ok(`${width} actual battle win`,await p.locator('.result h2').innerText()==='VICTORY');await click(p,'retry');ok(`${width} next floor`,await p.locator('.fighter h3').last().innerText()==='カイザー Lv.2');await click(p,'askRetreat');await click(p,'retreat');await click(p,'finish');
++ await nav(p,'home');await reloadGame(p);ok(`${width} reload retains progression`,(await p.locator('.hero button[data-action="fight"]').innerText()).includes('Lv.2'));
+  if(width===390)await p.screenshot({path:'reports/home-mobile.png',fullPage:true});
+  if(width===1440){
+   await p.screenshot({path:'reports/home-desktop.png',fullPage:true});
+@@ -29,20 +30,20 @@
+   await nav(p,'battle');await click(p,'fight','ex');ok('EX distinct mode',await p.locator('.fighter h3').last().innerText()==='EX カイザー');await click(p,'askRetreat');await click(p,'retreat');await click(p,'retry');ok('EX retry stays EX',await p.locator('.fighter h3').last().innerText()==='EX カイザー');await click(p,'askRetreat');await click(p,'retreat');await click(p,'finish');
+   await importSave(p,'reports/campaign-save.json');await nav(p,'archive');ok('all36 attainable fixture visible',await p.locator('.achievement:not(.locked)').count()===36);await nav(p,'upgrade');await click(p,'tab','powers');ok('Lv5 star reward actually owned',(await p.locator('.power-card').last().innerText()).includes('Lv. 5'));
+   await nav(p,'dev');await click(p,'enabledev');ok('developer independent realm banner',await p.locator('.test-banner').isVisible());await click(p,'fight','final');await noOverflow(p,'final controls desktop');
+-  for(let i=0;i<7;i++){const stun=p.locator('[data-action="combat"][data-id="wait"]');if(await stun.count())await stun.click();await click(p,'combat','divine');}
++  for(let i=0;i<7;i++){const stun=p.locator('[data-action="combat"][data-id="wait"]');if(await stun.count())await click(p,'combat','wait');await click(p,'combat','divine');}
+   ok('final signed gauge100 unlocks genesis',await p.locator('[data-action="combat"][data-id="genesis"]').isEnabled());const turn=(await p.locator('.heading .tag').innerText());await click(p,'combat','genesis');await click(p,'route','genesis:B');await p.locator('#cinema.active').waitFor({state:'hidden'});ok('route resolves and returns to battle',(await p.locator('.heading .tag').innerText())!==turn);await p.screenshot({path:'reports/final-battle-desktop.png',fullPage:true});
+   await click(p,'askRetreat');await click(p,'retreat');await click(p,'finish');await click(p,'exitdev');ok('test battles preserve main achievements',(await p.locator('.archive .number').innerText()).includes('36'));
+  }
+  if(width===320||width===390){
+-  await nav(p,'dev');await click(p,'enabledev');await noOverflow(p,`${width} developer large resources`);await click(p,'fight','final');await click(p,'combat','grasp');for(let i=0;i<2;i++)await click(p,'combat','divine');await click(p,'combat','godspeed');await noOverflow(p,`${width} final speed999x1000 stats`);
++  await nav(p,'dev');await click(p,'enabledev');await noOverflow(p,`${width} developer large resources`);await click(p,'fight','final');await click(p,'combat','fallen');await click(p,'combat','grasp');for(let i=0;i<3;i++)await click(p,'combat','divine');await click(p,'combat','godspeed');await noOverflow(p,`${width} final speed999x1000 stats`);
+   if(width===390)await p.screenshot({path:'reports/final-battle-mobile.png',fullPage:true});
+  }
+  await context.close();
+ }
+ const file=await browser.newPage({viewport:{width:390,height:844}});file.on('pageerror',e=>errors.push('file:'+e.message));try{await file.goto('file://'+process.cwd()+'/irena-play.html');await click(file,'begin');ok('standalone file:// works without HTTP server',await file.locator('h1').innerText()==='帰還の聖域');}catch(e){if(!e.message.includes('ERR_BLOCKED_BY_ADMINISTRATOR'))throw e;unverified.push('file:// navigation blocked by managed browser policy; not verified');}await file.close();
+ const source=await browser.newPage();source.on('pageerror',e=>errors.push('source:'+e.message));await source.goto(url.replace('irena-play.html','index.html'));await click(source,'begin');ok('editable ES module source entry works',await source.locator('h1').innerText()==='帰還の聖域');await source.close();
+-const blocked=await browser.newContext();await blocked.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('quota','QuotaExceededError');};});const p=await blocked.newPage();await p.goto(url);await click(p,'begin');ok('save failure displayed visibly',(await p.locator('.notice').innerText()).includes('自動保存失敗'));await blocked.close();
++const blocked=await browser.newContext();await blocked.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('quota','QuotaExceededError');};});const p=await blocked.newPage();await openGame(p,url);await click(p,'begin');ok('save failure displayed visibly',(await p.locator('.notice').innerText()).includes('自動保存失敗'));await blocked.close();
+ const invalid=await browser.newContext();await invalid.addInitScript(()=>{localStorage.setItem('irena-reborn-v3','broken json');});const ip=await invalid.newPage();await ip.goto(url);await click(ip,'begin');ok('corrupt existing save asks before overwrite',await ip.locator('#modal[open]').count()===1);ok('corrupt existing save preserved',await ip.evaluate(()=>localStorage.getItem('irena-reborn-v3'))==='broken json');await invalid.close();
+ ok('zero uncaught browser errors',errors.length===0);
+-fs.writeFileSync('reports/browser-results.json',JSON.stringify({browser:'system Chromium',viewports:[1440,768,390,320],checks:checks.length,pass:checks.length,fail:0,errors,unverified,results:checks,realIPhoneTested:false},null,2));console.log(JSON.stringify({pass:checks.length,fail:0,errors,unverified}));
++fs.writeFileSync('reports/browser-results.json',JSON.stringify({browser:'system Chromium',htmlSHA256:testedHTMLSHA256(),viewports:[1440,768,390,320],checks:checks.length,pass:checks.length,fail:0,errors,unverified,results:checks,realIPhoneTested:false},null,2));console.log(JSON.stringify({pass:checks.length,fail:0,errors,unverified}));
+ }catch(error){fs.writeFileSync('reports/browser-failure.json',JSON.stringify({passed:checks,errors,error:error.stack},null,2));throw error;}finally{await browser.close();}
+--- a/tools/iphone-qa.mjs
++++ b/tools/iphone-qa.mjs
+@@ -1,3 +1,4 @@
++import {combatReady,actionClick,skipOrFinishCinema,openGame,reloadGame,testedHTMLSHA256} from './browser-actions.mjs';
+ import fs from 'node:fs';
+ import assert from 'node:assert/strict';
+ import {createHash} from 'node:crypto';
+@@ -7,15 +8,15 @@
+ const results=[],screens=[],errors=[];
+ const ok=(label,value)=>{assert.ok(value,label);results.push(label);};
+ const profiles=[{width:320,height:568},{width:375,height:667},{width:390,height:664},{width:430,height:740}];
+-try{for(const profile of profiles){const width=profile.width,ctx=await browser.newContext({viewport:profile,screen:{width,height:width===390?844:profile.height+120},deviceScaleFactor:1,isMobile:true,hasTouch:true,userAgent:playwright.devices['iPhone 13'].userAgent,reducedMotion:width===390?'no-preference':'reduce'});await ctx.addInitScript(()=>{Math.random=()=>.99;});const p=await ctx.newPage();p.on('pageerror',e=>errors.push(width+': '+e.message));p.on('console',m=>{if(m.type()==='error')errors.push(width+': '+m.text());});const tap=async(action,id)=>p.locator(`[data-action="${action}"]${id!==undefined?`[data-id="${id}"]`:''}`).filter({visible:true}).first().tap();
++try{for(const profile of profiles){const width=profile.width,ctx=await browser.newContext({viewport:profile,screen:{width,height:width===390?844:profile.height+120},deviceScaleFactor:1,isMobile:true,hasTouch:true,userAgent:playwright.devices['iPhone 13'].userAgent,reducedMotion:width===390?'no-preference':'reduce'});await ctx.addInitScript(()=>{Math.random=()=>.99;});const p=await ctx.newPage();p.on('pageerror',e=>errors.push(width+': '+e.message));p.on('console',m=>{if(m.type()==='error')errors.push(width+': '+m.text());});const tap=async(action,id)=>actionClick(p,action,id,{touch:true});
+ async function check(name){await p.evaluate(()=>document.fonts.ready);const data=await p.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,width:innerWidth,height:innerHeight,viewportHeight:visualViewport?.height,targets:[...document.querySelectorAll('button:not(:disabled),input,select,summary')].filter(x=>x.getClientRects().length&&getComputedStyle(x).visibility!=='hidden').map(x=>({label:x.getAttribute('aria-label')||x.innerText||x.tagName,height:x.getBoundingClientRect().height,width:x.getBoundingClientRect().width})),texts:[...document.querySelectorAll('.final-commands strong,.hpnum,.power-card p,.next-step p')].map(x=>({kind:x.className,text:x.textContent,size:parseFloat(getComputedStyle(x).fontSize)})),images:[...document.images].filter(x=>x.getClientRects().length).map(x=>({loaded:x.complete&&x.naturalWidth>0,fit:getComputedStyle(x).objectFit}))}));ok(`${width} ${name} no horizontal scroll`,data.scrollWidth<=data.width);ok(`${width} ${name} touch targets at least44px`,data.targets.every(x=>x.height>=43.9));ok(`${width} ${name} readable combat and body text`,data.texts.every(x=>x.size>=(x.kind==='hpnum'?10:12)));ok(`${width} ${name} images loaded`,data.images.every(x=>x.loaded));await p.screenshot({path:`${out}/${width}-${name}.jpg`,type:'jpeg',quality:80});screens.push({profile,screen:name,...data});}
+ async function leave(){if(await p.locator('[data-action="askRetreat"]').count()){await tap('askRetreat');await tap('retreat');}if(await p.locator('[data-action="finish"]').count())await tap('finish');}
+-const started=performance.now();await p.goto('http://127.0.0.1:4173/irena-play.html');await tap('begin');await check('01-home');screens.at(-1).localLoadMs=Math.round(performance.now()-started);const soundBox=await p.locator('.soundtoggle').boundingBox(),levelBox=await p.locator('.challenge-level').boundingBox(),headerBox=await p.locator('.topbar').boundingBox();ok(width+' sound control does not overlap challenge level',soundBox.y>=levelBox.y+levelBox.height);ok(width+' sound target stays within header',soundBox.y+soundBox.height<=headerBox.y+headerBox.height);
++const started=performance.now();await openGame(p,process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html');await tap('begin');await check('01-home');screens.at(-1).localLoadMs=Math.round(performance.now()-started);const soundBox=await p.locator('.soundtoggle').boundingBox(),levelBox=await p.locator('.challenge-level').boundingBox(),headerBox=await p.locator('.topbar').boundingBox();ok(width+' sound control does not overlap challenge level',soundBox.y>=levelBox.y+levelBox.height);ok(width+' sound target stays within header',soundBox.y+soundBox.height<=headerBox.y+headerBox.height);
+ await tap('fight','normal');await check('02-normal-battle');await tap('combat','feather');ok(width+' normal fight resolves on touch',await p.locator('.result').count()===1);await tap('finish');await tap('nav','upgrade');
+ for(const [tab,name]of [['powers','03-powers'],['marks','04-marks'],['resonance','05-resonance'],['training','06-training'],['summon','07-summon']]){await tap('tab',tab);await check(name);}
+ await tap('nav','lab');await check('08-lab');ok(width+' iPhone input fonts prevent focus zoom',await p.locator('input,select').evaluateAll(xs=>xs.every(x=>parseFloat(getComputedStyle(x).fontSize)>=16)));await tap('labstart');await tap('combat','feather');await leave();await tap('nav','dev');await check('09-developer');await tap('enabledev');await tap('nav','upgrade');await tap('tab','marks');await tap('equipMark','split');await tap('equipMark','wind');await check('10-equipment');await tap('tab','resonance');await check('11-resonance-unlocked');await tap('tab','summon');await tap('summon','10');await check('12-summon-modal');const modalBox=await p.locator('#modal').boundingBox();ok(width+' summon modal stays inside visible height',modalBox.y>=0&&modalBox.y+modalBox.height<=profile.height+1);await tap('close');await tap('nav','raid');await check('13-raid-lobby');await tap('fight','raid');await check('14-raid-battle');await leave();
+-for(const [mode,name]of [['god','15-gauntlet'],['ex','16-ex'],['stella','17-stella'],['final','18-final-zero']]){await tap('nav','home');await tap('fight',mode);await check(name);if(mode==='stella'){await tap('combat','meteor');await p.locator('#cinema.active').waitFor({state:'hidden'});ok(width+' stellar cut-in returns to combat',await p.locator('[data-action="combat"][data-id="rebirth"]').isVisible());}if(mode==='final'){await tap('combat','grasp');for(let i=0;i<7;i++)await tap('combat','fallen');await check('19-final-fallen');ok(width+' unavailable final skills absent',await p.locator('.final-commands button:disabled').count()===0);ok(width+' final skills have no descriptions',await p.locator('.final-commands small,.final-commands button[title]').count()===0);await tap('combat','ending');await check('20-ending-route');await tap('route','ending:C');await p.locator('#cinema.active').waitFor({state:'hidden'});await check('21-final-after-cut');}await leave();}
++for(const [mode,name]of [['god','15-gauntlet'],['ex','16-ex'],['stella','17-stella'],['final','18-final-zero']]){await tap('nav','home');await tap('fight',mode);await check(name);if(mode==='stella'){await tap('combat','meteor');await p.locator('#cinema.active').waitFor({state:'hidden'});ok(width+' stellar cut-in returns to combat',await p.locator('[data-action="combat"][data-id="rebirth"]').isVisible());}if(mode==='final'){await tap('combat','fallen');await tap('combat','grasp');for(let i=0;i<6;i++)await tap('combat','fallen');await check('19-final-fallen');ok(width+' unavailable final skills absent',await p.locator('.final-commands button:disabled').count()===0);ok(width+' final skills have no descriptions',await p.locator('.final-commands small,.final-commands button[title]').count()===0);await tap('combat','ending');await check('20-ending-route');await tap('route','ending:C');await p.locator('#cinema.active').waitFor({state:'hidden'});await check('21-final-after-cut');}await leave();}
+ await tap('nav','home');await tap('nav','awakening');await check('22-awakening');await tap('awaken');if(width===390){await p.locator('#cinema.active').waitFor({state:'visible'});await p.screenshot({path:`${out}/${width}-awakening-animation.jpg`,type:'jpeg',quality:80});await p.locator('#skipCinema').tap();}await p.locator('#cinema.active').waitFor({state:'hidden'});await check('23-awakened');await tap('nav','home');await tap('nav','archive');await check('24-achievements');await tap('nav','home');
+-const download=p.waitForEvent('download');await tap('export');const d=await download;const path=`${out}/${width}-export.json`;await d.saveAs(path);ok(width+' JSON download works',JSON.parse(fs.readFileSync(path)).state.level===100);await p.reload();ok(width+' main save survives reload outside developer realm',(await p.locator('.hero button[data-action="fight"]').innerText()).includes('Lv.2'));await check('25-reloaded-main');
++const download=p.waitForEvent('download');await tap('export');const d=await download;const path=`${out}/${width}-export.json`;await d.saveAs(path);ok(width+' JSON download works',JSON.parse(fs.readFileSync(path)).state.level===100);await reloadGame(p);ok(width+' main save survives reload outside developer realm',(await p.locator('.hero button[data-action="fight"]').innerText()).includes('Lv.2'));await check('25-reloaded-main');
+ await ctx.close();}
+-ok(engine+' no browser exceptions or console errors',errors.length===0);fs.writeFileSync(`${out}/results.json`,JSON.stringify({engine,browserVersion:browser.version(),profiles,pass:results.length,fail:0,results,screens,errors,realIPhoneTested:false,htmlSHA256:createHash('sha256').update(fs.readFileSync('irena-play.html')).digest('hex')},null,2));console.log(JSON.stringify({engine,pass:results.length,fail:0,screens:screens.length,errors}));}catch(e){fs.writeFileSync(`${out}/failure.json`,JSON.stringify({engine,pass:results.length,results,screens,errors,error:e.stack},null,2));throw e;}finally{await browser.close();}
++ok(engine+' no browser exceptions or console errors',errors.length===0);fs.writeFileSync(`${out}/results.json`,JSON.stringify({engine,browserVersion:browser.version(),profiles,pass:results.length,fail:0,results,screens,errors,realIPhoneTested:false,htmlSHA256:testedHTMLSHA256()},null,2));console.log(JSON.stringify({engine,pass:results.length,fail:0,screens:screens.length,errors}));}catch(e){fs.writeFileSync(`${out}/failure.json`,JSON.stringify({engine,pass:results.length,results,screens,errors,error:e.stack},null,2));throw e;}finally{await browser.close();}
+--- a/tools/lab-retry-check.mjs
++++ b/tools/lab-retry-check.mjs
+@@ -1,5 +1,6 @@
++import {combatReady,actionClick,skipOrFinishCinema,openGame,reloadGame,testedHTMLSHA256} from './browser-actions.mjs';
+ import fs from 'node:fs';
+ import assert from 'node:assert/strict';
+ let chromium;try{({chromium}=await import('playwright'));}catch{({chromium}=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs'));}
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+-try{const page=await browser.newPage({viewport:{width:390,height:844}});const click=async(a,id)=>page.locator(`[data-action="${a}"]${id?`[data-id="${id}"]`:''}`).filter({visible:true}).first().click();await page.goto('http://127.0.0.1:4173/irena-play.html');await click('begin');await click('nav','lab');await page.locator('#labatk').fill('2');await page.locator('#labhp').fill('2');const save=await page.evaluate(()=>localStorage.getItem('irena-reborn-v3'));await click('labstart');const stats=await page.locator('.battle-aside .statgrid').innerText();const hp=await page.locator('.fighter .hpnum').first().innerText();await click('askRetreat');await click('retreat');await click('retry');assert.equal(await page.locator('.fighter .hpnum').first().innerText(),hp);assert.equal(await page.locator('.battle-aside .statgrid').innerText(),stats);assert.equal(await page.evaluate(()=>localStorage.getItem('irena-reborn-v3')),save);fs.writeFileSync('reports/ui-review/lab-retry-result.json',JSON.stringify({pass:3,fail:0,hp,stats,mainSaveUnchanged:true},null,2));console.log('Lab retry: 3/3 assertions passed');}finally{await browser.close();}
++try{const page=await browser.newPage({viewport:{width:390,height:844}});const click=async(a,id)=>actionClick(page,a,id);await openGame(page,process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html');await click('begin');await click('nav','lab');await page.locator('#labatk').fill('2');await page.locator('#labhp').fill('2');const save=await page.evaluate(()=>localStorage.getItem('irena-reborn-v3'));await click('labstart');const stats=await page.locator('.battle-aside .statgrid').innerText();const hp=await page.locator('.fighter .hpnum').first().innerText();await click('askRetreat');await click('retreat');await click('retry');assert.equal(await page.locator('.fighter .hpnum').first().innerText(),hp);assert.equal(await page.locator('.battle-aside .statgrid').innerText(),stats);assert.equal(await page.evaluate(()=>localStorage.getItem('irena-reborn-v3')),save);fs.writeFileSync('reports/ui-review/lab-retry-result.json',JSON.stringify({pass:3,fail:0,hp,stats,mainSaveUnchanged:true,htmlSHA256:testedHTMLSHA256()},null,2));console.log('Lab retry: 3/3 assertions passed');}finally{await browser.close();}
+--- a/tools/package.py
++++ b/tools/package.py
+@@ -13,13 +13,14 @@
+ with ZipFile(out/'irena-source.zip','w',ZIP_DEFLATED) as z:
+     for p in sorted(root.rglob('*')):
+         rel=p.relative_to(root)
+-        review_image=(len(rel.parts)>2 and rel.parts[:2]==('reports','ui-review') and rel.parts[2] in {'before','after','iphone-chromium','iphone-webkit'} and p.suffix.lower() in {'.png','.jpg','.jpeg'})
++        review_image=(rel.parts[0]=='reports' and p.suffix.lower() in {'.png','.jpg','.jpeg'})
+         if p.is_file() and not review_image and not any(x in {'node_modules','.git','artifacts','__pycache__'} for x in rel.parts):
+             z.write(p,Path('irena-reborn')/rel)
+ # Full-size audit evidence is delivered separately to keep the editable project practical on phones.
+ with ZipFile(out/'irena-review.zip','w',ZIP_DEFLATED) as z:
+-    for p in sorted((root/'reports/ui-review').rglob('*')):
+-        if p.is_file(): z.write(p,Path('irena-review')/p.relative_to(root/'reports/ui-review'))
++    for section in ['ui-review','quality-evolution']:
++        for p in sorted((root/'reports'/section).rglob('*')):
++            if p.is_file(): z.write(p,Path('irena-review')/section/p.relative_to(root/'reports'/section))
+ for name in ['irena-source.zip','irena-deploy.zip','irena-review.zip']:
+     with ZipFile(out/name) as z:
+         invalid=z.testzip()
+--- a/tools/quality-review.mjs
++++ b/tools/quality-review.mjs
+@@ -1,3 +1,4 @@
++import {combatReady,actionClick,skipOrFinishCinema,openGame,reloadGame,testedHTMLSHA256} from './browser-actions.mjs';
+ import fs from 'node:fs';
+ import {createHash} from 'node:crypto';
+ let chromium;try{({chromium}=await import('playwright'));}catch{({chromium}=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs'));}
+@@ -7,16 +8,16 @@
+ const records=[],errors=[];
+ const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ let page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+-const click=async(action,id)=>page.locator(`[data-action="${action}"]${id!==undefined?`[data-id="${id}"]`:''}`).filter({visible:true}).first().click();
++const click=async(action,id)=>actionClick(page,action,id);
+ const nav=id=>click('nav',id);
+ async function shot(name){await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:`${out}/${name}.png`,fullPage:true});records.push({screen:name,...await page.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,buttons:document.querySelectorAll('button').length,disabled:document.querySelectorAll('button:disabled').length,images:[...document.images].map(x=>({src:x.currentSrc.startsWith('data:')?'embedded':x.getAttribute('src'),loaded:x.complete&&x.naturalWidth>0,fit:getComputedStyle(x).objectFit})),combat:[...document.querySelectorAll('[data-action="combat"]')].map(x=>({id:x.dataset.id,disabled:x.disabled,text:x.innerText,description:!!x.querySelector('small')}))}))});}
+ async function retire(){if(await page.locator('[data-action="askRetreat"]').count()){await click('askRetreat');await click('retreat');}if(await page.locator('[data-action="finish"]').count())await click('finish');}
+-await page.goto('http://127.0.0.1:4173/irena-play.html');await shot('00-title');await click('begin');await shot('01-home');await nav('battle');await shot('02-battle-lobby');await click('fight','selected');await shot('03-normal-battle');await click('combat','slash');await shot('04-normal-action');await retire();
++await openGame(page,process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html');await shot('00-title');await click('begin');await shot('01-home');await nav('battle');await shot('02-battle-lobby');await click('fight','selected');await shot('03-normal-battle');await click('combat','slash');await shot('04-normal-action');await retire();
+ await nav('upgrade');for(const [tab,name] of [['powers','05-powers'],['marks','06-marks'],['resonance','07-resonance'],['training','08-training'],['summon','09-summon']]){await click('tab',tab);await shot(name);}
+ await nav('lab');await shot('10-lab');await click('labstart');await shot('11-lab-battle');await retire();await nav('dev');await shot('12-developer');await click('enabledev');await shot('13-all-unlocked');
+ await nav('upgrade');await click('tab','marks');await click('equipMark','split');await click('equipMark','wind');await shot('14-equipment');await click('tab','resonance');await shot('15-resonance-unlocked');await click('tab','summon');await click('summon','10');await shot('16-summon-result');await click('close');
+-for(const [mode,name] of [['raid','17-raid'],['god','18-gauntlet'],['ex','19-ex'],['stella','20-stella'],['final','21-final-zero']]){await nav('home');await click('fight',mode);await shot(name);if(mode==='final'){await click('combat','grasp');await click('combat','fallen');await click('combat','fallen');await shot('22-final-fallen-stage1');}await retire();}
++for(const [mode,name] of [['raid','17-raid'],['god','18-gauntlet'],['ex','19-ex'],['stella','20-stella'],['final','21-final-zero']]){await nav('home');await click('fight',mode);await shot(name);if(mode==='final'){await click('combat','fallen');await click('combat','grasp');await click('combat','fallen');await shot('22-final-fallen-stage1');}await retire();}
+ await nav('awakening');await shot('23-awakening');await click('awaken');await page.locator('#cinema.active').waitFor({state:'hidden'});await shot('24-awakened');await click('movie');await page.locator('#cinema.active').waitFor({state:'hidden'});
+-await nav('home');await nav('archive');await shot('25-achievements');await nav('home');const desktop=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',storageState:await context.storageState()});page=await desktop.newPage();await page.goto('http://127.0.0.1:4173/irena-play.html');await shot('26-home-desktop');
+-fs.writeFileSync(`${out}/audit.json`,JSON.stringify({phase,records,errors,htmlSHA256:createHash('sha256').update(fs.readFileSync('irena-play.html')).digest('hex')},null,2));
++await nav('home');await nav('archive');await shot('25-achievements');await nav('home');const desktop=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce',storageState:await context.storageState()});page=await desktop.newPage();await openGame(page,process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html');await shot('26-home-desktop');
++fs.writeFileSync(`${out}/audit.json`,JSON.stringify({phase,records,errors,htmlSHA256:testedHTMLSHA256()},null,2));
+ await browser.close();console.log(JSON.stringify({phase,screens:records.length,errors,overflow:records.filter(x=>x.scrollWidth>x.viewport).map(x=>x.screen)}));
+--- a/tools/ui-regression.mjs
++++ b/tools/ui-regression.mjs
+@@ -1,16 +1,18 @@
++import {combatReady,actionClick,skipOrFinishCinema,openGame,reloadGame,testedHTMLSHA256} from './browser-actions.mjs';
+ import fs from 'node:fs';
+ import assert from 'node:assert/strict';
+ import {createHash} from 'node:crypto';
+ import {fresh,developerState} from '../web/src/utils/progression.js';
+ import {startBattle,act,available} from '../web/src/utils/gameCore.js';
++import * as config from '../web/src/data/config.js';
+ import {FINAL_SKILLS} from '../web/src/data/config.js';
+ let chromium;try{({chromium}=await import('playwright'));}catch{({chromium}=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs'));}
+ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+ const results=[],errors=[],states=[];const out='reports/ui-review/after';fs.mkdirSync(out,{recursive:true});
+ const ok=(label,condition)=>{assert.ok(condition,label);results.push(label);};
+ const actionList=['slash','guard','divine','fallen',...Object.keys(FINAL_SKILLS),'genesis','ending'];
+-const click=async(p,action,id)=>p.locator(`[data-action="${action}"]${id!==undefined?`[data-id="${id}"]`:''}`).filter({visible:true}).first().click();
+-async function scene(width=390,source=false){const ctx=await browser.newContext({viewport:{width,height:844},isMobile:width<700,hasTouch:width<700,reducedMotion:'reduce'});await ctx.addInitScript(()=>{Math.random=()=>.99;});const p=await ctx.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:4173/'+(source?'index.html':'irena-play.html'));await click(p,'begin');return {p,ctx};}
++const click=async(p,action,id)=>actionClick(p,action,id,{waitForCombat:!['genesis','ending'].includes(id)});
++async function scene(width=390,source=false){const ctx=await browser.newContext({viewport:{width,height:844},isMobile:width<700,hasTouch:width<700,reducedMotion:'reduce'});await ctx.addInitScript(()=>{Math.random=()=>.99;});const p=await ctx.newPage();p.on('pageerror',e=>errors.push(e.message));await openGame(p,new URL(source?'index.html':'irena-play.html',process.env.GAME_URL||'http://127.0.0.1:4173/irena-play.html').href,{source});await click(p,'begin');return {p,ctx};}
+ async function labFinal(p){await click(p,'nav','lab');await p.locator('#labmode').selectOption('final');await p.locator('#labatk').fill('0.1');await p.locator('#labhp').fill('20');const save=await p.evaluate(()=>localStorage.getItem('irena-reborn-v3'));await click(p,'labstart');const b=startBattle(developerState(fresh()),{mode:'final',floor:100,test:true});b.base.atk*=.1;b.base.hp*=20;b.hp=b.base.hp;return {b,save};}
+ async function matchCommands(p,b,label){const expected=(b.statuses.stun?['wait']:actionList).filter(x=>!available(b,x)).sort();const shown=await p.locator('[data-action="combat"]').evaluateAll(els=>els.map(x=>({id:x.dataset.id,disabled:x.disabled,description:!!x.querySelector('small'),title:x.getAttribute('title'),height:x.getBoundingClientRect().height})));assert.deepEqual(shown.map(x=>x.id).sort(),expected,label+' engine permission equivalence');results.push(label+' engine permission equivalence');ok(label+' no disabled or explanation',shown.every(x=>!x.disabled&&!x.description&&!x.title));ok(label+' touch targets',shown.every(x=>x.height>=44));states.push({label,gauge:b.balance,turn:b.turn,commands:shown.map(x=>x.id)});}
+ async function step(p,b,id,route='A'){await click(p,'combat',id);if(['genesis','ending'].includes(id)){const choices=await p.locator('#modal .route-choices button').allTextContents();ok(id+' has all3 named routes',choices.length===3);ok(id+' choices contain no explanations',choices.every(x=>!x.includes('倍')&&!x.includes('ターン')&&!x.includes('—')));const box=await p.locator('#modal').boundingBox();ok(id+' modal fits viewport',box.y>=0&&box.y+box.height<=844);await click(p,'route',id+':'+route);await p.locator('#cinema.active').waitFor({state:'hidden'});}else if(id==='annihilate')await p.locator('#cinema.active').waitFor({state:'hidden'});act(b,id,{route,rng:()=>.99});await matchCommands(p,b,id+':'+b.turn);const shownTurn=await p.locator('.heading .tag').innerText();ok(id+' resolves exactly one round',shownTurn.endsWith(' '+b.turn));}
+@@ -18,9 +20,18 @@
+  for(const width of [320,375,390,430,768,1440]){const {p,ctx}=await scene(width);ok(width+' viewport fits',await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));ok(width+' key visual decoded',await p.locator('.hero-art.key-art').evaluate(x=>x.complete&&x.naturalWidth===944));const labels=await p.locator('.mobile-nav button').allTextContents();assert.deepEqual(labels.map(x=>x.trim()),['ホーム','強化','ガチャ','戦闘','レイド']);results.push(width+' reference navigation');if(width===390)await p.screenshot({path:out+'/home-mobile-viewport.png'});if(width<700){const nextBox=await p.locator('.next-step-button').boundingBox(),challengeBox=await p.locator('.challenge-button').boundingBox(),navBox=await p.locator('.mobile-nav').boundingBox();ok(width+' challenge CTA visible above fixed nav',challengeBox.y>=0&&challengeBox.y+challengeBox.height<=navBox.y);ok(width+' growth CTA visible on first screen',nextBox.y>=0&&nextBox.y+nextBox.height<=navBox.y);ok(width+' bottom nav touch targets',await p.locator('.mobile-nav button').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().height>=44)));await click(p,'nav','raid');ok(width+' locked raid stays gated',await p.locator('[data-action="fight"][data-id="raid"]').isDisabled());await click(p,'openupgrade','summon');ok(width+' gacha opens summon',await p.locator('[data-action="summon"]').count()===2);await click(p,'nav','home');await click(p,'nav','lab');await click(p,'labstart');await click(p,'askRetreat');await click(p,'retreat');await click(p,'finish');await click(p,'nav','dev');ok(width+' developer remains accessible',await p.locator('[data-action="enabledev"]').isVisible());}if(width>=768){const bounds=await p.evaluate(()=>({side:document.querySelector('.sidebar').getBoundingClientRect().right,hero:document.querySelector('.hero').getBoundingClientRect().left,header:document.querySelector('.topbar').getBoundingClientRect().left}));ok(width+' desktop sidebar does not overlap content',bounds.hero>=bounds.side&&bounds.header>=bounds.side);await p.screenshot({path:out+'/desktop-'+width+'.png',fullPage:true});}await ctx.close();}
+  for(const side of [1,-1]){for(const route of ['A','B','C']){const {p,ctx}=await scene();const {b,save}=await labFinal(p);await matchCommands(p,b,'initial:'+side+route);const stance=side===1?'divine':'fallen';for(let i=0;i<7;i++)await step(p,b,stance);ok('opposite side hidden',await p.locator(`[data-action="combat"][data-id="${side===1?'ending':'genesis'}"]`).count()===0);if(side===-1){const icons=await p.locator('.final-commands .skill-art').evaluateAll(xs=>xs.map(x=>({loaded:x.complete&&x.naturalWidth===384,fit:getComputedStyle(x).objectFit})));ok('all4 supplied fallen images loaded',icons.length===4&&icons.every(x=>x.loaded&&x.fit==='contain'));if(route==='A'){await p.screenshot({path:out+'/final-fallen-100.png',fullPage:true});await p.locator('.final-commands').screenshot({path:out+'/fallen-icons.png'});}}
+  await step(p,b,side===1?'genesis':'ending',route);ok('main save unchanged by experiment and ultimate',save===await p.evaluate(()=>localStorage.getItem('irena-reborn-v3')));await ctx.close();}}
+- const {p,ctx}=await scene();const {b}=await labFinal(p);await step(p,b,'grasp');ok('CT hides grasp',await p.locator('[data-action="combat"][data-id="grasp"]').count()===0);await step(p,b,'divine');await step(p,b,'divine');await step(p,b,'godspeed');ok('CT hides godspeed',await p.locator('[data-action="combat"][data-id="godspeed"]').count()===0);await step(p,b,'fallen');ok('opposite side hidden while prior buff persists',await p.locator('[data-action="combat"][data-id="godspeed"]').count()===0&&b.buffs.some(x=>x.id==='godspeed'));await step(p,b,'transcend');ok('transcend suppresses all authority commands',await p.locator('.final-commands [data-action="combat"]').count()===4);await step(p,b,'guard');await step(p,b,'guard');ok('recoil leaves only wait',await p.locator('[data-action="combat"]').count()===1);await step(p,b,'wait');await step(p,b,'annihilate');ok('annihilation recoil leaves only wait',await p.locator('[data-action="combat"]').count()===1);await step(p,b,'wait');for(let i=0;i<4;i++)await step(p,b,'guard');ok('cooldown skill returns when usable',await p.locator('[data-action="combat"][data-id="annihilate"]').count()===1);await ctx.close();
++ const {p,ctx}=await scene();const {b}=await labFinal(p);await step(p,b,'fallen');await step(p,b,'grasp');ok('CT hides grasp',await p.locator('[data-action="combat"][data-id="grasp"]').count()===0);await step(p,b,'divine');await step(p,b,'divine');await step(p,b,'divine');await step(p,b,'godspeed');ok('CT hides godspeed',await p.locator('[data-action="combat"][data-id="godspeed"]').count()===0);await step(p,b,'fallen');ok('opposite side hidden while prior buff persists',await p.locator('[data-action="combat"][data-id="godspeed"]').count()===0&&b.buffs.some(x=>x.id==='godspeed'));await step(p,b,'transcend');ok('transcend suppresses all authority commands',await p.locator('.final-commands [data-action="combat"]').count()===4);await step(p,b,'guard');await step(p,b,'guard');ok('recoil leaves only wait',await p.locator('[data-action="combat"]').count()===1);await step(p,b,'wait');await step(p,b,'annihilate');ok('annihilation recoil leaves only wait',await p.locator('[data-action="combat"]').count()===1);await step(p,b,'wait');for(let i=0;i<4;i++)await step(p,b,'guard');ok('cooldown skill returns when usable',await p.locator('[data-action="combat"][data-id="annihilate"]').count()===1);await ctx.close();
+  const fallback=await scene(390,true);await fallback.p.route('**/assets/icons/fallen-skill-1.webp',route=>route.abort());await labFinal(fallback.p);await click(fallback.p,'combat','fallen');await click(fallback.p,'combat','fallen');const image=fallback.p.locator('[data-id="erosion"] .skill-art');await image.waitFor();await image.evaluate(x=>x.decode());ok('source image failure uses loaded fallback',await image.evaluate(x=>x.dataset.fallback==='1'&&x.complete&&x.naturalWidth>0));await fallback.ctx.close();
+- const baseFiles=['web/src/utils/gameCore.js','web/src/utils/progression.js','web/src/utils/storage.js','web/src/data/config.js','tests/core.test.js','tests/campaign.test.js'];
+- for(const file of baseFiles){const original=fs.readFileSync('/workspace/scratch/irena-source-verify/irena-reborn/'+file);ok(file+' unchanged',original.equals(fs.readFileSync(file)));}
+- ok('no unhandled JavaScript errors',errors.length===0);fs.writeFileSync('reports/ui-review/ui-regression-results.json',JSON.stringify({pass:results.length,fail:0,results,states,errors,htmlSHA256:createHash('sha256').update(fs.readFileSync('irena-play.html')).digest('hex')},null,2));console.log(JSON.stringify({pass:results.length,fail:0,errors}));
++ // The previous UI-only task required whole-file equality with an older workspace.
++ // This task authorizes two narrow engine changes; protect the current ZIP's other
++ // functions and every balance value using the portable authoritative fixture.
++ const baseline=JSON.parse(fs.readFileSync(new URL('./quality-baseline.json',import.meta.url)));
++ for(const [file,hash]of Object.entries(baseline.files))ok(file+' authoritative contents unchanged',createHash('sha256').update(fs.readFileSync(file)).digest('hex')===hash);
++ const core=fs.readFileSync('web/src/utils/gameCore.js','utf8');
++ const declarations=[...core.matchAll(/^(?:export )?function (\w+)\(/gm)];
++ const functions=Object.fromEntries(declarations.map((x,i)=>[x[1],core.slice(x.index,declarations[i+1]?.index??core.length).trim()]));
++ for(const [name,hash]of Object.entries(baseline.functions))ok(name+' protected battle logic unchanged',createHash('sha256').update(functions[name]||'').digest('hex')===hash);
++ const expected=structuredClone(baseline.config);expected.FINAL_SKILLS.grasp.side=-1;expected.FINAL_SKILLS.grasp.text='堕天側専用。'+expected.FINAL_SKILLS.grasp.text;
++ assert.deepEqual(JSON.parse(JSON.stringify(config)),expected,'authoritative balance tables preserved except authorized fallen-only grasp');results.push('authoritative balance tables preserved except authorized fallen-only grasp');
++ ok('no unhandled JavaScript errors',errors.length===0);fs.writeFileSync('reports/ui-review/ui-regression-results.json',JSON.stringify({pass:results.length,fail:0,results,states,errors,htmlSHA256:testedHTMLSHA256()},null,2));console.log(JSON.stringify({pass:results.length,fail:0,errors}));
+ }catch(e){fs.writeFileSync('reports/ui-review/ui-regression-failure.json',JSON.stringify({pass:results.length,results,states,errors,error:e.stack},null,2));throw e;}finally{await browser.close();}
+--- a/web/src/components/App.js
++++ b/web/src/components/App.js
+@@ -5,16 +5,17 @@
+ const ART='assets/irena-placeholder.svg';
+ // Lightweight display variants of the supplied originals; originals remain untouched in assets/.
+ const PORTRAITS={normal:'assets/runtime/irena-normal.webp',fallen:'assets/runtime/irena-final-fallen.webp',divine:'assets/runtime/irena-final-divine.webp',neutral:'assets/runtime/irena-final-neutral.webp',stella:'assets/runtime/stella-standing.webp'};
+-const SCENES={victory:'assets/runtime/irena-victory.webp',feather:'assets/runtime/hadan-cutin.webp',meteor:'assets/runtime/stella-cutin.webp',fallenCrest:'assets/runtime/crest-fallen.webp',divineCrest:'assets/runtime/crest-divine.webp'};
++const ENEMIES={normal:'assets/supplied-20261020/kaiser-normal.jpg',ex:'assets/supplied-20261020/kaiser-ex.jpg'};
++const SCENES={genesis:'assets/supplied-20261020/genesis-cutin.jpg',victory:'assets/runtime/irena-victory.webp',feather:'assets/runtime/hadan-cutin.webp',meteor:'assets/runtime/stella-cutin.webp',fallenCrest:'assets/runtime/crest-fallen.webp',divineCrest:'assets/runtime/crest-divine.webp'};
+ function battlePortrait(b){if(b.character==='stella')return PORTRAITS.stella;if(b.character==='final')return b.balance===0?PORTRAITS.neutral:b.balance>0?PORTRAITS.divine:PORTRAITS.fallen;return PORTRAITS.normal;}
+ const MEDIA={awakeningMovie:null,keyArt:'assets/irena-key-art.webp',fallenSkills:{erosion:'assets/icons/fallen-skill-1.webp',release:'assets/icons/fallen-skill-2.webp',sovereignty:'assets/icons/fallen-skill-3.webp',ending:'assets/icons/fallen-ultimate.webp'}}; // Supply an actual MP4 here; CSS sequence below is a substitute, not the recovered film.
+ const $=s=>document.querySelector(s),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),n=x=>Math.floor(x).toLocaleString('ja-JP');
+ const compact=x=>x>=1e8?(x/1e8).toFixed(2).replace(/\.?0+$/,'')+'億':x>=1e4?(x/1e4).toFixed(2).replace(/\.?0+$/,'')+'万':n(x);
+ const navs=[['home','⌂','ホーム'],['upgrade','✧','強化'],['battle','⚔','戦闘'],['lab','◈','実験場'],['dev','⚙','開発者']];
+-let s=fresh(),sandbox=null,battle=null,page='home',tab='powers',difficulty='NORMAL',selectedFloor=1,saveError='',saveBlocked=false,toastTimer,cinemaTimer,alignmentRevealTimer,combatAnimating=false,sound=false,audio=null,lastSummon=[];
++let s=fresh(),sandbox=null,battle=null,page='home',tab='powers',difficulty='NORMAL',selectedFloor=1,saveError='',saveBlocked=false,toastTimer,cinemaTimer,alignmentRevealTimer,combatAnimating=false,combatRecovering=false,combatReleaseTimer,sound=false,audio=null,lastSummon=[];
+ try{const loaded=load();if(loaded.error){saveError='既存セーブを読み込めません：'+loaded.error;saveBlocked=true;}else s=loaded.state;}catch(e){saveError='保存領域を利用できません。JSONバックアップをご利用ください。';}
+ const current=()=>sandbox||s;
+-function persist(){if(saveBlocked&&!sandbox)return;try{if(sandbox)localStorage.setItem('irena-reborn-lab-v4',JSON.stringify(sandbox));else save(s);saveError='';}catch(e){saveError='自動保存失敗。JSONを書き出してください。';toast(saveError);}}
++function persist(){if(saveBlocked&&!sandbox)return false;try{if(sandbox)localStorage.setItem('irena-reborn-lab-v4',JSON.stringify(sandbox));else save(s);saveError='';return true;}catch(e){saveError='自動保存失敗。JSONを書き出してください。';toast(saveError);return false;}}
+ function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),4200);}
+ function button(text,action,id='',cls='',disabled=false){return `<button class="${cls}" data-action="${action}" data-id="${id}" ${disabled?'disabled':''}>${text}</button>`;}
+ function modal(title,body,actions=''){const el=$('#modal');el.innerHTML=`<h2>${title}</h2>${body}<div class="row">${actions}${button('閉じる','close','','ghost')}</div>`;if(!el.open)el.showModal();}
+@@ -26,7 +27,7 @@
+ function statsHTML(p){return `<div class="statgrid">${[['hp','生命力'],['atk','攻撃力'],['def','防御力'],['spd','速度']].map(([k,v])=>`<div class="stat"><small>${v}</small><strong title="${n(p[k])}">${compact(p[k])}</strong></div>`).join('')}</div>`;}
+ function heading(title,sub,kicker){return `<div class="heading"><div><div class="tag">${kicker}</div><h1>${title}</h1><p>${sub}</p></div><span class="pill"><i class="pip"></i>${sandbox?'TEST REALM':'THE FALLEN STAR'}</span></div>`;}
+ function titleScreen(){return `<section class="title-screen"><img class="title-art" src="${MEDIA.keyArt}" alt="ユーザー提供キービジュアル"><div class="title-copy"><div class="tag">THE FALLEN STAR</div><h1>いれーな</h1><div class="reborn">REBORN</div><p>神威と堕天、その境界に立つ者。<br>これは、失われた力を取り戻す物語。</p>${button(s.started?'旅を続ける':'再誕の物語を始める','begin','','primary')}<div class="row" style="justify-content:center">${button('JSONから復元','import','','ghost')}</div><small>ブラウザに自動保存 / JSONバックアップ対応<br>いれーな REBORN · 失われた力を取り戻す物語</small>${saveError?`<p class="saved-error">${esc(saveError)}</p>`:''}</div></section>`;}
+-function render(){const a=current();if(!a.started){$('#app').innerHTML=titleScreen();return;}
++function render(){syncCombatBusy();const a=current();if(!a.started){$('#app').innerHTML=titleScreen();return;}
+  const navIcons={home:'home',upgrade:'power',battle:'swords',lab:'flask',dev:'gear'};
+  const mobileNav=[['home','home','ホーム','nav','home'],['upgrade','power','強化','nav','upgrade'],['summon','star','ガチャ','openupgrade','summon'],['battle','swords','戦闘','nav','battle'],['raid','skull','レイド','nav','raid']];
+  $('#app').innerHTML=`<aside class="sidebar"><div class="logo"><div class="crest">${uiIcon('crown',36)}</div><strong>いれーな</strong><small>R E B O R N</small></div><div class="tag" style="margin:0 12px 16px">SANCTUARY</div>${navs.map(([id,icon,title])=>`<button class="navbtn ${page===id?'active':''}" data-action="nav" data-id="${id}"><span>${uiIcon(navIcons[id],22)}</span><span>${title}</span></button>`).join('')}<div class="sidefoot"><div class="tag">THE FALLEN STAR</div><p>失われた力は、<br>まだこの翼の中に。</p>${button('資料・操作説明','about','','ghost small')}</div></aside><div class="shell">${sandbox?`<div class="test-banner">試験用セーブで操作中 ${button('本編へ戻る','exitdev')}</div>`:''}<header class="topbar"><div class="arena-brand"><span class="brand-icon">${uiIcon('swords',26)}</span><div><strong>バトルアリーナデュエル</strong><small>TACTICAL 1 VS 1 · TURN-BASED</small></div></div><div class="challenge-level"><i class="pip"></i>挑戦 Lv. <b>${a.floor}</b></div><div class="resources"><span class="resource gold">✦<b title="${n(a.p)}">${compact(a.p)}</b><small>P</small></span><span class="resource">◇<b title="${n(a.resShards)}">${compact(a.resShards)}</b><small>共鳴片</small></span><span class="resource">♜<b>${a.level}</b><small>Lv.</small></span></div><div class="header-tools"><div class="save-state ${saveError?'saved-error':''}">${saveError?'保存要確認':'● '+(sandbox?'試験データ':'AUTO SAVE')}</div>${button(sound?'音 ON':'音 OFF','sound','','soundtoggle ghost')}</div></header><main class="content ${page==='home'?'home-page':''} ${page==='battle'&&battle?'combat-page':''}">${saveError?`<div class="notice saved-error">${esc(saveError)} ${button('JSON書き出し','export')}</div>`:''}${page==='home'?home(a):page==='upgrade'?upgrade(a):page==='battle'?battleView(a):page==='raid'?raidView(a):page==='archive'?archive(a):page==='lab'?lab(a):page==='awakening'?awakeningView(a):dev(a)}<footer class="utility-nav" aria-label="補助メニュー">${button(uiIcon('flask',16)+'実験場','nav','lab','ghost')}${button(uiIcon('gear',16)+'開発者','nav','dev','ghost')}${button(uiIcon('book',16)+'ガイド','about','','ghost')}</footer></main></div><nav class="mobile-nav" aria-label="メインナビゲーション">${mobileNav.map(([id,icon,title,action,target])=>{const selected=id==='summon'?page==='upgrade'&&tab==='summon':id==='upgrade'?page==='upgrade'&&tab!=='summon':page===id;return `<button class="${selected?'active':''}" data-action="${action}" data-id="${target}" ${selected?'aria-current="page"':''}><span>${uiIcon(icon,25)}</span>${title}</button>`;}).join('')}</nav>`;
+@@ -49,31 +50,53 @@
+ function trainingView(a){return `<div class="grid"><section class="card stack"><h3>いれーな育成</h3>${[['level','基礎レベル',a.level,150,40+a.level*3,'HP＋42 / 攻撃＋13 / 防御＋5 / 速度＋2'],['talent','才能',a.talent,20,a.talent*30,`攻撃補正 ${Math.round((a.talent-1)*3.5)}% → ${Math.round(a.talent*3.5)}%`],['feather','黒翼・羽弾',a.skills.feather,10,a.skills.feather*35,`技倍率 ${(1.95*(1+(a.skills.feather-1)*.07)).toFixed(2)} → ${(1.95*(1+a.skills.feather*.07)).toFixed(2)}`],['destruction','破壊の権能',a.skills.destruction,10,a.skills.destruction*35,`技倍率 ${(2.4*(1+(a.skills.destruction-1)*.1)).toFixed(2)} → ${(2.4*(1+a.skills.destruction*.1)).toFixed(2)}`],['ultimate','超堕天撃',a.skills.ultimate,10,a.skills.ultimate*35,`技倍率 ${(5.4*(1+(a.skills.ultimate-1)*.08)).toFixed(2)} → ${(5.4*(1+a.skills.ultimate*.08)).toFixed(2)}`]].map(([id,title,lv,max,cost,text])=>`<div><div class="row between"><div>${title}<small> Lv.${lv}/${max}</small><div class="small">${lv<max?text:'最大強化済み'}</div></div>${button(lv>=max?'MAX':`${cost}Pで強化`,'train',id,'',lv>=max||a.p<cost)}</div></div>`).join('')}</section><div class="stack"><section class="card"><h3>通常ステータス調整</h3><p class="small">残り ${a.sp}P / 通常Lv.100初撃破で50P、一度だけ獲得。</p>${allocations(a,false)}</section><section class="card"><h3>最終決戦専用・独立150P</h3><p class="small">残り ${a.finalBuild.points}P / 通常いれーなに影響しません。</p>${allocations(a,true)}${button('専用配分をリセット','resetFinal','','ghost small')}</section></div></div>`;}
+ function allocations(a,final){return `<div class="statgrid">${[['hp','HP',final?80:35],['atk','攻撃',final?35:12],['def','防御',final?22:9],['spd','速度',final?6:3]].map(([id,label,value])=>`<div><span class="small">${label} ＋${value} / ${final?a.finalBuild[id]:a.stats[id]}P</span><div>${button('＋1P',final?'allocateFinal':'allocate',id,'ghost',final?a.finalBuild.points<=0:a.sp<=0)}</div></div>`).join('')}</div>`;}
+ function summonView(a){return `<div class="grid"><section class="card stack"><div class="tag">BLACK WING SUMMON</div><h2>黒翼に、星の記憶を。</h2><div class="emblem" style="width:100%;height:140px;font-size:90px;border:none;background:radial-gradient(ellipse,#55314966,transparent 65%)">✧</div><p class="small">未所持を優先：未所持N種類から各1/Nの等確率。全6種収集後は各1/6。各報酬で権能欠片8個、重複時は共鳴片＋5。（排出仕様は補完）</p><div class="row">${button('単発 25P','summon','1','primary',a.p<25)}${button('10連 250P','summon','10','primary',a.p<250)}</div><p class="small">通算 ${a.summons}回 / 図鑑 ${a.collection.length}/6</p></section><section class="card"><h3>召喚図鑑</h3><div class="stack" style="margin-top:16px">${SUMMONS.map((x,i)=>`<div class="equip"><div class="emblem">${['✧','◈','⚖','♜','♛','✺'][i]}</div><div><strong>${a.collection.includes(x)?x:'？？？'}</strong><small>${a.collection.includes(x)?'COLLECTED':'未収集'}</small></div></div>`).join('')}</div></section></div><div class="section-head"><h2>召喚履歴</h2><small>最新60件</small></div><section class="card"><div class="collection">${a.summonHistory.length?a.summonHistory.map(x=>`<span>${x.reward}${x.dupe?' / 共鳴片＋5':' / NEW'}</span>`).join(''):'まだ星の記憶はありません。'}</div></section>`;}
+-function enemyArt(){return `<svg class="sprite" viewBox="0 0 280 260" aria-label="カイザーの代替紋章" role="img"><defs><radialGradient id="eg"><stop stop-color="#803b6255"/><stop offset="1" stop-color="#120d1a00"/></radialGradient><linearGradient id="eb" x2="0" y2="1"><stop stop-color="#7c586d"/><stop offset="1" stop-color="#201728"/></linearGradient></defs><ellipse cx="140" cy="130" rx="125" ry="120" fill="url(#eg)"/><g stroke="#88674d" fill="none" opacity=".5"><circle cx="140" cy="120" r="83"/><circle cx="140" cy="120" r="100" stroke-dasharray="1 9"/></g><path d="m119 83-49-66 20 85-53-34 41 61-56 32 73 7-25 62 58-35 13 39 18-39 58 35-25-62 73-7-56-32 41-61-53 34 20-85-49 66Z" fill="#251e30" stroke="#8c6877"/><path d="m93 91 47-29 47 29 8 58-55 47-55-47Z" fill="url(#eb)" stroke="#b68f6d"/><path d="m93 102 47 20 47-20-15 37-32-9-32 9Z" fill="#15121c"/><path d="m107 114 27 10-24 3Zm66 0-27 10 24 3Z" fill="#ee8798"/><path d="m140 85-9 55 9 38 9-38Z" fill="#302433" stroke="#ac8079"/><path d="m110 150 23 4-7 19m44-23-23 4 7 19" stroke="#cca67a" fill="none"/><path d="m108 63 7-25 25 17 25-17 7 25-32-11Z" fill="#ac8359"/></svg>`;}
++function enemyArt(b){const src=ENEMIES[b.mode];if(src)return `<img class="sprite portrait enemy-portrait" src="${src}" alt="${b.mode==='ex'?'EXカイザー':'通常カイザー'}のユーザー提供立ち絵">`;return `<svg class="sprite" viewBox="0 0 280 260" aria-label="カイザーの代替紋章" role="img"><defs><radialGradient id="eg"><stop stop-color="#803b6255"/><stop offset="1" stop-color="#120d1a00"/></radialGradient><linearGradient id="eb" x2="0" y2="1"><stop stop-color="#7c586d"/><stop offset="1" stop-color="#201728"/></linearGradient></defs><ellipse cx="140" cy="130" rx="125" ry="120" fill="url(#eg)"/><g stroke="#88674d" fill="none" opacity=".5"><circle cx="140" cy="120" r="83"/><circle cx="140" cy="120" r="100" stroke-dasharray="1 9"/></g><path d="m119 83-49-66 20 85-53-34 41 61-56 32 73 7-25 62 58-35 13 39 18-39 58 35-25-62 73-7-56-32 41-61-53 34 20-85-49 66Z" fill="#251e30" stroke="#8c6877"/><path d="m93 91 47-29 47 29 8 58-55 47-55-47Z" fill="url(#eb)" stroke="#b68f6d"/><path d="m93 102 47 20 47-20-15 37-32-9-32 9Z" fill="#15121c"/><path d="m107 114 27 10-24 3Zm66 0-27 10 24 3Z" fill="#ee8798"/><path d="m140 85-9 55 9 38 9-38Z" fill="#302433" stroke="#ac8079"/><path d="m110 150 23 4-7 19m44-23-23 4 7 19" stroke="#cca67a" fill="none"/><path d="m108 63 7-25 25 17 25-17 7 25-32-11Z" fill="#ac8359"/></svg>`;}
+ function battleView(a){if(!battle)return `${heading('王への挑戦','一撃を研ぎ澄ませ、百の玉座を越えよ。','KAISER / CONQUEST')}<section class="card stack"><h2>通常カイザー</h2><div class="selectline"><label>挑戦Lv. <input id="floor" type="number" min="1" max="${a.floor}" value="${Math.min(selectedFloor,a.floor)}"></label><label>難易度 <select id="difficulty"><option ${difficulty==='NORMAL'?'selected':''}>NORMAL</option><option ${difficulty==='EXPERT'?'selected':''}>EXPERT</option></select></label>${button('戦闘開始 →','fight','selected','primary')}</div><p class="small">最高到達 Lv.${a.floor} / 初回突破で次階層と基礎レベルが進行。再戦でもPと欠片を獲得できます。EXPERTは敵HP1.3倍・攻撃1.2倍・速度1.1倍（補完）。</p>${a.flags.lv100&&!a.flags.stella?button('？？？？？','warp','','primary'):''}</section><div class="section-head"><h2>異界の戦場</h2></div><div class="grid triple home-modes">${modeCard('◈','深淵レイド','共鳴片と育成資源を獲得','raid',a.cleared.includes(50),'通常Lv.50撃破')}${modeCard('♛','EX カイザー','全基礎能力2倍の三形態','ex',a.flags.stella,'ステラ解放後')}${modeCard('✧','ステラ最終決戦','終焉のカイザー HP30,000','stella',a.flags.stella,'ステラ解放後')}${modeCard('✺','いれーな最終決戦','神化・堕天の選択','final',a.flags.final,'ステラ最終決戦クリア')}${modeCard('⬡','神域連戦','五柱の神を越える','god',a.flags.ex,'EXカイザー撃破')}</div>`;
+  const b=battle,p=playerStats(b),e=enemyStats(b);let skills=b.character==='irena'?[['slash','斬撃','通常攻撃 / ゲージ＋26','⚔'],['feather','黒翼・羽弾','1.95倍 / ゲージ＋39','✦'],...(b.marks.includes('split')?[['pierce','穿羽','羽弾1.3倍 / CT3','↟'],['volley','連羽','0.7倍 × 2 / CT2','⋈']]:[]),['power','破壊の権能','装備権能の力で攻撃 / CT3','◈'],['ultimate','超堕天撃','5.4倍 / ゲージ100%消費','✺'],['guard','防御','被ダメージ70%軽減 / ＋18','⬡']]:b.character==='stella'?[['slash','星の斬撃','ステラの通常攻撃','✧'],['immortal','不滅','発動ターン完全無敵 / CT4','◇'],['rebirth','再誕',`最大HP${[100,50,25][b.rebirths]||0}%回復 / 残り${3-b.rebirths}回`,'❀'],['meteor','天象支配',b.meteor?'使用済み':'隕石5,000 / 1戦闘1回','✺'],['guard','防御','被ダメージ70%軽減','⬡']]:[['slash','斬撃','専用いれーなの通常攻撃','⚔'],['guard','防御','被ダメージ70%軽減','⬡'],['divine','神化','＋15 / 攻撃せず1ターン使用','✧'],['fallen','堕天','−15 / 攻撃せず1ターン使用','♜'],...Object.entries(FINAL_SKILLS).map(([id,x])=>[id,x.name,x.text,x.side===-1?'♜':x.side===1?'✧':'◈']),['genesis','創世','＋100 / 神威・静寂・再臨','✺'],['ending','終焉','−100 / 崩壊・断絶・消滅','✺']];
+  if(b.statuses.stun)skills=[['wait','反動から復帰','このターンは行動できません','⌛']];
+  if(b.character==='final')skills=skills.filter(([id])=>!available(b,id));
+  const playerName=b.character==='stella'?'ステラ':b.character==='final'?'いれーな・最終決戦':'いれーな';
+- return `${heading('境界の戦い',`${b.test?'試験戦闘 / ':''}${b.mode==='normal'?'通常攻略':{ex:'EXカイザー',raid:'深淵レイド',stella:'ステラ最終決戦',final:'いれーな最終決戦',god:'神域連戦'}[b.mode]} / ${b.difficulty}`,'BATTLE / TURN '+b.turn)}<div class="battle-layout"><div><section class="battle-stage ${b.character==='final'?(b.balance===0?'stage-neutral':b.balance>0?'stage-divine':'stage-fallen'):b.character==='stella'?'stage-stella':''}"><div class="fighter fighter-player"><h3>${playerName}</h3><div class="portrait-frame"><img class="sprite portrait ${b.character==='irena'?'portrait-alpha':''}" src="${battlePortrait(b)}" alt="${playerName}の戦闘立ち絵"></div><div class="info"><div class="row between" style="gap:4px"><span>HP</span><span class="hpnum">${n(p.current)} / ${n(p.hp)}</span></div><div class="health player"><span style="width:${p.ratio*100}%"></span></div><small>${b.character==='irena'?`致死耐性 ${b.lives} / 不屈 ${b.markLife}`:b.character==='stella'?`再誕 残り${3-b.rebirths}回`:`${b.balance>=0?'神化':'堕天'} 段階 ${stage(b.balance)}`}</small></div></div><div class="fighter fighter-enemy"><h3>${b.enemy.name}</h3><div class="portrait-frame portrait-foe">${enemyArt()}</div><div class="info"><div class="row between" style="gap:4px"><span>HP</span><span class="hpnum">${n(b.enemy.hp)} / ${n(e.hp)}</span></div><div class="health"><span style="width:${Math.max(0,b.enemy.hp/e.hp*100)}%"></span></div><small>第${b.enemy.phase}形態 / 侵食 ${Math.round(b.erosion*100)}%</small></div></div></section>${b.character==='irena'?`<section class="card" style="padding:12px 18px;margin-top:12px"><div class="row between"><small>ULTIMATE CHARGE</small><span class="gold">${b.gauge}%</span></div><div class="gaugebar"><span style="width:${b.gauge}%"></span></div></section>`:b.character==='final'?`<section class="card" style="padding:12px 18px;margin-top:12px"><div class="row between"><small>堕天 −100</small><span class="gold">${b.balance>0?'+':''}${b.balance}</span><small>神化 ＋100</small></div><div class="balancebar"><i style="left:${(b.balance+100)/2}%"></i></div><div class="gauge-stages"><span class="${stage(b.balance)>=1?'reached':''}">I · 30</span><span class="${stage(b.balance)>=2?'reached':''}">II · 60</span><span class="${stage(b.balance)>=3?'reached':''}">III · 100</span></div></section>`:''}${b.turn%4===0&&b.mode!=='stella'&&!b.result?'<div class="battle-warning" role="status">⚠ 重撃の予兆：このターンの敵の攻撃が強化されます</div>':''}${b.result?resultView(a,b):`<div class="battle-controls ${b.character==='final'?'final-commands':''}">${skills.map(([id,title,desc,glyph])=>{const reason=available(b,id),clean=b.character==='final',art=clean?MEDIA.fallenSkills[id]:null;return `<button class="skill ${['ultimate','genesis','ending','annihilate'].includes(id)?'ultimate':''}" data-action="combat" data-id="${id}" ${reason?'disabled':''} aria-label="${esc(title)}" ${clean?'':`title="${esc(reason||desc)}"`}><span class="glyph ${art?'has-art':''}">${art?`<img class="skill-art" src="${art}" alt="" width="58" height="58">`:clean?uiIcon(({slash:'swords',guard:'shield',divine:'star',fallen:'crown',godspeed:'power',omnipotent:'crown',dominion:'star',annihilate:'gem',transcend:'shield',grasp:'target',genesis:'star',wait:'shield'})[id]||'gem',26):glyph}</span><span><strong>${title}${!clean&&b.cd[id]>0?'　CT '+b.cd[id]:''}</strong>${clean?'':`<small>${reason||desc}</small>`}</span></button>`;}).join('')}</div>`}</div><aside class="battle-aside stack"><section class="card"><h3>戦況と権能</h3>${statsHTML(p)}<div class="small">敵：攻 ${n(e.atk)} / 防 ${n(e.def)} / 速 ${n(e.spd)}</div>${b.enemy.phase===3&&['ex','final'].includes(b.mode)?`<div class="notice" style="margin:14px 0 0">終末判定まで ${Math.max(0,9-b.phaseTurns)}ターン<br>通常行動の停止では防げません。</div>`:''}<div class="statuslist">${b.powers.map(id=>`<span class="pill">${name(id)}${['judge','judgewing','kingjudge','fallenjudge','abyssjudge'].includes(id)?' '+(b.stacks[id]||0)+'/2':''}</span>`).join('')}${b.buffs.map(x=>`<span class="pill gold">${FINAL_SKILLS[x.id]?.name||{divineMight:'神威',godlow:'堕天の神',grasp:'理外掌握'}[x.id]||x.id} ${x.remaining>900?'∞':x.remaining+'T'}</span>`).join('')}${Object.entries(b.statuses).map(([k,v])=>`<span class="pill">${{stun:'行動不能',seal:'封印',invulnerable:'無敵',pressure:'重圧',slow:'速度低下',fragile:'防御半減'}[k]||k} ${v}T</span>`).join('')}${b.ignoreDefense?`<span class="pill">崩壊 ${b.ignoreDefense}T</span>`:''}${b.noBuff?`<span class="pill">断絶 ${b.noBuff}T</span>`:''}${b.noPressure?`<span class="pill">重圧無効 ${b.noPressure}T</span>`:''}</div></section><section class="card"><div class="row between" style="margin:0 0 12px"><h3>戦闘記録</h3><span class="tag">COMBAT LOG</span></div><div class="log" aria-live="polite">${[...b.log].reverse().map(x=>`<p>${esc(x)}</p>`).join('')}</div></section>${!b.result?button('撤退する','askRetreat','','ghost'):''}</aside></div>`;
++ return `${heading('境界の戦い',`${b.test?'試験戦闘 / ':''}${b.mode==='normal'?'通常攻略':{ex:'EXカイザー',raid:'深淵レイド',stella:'ステラ最終決戦',final:'いれーな最終決戦',god:'神域連戦'}[b.mode]} / ${b.difficulty}`,'BATTLE / TURN '+b.turn)}${!b.result?`<div class="combat-shortcuts" aria-label="戦闘画面の移動">${button('戦場へ','focusStage','','ghost')}${button('技を選ぶ ↓','focusCommands','','primary')}</div>`:''}<div class="battle-layout"><div><section class="battle-stage ${b.character==='final'?(b.balance===0?'stage-neutral':b.balance>0?'stage-divine':'stage-fallen'):b.character==='stella'?'stage-stella':''}"><div class="fighter fighter-player"><h3>${playerName}</h3><div class="portrait-frame"><img class="sprite portrait ${b.character==='irena'?'portrait-alpha':''}" src="${battlePortrait(b)}" alt="${playerName}の戦闘立ち絵"></div><div class="info"><div class="row between" style="gap:4px"><span>HP</span><span class="hpnum">${n(p.current)} / ${n(p.hp)}</span></div><div class="health player"><span style="width:${p.ratio*100}%"></span></div><small>${b.character==='irena'?`致死耐性 ${b.lives} / 不屈 ${b.markLife}`:b.character==='stella'?`再誕 残り${3-b.rebirths}回`:`${b.balance>=0?'神化':'堕天'} 段階 ${stage(b.balance)}`}</small></div></div><div class="fighter fighter-enemy"><h3>${b.enemy.name}</h3><div class="portrait-frame portrait-foe ${ENEMIES[b.mode]?'supplied-enemy':''}">${enemyArt(b)}</div><div class="info"><div class="row between" style="gap:4px"><span>HP</span><span class="hpnum">${n(b.enemy.hp)} / ${n(e.hp)}</span></div><div class="health"><span style="width:${Math.max(0,b.enemy.hp/e.hp*100)}%"></span></div><small>第${b.enemy.phase}形態 / 侵食 ${Math.round(b.erosion*100)}%</small></div></div></section>${b.character==='irena'?`<section class="card" style="padding:12px 18px;margin-top:12px"><div class="row between"><small>ULTIMATE CHARGE</small><span class="gold">${b.gauge}%</span></div><div class="gaugebar"><span style="width:${b.gauge}%"></span></div></section>`:b.character==='final'?`<section class="card" style="padding:12px 18px;margin-top:12px"><div class="row between"><small>堕天 −100</small><span class="gold">${b.balance>0?'+':''}${b.balance}</span><small>神化 ＋100</small></div><div class="balancebar"><i style="left:${(b.balance+100)/2}%"></i></div><div class="gauge-stages"><span class="${stage(b.balance)>=1?'reached':''}">I · 30</span><span class="${stage(b.balance)>=2?'reached':''}">II · 60</span><span class="${stage(b.balance)>=3?'reached':''}">III · 100</span></div></section>`:''}${b.turn%4===0&&b.mode!=='stella'&&!b.result?'<div class="battle-warning" role="status">⚠ 重撃の予兆：このターンの敵の攻撃が強化されます</div>':''}${b.result?resultView(a,b):`<div class="battle-controls ${b.character==='final'?'final-commands':''}">${skills.map(([id,title,desc,glyph])=>{const reason=available(b,id),clean=b.character==='final',art=clean?MEDIA.fallenSkills[id]:null;return `<button class="skill ${['ultimate','genesis','ending','annihilate'].includes(id)?'ultimate':''}" data-action="combat" data-id="${id}" ${reason?'disabled':''} aria-label="${esc(title)}" ${clean?'':`title="${esc(reason||desc)}"`}><span class="glyph ${art?'has-art':''}">${art?`<img class="skill-art" src="${art}" alt="" width="58" height="58">`:clean?uiIcon(({slash:'swords',guard:'shield',divine:'star',fallen:'crown',godspeed:'power',omnipotent:'crown',dominion:'star',annihilate:'gem',transcend:'shield',grasp:'target',genesis:'star',wait:'shield'})[id]||'gem',26):glyph}</span><span><strong>${title}${!clean&&b.cd[id]>0?'　CT '+b.cd[id]:''}</strong>${clean?'':`<small>${reason||desc}</small>`}</span></button>`;}).join('')}</div>`}</div><aside class="battle-aside stack"><section class="card"><h3>戦況と権能</h3>${statsHTML(p)}<div class="small">敵：攻 ${n(e.atk)} / 防 ${n(e.def)} / 速 ${n(e.spd)}</div>${!b.result&&b.enemy.phase===3&&['ex','final'].includes(b.mode)?`<div class="notice" style="margin:14px 0 0">終末判定まで ${Math.max(0,9-b.phaseTurns)}ターン<br>通常行動の停止では防げません。</div>`:''}<div class="statuslist">${b.powers.map(id=>`<span class="pill">${name(id)}${['judge','judgewing','kingjudge','fallenjudge','abyssjudge'].includes(id)?' '+(b.stacks[id]||0)+'/2':''}</span>`).join('')}${b.buffs.map(x=>`<span class="pill gold">${FINAL_SKILLS[x.id]?.name||{divineMight:'神威',godlow:'堕天の神',grasp:'理外掌握'}[x.id]||x.id} ${x.remaining>900?'∞':x.remaining+'T'}</span>`).join('')}${Object.entries(b.statuses).map(([k,v])=>`<span class="pill">${{stun:'行動不能',seal:'封印',invulnerable:'無敵',pressure:'重圧',slow:'速度低下',fragile:'防御半減'}[k]||k} ${v}T</span>`).join('')}${b.ignoreDefense?`<span class="pill">崩壊 ${b.ignoreDefense}T</span>`:''}${b.noBuff?`<span class="pill">断絶 ${b.noBuff}T</span>`:''}${b.noPressure?`<span class="pill">重圧無効 ${b.noPressure}T</span>`:''}</div></section><section class="card"><div class="row between" style="margin:0 0 12px"><h3>戦闘記録</h3><span class="tag">COMBAT LOG</span></div><div class="log" aria-live="polite">${[...b.log].reverse().map(x=>`<p>${esc(x)}</p>`).join('')}</div></section>${!b.result?button('撤退する','askRetreat','','ghost'):''}</aside></div>`;
+ }
+-function resultView(a,b){const victoryArt=b.result==='win'&&b.mode==='normal';return `<section class="result ${victoryArt?'result-illustrated':''}">${victoryArt?`<img class="result-art" src="${SCENES.victory}" alt="通常戦闘の勝利イラスト">`:''}<div class="result-content"><div class="tag">${b.test?'TEST RESULT':'BATTLE RESULT'}</div><h2>${b.result==='win'?'VICTORY':'DEFEAT'}</h2><p class="small">${b.test?'試験戦闘のため本編報酬・実績には反映しません。':b.result==='win'?`獲得 ${b.reward?.p||0}P / 各権能欠片＋${b.reward?.fragments||0}`:'育成を整え、技と装備を組み替えて再挑戦できます。'}${b.mode==='god'&&b.result==='lose'?'<br>今回の仮獲得素材と連戦進行を破棄しました。':''}</p><div class="row" style="justify-content:center">${button('聖域に戻る','finish','','ghost')}${button(b.result==='win'&&b.mode==='normal'&&b.floor<100?'次の階層へ':b.mode==='god'&&a.gauntlet?'次の神へ':'再挑戦','retry','','primary')}</div></div></section>`;}
++function resultView(a,b){
++ const victoryArt=b.result==='win'&&b.mode==='normal',r=b.reward||{},won=b.result==='win';
++ const unlockNames={fallen:'権能「堕天」',king:'権能「堕天王」',judge:'権能「断罪」',star:'天星覇権 Lv.5',resonance:'権能共鳴',raid:'深淵レイド',mystery:'？？？？？ — 境界への扉',god:'神域連戦',final:'最終決戦専用いれーな'};
++ const earned=!b.test&&won?`<div class="reward-grid" aria-label="今回の獲得報酬"><div><small>育成ポイント</small><strong data-reward="p">＋${n(r.p||0)}<em>P</em></strong>${r.bonusP?`<span data-reward="bonusP">初回報酬 ＋${n(r.bonusP)}P を含む</span>`:''}</div><div><small>各権能の欠片</small><strong data-reward="fragments">＋${n(r.fragments||0)}</strong></div><div><small>共鳴片</small><strong data-reward="resShards">＋${n(r.resShards||0)}</strong></div>${r.levels?`<div class="reward-growth"><small>基礎レベル</small><strong data-reward="levels">＋${n(r.levels)} Lv.</strong></div>`:''}${r.sp?`<div class="reward-growth"><small>ステータスポイント</small><strong data-reward="sp">＋${n(r.sp)}P</strong></div>`:''}</div>`:'';
++ const discoveries=!b.test?`${r.unlocks?.length?`<div class="result-discoveries"><small>新たに取り戻した力</small>${r.unlocks.map(id=>`<strong data-unlock="${id}">✧ ${unlockNames[id]||esc(id)}</strong>`).join('')}</div>`:''}${r.achievements?.length?`<div class="result-achievements"><small>実績達成 · ${r.achievements.length}件</small>${r.achievements.map(id=>`<span data-achievement="${id}">${esc(ACHIEVEMENTS.find(x=>x.id===id)?.name||id)}</span>`).join('')}${button('実績の報酬を受け取る →','nav','archive','ghost')}</div>`:''}`:'';
++ const nextMilestone=won&&b.mode==='normal'&&!b.test?[[5,'権能「堕天」'],[10,'権能「堕天王」'],[20,'権能「断罪」'],[50,'共鳴・深淵レイド'],[100,'境界への扉']].find(([floor])=>!a.cleared.includes(floor)):null;
++ return `<section class="result ${victoryArt?'result-illustrated':''}">${victoryArt?`<img class="result-art" src="${SCENES.victory}" alt="通常戦闘の勝利イラスト">`:''}<div class="result-content"><div class="tag">${b.test?'TEST RESULT':'BATTLE RESULT'}</div><h2>${won?'VICTORY':'DEFEAT'}</h2><p class="small">${b.test?'試験戦闘のため本編報酬・実績には反映しません。':won?'失われた力を、またひとつ取り戻した。':'育成を整え、技と装備を組み替えて再挑戦できます。'}${b.mode==='god'&&!won?'<br>今回の仮獲得素材と連戦進行を破棄しました。':''}</p>${earned}${discoveries}${nextMilestone?`<p class="result-next">次の節目：カイザー Lv.${nextMilestone[0]} 撃破で ${nextMilestone[1]}</p>`:''}${r.unlocks?.includes('mystery')?button('？？？？？ — 境界を越える','warp','','primary full'):''}<div class="row" style="justify-content:center">${button('聖域に戻る','finish','','ghost')}${button(won&&b.mode==='normal'&&b.floor<100?'次の階層へ':b.mode==='god'&&a.gauntlet?'次の神へ':'再挑戦','retry','','primary')}</div></div></section>`;
++}
+ function archive(a){return `${heading('戦いの記憶','全36実績で、天星覇権 Lv.5を取り戻す。','ARCHIVE / ACHIEVEMENTS')}<div class="notice">達成 ${a.achieved.length}/36 / 受取 ${a.claimed.length}件。各実績60Pは手動で1回受取。条件の原本は未回収のため、提供された復元一覧を採用しています。</div><div class="grid triple">${[['A','火力','与ダメージ1.05 / 1.09 / 1.12倍'],['B','技巧','特殊1.08 / 1.12 / 1.15倍、必殺最大1.12倍'],['C','均衡','HP1.05 / HP防1.07 / 全能力1.12倍＋被ダメ0.92倍']].map(([cat,title,text])=>{const rank=badgeRank(a,cat),count=ACHIEVEMENTS.filter(x=>x.cat===cat&&a.achieved.includes(x.id)).length;return `<section class="card"><div class="row between"><span class="badge">${{A:'⚔',B:'✧',C:'⬡'}[cat]}</span><span class="tag">${count} / 12</span></div><h3>${title}の徽章 ${['—','I','II','III'][rank]}</h3><p class="small">3 / 5 / 8個で自動進化。${text}</p><div class="row">${button(a.badge===cat?'装備解除':'装備する','badge',cat,'ghost',!rank)}</div></section>`;}).join('')}</div>${['A','B','C'].map(cat=>`<div class="section-head"><h2>${{A:'A — 火力',B:'B — 技巧',C:'C — 均衡'}[cat]}</h2><span class="tag">12 RECORDS</span></div><div class="grid">${ACHIEVEMENTS.filter(x=>x.cat===cat).map(x=>`<section class="card achievement ${a.achieved.includes(x.id)?'':'locked'}"><div class="emblem">${a.achieved.includes(x.id)?'✧':'◇'}</div><div><h3>${x.name}</h3><p>${x.detail}</p></div>${button(a.claimed.includes(x.id)?'受取済':a.achieved.includes(x.id)?'60P 受取':'未達成','claim',x.id,'',!a.achieved.includes(x.id)||a.claimed.includes(x.id))}</section>`).join('')}</div>`).join('')}`;}
+ function awakeningView(a){return `${heading('失われた神格','新たな力ではない。かつての自分を、取り戻す。','DIVINE / REAWAKENING')}<div class="grid"><section class="card"><div class="tag">STAGE ${a.awakening} / 5</div><h2>${AWAKENINGS[a.awakening]}</h2><img class="awakening-art" src="${MEDIA.keyArt}" alt="ユーザー提供の共通キービジュアル（覚醒段階別ではありません）"><div class="levelsteps">${Array.from({length:5},(_,i)=>`<i class="${i<a.awakening?'on':''}"></i>`).join('')}</div><p class="small">各段階で通常基礎能力＋18%（補完）。共通キービジュアルを表示しています。5段階の専用絵とMP4は未提供です。</p></section><div class="stack"><section class="card"><h3>神格を取り戻す</h3><p class="small">共通神素材 ${a.godMaterials} / 神域の勲章 ${a.medals}<br>固有素材：${GODS.map((x,i)=>x+' '+a.godUnique[i]).join(' / ')}</p><p>${a.awakening<5?`次：${AWAKENINGS[a.awakening+1]}<br><span class="small">共通素材 ${(a.awakening+1)*5} ＋ ${GODS[a.awakening]}の固有素材1</span>`:'神格は完全に再生された。'}</p><div class="row">${button('手動で覚醒する','awaken','','primary',a.awakening>=5||a.godMaterials<(a.awakening+1)*5||a.godUnique[a.awakening]<1)}</div></section><section class="card"><h3>神域連戦</h3><p class="small">EX撃破後に解放。固定5連戦・各戦全回復。素材は全突破まで仮獲得。敗北・撤退で今回の進行と素材を失います。</p>${a.gauntlet?`<p>第${a.gauntlet.index+1}戦 / 仮素材 ${a.gauntlet.materials}</p>`:''}<div class="row">${button(a.gauntlet?'連戦を続ける':'神域へ挑戦','fight','god','ghost',!a.flags.ex)}</div></section><section class="card"><h3>第5段階の演出基盤</h3><p class="small">専用MP4の再生に対応。現在は10秒のCSS代替演出を使用します。元の覚醒ムービーではありません。</p>${button('代替演出をプレビュー','movie','','ghost')}</section></div></div>`;}
+ function lab(a){return `${heading('境界の実験場','本編の保存データから独立した、戦闘検証空間。','EXPERIMENT / SANDBOX')}<div class="notice">ここで始めた戦闘はすべて試験扱いです。報酬、実績、通常の解放フラグを更新しません。</div><section class="card stack"><h2>戦闘パラメータ</h2><div class="selectline"><label>モード<select id="labmode"><option value="normal">通常いれーな</option><option value="ex">EXカイザー</option><option value="stella">ステラ</option><option value="final">最終決戦いれーな</option></select></label><label>基礎攻撃倍率 <input id="labatk" type="number" value="1" min="0.1" max="20" step=".1"></label><label>基礎HP倍率 <input id="labhp" type="number" value="1" min="0.1" max="20" step=".1"></label></div><p class="small">全育成状態の試験キャラクターを使用。倍率はこの戦闘だけに適用します。</p>${button('独立試験を開始','labstart','','primary')}</section><div class="section-head"><h2>計算仕様</h2></div><section class="card"><p class="small">基本ダメージ = max(1, 攻撃×技倍率 − 防御×(1−無視率)) × 最終補正 ＋ 現在HP追加。最低保証は最後に適用。低HP倍率は排他的。深淵は基礎値から毎ターン6%の線形減少、下限5%。<br>堕天によるHP倍率は内部の生命割合を維持するため、倍率切替だけでは回復しません。羽弾と断罪の乗算・追加は別枠です。</p></section>`;}
+ function dev(a){return `${heading('観測者の書架','全機能を検証するための、独立した試験用セーブ。','DEVELOPER / CONTROL')}<div class="notice">「全機能開放」は本編のコピーから試験データを作成します。テスト戦の勝利は実績・初回報酬を付与しません。本編へ戻ると元の進行をそのまま再開できます。天星覇権はここでも36実績条件を維持します。</div><section class="card"><h2>全機能開放</h2><p class="small">全階層、ステラ、EX、最終決戦、共鳴10種、刻印、育成・素材を開放。試験用セーブは独立キーに保存。</p><div class="row">${button(sandbox?'試験データを再作成':'全機能開放','enabledev','','primary')}${sandbox?button('本編へ戻る','exitdev','','ghost'):button('保存済み試験データを開く','resumedev','','ghost')}</div>${sandbox?`<div class="dev-buttons">${[['normal','通常Lv.100'],['ex','EXカイザー'],['stella','ステラ最終決戦'],['final','専用いれーな'],['god','神域連戦']].map(([id,title])=>button(title,'fight',id)).join('')}</div>`:''}</section><div class="section-head"><h2>セーブ管理</h2></div><section class="card"><div class="row">${button('JSONバックアップ','export','','ghost')}${button('JSONを読み込む','import','','ghost')}${button('タイトルへ','title','','ghost')}${button('本編を初期化','askReset','','danger')}</div><p class="footnote">保存キー：irena-reborn-v3 / 旧v1・v2キーも検索。未知の旧スキーマは推測して変換せず、エラーを表示します。</p></section>`;}
+ function tone(kind='hit'){if(!sound)return;try{audio ||= new (window.AudioContext||window.webkitAudioContext)();audio.resume();const osc=audio.createOscillator(),g=audio.createGain();osc.connect(g);g.connect(audio.destination);osc.type=kind==='ultimate'?'sawtooth':'sine';osc.frequency.setValueAtTime(kind==='ultimate'?330:620,audio.currentTime);osc.frequency.exponentialRampToValueAtTime(80,audio.currentTime+.18);g.gain.setValueAtTime(.05,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.22);osc.start();osc.stop(audio.currentTime+.25);}catch{sound=false;}}
+-function cinema(type,title,sub,done,duration=2400,art=null){const el=$('#cinema');let completed=false;const finish=()=>{if(completed)return;completed=true;clearTimeout(cinemaTimer);el.className='';el.innerHTML='';el.setAttribute('aria-hidden','true');done?.();};el.className='active '+(type==='cut'?'cut':'');el.setAttribute('aria-hidden','false');el.innerHTML=`${type==='cut'?`<img src="${art||MEDIA.keyArt}" alt="${esc(title)}の演出画像">`:'<div class="tunnel"></div><div class="tunnel"></div><div class="tunnel"></div>'}<div class="cinema-copy"><h2>${title}</h2><p>${sub}</p></div><button id="skipCinema">スキップ</button>`;$('#skipCinema').onclick=finish;cinemaTimer=setTimeout(finish,matchMedia('(prefers-reduced-motion: reduce)').matches?50:duration);}
++function cinema(type,title,sub,done,duration=2400,art=null){
++ if(combatAnimating)return;
++ const el=$('#cinema');let completed=false;
++ const finish=()=>{if(completed)return;completed=true;clearTimeout(cinemaTimer);el.className='';el.innerHTML='';el.setAttribute('aria-hidden','true');try{done?.();}finally{combatAnimating=false;syncCombatBusy();}};
++ combatAnimating=true;syncCombatBusy();
++ el.className='active '+(type==='cut'?'cut':'');el.setAttribute('aria-hidden','false');
++ el.innerHTML=`${type==='cut'?`<img src="${art||MEDIA.keyArt}" alt="${esc(title)}の演出画像">`:'<div class="tunnel"></div><div class="tunnel"></div><div class="tunnel"></div>'}<div class="cinema-copy"><h2>${title}</h2><p>${sub}</p></div><button id="skipCinema" type="button">スキップ</button>`;
++ $('#skipCinema').onclick=finish;$('#skipCinema').focus({preventScroll:true});
++ cinemaTimer=setTimeout(finish,matchMedia('(prefers-reduced-motion: reduce)').matches?50:duration);
++}
+ // The alignment pause delays the actual turn (including enemy response) by 200 ms.
+ // Skip commits once immediately. None of these animations change combat calculations.
++function syncCombatBusy(){
++ const busy=combatAnimating||(typeof combatRecovering!=='undefined'&&combatRecovering);
++ if(document.documentElement?.dataset)document.documentElement.dataset.combatBusy=String(busy);
++ const app=$('#app');if(app)app.inert=busy;
++ const controls=$('.battle-controls');controls?.setAttribute?.('aria-busy',String(busy));
++}
+ function alignmentShift(id){
+  const reason=available(battle,id);if(reason)throw Error(reason);if(combatAnimating)return;
+  const fallen=id==='fallen',el=$('#cinema'),title=fallen?'堕天':'神化';let committed=false,finished=false;
+  const commit=()=>{if(committed)return;committed=true;el.classList.add('revealed');doCombat(id);};
+- const finish=()=>{if(finished)return;finished=true;clearTimeout(alignmentRevealTimer);clearTimeout(cinemaTimer);try{commit();}finally{el.className='';el.innerHTML='';el.setAttribute('aria-hidden','true');combatAnimating=false;}};
+- combatAnimating=true;el.className='active alignment '+(fallen?'alignment-fallen':'alignment-divine');el.setAttribute('aria-hidden','false');
++ const finish=()=>{if(finished)return;finished=true;clearTimeout(alignmentRevealTimer);clearTimeout(cinemaTimer);try{commit();}finally{el.className='';el.innerHTML='';el.setAttribute('aria-hidden','true');combatAnimating=false;syncCombatBusy();}};
++ combatAnimating=true;syncCombatBusy();el.className='active alignment '+(fallen?'alignment-fallen':'alignment-divine');el.setAttribute('aria-hidden','false');
+  el.innerHTML=`<div class="alignment-tint"></div><img class="alignment-crest" src="${fallen?SCENES.fallenCrest:SCENES.divineCrest}" alt="${title}の紋章"><img class="alignment-portrait" src="${fallen?PORTRAITS.fallen:PORTRAITS.divine}" alt="${title}の立ち絵"><div class="alignment-title">${title}</div><button id="skipCinema" type="button">スキップ</button>`;
+- $('#skipCinema').onclick=finish;
++ $('#skipCinema').onclick=finish;$('#skipCinema').focus?.({preventScroll:true});
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  alignmentRevealTimer=setTimeout(commit,reduced?0:200);
+  cinemaTimer=setTimeout(finish,reduced?100:850);
+@@ -97,15 +120,29 @@
+  if(b.enemyDamage>0){numbers(player,'−'+n(b.enemyDamage),'damage-taken');recoil(player,'impact-player');}
+ }
+ function beginFight(mode,options={}){const a=current();if(battle&&!battle.result)throw Error('進行中の戦闘があります。先に戦闘画面から撤退してください。');if(mode==='god'&&!a.gauntlet)startGauntlet(a);const floor=options.floor??(mode==='normal'?a.floor:100);battle=startBattle(a,{mode,floor,difficulty:mode==='normal'?difficulty:'NORMAL',test:!!sandbox,...options});selectedFloor=floor;page='battle';persist();render();window.scrollTo(0,0);}
+-function doCombat(id,route='A'){const b=battle;if(!b||b.result)return;act(b,id,{route});b.lastAction=id;if(b.result){b.reward=settle(current(),b);if(!b.test&&b.result==='win'&&id==='ultimate'&&b.used.marks.includes('starfall')){current().records.starfinish=true;achievements(current());}if(!b.test||sandbox)persist();}tone(['ultimate','meteor','annihilate','genesis','ending'].includes(id)?'ultimate':'hit');render();if(b.events.some(x=>x.type==='hit')||b.lastDamage>0)showBladeStrike(id);showCombatFeedback(b);}
++function doCombat(id,route='A'){
++ const b=battle;if(!b||b.result)return;
++ combatRecovering=true;clearTimeout(combatReleaseTimer);syncCombatBusy();
++ try{
++  act(b,id,{route});b.lastAction=id;
++  if(b.result){b.reward=settle(current(),b);if(!b.test&&b.result==='win'&&id==='ultimate'&&b.used.marks.includes('starfall')){current().records.starfinish=true;achievements(current());}if(!b.test||sandbox)persist();}
++  tone(['ultimate','meteor','annihilate','genesis','ending'].includes(id)?'ultimate':'hit');render();
++  if(b.events.some(x=>x.type==='hit')||b.lastDamage>0)showBladeStrike(id);showCombatFeedback(b);
++ }finally{
++  syncCombatBusy();
++  combatReleaseTimer=setTimeout(()=>{combatRecovering=false;syncCombatBusy();},matchMedia('(prefers-reduced-motion: reduce)').matches?60:280);
++ }
++}
+ function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+-function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const data=validateSave(JSON.parse(await file.text()));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=null;page='home';persist();close();render();toast('JSONから復元しました');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
+-async function handle(action,id){if(combatAnimating)return;const a=current();switch(action){
++function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const data=validateSave(JSON.parse(await file.text()));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=null;page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
++async function handle(action,id){if(combatAnimating||combatRecovering)return;const a=current();switch(action){
+  case 'begin':if(saveBlocked){confirmDialog('読み込めない既存セーブがあります','新しい旅を始めると保存済みデータを上書きします。既存のデータを残す場合は閉じて、正しいJSONを読み込んでください。','newAfterError','');break;}a.started=true;persist();render();break;
+  case 'newAfterError':saveBlocked=false;s=fresh();s.started=true;persist();close();render();break;
+  case 'nav':if(id==='upgrade')tab='powers';page=id;render();window.scrollTo(0,0);break;
+  case 'openupgrade':page='upgrade';tab=id;render();window.scrollTo(0,0);break;
+  case 'tab':tab=id;render();break;
++ case 'focusCommands':$('.battle-controls')?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});break;
++ case 'focusStage':$('.battle-stage')?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});break;
+  case 'sound':sound=!sound;if(sound)tone();render();break;
+  case 'about':modal('いれーな REBORN',`<p>本作は提供仕様書を基準とする新規復元版です。元のHTML・JSON・画像はこの環境では取得できていません。</p><p>まず通常カイザーを倒して育成。Lv.50で共鳴とレイド、Lv.100後の「？？？？？」からステラを解放します。ステラ解放でEXに挑戦でき、ステラ最終決戦の勝利で専用いれーなが解放されます。</p><p>確定した権能倍率・専用技・実績36件は維持。敵の基礎値・経済・権能Lv成長・共鳴の未回収値・神域ボスは補完設計です。ホームのキービジュアルと堕天の技アイコンはユーザー提供画像です。未提供の立ち絵は代替SVGを使用しています。</p><p>自動保存に加え、定期的にJSONを書き出してください。戦闘中の一時状態は再起動でリセットされます。Safari実機は未確認です。音は任意の合成SEのみ。</p>`);break;
+  case 'close':close();break;
+@@ -125,7 +162,7 @@
+  case 'summon':lastSummon=summon(a,Number(id));persist();render();tone();modal('黒翼召喚 — 星の記憶',`<div class="collection">${lastSummon.map(x=>`<span>${x.reward} ${x.dupe?'共鳴片＋5':'NEW'} / 欠片＋8</span>`).join('')}</div>`);break;
+  case 'fight':{if(id==='selected'){const f=Number($('#floor').value);if(!Number.isInteger(f))throw Error('階層は整数で入力してください');difficulty=$('#difficulty').value;beginFight('normal',{floor:f});}else beginFight(id);break;}
+  case 'combat':if(['divine','fallen'].includes(id)){alignmentShift(id);}else if(['genesis','ending'].includes(id)){const reason=available(battle,id);if(reason)throw Error(reason);const routes=id==='genesis'?[['A','神威','攻防速3倍・2ターン'],['B','静寂','敵の通常行動を1回停止'],['C','再臨','すべてのCTをリセット']]:[['A','崩壊','防御無効化3ターン'],['B','断絶','敵強化解除・10ターン禁止'],['C','消滅','重圧解除・5ターン無効']];modal(id==='genesis'?'創世 — ルート選択':'終焉 — ルート選択',`<div class="stack route-choices">${routes.map(([r,title,desc])=>button(title,'route',id+':'+r,'ghost')).join('')}</div>`);}else if(['feather','ultimate','meteor','annihilate'].includes(id)){if(available(battle,id))throw Error(available(battle,id));const isFeather=id==='feather',isStella=id==='meteor';cinema('cut',isFeather?'羽弾':isStella?'天象支配':id==='ultimate'?'超堕天撃':'終極殲滅',isFeather?'黒翼の弾幕、解き放つ。':isStella?'星々よ、我が意志に従え。':'その一撃が、境界を砕く。',()=>doCombat(id),isFeather?1000:isStella?1200:750,isFeather?SCENES.feather:isStella?SCENES.meteor:null);}else doCombat(id);break;
+- case 'route':{const [skill,route]=id.split(':');close();cinema('cut',skill==='genesis'?'創世':'終焉','ULTIMATE AUTHORITY',()=>doCombat(skill,route),800,skill==='ending'?MEDIA.fallenSkills.ending:null);break;}
++ case 'route':{const [skill,route]=id.split(':');close();cinema('cut',skill==='genesis'?'創世':'終焉','ULTIMATE AUTHORITY',()=>doCombat(skill,route),800,skill==='ending'?MEDIA.fallenSkills.ending:SCENES.genesis);break;}
+  case 'askRetreat':confirmDialog('撤退しますか','この戦闘は敗北になります。神域連戦の場合、今回の進行と仮素材を失います。','retreat','');break;
+  case 'retreat':battle.result='lose';battle.reward=settle(a,battle);if(!battle.test||sandbox)persist();close();render();break;
+  case 'finish':battle=null;page='home';render();window.scrollTo(0,0);break;
+@@ -146,6 +183,6 @@
+ function playMovie(){if(MEDIA.awakeningMovie){modal('神格覚醒',`<video controls autoplay playsinline style="width:100%" src="${MEDIA.awakeningMovie}"></video>`);}else cinema('warp','再誕の神格','CSS代替演出 / 専用MP4は未提供',null,10000);}
+ document.addEventListener('click',event=>{const el=event.target.closest('[data-action]');if(!el||el.disabled)return;try{Promise.resolve(handle(el.dataset.action,el.dataset.id)).catch(e=>toast(e.message));}catch(e){toast(e.message);}});
+ // Decode runtime art once; failed images use the existing local substitute without a retry loop.
+-for(const src of [ART,MEDIA.keyArt,...Object.values(MEDIA.fallenSkills)]){const preload=new Image();preload.src=src;preload.decode?.().catch(()=>{});}
++for(const src of new Set([ART,MEDIA.keyArt,...Object.values(PORTRAITS),...Object.values(ENEMIES),...Object.values(SCENES),...Object.values(MEDIA.fallenSkills)])){const preload=new Image();preload.src=src;preload.decode?.().catch(()=>{});}
+ document.addEventListener('error',event=>{const img=event.target;if(img instanceof HTMLImageElement&&!img.dataset.fallback){img.dataset.fallback='1';img.src=ART;}},true);
+ render();
+--- a/web/src/components/game.css
++++ b/web/src/components/game.css
+@@ -112,3 +112,35 @@
+ @keyframes impact-glint{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+ @media(max-width:700px){.battle-stage .combat-number{top:37%;font-size:clamp(18px,5.2vw,30px)}.battle-warning{font-size:11px}}
+ @media(prefers-reduced-motion:reduce){.battle-stage .combat-number{animation:none;opacity:1}.battle-stage .impact-foe .portrait-frame,.battle-stage .impact-player .portrait-frame,.battle-stage .impact-foe .portrait-frame:after,.battle-stage .impact-player .portrait-frame:after{animation:none}}
++
++/* Keep large portraits; mobile players can jump directly to the commands or back. */
++.combat-shortcuts{display:none}
++.battle-stage .portrait-foe.supplied-enemy{background:#f1edf5;border:1px solid #d3b2ed77}
++.battle-stage .fighter .sprite.enemy-portrait{position:absolute;inset:0;min-width:0;min-height:0;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;mix-blend-mode:multiply}
++.battle-stage .portrait-foe.supplied-enemy::after{background:linear-gradient(to bottom,transparent 78%,#27163738)}
++.battle-stage,.battle-controls{scroll-margin-top:16px}
++.reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0;text-align:left}
++.reward-grid>div{padding:12px;border:1px solid #d2b78344;border-radius:12px;background:#101827cf;min-width:0}
++.reward-grid small{display:block;font-size:12px;color:#d7d0dd}
++.reward-grid strong{display:block;font:750 24px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;color:#ffe1a1;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
++.reward-grid em{font-style:normal;font-size:13px;margin-left:4px}
++.reward-grid span{display:block;font-size:12px;line-height:1.6;color:#f5d6a1}
++.reward-growth{border-color:#cabbe98c!important}
++.result-discoveries,.result-achievements{margin:14px 0;padding:13px;border:1px solid #bfa3df66;border-radius:12px;background:#201e37e0;display:flex;flex-wrap:wrap;gap:6px 12px;text-align:left}
++.result-discoveries small,.result-achievements small{width:100%;font-size:12px;color:#d7c4ef}
++.result-discoveries strong{font-size:14px;font-weight:650;color:#ffe0a2}
++.result-achievements span{font-size:13px;color:#f0e9f8}
++.result-achievements button{width:100%;text-align:left;margin-top:4px}
++.result-next{font-size:13px;margin:16px 0;color:#f0d6aa}
++@media(max-width:700px){
++ .combat-shortcuts{display:flex;position:absolute;top:15px;right:12px;gap:5px;z-index:6;border:1px solid #85725d;border-radius:14px;padding:4px;background:#101827f5;box-shadow:0 3px 16px #050a18b3}
++ .combat-shortcuts button{min-height:44px;font-size:11px;padding:8px 9px;border-radius:10px}
++ .combat-page{position:relative;padding-bottom:145px}
++ .combat-page .heading>div{max-width:calc(100% - 150px)}
++ .combat-page .heading>.pill{display:none}
++ .reward-grid{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
++ .reward-grid>div{padding:10px}
++ .reward-grid strong{font-size:22px}
++ .result .result-content>h2{font-size:32px}
++ .result-discoveries,.result-achievements{padding:11px}
++}
+--- a/web/src/data/config.js
++++ b/web/src/data/config.js
+@@ -46,5 +46,5 @@
+  sovereignty:{name:'堕天王権',side:-1,stage:3,ct:5,duration:2,mul:{atk:4.5,def:.65},text:'補完：攻4.5・防0.65倍 / 2T。終了時1T停止'},
+  annihilate:{name:'終極殲滅',ct:5,text:'防御無視・最低5000。次ターン停止・速度反動'},
+  transcend:{name:'絶界昇華',ct:4,duration:3,mul:{atk:3,def:3,spd:3},text:'全能力3倍 / 3T。権能禁止、終了後停止・防御半減'},
+- grasp:{name:'理外掌握',ct:8,text:'全回復・重圧解除・速度1000倍永続・敵1回停止。終極殲滅CTのみ解除。攻撃倍率を発動ターンで固定 / CT8（補完）'}
++ grasp:{name:'理外掌握',side:-1,ct:8,text:'堕天側専用。全回復・重圧解除・速度1000倍永続・敵1回停止。終極殲滅CTのみ解除。攻撃倍率を発動ターンで固定 / CT8（補完）'}
+ };
+--- a/web/src/utils/gameCore.js
++++ b/web/src/utils/gameCore.js
+@@ -75,7 +75,7 @@
+  if(action==='divine'||action==='fallen')return null;
+  if(action==='genesis'||action==='ending'){if(b.buffs.some(x=>x.id==='transcend'))return '絶界昇華中は権能を使用できません';if(b.balance!==(action==='genesis'?100:-100))return '対応ゲージ100が必要';if(route&&!['A','B','C'].includes(route))return 'ルートが不正です';return null;}
+  const skill=FINAL_SKILLS[action];if(!skill)return '使用できない技';if(b.buffs.some(x=>x.id==='transcend'))return '絶界昇華中は権能を使用できません';
+- if(skill.side&&(Math.sign(b.balance)!==skill.side||stage(b.balance)<skill.stage))return '対応する側の段階が不足';return null;
++ if(skill.side&&(Math.sign(b.balance)!==skill.side||stage(b.balance)<(skill.stage||0)))return '対応する側の段階が不足';return null;
+  }return '使用できません';}
+ export function attack(b,action,rng=Math.random){let p=playerStats(b),e=enemyStats(b);const special=['feather','pierce','volley','power'].includes(action),feather=['feather','pierce','volley'].includes(action),ultimate=action==='ultimate';let mult=1,final=1,ignore=0,extra=0;
+  if(feather){mult=1.95*(1+(b.build.skills.feather-1)*.07);if(action==='pierce')mult*=1.3;if(action==='volley')mult*=.7;if(b.powers.includes('wing'))final*=5;if(b.powers.some(x=>['fallenwing','kingwing','judgewing','abysswing'].includes(x)))final*=10;
+@@ -100,7 +100,7 @@
+  if(special)b.cd[action]=action==='pierce'?3:action==='volley'?2:action==='power'?3:2;
+ }
+ export function finalAction(b,action,route){if(action==='divine'||action==='fallen'){b.balance=clamp(b.balance+(action==='divine'?15:-15),-100,100);log(b,`${action==='divine'?'神化':'堕天'}：${b.balance>0?'+':''}${b.balance} / 段階${stage(b.balance)}`);return;}
+- const skill=FINAL_SKILLS[action];if(skill?.side){buff(b,action,skill.duration,skill.mul,{minimum:skill.minimum||0});b.cd[action]=skill.ct;if(action==='dominion')b.statuses={};if(action==='release')b.hp=Math.max(1,b.hp-b.base.hp*.12);log(b,skill.name+' 発動');return;}
++ const skill=FINAL_SKILLS[action];if(skill?.side&&skill.mul){buff(b,action,skill.duration,skill.mul,{minimum:skill.minimum||0});b.cd[action]=skill.ct;if(action==='dominion')b.statuses={};if(action==='release')b.hp=Math.max(1,b.hp-b.base.hp*.12);log(b,skill.name+' 発動');return;}
+  if(action==='transcend'){buff(b,action,3,skill.mul);b.cd[action]=4;log(b,'絶界昇華：三大権能を封鎖');return;}
+  if(action==='grasp'){b.hp=b.base.hp;delete b.statuses.pressure;buff(b,'grasp',Infinity,{spd:1000,atk:b.turn<=3?.6:Math.min(5,1+b.turn*.16)});b.enemyStop=Math.max(b.enemyStop,1);b.cd.annihilate=0;b.cd.grasp=FINAL_SKILLS.grasp.ct;log(b,'理外掌握：全回復・敵停止・発動時攻撃倍率固定');return;}
+  let min=action==='annihilate'?5000:2000,p=playerStats(b),e=enemyStats(b);const d=damage(p.atk,e.def,{mult:action==='annihilate'?5:3,ignore:action==='annihilate'||b.ignoreDefense?1:0,minimum:Math.max(min,...b.buffs.map(x=>x.minimum||1))});b.enemy.hp=Math.max(0,b.enemy.hp-d);b.lastDamage=d;log(b,`${action==='annihilate'?'終極殲滅':action==='genesis'?'創世':'終焉'} ${d.toLocaleString()} ダメージ`);
+@@ -151,8 +151,16 @@
+  if(b.result)log(b,b.result==='win'?'VICTORY — 再誕への一歩':'DEFEAT — 力を整え、再び');else b.turn++;
+  return b;
+ }
+-export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;if(b.test)return {test:true,p:0};
+- s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return {p:0};}
++export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
++ const empty={p:0,fragments:0,bonusP:0,sp:0,levels:0,resShards:0,achievements:[],unlocks:[]};if(b.test)return {test:true,...empty};
++ // Report actual changes without adding any fields to the persistent save format.
++ const before={p:s.p,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
++ const summary=(fragments=0,bonusP=0)=>{const unlocks=[];
++  for(const id of ['fallen','king','judge','star'])if(!before.powers[id]&&s.powers[id])unlocks.push(id);
++  if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance','raid');
++  if(!before.lv100&&s.flags.lv100)unlocks.push('mystery');if(!before.ex&&s.flags.ex)unlocks.push('god');if(!before.final&&s.flags.final)unlocks.push('final');
++  return {p:s.p-before.p,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
++ s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return summary();}
+  const reward=35+b.floor*5+(b.mode==='raid'?180:b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;s.counts.wins++;s.counts.streak++;
+  for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);
+  s.records.fast ||= b.turn<=5;s.records.low ||= b.used.low;s.records.expert ||= b.difficulty==='EXPERT';s.records.basic ||= b.character==='irena'&&b.used.special===0&&b.used.ultimate===0;s.records.endure ||= b.used.endure;s.records.nomark ||= b.marks.length===0;s.records.nopower ||= b.powers.length===0&&b.character==='irena';s.records.starfinish ||= b.used.marks.includes('starfall')&&b.lastAction==='ultimate'&&b.lastDamage>0;
+@@ -168,5 +176,5 @@
+  if(b.mode==='stella'){s.flags.stellaClear=true;s.flags.final=true;}
+  if(b.mode==='final')s.flags.finalClear=true;
+  if(b.mode==='god'&&s.gauntlet){const g=s.gauntlet;g.materials+=5;g.unique[g.index]++;if(g.index===4){s.godMaterials+=g.materials+5;g.unique.forEach((n,i)=>s.godUnique[i]+=n);s.medals++;s.gauntlet=null;}else g.index++;}
+- achievements(s);return {p:reward,fragments:4+Math.floor(b.floor/10)};
++ achievements(s);return summary(4+Math.floor(b.floor/10),s.p-before.p-reward);
+ }
+--- /dev/null
++++ b/tests/reward-summary.test.js
+@@ -0,0 +1,66 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {fresh,developerState} from '../web/src/utils/progression.js';
++import {startBattle,act,settle} from '../web/src/utils/gameCore.js';
++import {validateSave,exportSave} from '../web/src/utils/storage.js';
++import {ACHIEVEMENTS} from '../web/src/data/config.js';
++
++function victory(s,options={}){const b=startBattle(s,options);b.enemy.hp=1;b.base.spd=1e8;act(b,'slash',{rng:()=>.99});assert.equal(b.result,'win');return {battle:b,reward:settle(s,b)};}
++const empty={p:0,fragments:0,bonusP:0,sp:0,levels:0,resShards:0,achievements:[],unlocks:[]};
++
++test('first EX result includes the actual 100P bonus exactly once and keeps settlement idempotent',()=>{
++ const s=developerState(fresh());s.flags.ex=false;s.flags.exReward=false;const before=s.p;
++ const first=victory(s,{mode:'ex'});
++ assert.equal(first.reward.p,s.p-before);assert.equal(first.reward.p,1135);assert.equal(first.reward.bonusP,100);
++ assert.equal(first.reward.fragments,14);assert.equal(first.reward.resShards,3);assert.equal(first.reward.sp,0);assert.equal(first.reward.levels,0);
++ assert.deepEqual(first.reward.unlocks,['god']);assert.ok(first.reward.achievements.includes('C2'));
++ const snapshot=JSON.stringify(s);assert.equal(settle(s,first.battle),null);assert.equal(JSON.stringify(s),snapshot);
++ const prior=s.p,repeat=victory(s,{mode:'ex'}).reward;
++ assert.equal(repeat.p,s.p-prior);assert.equal(repeat.p,1035);assert.equal(repeat.bonusP,0);assert.deepEqual(repeat.unlocks,[]);assert.deepEqual(repeat.achievements,[]);
++});
++
++test('ordinary first clear reports its real level increase and only newly earned achievements',()=>{
++ const s=fresh(),before=s.p,keys=Object.keys(s).sort();
++ const first=victory(s).reward;
++ assert.equal(first.p,s.p-before);assert.equal(first.p,40);assert.equal(first.levels,1);assert.equal(first.fragments,4);assert.equal(first.resShards,3);
++ assert.ok(first.achievements.includes('A0'));assert.ok(first.achievements.includes('A3'));assert.equal(first.sp,0);assert.equal(first.bonusP,0);
++ assert.deepEqual(Object.keys(s).sort(),keys);assert.deepEqual(validateSave(JSON.parse(exportSave(s))),s);
++ const repeat=victory(s,{floor:1}).reward;assert.equal(repeat.levels,0);assert.deepEqual(repeat.achievements,[]);
++});
++
++test('Lv50 and Lv100 result unlocks follow actual first victories and report 50 status points once',()=>{
++ const s=fresh();s.floor=50;s.level=50;assert.equal(s.cleared.includes(50),false);
++ const fifty=victory(s).reward;assert.deepEqual(fifty.unlocks,['fallen','king','judge','resonance','raid']);assert.equal(fifty.levels,1);
++ assert.deepEqual(victory(s,{floor:50}).reward.unlocks,[]);
++ s.floor=100;s.level=100;const first=victory(s).reward;
++ assert.equal(first.sp,50);assert.equal(s.sp,50);assert.equal(first.levels,1);assert.deepEqual(first.unlocks,['mystery']);assert.equal(s.flags.stella,false);
++ const repeat=victory(s).reward;assert.equal(repeat.sp,0);assert.equal(s.sp,50);assert.equal(repeat.levels,0);assert.deepEqual(repeat.unlocks,[]);
++});
++
++test('Stella clear reports dedicated Irena only on its first unlock',()=>{
++ const s=developerState(fresh());s.flags.final=false;s.flags.stellaClear=false;
++ assert.deepEqual(victory(s,{mode:'stella'}).reward.unlocks,['final']);
++ assert.deepEqual(victory(s,{mode:'stella'}).reward.unlocks,[]);
++});
++
++test('36th achievement reports the star reward without claiming manual achievement points',()=>{
++ const s=developerState(fresh());s.achieved=ACHIEVEMENTS.slice(0,35).map(x=>x.id);s.records.endure=false;
++ const b=startBattle(s,{floor:1});b.used.endure=true;b.enemy.hp=1;b.base.spd=1e8;act(b,'slash',{rng:()=>.99});const before=s.p,reward=settle(s,b);
++ assert.equal(s.achieved.length,36);assert.equal(s.powers.star,5);assert.deepEqual(reward.achievements,['C11']);assert.deepEqual(reward.unlocks,['star']);
++ assert.equal(reward.p,s.p-before);assert.equal(reward.p,40);assert.deepEqual(s.claimed,[]);
++});
++
++test('test settlements report zero rewards and leave the entire main save untouched',()=>{
++ const s=fresh(),before=JSON.stringify(s),b=startBattle(developerState(s),{mode:'ex',test:true});b.result='win';
++ assert.deepEqual(settle(s,b),{test:true,...empty});assert.equal(JSON.stringify(s),before);assert.equal(settle(s,b),null);
++});
++
++test('defeat has no invented P, material, level, status-point or unlock rewards',()=>{
++ const s=fresh(),b=startBattle(s);b.result='lose';
++ assert.deepEqual(settle(s,b),empty);assert.equal(s.p,180);assert.equal(s.level,1);assert.equal(s.sp,0);assert.deepEqual(s.cleared,[]);
++});
++
++test('raid summary reports the real shared resonance fragment gain',()=>{
++ const s=developerState(fresh()),before=s.resShards,reward=victory(s,{mode:'raid'}).reward;
++ assert.equal(reward.resShards,25);assert.equal(s.resShards-before,reward.resShards);assert.equal(reward.p,715);assert.equal(reward.bonusP,0);
++});
+--- /dev/null
++++ b/tools/browser-actions.mjs
+@@ -0,0 +1,26 @@
++import {createHash} from 'node:crypto';
++const loadedBuildHashes=new Set();
++async function captureBuild(response){
++ if(!response)throw Error('Game document response missing');
++ loadedBuildHashes.add(createHash('sha256').update(await response.body()).digest('hex'));
++ if(loadedBuildHashes.size!==1)throw Error('Game build changed during browser validation; repeat on one stable artifact');
++}
++export async function openGame(page,url,{source=false}={}){const response=await page.goto(url);if(!source)await captureBuild(response);return response;}
++export async function reloadGame(page){const response=await page.reload();await captureBuild(response);return response;}
++export function testedHTMLSHA256(){if(loadedBuildHashes.size!==1)throw Error('No single tested game build');return [...loadedBuildHashes][0];}
++// Wait for observable UI readiness rather than guessing animation durations.
++export async function combatReady(page){
++ await page.waitForFunction(()=>!document.querySelector('#cinema.active')&&document.documentElement.dataset.combatBusy!=='true');
++}
++export async function actionClick(page,action,id,{touch=false,waitForCombat=true}={}){
++ await combatReady(page);
++ const target=page.locator(`[data-action="${action}"]${id!==undefined?`[data-id="${id}"]`:''}`).filter({visible:true}).first();
++ await target[touch?'tap':'click']();
++ if(action==='combat'&&waitForCombat)await combatReady(page);
++}
++export async function skipOrFinishCinema(page){
++ // Reduced motion can finish between the title assertion and the skip click.
++ // Resolve a visible skip synchronously; otherwise wait for the already-running completion.
++ await page.evaluate(()=>document.querySelector('#cinema.active #skipCinema')?.click());
++ await combatReady(page);
++}
+--- /dev/null
++++ b/tools/quality-baseline.json
+@@ -0,0 +1,628 @@
++{
++  "sourceZIP": "irena-REBORN-Codex-light.zip",
++  "sha256": "4f5723705eec13c67dc7eb02594fdca652d966c0bfd750aba83e97c0d286806d",
++  "config": {
++    "ACHIEVEMENTS": [
++      {
++        "id": "A0",
++        "cat": "A",
++        "name": "初勝利",
++        "detail": "初めて勝利"
++      },
++      {
++        "id": "A1",
++        "cat": "A",
++        "name": "常勝への一歩",
++        "detail": "通算10勝"
++      },
++      {
++        "id": "A2",
++        "cat": "A",
++        "name": "闘技場の常連",
++        "detail": "通算50勝"
++      },
++      {
++        "id": "A3",
++        "cat": "A",
++        "name": "瞬撃",
++        "detail": "5ターン以内に勝利"
++      },
++      {
++        "id": "A4",
++        "cat": "A",
++        "name": "羽弾の熟練者",
++        "detail": "特殊技25回"
++      },
++      {
++        "id": "A5",
++        "cat": "A",
++        "name": "必殺の求道者",
++        "detail": "必殺技10回"
++      },
++      {
++        "id": "A6",
++        "cat": "A",
++        "name": "最初の壁",
++        "detail": "通常Lv.10撃破"
++      },
++      {
++        "id": "A7",
++        "cat": "A",
++        "name": "強敵撃破",
++        "detail": "通常Lv.30撃破"
++      },
++      {
++        "id": "A8",
++        "cat": "A",
++        "name": "折り返し地点",
++        "detail": "通常Lv.50撃破"
++      },
++      {
++        "id": "A9",
++        "cat": "A",
++        "name": "極限への挑戦",
++        "detail": "通常Lv.70撃破"
++      },
++      {
++        "id": "A10",
++        "cat": "A",
++        "name": "王座目前",
++        "detail": "通常Lv.90撃破"
++      },
++      {
++        "id": "A11",
++        "cat": "A",
++        "name": "百戦錬磨",
++        "detail": "通常Lv.100撃破"
++      },
++      {
++        "id": "B0",
++        "cat": "B",
++        "name": "連勝街道",
++        "detail": "5連勝"
++      },
++      {
++        "id": "B1",
++        "cat": "B",
++        "name": "己の腕一本",
++        "detail": "権能未装備で勝利"
++      },
++      {
++        "id": "B2",
++        "cat": "B",
++        "name": "基本を極めし者",
++        "detail": "特殊・必殺を使わず勝利"
++      },
++      {
++        "id": "B3",
++        "cat": "B",
++        "name": "読み合いの極致",
++        "detail": "EXPERTで勝利"
++      },
++      {
++        "id": "B4",
++        "cat": "B",
++        "name": "権能の収集者",
++        "detail": "通常権能3種を解放"
++      },
++      {
++        "id": "B5",
++        "cat": "B",
++        "name": "五権能の使い手",
++        "detail": "通常権能5種を解放"
++      },
++      {
++        "id": "B6",
++        "cat": "B",
++        "name": "極限強化",
++        "detail": "通常権能1種Lv.5"
++      },
++      {
++        "id": "B7",
++        "cat": "B",
++        "name": "権能の完全掌握",
++        "detail": "通常権能5種Lv.5"
++      },
++      {
++        "id": "B8",
++        "cat": "B",
++        "name": "堕天の極致",
++        "detail": "才能Lv.20"
++      },
++      {
++        "id": "B9",
++        "cat": "B",
++        "name": "技術の到達点",
++        "detail": "羽弾・破壊ともLv.10"
++      },
++      {
++        "id": "B10",
++        "cat": "B",
++        "name": "星墜の一撃",
++        "detail": "星墜の必殺で勝利"
++      },
++      {
++        "id": "B11",
++        "cat": "B",
++        "name": "刻印を使いこなす者",
++        "detail": "刻印10種を実戦発動"
++      },
++      {
++        "id": "C0",
++        "cat": "C",
++        "name": "あと一歩の奇跡",
++        "detail": "HP10%以下から勝利"
++      },
++      {
++        "id": "C1",
++        "cat": "C",
++        "name": "飾らぬ勝利",
++        "detail": "刻印未装備で勝利"
++      },
++      {
++        "id": "C2",
++        "cat": "C",
++        "name": "終局を越えて",
++        "detail": "EXカイザー撃破"
++      },
++      {
++        "id": "C3",
++        "cat": "C",
++        "name": "星を越えた決戦",
++        "detail": "ステラ最終決戦クリア"
++      },
++      {
++        "id": "C4",
++        "cat": "C",
++        "name": "召喚の幕開け",
++        "detail": "召喚10回"
++      },
++      {
++        "id": "C5",
++        "cat": "C",
++        "name": "召喚研究家",
++        "detail": "召喚50回"
++      },
++      {
++        "id": "C6",
++        "cat": "C",
++        "name": "黒翼の収集家",
++        "detail": "召喚6種収集"
++      },
++      {
++        "id": "C7",
++        "cat": "C",
++        "name": "刻印の蒐集者",
++        "detail": "刻印5種収集"
++      },
++      {
++        "id": "C8",
++        "cat": "C",
++        "name": "十刻印の覇者",
++        "detail": "刻印10種収集"
++      },
++      {
++        "id": "C9",
++        "cat": "C",
++        "name": "三重刻印",
++        "detail": "刻印3枠装備"
++      },
++      {
++        "id": "C10",
++        "cat": "C",
++        "name": "深淵の踏破者",
++        "detail": "レイド10勝"
++      },
++      {
++        "id": "C11",
++        "cat": "C",
++        "name": "不屈の証",
++        "detail": "不屈発動後に勝利"
++      }
++    ],
++    "AWAKENINGS": [
++      "未覚醒",
++      "神性の微光",
++      "神翼の胎動",
++      "神威の顕現",
++      "神域の再臨（補完名）",
++      "再誕の神格（補完名）"
++    ],
++    "BALANCE": {
++      "provenance": "仕様書に基づく新規復元。敵・経済・未回収数値は補完設計。",
++      "base": {
++        "hp": 400,
++        "hpLevel": 42,
++        "atk": 47,
++        "atkLevel": 13,
++        "def": 18,
++        "defLevel": 5,
++        "spd": 22,
++        "spdLevel": 2
++      },
++      "gauge": {
++        "slash": 26,
++        "feather": 39,
++        "guard": 18
++      },
++      "skills": {
++        "feather": 1.95,
++        "ultimate": 5.4
++      },
++      "resCosts": [
++        40,
++        80,
++        120,
++        160
++      ],
++      "abyssStep": 0.06,
++      "abyssCap": 0.95,
++      "exLimit": 9,
++      "summonCost": 25,
++      "achievementReward": 60
++    },
++    "FINAL_SKILLS": {
++      "godspeed": {
++        "name": "神域の速度",
++        "side": 1,
++        "stage": 1,
++        "ct": 5,
++        "duration": 4,
++        "mul": {
++          "def": 1.5,
++          "spd": 999
++        },
++        "text": "防御1.5倍・速度999倍 / 4T"
++      },
++      "omnipotent": {
++        "name": "全能降臨",
++        "side": 1,
++        "stage": 2,
++        "ct": 5,
++        "duration": 4,
++        "mul": {
++          "atk": 2,
++          "def": 2,
++          "spd": 2
++        },
++        "text": "攻・防・速2倍 / 4T"
++      },
++      "dominion": {
++        "name": "万象支配",
++        "side": 1,
++        "stage": 3,
++        "ct": 5,
++        "duration": 2,
++        "mul": {
++          "atk": 4,
++          "def": 2,
++          "spd": 999
++        },
++        "minimum": 3000,
++        "text": "攻4・防2・速999倍 / 2T。最低3000・異常解除"
++      },
++      "erosion": {
++        "name": "堕天侵食",
++        "side": -1,
++        "stage": 1,
++        "ct": 4,
++        "duration": 3,
++        "mul": {
++          "atk": 2.2,
++          "def": 0.85
++        },
++        "text": "補完：攻2.2・防0.85倍 / 3T"
++      },
++      "release": {
++        "name": "深淵解放",
++        "side": -1,
++        "stage": 2,
++        "ct": 4,
++        "duration": 2,
++        "mul": {
++          "atk": 3.2,
++          "spd": 2
++        },
++        "text": "補完：攻3.2・速2倍 / 2T。HP12%消費"
++      },
++      "sovereignty": {
++        "name": "堕天王権",
++        "side": -1,
++        "stage": 3,
++        "ct": 5,
++        "duration": 2,
++        "mul": {
++          "atk": 4.5,
++          "def": 0.65
++        },
++        "text": "補完：攻4.5・防0.65倍 / 2T。終了時1T停止"
++      },
++      "annihilate": {
++        "name": "終極殲滅",
++        "ct": 5,
++        "text": "防御無視・最低5000。次ターン停止・速度反動"
++      },
++      "transcend": {
++        "name": "絶界昇華",
++        "ct": 4,
++        "duration": 3,
++        "mul": {
++          "atk": 3,
++          "def": 3,
++          "spd": 3
++        },
++        "text": "全能力3倍 / 3T。権能禁止、終了後停止・防御半減"
++      },
++      "grasp": {
++        "name": "理外掌握",
++        "ct": 8,
++        "text": "全回復・重圧解除・速度1000倍永続・敵1回停止。終極殲滅CTのみ解除。攻撃倍率を発動ターンで固定 / CT8（補完）"
++      }
++    },
++    "GODS": [
++      "黎明の神アウロラ",
++      "境界の神リメス",
++      "深淵の神ノクス",
++      "断罪の神ユスティア",
++      "失われた神座"
++    ],
++    "MARKS": [
++      {
++        "id": "split",
++        "name": "羽撃ち分け",
++        "icon": "⋈",
++        "cost": 160,
++        "effect": "穿羽1.30倍・CT3 / 連羽0.70倍×2・CT2。交互使用で15%強化。",
++        "confirmed": true
++      },
++      {
++        "id": "starfall",
++        "name": "星墜の印",
++        "icon": "✧",
++        "cost": 220,
++        "effect": "必殺ダメージ＋12%",
++        "confirmed": true
++      },
++      {
++        "id": "endure",
++        "name": "不屈の印",
++        "icon": "◇",
++        "cost": 200,
++        "effect": "HP＋18%。致命傷を1回耐える",
++        "confirmed": true
++      },
++      {
++        "id": "abyssmark",
++        "name": "深淵の印",
++        "icon": "◈",
++        "cost": 160,
++        "effect": "攻撃＋8%"
++      },
++      {
++        "id": "wind",
++        "name": "疾風の印",
++        "icon": "≋",
++        "cost": 160,
++        "effect": "速度＋15%"
++      },
++      {
++        "id": "iron",
++        "name": "鉄壁の印",
++        "icon": "⬡",
++        "cost": 180,
++        "effect": "防御＋12%"
++      },
++      {
++        "id": "fire",
++        "name": "業火の印",
++        "icon": "♨",
++        "cost": 200,
++        "effect": "特殊技＋8%"
++      },
++      {
++        "id": "moon",
++        "name": "月影の印",
++        "icon": "☾",
++        "cost": 200,
++        "effect": "必殺ゲージ獲得＋25%"
++      },
++      {
++        "id": "crown",
++        "name": "王冠の印",
++        "icon": "♛",
++        "cost": 260,
++        "effect": "攻撃・防御＋5%"
++      },
++      {
++        "id": "life",
++        "name": "生命の印",
++        "icon": "❀",
++        "cost": 180,
++        "effect": "最大HP＋10%"
++      }
++    ],
++    "POWERS": [
++      {
++        "id": "abyss",
++        "name": "深淵",
++        "icon": "◈",
++        "effect": "毎ターン敵のHP・攻撃・防御・速度を基礎値の6%侵食。上限95%。",
++        "source": "初期解放 / 120Pで再入手"
++      },
++      {
++        "id": "fallen",
++        "name": "堕天",
++        "icon": "♜",
++        "effect": "HP50/25/10%以下で全ステータス2.4/3.1/3.8倍。段階は重複しない。",
++        "source": "Lv.5撃破 / 120P"
++      },
++      {
++        "id": "wing",
++        "name": "黒翼",
++        "icon": "✦",
++        "effect": "全ステータス1.1倍。羽弾の最終ダメージ5倍。",
++        "source": "初期解放 / 120Pで再入手"
++      },
++      {
++        "id": "king",
++        "name": "堕天王",
++        "icon": "♛",
++        "effect": "最大HP・防御1.2倍。致命傷をHP1で5回耐える。",
++        "source": "Lv.10撃破 / 120P"
++      },
++      {
++        "id": "judge",
++        "name": "断罪",
++        "icon": "⚖",
++        "effect": "命中2回蓄積後の次の命中で3倍・防御60%無視・敵の攻撃前現在HP20%を加算。",
++        "source": "Lv.20撃破 / 120P"
++      },
++      {
++        "id": "star",
++        "name": "天星覇権",
++        "icon": "✺",
++        "effect": "全ステータス3倍・与ダメージ2倍・毎ターン最大HP5%回復（補完性能）。",
++        "source": "実績36個すべて達成でLv.5"
++      }
++    ],
++    "RECIPES": [
++      {
++        "id": "god",
++        "name": "堕天の神",
++        "parts": [
++          "fallen",
++          "king"
++        ],
++        "live": true,
++        "effect": "低HP50/25/5%で全能力2/3/4倍を2ターン維持。段階ごとの致死耐性＋HP1耐性4回。"
++      },
++      {
++        "id": "fallenwing",
++        "name": "堕天翼",
++        "parts": [
++          "fallen",
++          "wing"
++        ],
++        "live": true,
++        "effect": "HP50/25/10%で全能力4.8/6.2/7.6倍。羽弾最終10倍。"
++      },
++      {
++        "id": "fallenjudge",
++        "name": "堕天審判",
++        "parts": [
++          "fallen",
++          "judge"
++        ],
++        "live": false,
++        "effect": "低HP全能力強化。断罪4倍・防御90%無視。"
++      },
++      {
++        "id": "abyssfallen",
++        "name": "深淵堕天",
++        "parts": [
++          "abyss",
++          "fallen"
++        ],
++        "live": false,
++        "effect": "毎ターン9%侵食。低HPと侵食に応じて攻撃強化。"
++      },
++      {
++        "id": "kingwing",
++        "name": "王の翼",
++        "parts": [
++          "king",
++          "wing"
++        ],
++        "live": false,
++        "effect": "HP・防御1.5倍。致死耐性7回。羽弾最終10倍。"
++      },
++      {
++        "id": "kingjudge",
++        "name": "王権断罪",
++        "parts": [
++          "king",
++          "judge"
++        ],
++        "live": false,
++        "effect": "HP・防御1.5倍。致死耐性6回。命中・被弾で断罪蓄積。"
++      },
++      {
++        "id": "abyssking",
++        "name": "深淵王",
++        "parts": [
++          "abyss",
++          "king"
++        ],
++        "live": true,
++        "effect": "毎ターン9%侵食。防御1.3〜2.05倍、攻撃も侵食に応じて増加。致死耐性6回。"
++      },
++      {
++        "id": "judgewing",
++        "name": "断罪翼",
++        "parts": [
++          "judge",
++          "wing"
++        ],
++        "live": true,
++        "effect": "羽弾最終10倍。羽弾の命中だけで断罪を蓄積・発動。"
++      },
++      {
++        "id": "abysswing",
++        "name": "深淵の翼",
++        "parts": [
++          "abyss",
++          "wing"
++        ],
++        "live": false,
++        "effect": "毎ターン9%侵食。羽弾命中で追加侵食、羽弾最終10倍。"
++      },
++      {
++        "id": "abyssjudge",
++        "name": "深淵断罪",
++        "parts": [
++          "abyss",
++          "judge"
++        ],
++        "live": true,
++        "effect": "毎ターン9%侵食。断罪の火力が侵食と状態異常数で増加。"
++      }
++    ],
++    "SUMMONS": [
++      "黒翼の欠片",
++      "深淵結晶",
++      "断罪の印章",
++      "堕天の羽根",
++      "王権の残光",
++      "星のかけら"
++    ],
++    "VERSION": 4
++  },
++  "files": {
++    "web/src/utils/progression.js": "8ad7032fe4358d8fbb715fdd7f39989069161f243b6823ec15ce162b8f930d21",
++    "web/src/utils/storage.js": "e7c2006c1e2901aeb9f30ba0c5906826a97e0f926c1e90e13d1b95b34665dc86"
++  },
++  "functions": {
++    "baseStats": "077cc8f141dd13a52c22c6d1a75a9f9620964973ed49d167f30d3cf7e4cc79ec",
++    "normalEnemy": "5887a735578bffa7a7326c01d06545305a4372cd1c52491e242793644e92784b",
++    "enemyConfig": "98fcf536f21af4b3628a9da7f6260e7ec3d6751e1cebb0759462940d9c57c368",
++    "canStart": "f99a18900ddb2a60f169cb509e25a1c65687a0be6579f875d15a23d80259cdbd",
++    "startBattle": "967b7737ba6f91d3a4b8f6a08bf25e436d78a07814844b21e520db7a4c941dee",
++    "log": "d12829b087fbdd543ed63e5ff4f7dd357932c4ba01b82017f5fe4f2ade375483",
++    "fallenMultiplier": "bcf84098da784b1666395a6e04de477d159d6295bc66bc05e05c24b883229343",
++    "playerStats": "ab7d4ecb72c4ce1f4126cd895a9c23374e1526d2a798a4edee3f143272c73587",
++    "enemyStats": "4c3caa86e227c04e3d804e928d5899129c9c0623316655990189f07b24ad9467",
++    "damage": "de9970e2801ef328f5befb68624080df26a234c366f6774bea53ed5aa6a98897",
++    "buff": "f1513e9cf1bc538b71e37faa3c23d5700f401232b382ea7eba2f7e82cc1af351",
++    "dealPlayer": "a1147922184276bc5d7f0c56bd06ee906f9b5dce752444c33ee533f366692e9a",
++    "heal": "54d1dacafe41f992269b87d212101c21c5aed2c2e3f24eb1a7ed5d7a81a81457",
++    "markUsed": "1c9913d365a455df00afd7652c3669a6b3fbcbd431acb4ed05d06213ef988c72",
++    "tickMap": "cea711bbe8fbf6d83e9c9fc75388457ca66d703bd8812eb83d7778ca6c30a279",
++    "erosion": "20f78753eb2186c9e1af3be527c55c5786a845d3b7d9c8ab14daa24bd1342e11",
++    "passiveStart": "e53da348168fdbf380f6063c87aeb34e563da5c762966186d0bead3e88622e89",
++    "stage": "ffc6c2243ce23679fc3f8cb90a0143f255c96d3fc4f8dc256221c460e97aaf1a",
++    "attack": "ce0863f442c257a03cf1fb32bd44bc64f6cf633d569ed555eb39eaed8df79fa8",
++    "phase": "2dd820f62aee945d7b900633d38c8cf826b5df2b4841d918a9356dfbaa69dd76",
++    "enemyTurn": "c424f7b90121b53bd5fdc8b5a8b86126dede53691e0965627c7403791cd03181",
++    "act": "f312eaabc01ff00533ac2e27862a84a6b26a5eacd93d20be5c6328cdc8c23c12"
++  }
++}
+--- /dev/null
++++ b/tools/quality-evolution.mjs
+@@ -0,0 +1,82 @@
++import fs from 'node:fs';
++import assert from 'node:assert/strict';
++import {createHash} from 'node:crypto';
++import {fresh,developerState} from '../web/src/utils/progression.js';
++let pw;try{pw=await import('playwright');}catch{pw=await import('/opt/codex/cua_node/lib/node_modules/playwright/index.mjs');}
++const mode=process.argv[2]||'after',engine=process.argv[3]||'chromium',stressOnly=process.argv.includes('--stress-only'),runStarted=performance.now();
++if(!['before','after'].includes(mode)||!['chromium','webkit'].includes(engine))throw Error('Usage: node tools/quality-evolution.mjs before|after chromium|webkit');
++const url=process.env.GAME_URL||'http://127.0.0.1:4180/irena-play.html',out=process.env.QA_OUTPUT||`reports/quality-evolution/${stressOnly?'stress':mode}-${engine}`;
++fs.mkdirSync(out,{recursive:true});
++const browser=await pw[engine].launch(engine==='chromium'?{executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']}:{headless:true});
++const artifactResponse=await fetch(url);if(!artifactResponse.ok)throw Error('Cannot fetch game artifact: '+artifactResponse.status);const artifactBytes=Buffer.from(await artifactResponse.arrayBuffer()),artifactSHA256=createHash('sha256').update(artifactBytes).digest('hex');
++const results=[],screens=[],errors=[],observations=[],loadedDocumentSHA256=new Set();
++async function verifyLoadedArtifact(response){assert.ok(response?.ok(),'game document loaded successfully');const sha=createHash('sha256').update(await response.body()).digest('hex');assert.equal(sha,artifactSHA256,'game document changed during the QA run');loadedDocumentSHA256.add(sha);}
++const ok=(name,value=true)=>{assert.ok(value,name);results.push(name);};
++const selector=(a,id)=>`[data-action="${a}"]${id!==undefined?`[data-id="${id}"]`:''}`;
++async function ready(p){await p.waitForFunction(()=>!document.querySelector('#cinema.active')&&document.documentElement.dataset.combatBusy!=='true');}
++async function press(p,a,id){await ready(p);const x=p.locator(selector(a,id)).filter({visible:true}).first();if(p.viewportSize().width<700)await x.tap();else await x.click();}
++async function skipNative(p,label){const box=await p.locator('#skipCinema').boundingBox();if(box){if(p.viewportSize().width<700)await p.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);else await p.mouse.click(box.x+box.width/2,box.y+box.height/2);}else observations.push({case:label,note:'Natural cinematic completion preceded the optional skip tap.'});await ready(p);}
++async function enemyArt(p,file,label){await p.locator('.fighter-enemy img').evaluate(x=>Promise.all(x.getAnimations().map(a=>a.finished.catch(()=>{}))));ok(label+' supplied enemy art selected',await imageMatches(p,'.fighter-enemy img',file));ok(label+' full enemy art fits without cropping',await p.locator('.fighter-enemy img').evaluate(x=>{const r=x.getBoundingClientRect(),f=x.closest('.portrait-frame').getBoundingClientRect();return getComputedStyle(x).objectFit==='contain'&&r.left>=f.left-1&&r.right<=f.right+1&&r.top>=f.top-1&&r.bottom<=f.bottom+1;}));}
++async function open(profile={width:390,height:664},state=null){const ctx=await browser.newContext({viewport:profile,screen:profile,isMobile:profile.width<700,hasTouch:profile.width<700,reducedMotion:'no-preference'});await ctx.addInitScript(seed=>{Math.random=()=>.99;if(seed)localStorage.setItem('irena-reborn-v3',JSON.stringify(seed));},state);const p=await ctx.newPage();p.on('pageerror',e=>errors.push({message:e.message,url:p.url()}));p.on('console',m=>{if(m.type()==='error')errors.push({message:m.text(),url:p.url()});});await verifyLoadedArtifact(await p.goto(url));return {p,ctx};}
++async function shot(p,label){await ready(p);await p.locator('.battle-stage .portrait').evaluateAll(xs=>Promise.all(xs.flatMap(x=>x.getAnimations()).map(a=>a.finished.catch(()=>{}))));await p.locator('img').evaluateAll(xs=>Promise.all(xs.map(x=>x.decode?.().catch(()=>{}))));const metric=await p.evaluate(()=>({width:innerWidth,height:innerHeight,scrollWidth:document.documentElement.scrollWidth,targets:[...document.querySelectorAll('button:not(:disabled),input,select,summary')].filter(x=>x.getClientRects().length).map(x=>({text:x.getAttribute('aria-label')||x.textContent.trim().slice(0,35),height:x.getBoundingClientRect().height})),images:[...document.images].filter(x=>x.getClientRects().length).map(x=>({alt:x.alt,loaded:x.complete&&x.naturalWidth>0,fit:getComputedStyle(x).objectFit}))}));ok(`${label}: no horizontal overflow`,metric.scrollWidth<=metric.width);ok(`${label}: images decoded`,metric.images.every(x=>x.loaded));const path=`${out}/${label}.jpg`;await p.screenshot({path,fullPage:true,type:'jpeg',quality:78});let viewportPath=null;if(label.includes('commands-jump')||label.includes('milestone-reward')){if(label.includes('milestone-reward'))await p.locator('.result').evaluate(x=>x.scrollIntoView({block:'start',behavior:'instant'}));viewportPath=`${out}/${label}-viewport.jpg`;await p.screenshot({path:viewportPath,type:'jpeg',quality:85});}screens.push({label,path,viewportPath,...metric});}
++async function imageMatches(p,selector,path){const src=await p.locator(selector).getAttribute('src');if(!src)return false;if(src.startsWith('data:'))return Buffer.from(src.split(',')[1],'base64').equals(fs.readFileSync(path));return src.endsWith(path);}
++async function turn(p){return Number((await p.locator('.heading .tag').innerText()).match(/TURN (\d+)/)?.[1]);}
++async function leave(p){await ready(p);if(await p.locator(selector('askRetreat')).count()){await press(p,'askRetreat');await press(p,'retreat');}if(await p.locator(selector('finish')).count())await press(p,'finish');}
++async function importJSON(p,state){const chooser=p.waitForEvent('filechooser');await press(p,'import');await(await chooser).setFiles({name:'quality-save.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({game:'irena-reborn',version:4,state}))});await p.locator('#modal[open]').waitFor();await press(p,'confirmImport');await p.locator('#modal[open]').waitFor({state:'hidden'});}
++async function lab(p,kind='final'){await press(p,'nav','lab');await p.locator('#labmode').selectOption(kind);await p.locator('#labatk').fill('0.1');await p.locator('#labhp').fill('20');await press(p,'labstart');}
++try{
++ // Native controls, genuine new-game progression, then explicit independent developer coverage.
++ for(const profile of (stressOnly?[]:[{width:320,height:568},{width:390,height:664},{width:768,height:900}])){
++  const {p,ctx}=await open(profile),prefix=String(profile.width);await shot(p,prefix+'-01-title');await press(p,'begin');await shot(p,prefix+'-02-home');await press(p,'fight','normal');await shot(p,prefix+'-03-normal');if(mode==='after')await enemyArt(p,'assets/supplied-20261020/kaiser-normal.jpg',prefix+' normal Kaiser');
++  if(mode==='after'&&profile.width<700){const quick=await p.locator('.combat-shortcuts').boundingBox(),heading=await p.locator('.heading>div').boundingBox(),arena=await p.locator('.battle-stage').boundingBox();ok(prefix+' shortcuts do not overlap heading text',quick.x>=heading.x+heading.width||quick.y>=heading.y+heading.height||quick.y+quick.height<=heading.y);ok(prefix+' shortcuts stay above portrait and HP information',quick.y+quick.height<=arena.y);await press(p,'focusCommands');await p.waitForFunction(()=>document.querySelector('.battle-controls').getBoundingClientRect().top<80);const bounds=await p.locator('.battle-controls').boundingBox(),nav=await p.locator('.mobile-nav').boundingBox();ok(prefix+' command shortcut exposes first action',bounds.y>=0&&bounds.y+45<nav.y);ok(prefix+' visible command centers accept touch',await p.locator('.battle-controls button:enabled').evaluateAll(xs=>xs.every(x=>{const r=x.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return r.y>=0&&r.bottom<innerHeight&&!!hit&&x.contains(hit)})));await shot(p,prefix+'-03b-commands-jump');await press(p,'focusStage');await p.waitForFunction(()=>{const y=document.querySelector('.battle-stage').getBoundingClientRect().top;return y>=0&&y<80});const stage=await p.locator('.battle-stage').boundingBox();ok(prefix+' stage shortcut returns to portrait',stage.y>=0&&stage.y<profile.height/2);}
++  await press(p,'combat','slash');await ready(p);ok(prefix+' genuine slash damages foe',await p.locator('.log').innerText().then(x=>x.includes('斬撃')));await press(p,'combat','feather');await p.locator('#cinema.active.cut').waitFor();ok(prefix+' correct feather cut-in',await imageMatches(p,'#cinema img','assets/runtime/hadan-cutin.webp'));await skipNative(p,'short auto cut-in');ok(prefix+' ordinary win',await p.locator('.result h2').innerText()==='VICTORY');await shot(p,prefix+'-04-victory');
++  if(mode==='after'){
++   const earnedLevelText=(await p.locator('[data-reward="levels"]').innerText()).trim();
++   ok(prefix+' first victory reports one earned level',/[+＋]\s*1\s*Lv\.?/.test(earnedLevelText));
++   await press(p,'nav','upgrade');await press(p,'tab','training');await press(p,'train','level');
++   ok(prefix+' later training actually reaches level3',await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')).level)===3);
++   await press(p,'nav','battle');
++   ok(prefix+' result earned level remains unchanged after later training',(await p.locator('[data-reward="levels"]').innerText()).trim()===earnedLevelText);
++  }
++  await press(p,'finish');
++  const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));ok(prefix+' normal progress saved',saved.floor===2&&saved.cleared.includes(1));await verifyLoadedArtifact(await p.reload());ok(prefix+' reload preserves floor2',await p.locator('.challenge-progress strong').innerText()==='Lv.2');
++  await press(p,'openupgrade','powers');await press(p,'buyPower','fallen');await press(p,'equipPower','abyss');await press(p,'equipPower','fallen');ok(prefix+' power purchase and gear change',await p.locator('.power-card.selected').allTextContents().then(xs=>xs.some(x=>x.includes('堕天'))));
++  for(const [tab,label]of [['powers','05-powers'],['marks','06-marks'],['resonance','07-resonance'],['training','08-training'],['summon','09-summon']]){await press(p,'tab',tab);await shot(p,prefix+'-'+label);}
++  await press(p,'nav','home');await press(p,'nav','archive');await shot(p,prefix+'-10-achievements');ok(prefix+' exactly36 achievements',await p.locator('.achievement').count()===36);await press(p,'nav','lab');await shot(p,prefix+'-11-lab');await press(p,'nav','dev');await shot(p,prefix+'-12-developer');await press(p,'enabledev');if(profile.width<700){await press(p,'nav','raid');await shot(p,prefix+'-13-raid');}else await press(p,'nav','home');await press(p,'fight','raid');await shot(p,prefix+'-14-raid-fight');await leave(p);
++  for(const [kind,label]of [['ex','15-ex'],['god','16-gauntlet'],['stella','17-stella'],['final','18-final-neutral']]){await press(p,'nav','home');await press(p,'fight',kind);await shot(p,prefix+'-'+label);if(mode==='after'){if(kind==='ex')await enemyArt(p,'assets/supplied-20261020/kaiser-ex.jpg',prefix+' EX Kaiser');else ok(prefix+' '+kind+' retains unmapped enemy substitute',await p.locator('.fighter-enemy img').count()===0);}if(kind==='stella'){await press(p,'combat','meteor');await p.locator('#cinema.active.cut').waitFor();ok(prefix+' Stella cut-in title',await p.locator('#cinema h2').innerText()==='天象支配');ok(prefix+' correct Stella cut-in image',await imageMatches(p,'#cinema img','assets/runtime/stella-cutin.webp'));await skipNative(p,'short auto cut-in');}if(kind==='final'){ok(prefix+' neutral portrait present',await imageMatches(p,'.fighter-player img','assets/runtime/irena-final-neutral.webp'));if(mode==='after')ok(prefix+' grasp hidden at neutral',await p.locator(selector('combat','grasp')).count()===0);await press(p,'combat','fallen');await ready(p);if(mode==='after')ok(prefix+' grasp usable on fallen side',await p.locator(selector('combat','grasp')).count()===1);ok(prefix+' fallen portrait matches supplied fallen art',await imageMatches(p,'.fighter-player img','assets/runtime/irena-final-fallen.webp'));await shot(p,prefix+'-19-final-fallen');ok(prefix+' clean final commands',await p.locator('.final-commands button:disabled,.final-commands small,.final-commands button[title]').count()===0);await press(p,'combat','divine');await ready(p);await press(p,'combat','divine');await ready(p);if(mode==='after')ok(prefix+' grasp hidden on divine side',await p.locator(selector('combat','grasp')).count()===0);ok(prefix+' divine portrait matches supplied divine art',await imageMatches(p,'.fighter-player img','assets/runtime/irena-final-divine.webp'));await shot(p,prefix+'-20-final-divine');}await leave(p);}
++  await press(p,'nav','awakening');await shot(p,prefix+'-21-awakening');await press(p,'nav','home');await press(p,'exitdev');const main=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));ok(prefix+' developer tests preserve main progression',main.floor===2&&main.level===saved.level);await ctx.close();
++ }
++ // Explicit asynchronous input races, using old element/function references to exercise idempotence.
++ if(mode==='after'&&!stressOnly){
++  const {p,ctx}=await open();await press(p,'begin');await lab(p);const initial=await turn(p);
++  await p.evaluate(()=>{const find=id=>document.querySelector(`[data-action="combat"][data-id="${id}"]`);find('annihilate').click();window.__oldSkip=document.querySelector('#skipCinema').onclick;find('slash').click();find('guard').click();window.__oldSkip();window.__oldSkip();});await ready(p);ok('cut-in old-skip reference commits exactly one round',await turn(p)===initial+1);await p.waitForTimeout(1050);ok('auto timer after repeated skip cannot advance again',await turn(p)===initial+1);await press(p,'combat','wait');await ready(p);
++  const beforeGuard=await turn(p);await p.evaluate(()=>{document.querySelector('[data-action="combat"][data-id="guard"]').click();document.querySelector('[data-action="combat"][data-id="slash"]').click();document.querySelector('[data-action="combat"][data-id="guard"]').click();});await ready(p);ok('rapid guard/slash sequence commits one round',await turn(p)===beforeGuard+1);await press(p,'combat','guard');await ready(p);ok('new action accepted after recovery',await turn(p)===beforeGuard+2);
++  const beforeAlignment=await turn(p);await p.evaluate(()=>{const x=document.querySelector('[data-action="combat"][data-id="fallen"]');x.click();x.click();window.__alignSkip=document.querySelector('#skipCinema').onclick;window.__alignSkip();window.__alignSkip();});await ready(p);ok('alignment skip and repeated input commits once',await turn(p)===beforeAlignment+1);await p.waitForTimeout(900);ok('alignment reveal timer cannot double-commit',await turn(p)===beforeAlignment+1);await ctx.close();
++  // Keyboard repeat under natural completion: generic offensive cut-ins and both final routes.
++  for(const id of ['feather','ultimate','meteor','annihilate','genesis','ending']){
++   const seed=developerState(fresh());seed.equipped=['king'];seed.markEquip=[];seed.level=100;const {p,ctx}=await open(undefined,seed);const kind=id==='meteor'?'stella':['annihilate','genesis','ending'].includes(id)?'final':'normal';await lab(p,kind);
++   if(id==='ultimate'){for(let i=0;i<6;i++){await press(p,'combat','guard');await ready(p);}}
++   if(['genesis','ending'].includes(id)){for(let i=0;i<7;i++){await press(p,'combat',id==='genesis'?'divine':'fallen');await ready(p);}}
++   const previous=await turn(p);await press(p,'combat',id);if(['genesis','ending'].includes(id))await press(p,'route',id+':B');await p.locator('#cinema.active').waitFor();if(id==='genesis')ok('Genesis uses new dedicated cut-in image',await imageMatches(p,'#cinema img','assets/supplied-20261020/genesis-cutin.jpg'));if(['feather','meteor','ending'].includes(id)){await p.evaluate(()=>{document.querySelector('[data-action="combat"][data-id="slash"]').click();document.querySelector('[data-action="combat"][data-id="guard"]').click();});}else{await p.keyboard.press('Enter');await p.keyboard.press('Enter');}await ready(p);ok(id+' repeated input resolves one round',await turn(p)===previous+1);await p.waitForTimeout(150);ok(id+' no lingering cinematic',await p.locator('#cinema.active').count()===0);await ctx.close();
++  }
++  // Seeded milestone setups still resolve real attacks and real rewards; no fake victory flags.
++  for(const kind of ['normal','ex']){
++   const seed=fresh();seed.started=true;seed.level=150;seed.floor=100;seed.p=5000;seed.stats.atk=100000;seed.cleared=Array.from({length:kind==='normal'?99:100},(_,i)=>i+1);if(kind==='ex')Object.assign(seed.flags,{lv100:true,reward100:true,stella:true,warp:true});
++   const {p,ctx}=await open(undefined,seed);const previous=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));await press(p,'fight',kind);await press(p,'combat','slash');await ready(p);ok(kind+' seeded milestone resolves actual victory',await p.locator('.result h2').innerText()==='VICTORY');const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));const amount=async key=>Number((await p.locator(`[data-reward="${key}"]`).innerText()).replace(/[^0-9.-]/g,''));ok(kind+' displayed P equals persisted increase',await amount('p')===saved.p-previous.p);ok(kind+' newly earned achievements shown',await p.locator('[data-achievement]').count()>0);
++   if(kind==='normal'){ok('Lv100 one-time50SP displayed',await amount('sp')===50);ok('Lv100 mystery unlock shown',await p.locator('[data-unlock="mystery"]').count()===1);ok('Lv100 reward persisted once',saved.sp===50&&saved.flags.reward100);}
++   else{ok('EX first bonus100P displayed',await amount('bonusP')===100);ok('EX P total includes first bonus',saved.p-previous.p===1135);ok('EX gauntlet unlock shown',await p.locator('[data-unlock="god"]').count()===1);ok('EX victory removes expired deadline warning',!(await p.locator('.battle-aside').innerText()).includes('終末判定まで'));}
++   await shot(p,'390-23-'+kind+'-milestone-reward');await press(p,'retry');await press(p,'combat','slash');await ready(p);const repeated=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));ok(kind+' repeated fight does not duplicate first reward',kind==='normal'?repeated.sp===saved.sp:repeated.p-saved.p===1035);ok(kind+' repeated result omits first bonus',await p.locator(kind==='normal'?'[data-reward="sp"]':'[data-reward="bonusP"]').count()===0);if(kind==='normal'){await press(p,'finish');await press(p,'warp');await p.locator('#cinema.active').waitFor();const warpAt=performance.now();await p.locator('#skipCinema').tap();await ready(p);ok('native touch skips 3500ms warp before automatic completion',performance.now()-warpAt<3000);const unlocked=await p.evaluate(()=>JSON.parse(localStorage.getItem('irena-reborn-v3')));ok('native warp skip unlocks Stella exactly once',unlocked.flags.stella&&unlocked.flags.warp&&unlocked.sp===50);}await ctx.close();
++  }
++  // Failure injection leaves old save intact and does not claim durable success.
++  const failed=await open();await press(failed.p,'begin');const old=await failed.p.evaluate(()=>localStorage.getItem('irena-reborn-v3'));await failed.p.evaluate(()=>Storage.prototype.setItem=function(){throw new DOMException('Quota exceeded','QuotaExceededError');});const imported=fresh();imported.started=true;imported.level=7;await importJSON(failed.p,imported);ok('failed import retains previous stored JSON',await failed.p.evaluate(()=>localStorage.getItem('irena-reborn-v3'))===old);ok('failed import leaves visible warning',await failed.p.locator('.notice.saved-error').isVisible());ok('failed import toast distinguishes unsaved state',await failed.p.locator('#toast').innerText().then(x=>/保存|メモリ/.test(x)&&x!=='JSONから復元しました'));await shot(failed.p,'390-22-import-storage-failure');await failed.ctx.close();
++ }else if(mode==='before'){
++  const {p,ctx}=await open();await press(p,'begin');await lab(p);const start=await turn(p);await press(p,'combat','annihilate');await p.keyboard.press('Enter');await p.keyboard.press('Enter');await p.waitForTimeout(1300);observations.push({case:'generic cut-in Enter re-entry',initialTurn:start,finalTurn:await turn(p),errors:errors.slice()});await ctx.close();
++ }
++ if(mode==='after'&&stressOnly){
++  const {p,ctx}=await open();await press(p,'begin');const before=await p.evaluate(()=>localStorage.getItem('irena-reborn-v3'));await lab(p,'normal');const initial=await turn(p),started=performance.now();
++  for(let i=1;i<=120;i++){await press(p,'combat','guard');await ready(p);ok('continuous round '+i+' advances exactly once',await turn(p)===initial+i);ok('continuous round '+i+' releases input lock',await p.evaluate(()=>document.documentElement.dataset.combatBusy==='false'&&!document.querySelector('#app').inert));ok('continuous round '+i+' leaves no cinematic',await p.locator('#cinema.active').count()===0);}
++  const durationMs=Math.round(performance.now()-started);await p.waitForTimeout(1100);ok('continuous session effect nodes clean up',await p.locator('.blade-strike,.combat-number').count()===0);ok('continuous session leaves main JSON byte-identical',await p.evaluate(()=>localStorage.getItem('irena-reborn-v3'))===before);observations.push({case:'continuous120rounds',rounds:120,durationMs,animationsEnabled:true,viewport:{width:390,height:664},realIPhoneTested:false});await shot(p,'390-continuous-120-rounds');await ctx.close();
++ }
++ if(mode==='after')ok('zero uncaught errors / console errors',errors.length===0);
++ fs.writeFileSync(`${out}/results.json`,JSON.stringify({mode,engine,stressOnly,durationMs:Math.round(performance.now()-runStarted),browser:browser.version(),url,pass:results.length,fail:0,results,screens,errors,observations,realIPhoneTested:false,htmlSHA256:artifactSHA256,htmlBytes:artifactBytes.length,loadedDocumentSHA256:[...loadedDocumentSHA256]},null,2));console.log(JSON.stringify({mode,engine,pass:results.length,fail:0,screens:screens.length,errors,observations}));
++}catch(e){fs.writeFileSync(`${out}/failure-${Date.now()}.json`,JSON.stringify({mode,engine,url,pass:results.length,results,screens,errors,observations,error:e.stack},null,2));throw e;}finally{await browser.close();}

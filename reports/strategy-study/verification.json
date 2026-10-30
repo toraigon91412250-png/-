@@ -1,0 +1,89 @@
+{
+  "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+  "htmlBytes": 15425811,
+  "unit": {
+    "pass": 208,
+    "fail": 0,
+    "skip": 0
+  },
+  "syntax": {
+    "files": 32,
+    "passed": true
+  },
+  "researchScriptsSyntax": true,
+  "build": {
+    "passed": true,
+    "embeddedImages": 29
+  },
+  "browser": {
+    "campaignChromium": {
+      "pass": 121,
+      "fail": 0,
+      "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+      "file": "reports/strategy-study/chromium/results.json"
+    },
+    "campaignWebKit": {
+      "pass": 121,
+      "fail": 0,
+      "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+      "file": "reports/strategy-study/webkit/results.json"
+    },
+    "existingBrowser": {
+      "pass": 119,
+      "fail": 0,
+      "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+      "file": "reports/browser-results.json"
+    },
+    "existingUI": {
+      "pass": 389,
+      "fail": 0,
+      "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+      "file": "reports/ui-review/ui-regression-results.json"
+    },
+    "threePhase": {
+      "pass": 103,
+      "fail": 0,
+      "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+      "file": "reports/three-phase/chromium/results.json"
+    }
+  },
+  "mainGameChanged": false,
+  "saveFormatChanged": false,
+  "labPersistenceImplemented": false,
+  "realIPhoneTested": false,
+  "fileURLTested": false,
+  "deployed": false,
+  "runtimeFiles": [
+    "web/src/utils/campaign20.js",
+    "web/src/components/campaign20View.js"
+  ],
+  "measurement": {
+    "conditions": 150,
+    "samplesPerCondition": 32,
+    "trainingSeeds": [
+      21001,
+      21032
+    ],
+    "holdoutSeeds": [
+      41001,
+      41032
+    ],
+    "pairedStates": 36256,
+    "pairedBattles": 108768
+  },
+  "sourceRecovery": {
+    "passed": true,
+    "checks": {
+      "syntaxFiles": 32,
+      "unitPass": 208,
+      "unitFail": 0,
+      "build": true,
+      "rebuiltHTMLIdentical": true,
+      "runtimePayloadIdentical": true
+    },
+    "htmlSHA256": "41ebf012e3f6a47ba7efd34446aa9b6e5bbcce690916333642fec27286b3c560",
+    "recoveryPath": "/workspace/scratch/irena-strategy-recovery/irena-reborn",
+    "sourceArchiveContainsGeneratedHTML": false,
+    "sourceArchiveRequiresRawDataForBuildOrUnit": false
+  }
+}

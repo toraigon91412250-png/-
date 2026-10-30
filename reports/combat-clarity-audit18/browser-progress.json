@@ -1,0 +1,31 @@
+{
+  "checks": [
+    "320 command IDs and positions preserved during transcend",
+    "320 sealed labels show remaining2T",
+    "320 all commands fit and have44px touch targets",
+    "320 blocked tap cannot advance turn",
+    "320 EX asset renders with alpha-compatible styling",
+    "320 seal countdown updates1T",
+    "390 command IDs and positions preserved during transcend",
+    "390 sealed labels show remaining2T",
+    "390 all commands fit and have44px touch targets",
+    "390 blocked tap cannot advance turn",
+    "390 EX asset renders with alpha-compatible styling",
+    "390 seal countdown updates1T",
+    "deadline sits under enemy HP with actual5T remaining",
+    "old sidebar deadline panel removed",
+    "deadline contained within enemy card",
+    "deadline follows real phase turn decrement",
+    "430 command IDs and positions preserved during transcend",
+    "430 sealed labels show remaining2T",
+    "430 all commands fit and have44px touch targets",
+    "430 blocked tap cannot advance turn",
+    "430 EX asset renders with alpha-compatible styling",
+    "430 seal countdown updates1T",
+    "desktop EX white rectangle removed",
+    "guard command names target, multiplier and duration",
+    "existing state modal explains ATK3 duration consumption and exclusions",
+    "no JavaScript errors"
+  ],
+  "errors": []
+}

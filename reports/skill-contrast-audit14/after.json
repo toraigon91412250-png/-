@@ -1,0 +1,103 @@
+{
+  "checks": [
+    "pierce has real hit count",
+    "pierce projectile count matches actual hits",
+    "pierce finishes with no VFX",
+    "pierce commands fit viewport",
+    "pierce distinct projectile variant",
+    "pierce distinct cutin variant",
+    "pierce visible charging cue",
+    "volley has real hit count",
+    "volley projectile count matches actual hits",
+    "volley finishes with no VFX",
+    "volley commands fit viewport",
+    "volley distinct projectile variant",
+    "volley distinct cutin variant",
+    "volley hits readable interval >=300ms",
+    "no JS errors"
+  ],
+  "passed": 15,
+  "errors": [],
+  "runs": [
+    {
+      "action": "pierce",
+      "seen": [
+        {
+          "cls": "vfx vfx-cutin vfx-cutin-pierce",
+          "text": "穿羽",
+          "time": 9372.5,
+          "width": "374px",
+          "height": "194.547px"
+        },
+        {
+          "cls": "vfx vfx-pierce-charge",
+          "text": "",
+          "time": 9867.40000000596,
+          "width": "72px",
+          "height": "72px"
+        },
+        {
+          "cls": "vfx vfx-projectile vfx-projectile-pierce",
+          "text": "",
+          "time": 10168.5,
+          "width": "430.094px",
+          "height": "48.625px"
+        },
+        {
+          "cls": "vfx vfx-pierce-trail",
+          "text": "",
+          "time": 10409.60000000149,
+          "width": "153.578px",
+          "height": "5px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0",
+          "text": "667",
+          "time": 10415.90000000596,
+          "width": "32.5625px",
+          "height": "21.0625px"
+        }
+      ]
+    },
+    {
+      "action": "volley",
+      "seen": [
+        {
+          "cls": "vfx vfx-cutin vfx-cutin-volley",
+          "text": "連羽",
+          "time": 5212.10000000149,
+          "width": "374px",
+          "height": "133.109px"
+        },
+        {
+          "cls": "vfx vfx-projectile vfx-projectile-volley",
+          "text": "",
+          "time": 5872,
+          "width": "246.828px",
+          "height": "58.875px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-0",
+          "text": "1",
+          "time": 6071.80000000447,
+          "width": "8.54688px",
+          "height": "21.0625px"
+        },
+        {
+          "cls": "vfx vfx-projectile vfx-projectile-volley",
+          "text": "",
+          "time": 6211.5,
+          "width": "246.828px",
+          "height": "58.875px"
+        },
+        {
+          "cls": "vfx vfx-number vfx-out vfx-shot-1",
+          "text": "1",
+          "time": 6413.20000000298,
+          "width": "8.54688px",
+          "height": "21.0625px"
+        }
+      ]
+    }
+  ]
+}

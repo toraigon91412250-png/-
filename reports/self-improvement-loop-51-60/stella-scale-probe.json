@@ -1,0 +1,1730 @@
+{
+  "generatedAt": "2026-10-26T16:25:37.252Z",
+  "purpose": "In-memory probe of the dedicated Stella Nightmare damage scalar; production source was not edited.",
+  "source": {
+    "gameCoreSHA256": "8c3db3d1068188d222e499cbca79849558bd5340700ce538a9f99be18b6f9c52",
+    "testedExpression": "b.difficulty==='NIGHTMARE'?1.4:1",
+    "method": "Imported a data-URL copy of gameCore.js with only the dedicated Stella scalar changed; all other imports use the repository files."
+  },
+  "profile": {
+    "character": "stella",
+    "progression": "developerState(fresh()) (level 100, endgame flags; test=false)",
+    "actionPolicy": "Existing choose(b, balanced); stella uses its dedicated meteor/immortal/rebirth/slash policy independent of resonance build."
+  },
+  "seedCount": 16,
+  "seeds": [
+    110001,
+    110002,
+    110003,
+    110004,
+    110005,
+    110006,
+    110007,
+    110008,
+    110009,
+    110010,
+    110011,
+    110012,
+    110013,
+    110014,
+    110015,
+    110016
+  ],
+  "actionLimit": 500,
+  "groups": [
+    {
+      "scale": 1.4,
+      "trials": 16,
+      "wins": 15,
+      "losses": 1,
+      "winRate": 0.9375,
+      "meanActions": 33,
+      "meanPlayerHP": 1060,
+      "maxActions": 36
+    },
+    {
+      "scale": 1.41,
+      "trials": 16,
+      "wins": 14,
+      "losses": 2,
+      "winRate": 0.875,
+      "meanActions": 33,
+      "meanPlayerHP": 1004,
+      "maxActions": 36
+    },
+    {
+      "scale": 1.42,
+      "trials": 16,
+      "wins": 13,
+      "losses": 3,
+      "winRate": 0.8125,
+      "meanActions": 33.06,
+      "meanPlayerHP": 872,
+      "maxActions": 36
+    },
+    {
+      "scale": 1.43,
+      "trials": 16,
+      "wins": 10,
+      "losses": 6,
+      "winRate": 0.625,
+      "meanActions": 32.94,
+      "meanPlayerHP": 986,
+      "maxActions": 36
+    },
+    {
+      "scale": 1.45,
+      "trials": 16,
+      "wins": 9,
+      "losses": 7,
+      "winRate": 0.5625,
+      "meanActions": 32.94,
+      "meanPlayerHP": 846,
+      "maxActions": 36
+    },
+    {
+      "scale": 1.5,
+      "trials": 16,
+      "wins": 8,
+      "losses": 8,
+      "winRate": 0.5,
+      "meanActions": 32.81,
+      "meanPlayerHP": 345,
+      "maxActions": 35
+    }
+  ],
+  "rows": [
+    {
+      "scale": 1.4,
+      "seed": 110001,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 343,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24416,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110004,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 343,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24416,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 34,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25648,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 1351,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23408,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110010,
+      "result": "win",
+      "actions": 35,
+      "playerHP": 119,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24640,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110011,
+      "result": "win",
+      "actions": 34,
+      "playerHP": 343,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25032,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110012,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 343,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24416,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110014,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23800,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110015,
+      "result": "win",
+      "actions": 36,
+      "playerHP": 455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24360,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 23,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.4,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1575,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23184,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110001,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 214,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24576,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110004,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 214,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24576,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 34,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25816,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 1229,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23562,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110010,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 140,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24802,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110011,
+      "result": "win",
+      "actions": 34,
+      "playerHP": 214,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25196,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110012,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 214,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24576,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110014,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23956,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110015,
+      "result": "win",
+      "actions": 36,
+      "playerHP": 327,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24520,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 23,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.41,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1455,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23336,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110001,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 85,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24747,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110004,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 85,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24747,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 34,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25996,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 1108,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23724,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110010,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 140,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24973,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110011,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2560,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25371,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110012,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 85,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24747,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110014,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 426,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24122,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110015,
+      "result": "win",
+      "actions": 36,
+      "playerHP": 199,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24688,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 23,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.42,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1335,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23498,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110001,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24932,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110004,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24932,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2950,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24932,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 986,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23903,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110010,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 140,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25161,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110011,
+      "result": "lose",
+      "actions": 34,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25561,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110012,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24932,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110014,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 300,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24303,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110015,
+      "result": "win",
+      "actions": 36,
+      "playerHP": 71,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24875,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 23,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.43,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 1215,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 23674,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110001,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25288,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110004,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25288,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2950,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25288,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 743,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24244,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110010,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 140,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25520,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110011,
+      "result": "lose",
+      "actions": 34,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25926,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110012,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25288,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110014,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 47,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24650,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110015,
+      "result": "lose",
+      "actions": 36,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 1700,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25230,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 23,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.45,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 975,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24012,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110001,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 26160,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110002,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110003,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110004,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 530,
+      "enemyMaxHP": 48000,
+      "damageReceived": 26160,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110005,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2950,
+      "enemyMaxHP": 48000,
+      "damageReceived": 26160,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110006,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110007,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110008,
+      "result": "win",
+      "actions": 33,
+      "playerHP": 135,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25080,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110009,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110010,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 140,
+      "enemyMaxHP": 48000,
+      "damageReceived": 26400,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110011,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2950,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25500,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110012,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 26160,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110013,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110014,
+      "result": "lose",
+      "actions": 33,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 920,
+      "enemyMaxHP": 48000,
+      "damageReceived": 25500,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 21,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110015,
+      "result": "lose",
+      "actions": 35,
+      "playerHP": 0,
+      "maxHP": 10500,
+      "enemyHP": 2560,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 9,
+        "slash": 22,
+        "rebirth": 3
+      }
+    },
+    {
+      "scale": 1.5,
+      "seed": 110016,
+      "result": "win",
+      "actions": 32,
+      "playerHP": 375,
+      "maxHP": 10500,
+      "enemyHP": 0,
+      "enemyMaxHP": 48000,
+      "damageReceived": 24840,
+      "uses": {
+        "meteor": 1,
+        "immortal": 8,
+        "slash": 20,
+        "rebirth": 3
+      }
+    }
+  ]
+}

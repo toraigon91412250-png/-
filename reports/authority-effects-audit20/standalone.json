@@ -1,0 +1,11 @@
+{
+  "passed": 5,
+  "checks": [
+    "standalone matching supplied image decodes inline",
+    "standalone approved wing gauge46",
+    "standalone restored A1 gauge46",
+    "standalone commands on screen",
+    "no JS errors"
+  ],
+  "errors": []
+}

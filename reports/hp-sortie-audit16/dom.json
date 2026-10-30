@@ -1,0 +1,14 @@
+{
+  "passed": 7,
+  "checks": [
+    "milestone5 has no sortie",
+    "real DOM immediate",
+    "real DOM repeated",
+    "real DOM heal",
+    "real DOM zero",
+    "real DOM cancel",
+    "no JavaScript errors"
+  ],
+  "errors": [],
+  "runs": []
+}

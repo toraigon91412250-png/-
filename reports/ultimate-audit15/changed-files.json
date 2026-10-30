@@ -1,0 +1,15 @@
+[
+  "tools/build.mjs",
+  "tests/flow-cutin.test.js",
+  "tests/audit-baseline.js",
+  "tests/ultimate-presentation.test.js",
+  "web/src/components/App.js",
+  "web/src/components/game.css",
+  "web/src/components/combatPresentation.js",
+  "assets/combat-vfx/ultimate-v1/impact.webp",
+  "assets/combat-vfx/ultimate-v1/impact.png",
+  "assets/combat-vfx/ultimate-v1/hero.png",
+  "assets/combat-vfx/ultimate-v1/hero.webp",
+  "assets/combat-vfx/ultimate-v1/eclipse.webp",
+  "assets/combat-vfx/ultimate-v1/eclipse.png"
+]

@@ -1,0 +1,962 @@
+[
+  {
+    "order": [
+      "abyss",
+      "fallen",
+      "judge",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "abyss",
+      "fallen",
+      "king",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "abyss",
+      "judge",
+      "fallen",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "abyss",
+      "judge",
+      "king",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "abyss",
+      "king",
+      "fallen",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "abyss",
+      "king",
+      "judge",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "abyss",
+      "judge",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "abyss",
+      "king",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "judge",
+      "abyss",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "judge",
+      "king",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "king",
+      "abyss",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "fallen",
+      "king",
+      "judge",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "abyss",
+      "fallen",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "abyss",
+      "king",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "fallen",
+      "abyss",
+      "king"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "fallen",
+      "king",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "king",
+      "abyss",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "judge",
+      "king",
+      "fallen",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "abyss",
+      "fallen",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "abyss",
+      "judge",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "fallen",
+      "abyss",
+      "judge"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "fallen",
+      "judge",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "judge",
+      "abyss",
+      "fallen"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      }
+    ]
+  },
+  {
+    "order": [
+      "king",
+      "judge",
+      "fallen",
+      "abyss"
+    ],
+    "trials": [
+      {
+        "id": "wing",
+        "result": "win",
+        "turn": 4,
+        "hp": 538
+      },
+      {
+        "id": "king",
+        "result": "win",
+        "turn": 7,
+        "hp": 812.5999999999999
+      },
+      {
+        "id": "judge",
+        "result": "win",
+        "turn": 6,
+        "hp": 380.96000000000004
+      },
+      {
+        "id": "fallen",
+        "result": "win",
+        "turn": 4,
+        "hp": 331.23333333333335
+      },
+      {
+        "id": "abyss",
+        "result": "win",
+        "turn": 7,
+        "hp": 484
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "checks": [
+    "wing command identifies first slot",
+    "wing matching original image displays before impact",
+    "wing one real impact follows reveal and clears all VFX",
+    "wing repeated taps advance exactly one turn",
+    "judge command identifies first slot",
+    "judge matching original image displays before impact",
+    "judge one real impact follows reveal and clears all VFX",
+    "judge repeated taps advance exactly one turn",
+    "abyss command identifies first slot",
+    "abyss matching original image displays before impact",
+    "abyss one real impact follows reveal and clears all VFX",
+    "abyss repeated taps advance exactly one turn",
+    "fallen command identifies first slot",
+    "fallen matching original image displays before impact",
+    "fallen one real impact follows reveal and clears all VFX",
+    "fallen repeated taps advance exactly one turn",
+    "king command identifies first slot",
+    "king matching original image displays before impact",
+    "king one real impact follows reveal and clears all VFX",
+    "king repeated taps advance exactly one turn",
+    "320 commands stay on screen and no horizontal overflow",
+    "430 commands stay on screen and no horizontal overflow",
+    "reduced motion returns control after real action",
+    "reduced next action succeeds",
+    "failed image leaves combat usable",
+    "image failure next action succeeds",
+    "no uncaught JavaScript errors"
+  ],
+  "errors": []
+}

@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "public exact tested HTML",
+    "390 command IDs and positions preserved during transcend",
+    "390 sealed labels show remaining2T",
+    "390 all commands fit and have44px touch targets",
+    "390 blocked tap cannot advance turn",
+    "390 EX asset renders with alpha-compatible styling",
+    "390 seal countdown updates1T",
+    "guard command names target, multiplier and duration",
+    "existing state modal explains ATK3 duration consumption and exclusions",
+    "no JavaScript errors"
+  ],
+  "errors": []
+}

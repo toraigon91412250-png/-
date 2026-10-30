@@ -1,0 +1,2 @@
+import {campaignTrain,campaignUpgrade} from '../../web/src/utils/campaign20.js';
+export function campaignGrowth(run){for(const id of Object.keys(run.build.powers))while(run.build.powers[id]<5&&run.build.fragments[id]>=run.build.powers[id]*8)campaignUpgrade(run,id);for(const id of ['talent','feather','destruction','ultimate']){const level=id==='talent'?run.build.talent:run.build.skills[id];if(level<(id==='talent'?20:10)&&run.build.p>level*(id==='talent'?30:35)+100)campaignTrain(run,id);}}

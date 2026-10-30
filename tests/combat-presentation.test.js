@@ -1,0 +1,30 @@
+import {legacyAuthorityStrike} from '../web/src/utils/authorityStrike.js';
+import test from 'node:test';import assert from 'node:assert/strict';
+import {freshMain20,startMainBattle,actMainBattle,settleMainBattle} from '../web/src/utils/main20.js';
+import {observeCombat,combatFrame} from '../web/src/utils/combatObservation.js';
+import {planCombatPresentation,mirrorShatterLabel} from '../web/src/components/combatPresentation.js';
+import {developerState,clone} from '../web/src/utils/progression.js';
+import {available} from '../web/src/utils/gameCore.js';
+import {exportSave} from '../web/src/utils/storage.js';
+import {prepare,pick} from '../reports/balance-audit6/study.mjs';
+import * as previous from '../reports/combat-direction-audit11/previous-engine/utils/main20.js';
+const capture=(b,action,options={})=>{const events=[];observeCombat(b,e=>events.push(e),()=>actMainBattle(b,action,options));return events;};
+test('mirror shatter feedback combines the actual heal without changing enemy labels',()=>{assert.equal(mirrorShatterLabel({target:'player',text:'破鏡・生命回帰'},'回復＋120'),'破鏡 回復＋120');assert.equal(mirrorShatterLabel({target:'player',text:'破鏡・生命回帰'},'回復0（HP最大）'),'破鏡 回復0（HP最大）');assert.equal(mirrorShatterLabel({target:'enemy',text:'封印破砕'},'回復＋120'),'封印破砕');});
+test('legacy saved-rule observer preserves full combat/save/reward/RNG through legal main20 routes against audit10',()=>{
+ for(const [profile,seed] of [['wingAbyss',20261021],['wingJudge',46],['wingAbyss',19]]){const s=freshMain20(),old=clone(s),ledger={earnedP:180,trainingP:0,markP:0,fragmentP:{}};
+  for(let floor=1;floor<=20;floor++){prepare(s,profile,'split',ledger);Object.assign(old,clone(s));const b=legacyAuthorityStrike(startMainBattle(s)),a=previous.startMainBattle(old);b.campaign.random=seed+floor;a.campaign.random=seed+floor;
+   for(let n=0;!b.result&&n<200;n++){const id=pick(b,'mixed'),events=capture(b,id);previous.actMainBattle(a,id);assert.deepEqual(b,a,profile+'/'+floor+'/'+n);assert.ok(events.length);}
+   assert.equal(b.result,'win');const reward=settleMainBattle(s,b);assert.deepEqual(reward,previous.settleMainBattle(old,a));assert.deepEqual(exportSave(s),exportSave(old));ledger.earnedP+=reward.p;
+  }
+ }
+});
+test('EX, raid, Stella, final retain complete state under observation',()=>{const s=developerState(freshMain20());for(const mode of ['ex','raid','stella','final'])for(const action of mode==='irena'?['slash']:['guard','slash']){const b=startMainBattle(s,{mode,floor:20}),a=previous.startMainBattle(s,{mode,floor:20});for(let n=0;n<3&&!b.result;n++){capture(b,action,{rng:()=>.99});previous.actMainBattle(a,action,{rng:()=>.99});assert.deepEqual(b,a);}}});
+test('actual enemy-first, outgoing hits, shell break and exposure are ordered facts',()=>{const s=freshMain20();s.floor=5;s.level=20;s.markEquip=['split'];s.marks=['split'];let b=startMainBattle(s);b.enemy.base.spd=b.base.spd*2;let e=capture(b,'power',{rng:()=>.99});const kinds=e.map(x=>x.kind);assert.ok(kinds.indexOf('incomingHit')<kinds.indexOf('playerAction'));assert.ok(kinds.indexOf('armorBreak')<kinds.indexOf('hit'));assert.equal(e.find(x=>x.kind==='armorBreak').frame.armor,false);assert.equal(b.enemy.statuses.researchExposed,2);const plan=planCombatPresentation(e,'power');assert.ok(plan.frames.find(x=>x.event.kind==='incomingHit').at<plan.frames.find(x=>x.event.kind==='hit').at);
+ b=startMainBattle(s);b.enemy.base.spd=1;e=capture(b,'volley',{rng:()=>.99});assert.equal(e.filter(x=>x.kind==='hit').length,2);const p=planCombatPresentation(e,'volley');assert.deepEqual(p.frames.filter(x=>x.event.kind==='hit').map(x=>x.at),[900,1240]);assert.deepEqual(e.filter(x=>x.kind==='hit').map(x=>x.damage),b.events.map(x=>x.damage));assert.ok(p.frames.find(x=>x.event.kind==='enemyAction').at>1240);
+});
+test('zero, miss and truncated volley do not invent a second hit or fake damage',()=>{const s=freshMain20();s.floor=5;s.level=20;s.marks=['split'];s.markEquip=['split'];let b=startMainBattle(s);b.enemy.base.spd=1;b.enemy.hp=1;const e=capture(b,'volley',{rng:()=>.99});assert.equal(e.filter(x=>x.kind==='hit').length,1);assert.ok(!e.some(x=>x.kind==='enemyAction'));const events=[{kind:'playerAction'},{kind:'hit',damage:0,hitIndex:0,landed:false},{kind:'hit',damage:0,hitIndex:1,landed:true}];const p=planCombatPresentation(events,'volley');assert.equal(p.frames.filter(x=>x.event.kind==='hit').length,2);assert.equal(p.frames[1].event.damage,0);assert.equal(p.frames[2].event.damage,0);});
+test('guard, lethal endurance/recovery, deadline and observer exceptions preserve rules',()=>{const s=developerState(freshMain20());s.equipped=['king'];s.markEquip=['crown'];let b=startMainBattle(s,{floor:5}),a=previous.startMainBattle(s,{floor:5});b.hp=a.hp=1;b.enemy.base.atk=a.enemy.base.atk=1e6;const e=capture(b,'guard',{rng:()=>.99});previous.actMainBattle(a,'guard',{rng:()=>.99});assert.deepEqual(b,a);assert.ok(e.some(x=>x.kind==='incomingHit'));assert.ok(e.some(x=>x.kind==='heal'));
+ b=startMainBattle(s,{mode:'ex',floor:20});a=previous.startMainBattle(s,{mode:'ex',floor:20});for(const x of [b,a]){x.enemy.phase=3;x.phaseTurns=8;x.enemyStop=2;}
+ const d=capture(b,'guard',{rng:()=>.99});previous.actMainBattle(a,'guard',{rng:()=>.99});assert.deepEqual(b,a);assert.equal(b.result,'lose');assert.ok(d.some(x=>x.kind==='deadline'));
+ b=startMainBattle(s,{floor:5});a=previous.startMainBattle(s,{floor:5});observeCombat(b,()=>{throw Error('broken renderer');},()=>actMainBattle(b,'slash',{rng:()=>.99}));previous.actMainBattle(a,'slash',{rng:()=>.99});assert.deepEqual(b,a);assert.ok(!JSON.stringify(b).includes('observer'));});
+test('reduced motion queue is ordered, short and detached from save serialization',()=>{const s=freshMain20();s.floor=5;const b=startMainBattle(s),e=capture(b,'slash',{rng:()=>.99});const normal=planCombatPresentation(e,'slash'),reduced=planCombatPresentation(e,'slash',{reduced:true});assert.ok(reduced.duration<normal.duration);for(let i=1;i<reduced.frames.length;i++)assert.ok(reduced.frames[i].at>=reduced.frames[i-1].at);assert.ok(!exportSave(s).includes('presentation'));assert.equal(combatFrame(b).player.hp>=0,true);});

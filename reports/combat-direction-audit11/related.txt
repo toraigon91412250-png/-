@@ -1,0 +1,14 @@
+✔ observer preserves full combat/save/reward/RNG through legal main20 routes against audit10 (145.445788ms)
+✔ EX, raid, Stella, final retain complete state under observation (24.255795ms)
+✔ actual enemy-first, outgoing hits, shell break and exposure are ordered facts (2.731557ms)
+✔ zero, miss and truncated volley do not invent a second hit or fake damage (0.878612ms)
+✔ guard, lethal endurance/recovery, deadline and observer exceptions preserve rules (3.501769ms)
+✔ reduced motion queue is ordered, short and detached from save serialization (1.08674ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 385.435614

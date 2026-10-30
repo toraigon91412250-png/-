@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "390 no horizontal overflow",
+    "390 all commands fit viewport",
+    "390 touch targets at least 44px",
+    "390 boss image decoded",
+    "390 main save unmodified",
+    "zero JS errors"
+  ],
+  "errors": []
+}

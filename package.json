@@ -1,10 +1,16 @@
 {
-  "name": "duel-arena",
+  "name": "irena-reborn",
+  "version": "4.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node web/server.js",
-    "dev": "node web/server.js",
-    "build": "npm run build --prefix web",
-    "lint": "echo 'OK'"
+    "test": "node --test tests/*.test.js",
+    "check": "node tools/check.mjs",
+    "build": "node tools/build.mjs",
+    "test:browser": "node tools/browser-e2e.mjs",
+    "package": "python3 tools/package.py"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
   }
 }

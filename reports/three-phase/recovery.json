@@ -1,0 +1,44 @@
+{
+  "sourceZIPCRC": "passed",
+  "commands": [
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "tail": [
+        "✔ white strike renders only on attacking actions and cleans up automatically (0.894876ms)",
+        "ℹ tests 164",
+        "ℹ suites 0",
+        "ℹ pass 164",
+        "ℹ fail 0",
+        "ℹ cancelled 0",
+        "ℹ skipped 0",
+        "ℹ todo 0",
+        "ℹ duration_ms 588.884475"
+      ]
+    },
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "tail": [
+        "",
+        "> irena-reborn@4.0.0 check",
+        "> node tools/check.mjs",
+        "",
+        "Syntax OK: 25 files"
+      ]
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "tail": [
+        "",
+        "> irena-reborn@4.0.0 build",
+        "> node tools/build.mjs",
+        "",
+        "Build successful: dist/index.html + irena-play.html (5237470 bytes; 19 embedded images)"
+      ]
+    }
+  ],
+  "rebuiltHTMLByteIdentical": true,
+  "htmlSHA256": "0719d546f45f2bf20a08fe7f42e3016b09d8ef3489bed588372dfbc353cc9586"
+}
