@@ -1244,3 +1244,34 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 
 /* Keep the active awakening countdown visible on compact screens too. */
 .div-unified .div-loadout{display:flex}
+
+
+/* Five authority cooperation: isolated to the divinity screens. */
+.cooperation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.cooperation-card progress{width:100%;height:13px;accent-color:#8cc5d6}
+.cooperation-card small{color:var(--muted,#aeb5c2)}
+.cooperation-rules{margin-block:12px 20px}
+.cooperation-banter{display:flex;gap:8px;align-items:center;margin:6px 0;padding:10px 12px;border-left:3px solid #ac8cb8;border-radius:6px;background:rgba(14,18,30,.87);font-size:.85rem;line-height:1.5}
+.cooperation-banter b{flex:none;color:#e9c4ee}
+.cooperation-banter span{min-width:0}
+/* Authority banter floats above combat without reducing the portrait or command area. */
+.div-arena.battle-stage .cooperation-banter{
+ position:absolute;z-index:6;pointer-events:none;left:50%;top:12%;
+ transform:translateX(-50%);width:min(88%,480px);height:50px;
+ margin:0;padding:0;border:1px solid rgba(215,187,226,.58);border-radius:10px;
+ background:linear-gradient(100deg,rgba(13,12,26,.87),rgba(37,25,43,.78));
+ box-shadow:0 4px 20px rgba(0,0,0,.3);font-size:12px;
+ animation:coopBanterPanel var(--banter-duration) linear both;
+}
+.div-arena .cooperation-banter-line{
+ position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ gap:8px;padding:6px 10px;min-width:0;opacity:0;
+ animation:coopBanterLine 1.45s ease-in-out both;
+}
+.div-arena .cooperation-banter-line b{flex:none;color:#f3cbeb;font-size:12px;white-space:nowrap}
+.div-arena .cooperation-banter-line span{min-width:0;color:#fff3e8;line-height:1.3;overflow-wrap:anywhere}
+.div-arena .cooperation-banter-release{border-color:rgba(255,223,150,.9);background:linear-gradient(100deg,rgba(36,21,38,.95),rgba(73,46,34,.91));}
+@keyframes coopBanterLine{0%,8%{opacity:0;transform:translateY(4px)}18%,78%{opacity:1;transform:translateY(0)}98%,100%{opacity:0}}
+@keyframes coopBanterPanel{0%{opacity:0}6%,88%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media(max-width:767px){.div-arena.battle-stage .cooperation-banter{top:10%;height:44px;width:93%;font-size:11px}.div-arena .cooperation-banter-line{gap:6px;padding:4px 8px}.div-arena .cooperation-banter-line b{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.div-arena.battle-stage .cooperation-banter{animation:none}.div-arena .cooperation-banter-line{animation:none}.div-arena .cooperation-banter-line:not(:first-child){display:none}.div-arena .cooperation-banter-line:first-child{opacity:1}}

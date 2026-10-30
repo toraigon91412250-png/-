@@ -2,8 +2,10 @@ import {DIV_IDS,DIV_NAMES,DIV_TRIALS,DIV_SKILLS} from '../data/divinity.js';
 import {hasDivinity,divinityTrialReason} from './divinityProgress.js';
 import {startBattle,act,damage,dealPlayer,playerStats,enemyStats,log,heal,baseStats} from './gameCore.js';
 import {divBattleState,syncDivinityLives,divinityTrialFloor} from './divinityCombat.js';
+import {cooperationEnabled,cooperationTier,cooperationTrialReason,grantCooperationTrial} from './divinityCooperation.js';
 export const divTrial=b=>b?.trial?.kind==='divinity';
 export function startDivinityTrial(s,id){
+ if(cooperationEnabled(s)&&DIV_IDS.includes(id))return startCooperationTrial(s,id);
  const reason=divinityTrialReason(s,id);if(reason)throw Error(reason);
  const b=startBattle(s,{mode:'normal',floor:1,test:true});b.test=false;b.mode='divinity';
  const late=['truth','infinite'].includes(id);
@@ -37,6 +39,7 @@ function divineTrialGate(b,amount){
  return Math.min(amount,Math.max(0,b.enemy.hp-floor));
 }
 export function actDivinityTrial(b,action,options={}){
+ if(b.trial?.cooperation)return actCooperationTrial(b,action,options);
  if(!divTrial(b))throw Error('神格試練ではありません');
  const t=b.trial,wasAwake=t.awakened,guard=action==='guard'||DIV_SKILLS[action]?.guard;
  const before={ratio:b.hp/b.base.hp,returnReady:t.returnReady};t.returnReady=false;
@@ -67,10 +70,56 @@ export function settleDivinityTrial(s,b){
  if(!hasDivinity(s)||divinityTrialReason(s,b.trial.id))throw Error('試練と進行が一致しません');
  b.settled=true;const r={p:0,fragments:0,sp:0,levels:0,resShards:0,achievements:[],unlocks:[]};if(b.result!=='win')return r;
  const id=b.trial.id;
+ if(b.trial.cooperation){
+  if(!b.trial.proven)throw Error('協力試練の条件を満たしていません');
+  grantCooperationTrial(s,id,b.trial.tier);
+  r.p=b.trial.tier===1?120:180;s.p+=r.p;
+  r.fragments=b.trial.tier===1?16:24;s.fragments[id]+=r.fragments;
+  r.unlocks.push(`${DIV_NAMES[id]} 協力上限突破`);
+  return r;
+ }
  if(DIV_IDS.includes(id)){
   if(!b.trial.awakened||!b.trial.used)throw Error('覚醒した権能で試練を突破してください');
   const first=!s.divinity.reclaimed.includes(id);if(first){s.divinity.reclaimed.push(id);s.divinity.order.push(id);s.powers[id]=Math.max(1,s.powers[id]||0);if(!s.powerHistory.includes(id))s.powerHistory.push(id);if(s.equipped.length<2)s.equipped.push(id);r.unlocks.push(id);r.p=120;r.fragments=16;s.p+=120;s.fragments[id]+=16;}else{r.p=40;r.fragments=4;s.p+=40;s.fragments[id]+=4;}
  }else if(id==='truth'){s.divinity.truth=true;r.unlocks.push('真・神格解放');}
  else{s.divinity.infiniteWins++;s.resShards+=40;r.resShards=40;}
  return r;
+}
+
+// Cooperation trials reuse the established deterministic combat and boss
+// telegraphs, but test trust rather than granting an authority a second time.
+function startCooperationTrial(s,id){
+ const reason=cooperationTrialReason(s,id);if(reason)throw Error(reason);
+ const tier=cooperationTier(s,id)+1;
+ const b=startBattle(s,{mode:'normal',floor:1,test:true});b.test=false;b.mode='divinity';
+ b.trial={kind:'divinity',cooperation:true,id,tier,awakened:true,used:false,
+   guards:0,proof:0,lastAttack:null,heavyGuarded:false,incomingCorrosion:false,
+   returnReady:false,proven:false};
+ b.powers=[id,...s.equipped.filter(x=>x!==id)].slice(0,2);
+ b.build.equipped=[...b.powers];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp;
+ b.enemy.name=`${DIV_NAMES[id]}・協力の試練 ${tier}`;
+ b.enemy.base=tier===1?{hp:8000,atk:145,def:40,spd:12}:{hp:100000,atk:1150,def:500,spd:18};
+ b.enemy.hp=b.enemy.base.hp;b.log=[`${DIV_NAMES[id]}の第${tier}協力試練。条件を達成して勝利せよ。`];
+ return b;
+}
+function actCooperationTrial(b,action,options){
+ const t=b.trial,priorRatio=b.hp/b.base.hp,priorProof=t.proof;
+ const guard=action==='guard'||DIV_SKILLS[action]?.guard;
+ act(b,action,{...options,rng:()=>.5,enemyAction:divineTrialEnemy,damageGate:divineTrialGate});
+ if(guard)t.guards++;
+ const attacked=b.events.some(e=>e.type==='hit'&&e.landed&&e.damage>=0);
+ if(attacked&&t.lastAttack!==action)t.proof=Math.min(2,t.proof+1);
+ if(attacked)t.lastAttack=action;
+ const own=DIV_SKILLS[action]?.power===t.id || t.id==='wing'&&['feather','pierce','volley'].includes(action);
+ if(own)t.used=true;
+ const verified={
+  wing:t.guards>=1&&t.used,
+  king:t.heavyGuarded&&t.used&&attacked,
+  fallen:priorRatio<=.5&&t.used&&attacked,
+  judge:priorProof>=2&&['verdict','judgment'].includes(action)&&attacked,
+  abyss:t.heavyGuarded&&t.used&&attacked
+ };
+ if(verified[t.id]&&!t.proven){t.proven=true;log(b,'協力試練の条件達成。最後まで戦い抜け！');b.events.push({type:'authorityAwakening',power:t.id});}
+ if(b.result==='win'&&!t.proven){b.result=null;b.enemy.hp=Math.max(1,b.enemy.base.hp*.1);}
+ return b;
 }

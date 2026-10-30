@@ -1,12 +1,17 @@
 import {freshMain20,loadMain20,validateMain20} from './main20.js';
 import {divinityState,hasDivinity,migrateDivinity} from './divinityProgress.js';
 import {SAVE_KEY} from './storage.js';
+import {activateCooperation,cooperationEnabled} from './divinityCooperation.js';
 export function freshDivinity(){const s=freshMain20();s.powers={};s.equipped=[];s.powerHistory=[];s.divinity=divinityState();return s;}
 export function validateDivinitySave(input){return migrateDivinity(validateMain20(input));}
 export function loadDivinity(storage=globalThis.localStorage){
  try{
- const result=loadMain20(storage);if(result.error)return result;if(!result.key)return {...result,state:freshDivinity()};
+ const result=loadMain20(storage);if(result.error)return result;if(!result.key)return {...result,state:activateCooperation(freshDivinity())};
  if(!hasDivinity(result.state)){const raw=storage.getItem(result.key);const key='irena-before-divinity-v1';if(!storage.getItem(key))storage.setItem(key,raw);migrateDivinity(result.state);}
+ if(!cooperationEnabled(result.state)){
+  const key='irena-before-cooperation-v1';if(!storage.getItem(key))storage.setItem(key,storage.getItem(result.key));
+  activateCooperation(result.state);
+ }
  return result;
  }catch(error){return {state:null,key:SAVE_KEY,error:'移行前バックアップを保存できません。元のセーブは変更していません。'+error.message};}
 }

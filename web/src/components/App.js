@@ -1,5 +1,6 @@
 import {DIV_IDS,DIV_NAMES,DIV_ART,DIV_STAGES,DIV_SKILLS,DIV_TRIALS} from '../data/divinity.js';
 import {hasDivinity,chooseDivinityBranch,divinityAwakenReason} from '../utils/divinityProgress.js';
+import {activateCooperation} from '../utils/divinityCooperation.js';
 import {freshDivinity,loadDivinity,validateDivinitySave,divinityDeveloper} from '../utils/divinitySave.js';
 import {isDivinityBattle,divBattleState} from '../utils/divinityCombat.js';
 import {startDivinityTrial,actDivinityTrial,settleDivinityTrial,divTrial} from '../utils/divinityTrials.js';
@@ -49,7 +50,7 @@ function persistMirror(b){if(b.trial?.developerGauntlet)return;mirrorMemory=reco
 let campaign=null;
 const lab20Runs={B:null,current:null};let lab20Run=null;
 let sortieActive=false;
-let s=freshDivinity(),sandbox=null,battle=null,page='home',tab='overview',powerSort='default',difficulty='NORMAL',finaleDifficulty='NORMAL',raidDifficulty='NORMAL',godDifficulty='NORMAL',selectedFloor=1,saveError='',saveBlocked=false,toastTimer,cinemaTimer,alignmentRevealTimer,combatAnimating=false,combatRecovering=false,combatReleaseTimer,sound=false,audio=null,lastSummon=[],summonSession=null;
+let s=activateCooperation(freshDivinity()),sandbox=null,battle=null,page='home',tab='overview',powerSort='default',difficulty='NORMAL',finaleDifficulty='NORMAL',raidDifficulty='NORMAL',godDifficulty='NORMAL',selectedFloor=1,saveError='',saveBlocked=false,toastTimer,cinemaTimer,alignmentRevealTimer,combatAnimating=false,combatRecovering=false,combatReleaseTimer,sound=false,audio=null,lastSummon=[],summonSession=null;
 try{const loaded=loadDivinity();if(loaded.error){saveError='既存セーブを読み込めません：'+loaded.error;saveBlocked=true;}else {s=loaded.state;selectedFloor=s.floor;battle=restoreMarkBattle(s.markBattle,validateSave);}}catch(e){saveError='保存領域を利用できません。JSONバックアップをご利用ください。';saveBlocked=true;}
 const current=()=>sandbox||s;
 function persist(){if(saveBlocked&&!sandbox)return false;try{if(sandbox)localStorage.setItem('irena-reborn-lab-v4',JSON.stringify(sandbox));else {const checkpoint=markBattleCheckpoint(battle);if(checkpoint)s.markBattle=checkpoint;else delete s.markBattle;save(s);}saveError='';return true;}catch(e){saveError='自動保存失敗。JSONを書き出してください。';toast(saveError);return false;}}
@@ -295,7 +296,7 @@ async function doPresentedCombat(b,id,route){
  finally{controller.abort();combatRecovering=false;if(b===battle)render();syncCombatBusy();}
 }
 function download(filename,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
-function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const importedRaw=await file.text();const data=validateDivinitySave(JSON.parse(importedRaw));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}localStorage.setItem('irena-before-divinity-import-'+Date.now(),importedRaw);if(sandbox)sandbox=data;else s=data;saveBlocked=false;battle=sandbox?null:restoreMarkBattle(s.markBattle,validateSave);page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
+function importFile(){const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>2000000)throw Error('ファイルが大きすぎます（上限2MB）');const importedRaw=await file.text();const data=validateDivinitySave(JSON.parse(importedRaw));modal('セーブを復元',`<p>Lv.${data.level} / 到達Lv.${data.floor} / ${data.achieved.length}実績のデータです。${sandbox?'試験用':'本編'}セーブを上書きします。読み込み前のバックアップを書き出せます。</p>`,button('現在のJSONを書き出し','export','','ghost')+button('このデータに置き換える','confirmImport','','primary'));$('#modal').querySelector('[data-action="confirmImport"]').onclick=event=>{event.stopPropagation();if(battle&&!battle.result){toast('進行中の戦闘を撤退してから読み込んでください');return;}localStorage.setItem('irena-before-divinity-import-'+Date.now(),importedRaw);if(sandbox)sandbox=activateCooperation(data);else s=activateCooperation(data);saveBlocked=false;battle=sandbox?null:restoreMarkBattle(s.markBattle,validateSave);page='home';const stored=persist();close();render();toast(stored?'JSONから復元しました':'JSONを読み込みましたが、端末への保存に失敗しました。JSONバックアップを保持してください。');};}catch(e){toast('読み込み失敗：'+e.message);}};input.click();}
 async function handle(action,id){if(sortieActive||combatAnimating||combatRecovering)return;const a=current();if(action==='mirrorStart'&&!mirrorEntryAllowed(a.level,!!sandbox))throw Error('鏡像戦は育成Lv.20で解放されます');if(hasDivinity(a)&&battle&&!battle.result&&['equipPower','replaceEquipment','upgradePower','divBranch','divAwaken','fuse','train','divDev','divDevStage','divDevLevel'].includes(action))throw Error('戦闘を終えてから育成・装備を変更してください');switch(action){
  case 'divPage':divCommandPage=Number(id)||0;render();break;
  case 'divNotice':a.divinity.notice='';persist();render();break;
@@ -305,11 +306,11 @@ async function handle(action,id){if(sortieActive||combatAnimating||combatRecover
  case 'divCommand':await resolveDivinityCombat(id);break;
  case 'divFinish':battle=null;page='awakening';render();window.scrollTo(0,0);break;
  case 'divInfo':if(battle)modal('戦況・権能',`<h3>自分</h3><p>${esc(divinityStatusText(battle.statuses))} / 障壁 ${n(divBattleState(battle).shield)}</p>${statsHTML(playerStats(battle))}<p>${DIV_STAGES[battle.build.awakening].effect}</p><h3>敵</h3><p>${esc(divinityStatusText(battle.enemy.statuses))} / 侵食 ${Math.round(battle.erosion*100)}%</p>${statsHTML(enemyStats(battle))}<p>${battle.trial?.kind==='mirror'?mirrorStateDetails(battle).map(esc).join('<br>'):divTrial(battle)?DIV_TRIALS[battle.trial.id].condition:'4ターンごとの重撃に注意。防御と権能で突破。'}</p><h3>装備権能</h3><p>${battle.powers.map(id=>esc(name(id))).join("・")||"未解放"}</p><h3>使用できる技</h3>${divinityCommands(battle).map(([key,title,text])=>`<p><b>${title}</b> ${text}</p>`).join('')}`);break;
- case 'divDev':sandbox=divinityDeveloper(a,Number(id));battle=null;page='awakening';persist();render();break;
+ case 'divDev':sandbox=activateCooperation(divinityDeveloper(a,Number(id)));battle=null;page='awakening';persist();render();break;
  case 'divDevStage':if(!sandbox||!hasDivinity(sandbox))throw Error('先に神格の試験データを作成してください');sandbox.awakening=Number($('#div-dev-stage').value);persist();render();break;
  case 'divDevLevel':{if(!sandbox||!hasDivinity(sandbox))throw Error('先に神格の試験データを作成してください');const power=$('#div-dev-power').value;sandbox.powers[power]=Number($('#div-dev-level').value);if(!sandbox.divinity.reclaimed.includes(power))sandbox.divinity.reclaimed.push(power);persist();render();break;}
  case 'begin':if(saveBlocked){confirmDialog('読み込めない既存セーブがあります','新しい旅を始めると保存済みデータを上書きします。既存のデータを残す場合は閉じて、正しいJSONを読み込んでください。','newAfterError','');break;}a.started=true;persist();render();break;
- case 'newAfterError':saveBlocked=false;s=freshDivinity();s.started=true;persist();close();render();break;
+ case 'newAfterError':saveBlocked=false;s=activateCooperation(freshDivinity());s.started=true;persist();close();render();break;
  case 'nav':if(id==='upgrade')tab='overview';page=id;render();window.scrollTo(0,0);break;
  case 'openupgrade':page='upgrade';tab=id;render();window.scrollTo(0,0);break;
  case 'upgradeBack':tab='overview';render();window.scrollTo(0,0);break;
@@ -378,7 +379,7 @@ async function handle(action,id){if(sortieActive||combatAnimating||combatRecover
  case 'import':importFile();break;
  case 'title':if(battle&&!battle.result)throw Error('先に戦闘を終了してください');$('#app').innerHTML=titleScreen();break;
  case 'askReset':confirmDialog('本編データの初期化','本編の進行を消去します。必要なら先にJSONバックアップを書き出してください。','reset','');break;
- case 'reset':s=freshDivinity();sandbox=null;battle=null;saveBlocked=false;persist();close();render();break;
+ case 'reset':s=activateCooperation(freshDivinity());sandbox=null;battle=null;saveBlocked=false;persist();close();render();break;
 }}
 function playMovie(){if(MEDIA.awakeningMovie){modal('神格覚醒',`<video controls autoplay playsinline style="width:100%" src="${MEDIA.awakeningMovie}"></video>`);}else cinema('warp','再誕の神格','CSS代替演出 / 専用MP4は未提供',null,10000);}
 document.addEventListener('click',event=>{const el=event.target.closest('[data-action]');if(!el||el.disabled)return;try{Promise.resolve(handle(el.dataset.action,el.dataset.id)).catch(e=>toast(e.message));}catch(e){toast(e.message);}});

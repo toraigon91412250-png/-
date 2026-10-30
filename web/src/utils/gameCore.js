@@ -1,3 +1,4 @@
+import {grantCooperationBattle} from './divinityCooperation.js';
 import {divinityAvailable,divinityIsGuard,divinityIncoming,divinityBefore,divinityStrikeProfile,performDivinityAction,divinityAfter,spendDivinityLife,divinityErosionCap} from './divinityCombat.js';
 import {recordSpecialBattleAction} from './battleHistory.js';
 import {authorityStrikeEffect} from './authorityStrike.js';
@@ -200,5 +201,6 @@ export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
  if(b.mode==='stella'){s.flags.stellaClear=true;s.flags.final=true;}
  if(b.mode==='final')s.flags.finalClear=true;
  if(b.mode==='god'&&s.gauntlet){const g=s.gauntlet;g.materials+=5;g.unique[g.index]++;if(g.index===4){s.godMaterials+=g.materials+5;g.unique.forEach((n,i)=>s.godUnique[i]+=n);s.medals++;s.gauntlet=null;}else g.index++;}
- achievements(s);return summary(4+Math.floor(b.floor/10),s.p-before.p-reward);
+ const coopGains=grantCooperationBattle(s,b);
+ achievements(s);return {...summary(4+Math.floor(b.floor/10),s.p-before.p-reward),...(coopGains.length?{cooperation:coopGains}:{})};
 }
