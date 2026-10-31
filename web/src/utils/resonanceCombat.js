@@ -85,7 +85,7 @@ function activate(b,id,env){
    const bonus=Math.min(v.bonusHits,spend*2);
    d.feathers=Math.max(0,(d.feathers||0)-spend);
    for(let i=0;i<v.hits+bonus;i++){
-    if(b.enemy.hp>0)impact(b,v.hitMult,0,env);
+    if(b.enemy.hp>0)impact(b,v.hitMult,env,0);
     corrode(b,v.erosion);
    }
    break;
@@ -93,7 +93,7 @@ function activate(b,id,env){
   case 'lowJudgment':{
    const ratio=hpRatio(b),isLow=ratio<=.25;
    const hadProof=(d.proof||0)>=2;
-   impact(b,v.mult,v.ignore,env);
+   impact(b,v.mult,env,v.ignore);
    const pct=hadProof?v.proofExtra:v.currentHp[isLow?1:0];
    if(b.enemy.hp>0)fixedDamage(b,b.enemy.hp*pct,env);
    if(hadProof)d.proof=0;
@@ -158,13 +158,13 @@ export function afterResonanceTurn(b,action,env){
  // A successful guarded enemy attack opens an immediate counterattack.
  if(rs.royalJudgment?.armed&&action==='guard'&&b.turn%4===0&&b.enemyDamage>=0){
   const v=rs.royalJudgment;v.armed=false;
-  impact(b,v.counterMult,v.ignore,env);
+  impact(b,v.counterMult,env,v.ignore);
   if((rs.lastIncoming||0)>=env.playerStats(b).hp*.2&&b.enemy.hp>0)fixedDamage(b,b.enemy.base.hp*v.extraMaxHp,env);
   rs.royalJudgment=null;
  }
  if(rs.wingGuard?.left>0&&action!=='res_wingking'){
   if(rs.wingGuard.counters>0&&b.enemyDamage>0&&b.enemy.hp>0){
-   impact(b,rs.wingGuard.counterMult*(1+Math.min(b.divine.feathers||0,5)*.1),0,env);
+   impact(b,rs.wingGuard.counterMult*(1+Math.min(b.divine.feathers||0,5)*.1),env,0);
    rs.wingGuard.counters--;
   }
   rs.wingGuard.left--;
@@ -173,7 +173,7 @@ export function afterResonanceTurn(b,action,env){
  if(rs.survival?.left>0&&action!=='res_kingfallen'){
   const v=rs.survival;
   if(v.triggered){
-   if(b.enemy.hp>0)impact(b,hpRatio(b)<=.25?v.lowCounterMult:v.counterMult,0,env);
+   if(b.enemy.hp>0)impact(b,hpRatio(b)<=.25?v.lowCounterMult:v.counterMult,env,0);
    env.heal(b,v.heal);rs.survival=null;
   }else if(--v.left<=0)rs.survival=null;
  }
