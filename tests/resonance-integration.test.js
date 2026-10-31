@@ -6,6 +6,9 @@ import {exportSave} from '../web/src/utils/storage.js';
 import {startResonanceTrial,actResonanceTrial,settleResonanceTrial} from '../web/src/utils/resonanceTrial20.js';
 import {RESONANCES,resonanceState} from '../web/src/data/resonanceV3.js';
 import {available} from '../web/src/utils/gameCore.js';
+import {startMainBattle,actMainBattle} from '../web/src/utils/main20.js';
+import {markBattleCheckpoint,restoreMarkBattle} from '../web/src/utils/battleCheckpoint.js';
+import {learnResonance} from '../web/src/data/resonanceV3.js';
 function eligible(){
  const s=activateCooperation(freshDivinity());
  s.started=true;s.floor=20;s.cleared=Array.from({length:20},(_,i)=>i+1);
@@ -91,4 +94,22 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
  }
  assert.equal(RESONANCES.every(r=>resonanceState(s).levels[r.id]===1),true);
  assert.equal(resonanceState(s).finished,true);
+});
+test('normal combat checkpoint round-trips cooperative action with deterministic replay',()=>{
+ const s=eligible();
+ s.level=1;s.stats.hp=500;s.stats.def=500;s.equipped=['wing','judge'];
+ learnResonance(s,'wingjudge');
+ const b=startMainBattle(s,{floor:20});
+ for(let n=0;n<4;n++)actMainBattle(b,'slash',{rng:()=>.5});
+ assert.equal(b.gauge,100);
+ assert.equal(b.result,null);
+ actMainBattle(b,'res_wingjudge',{rng:()=>.5});
+ assert.equal(b.result,null);
+ const checkpoint=markBattleCheckpoint(b);
+ assert.ok(checkpoint);
+ assert.ok(checkpoint.turns.some(row=>row.action==='res_wingjudge'));
+ const restored=restoreMarkBattle(checkpoint,validateDivinitySave);
+ assert.equal(restored.enemy.hp,b.enemy.hp);
+ assert.equal(restored.gauge,b.gauge);
+ assert.equal(restored.cd.resonanceShared,b.cd.resonanceShared);
 });
