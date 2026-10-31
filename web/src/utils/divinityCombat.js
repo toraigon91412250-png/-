@@ -44,17 +44,19 @@ export function divinityTrialFloor(b){
 }
 export const divinityErosionCap=b=>Math.min(.95,1-divinityTrialFloor(b));
 export function divinityIncoming(b,amount){
- if(!isDivinityBattle(b)||b.statuses.invulnerable||amount<=0)return amount;const d=divBattleState(b);
+ if(!isDivinityBattle(b)||b.statuses.invulnerable||amount<=0)return amount;const d=divBattleState(b),incomingRaw=amount;
  if(b.enemy.statuses.divinityWeaken)amount*=.7;
  if(d.nextReduction){amount*=.5;d.nextReduction=false;}
  const absorbed=Math.min(amount,d.shield);d.shield-=absorbed;amount-=absorbed;
  amount=adjustResonanceIncoming(b,amount,{playerStats});
+ if(d.resonance)d.resonance.lastIncoming=incomingRaw;
  if(absorbed>0){log(b,`障壁が${Math.round(absorbed)}を受け止めた`);b.events.push({type:'divinityShield',amount:absorbed});}
  if(amount>=playerStats(b).current&&b.build.awakening>=4&&!d.revived){d.revived=true;heal(b,.4);amount=Math.min(amount,Math.max(0,playerStats(b).current-playerStats(b).hp*.4));log(b,'神域の再臨：一度だけ、HP40%で再起');b.events.push({type:'divinityRevive'});}
  return amount;
 }
 export function divinityBefore(b,action){
  if(!isDivinityBattle(b))return;const d=divBattleState(b);d.guardAction=action==='guard'||divinityIsGuard(b,action);d.freshUnified=false;
+ if(d.resonance)d.resonance.lastIncoming=0;
  if(action==='royalGuard'||action==='mantle')d.shield=Math.max(d.shield,playerStats(b).hp*(action==='royalGuard'&&divPowerLevel(b,'king')>=2?.35:.25));
  if(d.guardAction&&b.build.divinity.branches.king==='bastion'&&divHasPower(b,'king'))d.shield=Math.max(d.shield,playerStats(b).hp*.15);
  if(action==='fallenOath'){b.hp=Math.min(b.hp,b.base.hp*.45);if(divPowerLevel(b,'fallen')>=2)b.gauge=Math.min(100,b.gauge+15);}
