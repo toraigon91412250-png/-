@@ -185,7 +185,7 @@ export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
   for(const id of ['fallen','king','judge','star'])if(!before.powers[id]&&s.powers[id])unlocks.push(id);
   if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance');
   if(!before.lv100&&s.flags.lv100)unlocks.push('mystery');if(!before.ex&&s.flags.ex)unlocks.push('god');if(!before.final&&s.flags.final)unlocks.push('final');
-  return {p:s.p-before.p,summonPoints:(s.summonPoints||0)-before.summonPoints,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
+  return {p:s.p-before.p,...((s.summonPoints||0)>before.summonPoints?{summonPoints:(s.summonPoints||0)-before.summonPoints}:{}),fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
  s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return summary();}
  const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;addSummonWinReward(s,b);s.counts.wins++;s.counts.streak++;
  for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);
