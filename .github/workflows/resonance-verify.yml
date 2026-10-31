@@ -35,3 +35,18 @@ jobs:
       - name: Exercise browser flows
         if: ${{ !cancelled() }}
         run: node tools/resonance-browser.mjs
+      - name: Verify deliverable ZIP integrity
+        if: ${{ !cancelled() }}
+        run: npm run package
+      - name: Upload verified play and source files
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: irena-reborn-resonance-PR209
+          path: |
+            artifacts/irena-play.html
+            artifacts/irena-source.zip
+            artifacts/irena-deploy.zip
+            artifacts/SHA256.json
+          if-no-files-found: error
+          retention-days: 30
