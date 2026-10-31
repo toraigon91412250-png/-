@@ -34,7 +34,8 @@ try{
  if(await page.locator('button.navbtn[data-id=upgrade]').count()===0){
   const body=(await page.locator('body').textContent()||'').slice(0,800);
   const stored=await page.evaluate(key=>localStorage.getItem(key)?.slice(0,180),SAVE_KEY);
-  throw Error('No navigation rendered; body='+body+'; saved='+stored+'; errors='+errors.join('; '));
+  const script=await page.locator('script').last().textContent();
+  throw Error('No navigation rendered; decl='+script.includes('function summonBalance')+'; summonDef='+script.includes('SUMMON_COST_SINGLE')+'; idx='+script.indexOf('summonBalance')+'; scriptLength='+script.length+'; body='+body.slice(0,90)+'; saved='+stored+'; errors='+errors.join('; '));
  }
  await page.locator('button.navbtn[data-id=upgrade]').click();
  await page.locator('button.upgrade-category[data-id=summon]').click();
