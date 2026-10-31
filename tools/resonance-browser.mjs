@@ -30,6 +30,12 @@ try{
  s.divinity.infiniteWins=1;s.summonPoints=1000;s.p=1000;
  await page.evaluate(([key,raw])=>localStorage.setItem(key,raw),[SAVE_KEY,JSON.stringify(s)]);
  await page.reload();
+ await page.waitForTimeout(250);
+ if(await page.locator('button.navbtn[data-id=upgrade]').count()===0){
+  const body=(await page.locator('body').textContent()||'').slice(0,800);
+  const stored=await page.evaluate(key=>localStorage.getItem(key)?.slice(0,180),SAVE_KEY);
+  throw Error('No navigation rendered; body='+body+'; saved='+stored+'; errors='+errors.join('; '));
+ }
  await page.locator('button.navbtn[data-id=upgrade]').click();
  await page.locator('button.upgrade-category[data-id=summon]').click();
  await page.locator('button[data-action=resonanceSummon][data-id="10"]').click();
