@@ -149,28 +149,27 @@ export function adjustResonanceIncoming(b,raw,env){
   rs.survival.triggered=true;
   amount=Math.max(0,env.playerStats(b).current-1);
  }
- rs.lastIncoming=raw;
  return amount;
 }
 export function afterResonanceTurn(b,action,env){
  if(!b.divine)return;
  const rs=soul(b);
  // A successful guarded enemy attack opens an immediate counterattack.
- if(rs.royalJudgment?.armed&&action==='guard'&&b.turn%4===0&&b.enemyDamage>=0){
+ if(rs.royalJudgment?.armed&&action==='guard'&&b.turn%4===0&&(rs.lastIncoming||0)>0){
   const v=rs.royalJudgment;v.armed=false;
   impact(b,v.counterMult,env,v.ignore);
   if((rs.lastIncoming||0)>=env.playerStats(b).hp*.2&&b.enemy.hp>0)fixedDamage(b,b.enemy.base.hp*v.extraMaxHp,env);
   rs.royalJudgment=null;
  }
- if(rs.wingGuard?.left>0&&action!=='res_wingking'){
-  if(rs.wingGuard.counters>0&&b.enemyDamage>0&&b.enemy.hp>0){
+ if(rs.wingGuard?.left>0&&action!=='res_wingking'&&(rs.lastIncoming||0)>0){
+  if(rs.wingGuard.counters>0&&b.enemy.hp>0){
    impact(b,rs.wingGuard.counterMult*(1+Math.min(b.divine.feathers||0,5)*.1),env,0);
    rs.wingGuard.counters--;
   }
   rs.wingGuard.left--;
   if(rs.wingGuard.left<=0)rs.wingGuard=null;
  }
- if(rs.survival?.left>0&&action!=='res_kingfallen'){
+ if(rs.survival?.left>0&&action!=='res_kingfallen'&&(rs.lastIncoming||0)>0){
   const v=rs.survival;
   if(v.triggered){
    if(b.enemy.hp>0)impact(b,hpRatio(b)<=.25?v.lowCounterMult:v.counterMult,env,0);
