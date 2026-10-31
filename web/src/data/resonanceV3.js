@@ -88,7 +88,7 @@ export function resonanceState(s){
  if(!s?.divinity)throw Error('五権能が必要です');
  return s.divinity.resonanceV3 ||= {levels:{},cleared:[],floor:1};
 }
-export function resonanceLevel(s,id){return resonanceState(s).levels[id]||0;}
+export function resonanceLevel(s,id){return s?.divinity?.resonanceV3?.levels?.[id]||0;}
 export function resonanceMaxLevel(s,id){
  const row=RESONANCE_BY_ID[id];
  if(!row)return 0;
