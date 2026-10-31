@@ -17,6 +17,7 @@ test('survival absorbs one lethal attack ahead of king lives',()=>{
  const b=make('kingfallen');b.powers=['king','fallen'];b.hp=450;
  performResonanceAction(b,'res_kingfallen',env);b.hp=100;b.turn=2;
  const incoming=adjustResonanceIncoming(b,300,env);assert.equal(incoming,99);
+ b.divine.resonance.lastIncoming=300; // the outer defense pipeline records the enemy hit before shields
  afterResonanceTurn(b,'guard',env);assert.equal(b.divine.resonance.survival,null);
  assert.ok(b.lastDamage>0);
 });
@@ -26,4 +27,18 @@ test('barrier reduction stores mitigated damage with cap',()=>{
  const v=adjustResonanceIncoming(b,1000,env);
  assert.ok(Math.abs(v-50)<.01);
  assert.equal(b.divine.resonance.abyssBarrier.prevented,950);
+});
+
+test('wing barrier lasts for actual incoming hits, counters even with shield absorbing HP damage',()=>{
+ const b=make('wingking');b.powers=['wing','king'];
+ performResonanceAction(b,'res_wingking',env);
+ assert.equal(b.divine.resonance.wingGuard.left,3);
+ afterResonanceTurn(b,'slash',env); // enemy did not attack
+ assert.equal(b.divine.resonance.wingGuard.left,3);
+ b.divine.resonance.lastIncoming=100; // intercepted by a barrier, 0 HP damage
+ b.enemyDamage=0;
+ afterResonanceTurn(b,'guard',env);
+ assert.equal(b.divine.resonance.wingGuard.left,2);
+ assert.equal(b.divine.resonance.wingGuard.counters,2);
+ assert.ok(b.lastDamage>0);
 });
