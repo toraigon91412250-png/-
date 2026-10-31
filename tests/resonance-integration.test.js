@@ -67,7 +67,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
    actLegal(b,'attune_abyss');actLegal(b,'abyssTide');
    actLegal(b,'attune_judge');
    actLegal(b,'slash');actLegal(b,'power');
-   assert.equal(b.trial.seals.length,5,'Final boss must witness all 5 authorities');
+   assert.equal(b.trial.seals.length,5,'Final boss must witness all 5 authorities: '+b.trial.seals.join(',')+'; HP '+(b.hp/b.base.hp).toFixed(3)+'; '+b.log.slice(-10).join(' | '));
   }else if(floor%2===1){
    const defensive=[7,13,15].includes(floor);
    actLegal(b,floor===1?'feather':'slash');
