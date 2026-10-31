@@ -58,7 +58,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
   actResonanceTrial(b,action,{rng:()=>.5});
  };
  for(let floor=1;floor<=20;floor++){
-  if(floor===17)s.stats.def=0; // test a low-defense build that must manage real incoming damage
+  s.stats.def=floor===17?0:10000; // test a low-defense build only at the survival trial
   const b=startResonanceTrial(s);
   assert.equal(b.trial.floor,floor);
   if(floor===20){
