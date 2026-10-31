@@ -58,6 +58,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
   actResonanceTrial(b,action,{rng:()=>.5});
  };
  for(let floor=1;floor<=20;floor++){
+  if(floor===17)s.stats.def=0; // test a low-defense build that must manage real incoming damage
   const b=startResonanceTrial(s);
   assert.equal(b.trial.floor,floor);
   if(floor===20){
@@ -72,7 +73,10 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
    actLegal(b,floor===1?'feather':'slash');
    actLegal(b,defensive?'guard':floor===1?'slash':'power');
    assert.equal(b.trial.proven,true,'Floor '+floor+' must create cooperation');
-   if([11,17].includes(floor))actLegal(b,'fallenOath');
+   if([11,17].includes(floor)){
+    actLegal(b,'fallenOath');
+    for(let i=0;floor===17&&b.hp/b.base.hp>.5&&i<20;i++)actLegal(b,i%2===0?'slash':'guard');
+   }
    actLegal(b,'res_'+b.trial.tempId);
    assert.equal(b.trial.tempUsed,true,'Floor '+floor+' must cast its learned skill');
   }
