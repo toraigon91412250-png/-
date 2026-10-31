@@ -1,3 +1,4 @@
+import {addSummonWinReward} from './resonanceSummon.js';
 import {grantCooperationBattle} from './divinityCooperation.js';
 import {divinityAvailable,divinityIsGuard,divinityIncoming,divinityBefore,divinityStrikeProfile,performDivinityAction,divinityAfter,spendDivinityLife,divinityErosionCap} from './divinityCombat.js';
 import {recordSpecialBattleAction} from './battleHistory.js';
@@ -179,14 +180,14 @@ export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn,da
 export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
  const empty={p:0,fragments:0,bonusP:0,sp:0,levels:0,resShards:0,achievements:[],unlocks:[]};if(b.test)return {test:true,...empty};
  // Report actual changes without adding any fields to the persistent save format.
- const before={p:s.p,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
+ const before={p:s.p,summonPoints:s.summonPoints||0,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
  const summary=(fragments=0,bonusP=0)=>{const unlocks=[];
   for(const id of ['fallen','king','judge','star'])if(!before.powers[id]&&s.powers[id])unlocks.push(id);
   if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance');
   if(!before.lv100&&s.flags.lv100)unlocks.push('mystery');if(!before.ex&&s.flags.ex)unlocks.push('god');if(!before.final&&s.flags.final)unlocks.push('final');
-  return {p:s.p-before.p,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
+  return {p:s.p-before.p,summonPoints:(s.summonPoints||0)-before.summonPoints,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
  s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return summary();}
- const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;s.counts.wins++;s.counts.streak++;
+ const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;addSummonWinReward(s,b);s.counts.wins++;s.counts.streak++;
  for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);
  s.records.fast ||= b.turn<=5;s.records.low ||= b.used.low;s.records.expert ||= ['EXPERT','NIGHTMARE'].includes(b.difficulty);s.records.basic ||= b.character==='irena'&&b.used.special===0&&b.used.ultimate===0;s.records.endure ||= b.used.endure;s.records.nomark ||= b.marks.length===0;s.records.nopower ||= b.powers.length===0&&b.character==='irena';s.records.starfinish ||= b.used.marks.includes('starfall')&&b.lastAction==='ultimate'&&b.lastDamage>0;
  // Award fragments to ALL five types so consumed authorities can always be rebuilt.
