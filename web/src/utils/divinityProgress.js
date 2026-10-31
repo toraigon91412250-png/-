@@ -1,3 +1,4 @@
+import {RESONANCE_BY_ID} from '../data/resonanceV3.js';
 import {DIV_IDS,DIV_BRANCHES,DIV_STAGES} from '../data/divinity.js';
 import {RECIPES} from '../data/config.js';
 import {cooperationEnabled,cooperationTrialReason,normalizeCooperation} from './divinityCooperation.js';
@@ -9,6 +10,18 @@ export function validateDivinityField(value,s){
  d.reclaimed=ids(value.reclaimed);d.order=ids(value.order);d.truth=value.truth===true;d.infiniteWins=Number.isSafeInteger(value.infiniteWins)?Math.max(0,value.infiniteWins):0;d.migrated=value.migrated===true;
  for(const id of DIV_IDS){if(s.powers[id]&&!d.reclaimed.includes(id))d.reclaimed.push(id);if(DIV_BRANCHES[id].some(([v])=>value.branches?.[id]===v))d.branches[id]=value.branches[id];}
  d.notice=typeof value.notice==='string'?value.notice.slice(0,400):'';
+ if(value.resonanceV3!==undefined){
+  const v=value.resonanceV3;
+  if(!v||typeof v!=='object'||Array.isArray(v)||!v.levels||typeof v.levels!=='object'||Array.isArray(v.levels)||!Array.isArray(v.cleared)||!Number.isInteger(v.floor)||v.floor<1||v.floor>20)throw Error('新共鳴の保存形式が不正です');
+  const levels={};
+  for(const [id,level] of Object.entries(v.levels)){
+   if(!RESONANCE_BY_ID[id]||!Number.isInteger(level)||level<1||level>5)throw Error('新共鳴のレベルが不正です');
+   levels[id]=level;
+  }
+  if(v.cleared.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('新試練の進行が不正です');
+  d.resonanceV3={levels,cleared:[...new Set(v.cleared)].sort((a,b)=>a-b),floor:v.floor};
+ }
+
  if(value.cooperation!==undefined){
   if(!value.cooperation||typeof value.cooperation!=='object'||Array.isArray(value.cooperation)||!value.cooperationTrials||typeof value.cooperationTrials!=='object'||Array.isArray(value.cooperationTrials))throw Error('協力率データの保存形式が不正です');
   d.cooperation={...value.cooperation};d.cooperationTrials={...value.cooperationTrials};normalizeCooperation({...s,divinity:d});
