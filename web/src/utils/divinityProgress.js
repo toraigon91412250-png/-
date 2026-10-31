@@ -19,7 +19,7 @@ export function validateDivinityField(value,s){
    levels[id]=level;
   }
   if(v.cleared.some(n=>!Number.isInteger(n)||n<1||n>20))throw Error('新試練の進行が不正です');
-  d.resonanceV3={levels,cleared:[...new Set(v.cleared)].sort((a,b)=>a-b),floor:v.floor};
+  d.resonanceV3={levels,cleared:[...new Set(v.cleared)].sort((a,b)=>a-b),floor:v.floor,finished:v.finished===true&&v.cleared.includes(20)};
  }
 
  if(value.cooperation!==undefined){
