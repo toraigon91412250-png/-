@@ -20,14 +20,18 @@ jobs:
       - name: Run cooperative feature unit tests
         run: node --test tests/resonance-*.test.js
       - name: Check source syntax
+        if: ${{ !cancelled() }}
         run: npm run check
       - name: Build game
+        if: ${{ !cancelled() }}
         run: |
           cp -R migration-inputs/assets-to-integrate ../assets-to-integrate
           cp -R migration-inputs/combat-ui-user-input ../combat-ui-user-input
           cp -R migration-inputs/supplied-raid ../supplied-raid
           npm run build
       - name: Install Chromium
+        if: ${{ !cancelled() }}
         run: npx playwright install --with-deps chromium
       - name: Exercise browser flows
+        if: ${{ !cancelled() }}
         run: node tools/resonance-browser.mjs
