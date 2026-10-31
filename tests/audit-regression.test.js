@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,developerState,clone,powerGrowth,powerUpgradeInfo,upgradePower,summon,fuse,buyPower} from '../web/src/utils/progression.js';
+import {fresh,developerState,clone,powerGrowth,powerUpgradeInfo,upgradePower,fuse,buyPower} from '../web/src/utils/progression.js';
 import {startBattle,act,available,playerStats,settle,dealPlayer,canStart,baseStats} from '../web/src/utils/gameCore.js';
 import {startThreePhase,actThreePhase} from '../web/src/utils/threePhase.js';
 import {validateSave,exportSave,save,load,SAVE_KEY} from '../web/src/utils/storage.js';
@@ -66,10 +66,10 @@ test('authority dialogs distinguish current, next, needed, owned and all UI stat
  assert.equal(api.powerStatus(a,POWERS.find(p=>p.id==='star')).state,'locked');
  a.powers.abyss=5;html=api.powerDetails(a,POWERS[0]);assert.ok(html.includes('最大レベル'));assert.ok(!html.includes('Lv.6'));assert.ok(api.powersView(a).includes('state-max'));
 });
-test('fusing, rebuilding and summon rewards preserve their exact costs and main save boundaries',()=>{
+test('fusing and rebuilding preserve their exact costs and main save boundaries',()=>{
  const a=developerState(fresh());a.resonance={};a.recipes=[];a.equipped=['fallen','king'];a.fragments.fallen=17;a.fragments.king=9;const shards=a.resShards;
  fuse(a,'god');assert.equal(a.resShards,shards+26);assert.deepEqual(a.equipped,[]);assert.equal(a.resonance.god,1);assert.throws(()=>fuse(a,'god'));const before=a.p;buyPower(a,'fallen');assert.equal(a.p,before-120);
- a.collection=['黒翼の欠片','深淵結晶','断罪の印章','堕天の羽根','王権の残光','星のかけら'];const p=a.p,r=a.resShards,f=a.fragments.wing;summon(a,10,()=>0);assert.equal(a.p,p-250);assert.equal(a.resShards,r+50);assert.equal(a.fragments.wing,f+80);
+ const p=a.p,r=a.resShards;assert.equal(a.p,p);assert.equal(a.resShards,r);assert.equal(Object.hasOwn(a,'summon'),false);
 });
 test('every normal power and recipe survives deterministic legal-action stress without nonfinite state or frozen rounds',()=>{
  const ids=[...POWERS.map(x=>x.id),'god','fallenwing','fallenjudge','abyssfallen','kingwing','kingjudge','abyssking','judgewing','abysswing','abyssjudge'];

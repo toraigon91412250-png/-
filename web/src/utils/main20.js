@@ -7,7 +7,7 @@ export const MAIN20_B_RULES={shellFloors:[5,9,14,17,20],shellDefense:4,shellFeat
 export const MAIN20_DIFFICULTY_SCALE={EXPERT:{hp:1.3,atk:1.2,spd:1.1},NIGHTMARE:{hp:10,atk:4.6,spd:4.5}};
 export const main20NightmareUnlocked=s=>s?.route20===1&&Array.isArray(s.cleared)&&Array.from({length:20},(_,i)=>s.cleared.includes(i+1)).every(Boolean);
 export const main20Limit=s=>s.route20===1?20:100;
-export const main20Milestones=s=>hasDivinity(s)?divinityMilestones(s):s.route20===1?[[5,'権能「堕天」'],[10,'権能「堕天王」・共鳴・深淵レイド'],[15,'権能「断罪」'],[20,'境界への扉']]:[[5,'権能「堕天」'],[10,'権能「堕天王」'],[20,'権能「断罪」'],[50,'共鳴・深淵レイド'],[100,'境界への扉']];
+export const main20Milestones=s=>hasDivinity(s)?divinityMilestones(s):s.route20===1?[[5,'権能「堕天」'],[10,'権能「堕天王」・共鳴'],[15,'権能「断罪」'],[20,'境界への扉']]:[[5,'権能「堕天」'],[10,'権能「堕天王」'],[20,'権能「断罪」'],[50,'共鳴権能'],[100,'境界への扉']];
 export function freshMain20(){return {...fresh(),version:5,route20:1,legacyCleared:[]};}
 export function migrateMain20(input){
  const output=clone(input),s=Object.hasOwn(output,'state')?output.state:output;
@@ -67,7 +67,7 @@ export function settleMainBattle(s,b){
  if(first){s.cleared.push(b.floor);s.floor=Math.min(20,Math.max(s.floor,b.floor+1));s.level=Math.max(s.level,1+b.floor*3);
   for(const [at,id,oldAt]of [[5,'fallen',5],[10,'king',10],[15,'judge',20]])if(!hasDivinity(s)&&b.floor===at&&!s.legacyCleared?.includes(oldAt)){if(!s.powers[id]){s.powers[id]=1;unlocks.push(id);}else s.fragments[id]+=8;if(!s.powerHistory.includes(id))s.powerHistory.push(id);}
   for(const [at,id]of [[8,'split'],[12,'starfall'],[16,'endure']])if(b.floor===at&&!s.marks.includes(id)){s.marks.push(id);unlocks.push(id);}
-  if(b.floor===10)unlocks.push('resonance','raid');
+  if(b.floor===10)unlocks.push('resonance');
   if(b.floor===20){if(!s.flags.lv100)unlocks.push('mystery');s.flags.lv100=true;if(!s.flags.reward100){s.sp+=50;s.flags.reward100=true;}}
  }
  achievements(s);

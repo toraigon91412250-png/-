@@ -31,7 +31,7 @@ export function enemyConfig(mode,floor,index=0){let base=normalEnemy(floor),name
  if(mode==='god'){base={hp:45000+index*13000,atk:1600+index*250,def:600+index*120,spd:230+index*30};name=GODS[index];}
  return {name,base};
 }
-export function canStart(s,mode,floor){if(mode==='normal')return Number.isInteger(floor)&&floor>=1&&floor<=Math.min(100,s.floor);if(mode==='raid')return midgameUnlocked(s);if(mode==='ex'||mode==='stella')return s.flags.stella;if(mode==='final')return s.flags.final;if(mode==='god')return s.flags.ex&&!!s.gauntlet;return false;}
+export function canStart(s,mode,floor){if(mode==='normal')return Number.isInteger(floor)&&floor>=1&&floor<=Math.min(100,s.floor);if(mode==='raid')return false; /* Lab-only guard-break trial still uses a test battle template. */if(mode==='ex'||mode==='stella')return s.flags.stella;if(mode==='final')return s.flags.final;if(mode==='god')return s.flags.ex&&!!s.gauntlet;return false;}
 export function startBattle(s,{mode='normal',floor=s.floor,difficulty='NORMAL',test=false}={}){
  const validDifficulty=['NORMAL','EXPERT'].includes(difficulty)||difficulty==='NIGHTMARE'&&['ex','stella','final','raid','god'].includes(mode);
  if(!['normal','ex','raid','stella','final','god'].includes(mode)||!Number.isInteger(floor)||floor<1||floor>100||!validDifficulty)throw Error('戦闘設定が不正です');
@@ -182,21 +182,20 @@ export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
  const before={p:s.p,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
  const summary=(fragments=0,bonusP=0)=>{const unlocks=[];
   for(const id of ['fallen','king','judge','star'])if(!before.powers[id]&&s.powers[id])unlocks.push(id);
-  if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance','raid');
+  if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance');
   if(!before.lv100&&s.flags.lv100)unlocks.push('mystery');if(!before.ex&&s.flags.ex)unlocks.push('god');if(!before.final&&s.flags.final)unlocks.push('final');
   return {p:s.p-before.p,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
  s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return summary();}
- const reward=35+b.floor*5+(b.mode==='raid'?180:b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;s.counts.wins++;s.counts.streak++;
+ const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;s.counts.wins++;s.counts.streak++;
  for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);
  s.records.fast ||= b.turn<=5;s.records.low ||= b.used.low;s.records.expert ||= ['EXPERT','NIGHTMARE'].includes(b.difficulty);s.records.basic ||= b.character==='irena'&&b.used.special===0&&b.used.ultimate===0;s.records.endure ||= b.used.endure;s.records.nomark ||= b.marks.length===0;s.records.nopower ||= b.powers.length===0&&b.character==='irena';s.records.starfinish ||= b.used.marks.includes('starfall')&&b.lastAction==='ultimate'&&b.lastDamage>0;
  // Award fragments to ALL five types so consumed authorities can always be rebuilt.
- for(const id of Object.keys(s.fragments))s.fragments[id]+=4+Math.floor(b.floor/10);s.resShards+=b.mode==='raid'?25:3;
+ for(const id of Object.keys(s.fragments))s.fragments[id]+=4+Math.floor(b.floor/10);s.resShards+=3;
  if(b.mode==='normal'){
  const first=!s.cleared.includes(b.floor);if(first){s.cleared.push(b.floor);s.level=Math.max(s.level,b.floor+1);s.floor=Math.min(100,Math.max(s.floor,b.floor+1));}
  for(const [level,id]of [[5,'fallen'],[10,'king'],[20,'judge']])if(b.floor>=level&&!s.powerHistory.includes(id)){s.powers[id]=1;s.powerHistory.push(id);}
  if(b.floor===100){s.flags.lv100=true;if(!s.flags.reward100){s.sp+=50;s.flags.reward100=true;}}
  }
- if(b.mode==='raid')s.counts.raid++;
  if(b.mode==='ex'){s.flags.ex=true;if(!s.flags.exReward){s.p+=100;s.flags.exReward=true;}}
  if(b.mode==='stella'){s.flags.stellaClear=true;s.flags.final=true;}
  if(b.mode==='final')s.flags.finalClear=true;

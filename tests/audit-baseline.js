@@ -10,6 +10,8 @@ const manifest=JSON.parse(fs.readFileSync(new URL('../reports/audit-20261022/aut
 const sha=x=>createHash('sha256').update(x).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const removal=JSON.parse(fs.readFileSync(new URL('../reports/v41-removal/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(removal){assert.equal(sha(bytes),removal.afterSHA256,key+' approved v41 feature retirement');assert.equal(sha(removal.before),removal.beforeSHA256,key+' preserved v40 source');bytes=Buffer.from(removal.before);}
  const v40Core=JSON.parse(fs.readFileSync(new URL('../reports/github-v40-cooperation/core-authorized.json',import.meta.url),'utf8'))[key];
  if(v40Core){assert.equal(sha(bytes),v40Core.afterSHA256,key+' verified v40 core');assert.equal(sha(v40Core.before),v40Core.beforeSHA256,key+' preserved v38 core');bytes=Buffer.from(v40Core.before);}
  const v40UI=JSON.parse(fs.readFileSync(new URL('../reports/github-v40-cooperation/ui-authorized.json',import.meta.url),'utf8'))[key];

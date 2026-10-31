@@ -15,7 +15,7 @@ export function markBattleCheckpoint(b){
 export function restoreMarkBattle(record,validateBuild){
  if(record==null)return null;
  const fail=()=>{throw Error('刻印戦闘の保存データが不正です。元のJSONを保持してください');};
- if(![1,2,3].includes(record.schema)||!(record.schema===3?['normal','ex','raid','god','stella','final']:['normal','ex','raid','god']).includes(record.mode)||!Array.isArray(record.turns)||!record.build||typeof record.build!=='object'||Object.hasOwn(record.build,'state'))return fail();
+ if(![1,2,3].includes(record.schema)||!(record.schema===3?['normal','ex','god','stella','final']:['normal','ex','god']).includes(record.mode)||!Array.isArray(record.turns)||!record.build||typeof record.build!=='object'||Object.hasOwn(record.build,'state'))return fail();
  if(record.authorityStrike!==undefined&&record.authorityStrike!=='A1')return fail();
  const build={...record.build};delete build.markBattle;const s=validateBuild(build);
  if((record.schema===2||record.rules==='B1')&&(record.rules!=='B1'||s.route20!==1||record.mode!=='normal'))return fail();

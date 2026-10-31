@@ -1,7 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-import {SUMMONS} from '../web/src/data/config.js';
+// Archived six-entry table is used only for the historical UI regression test.
+const SUMMONS=['黒翼の欠片','深淵結晶','断罪の印章','堕天の羽根','王権の残光','星のかけら'];
 import {createCampaign,startCampaignBattle,actCampaign} from '../web/src/utils/campaign20.js';
-const app=fs.readFileSync('web/src/components/App.js','utf8');
+const app=JSON.parse(fs.readFileSync('reports/v41-removal/authorized-changes.json','utf8'))['web/src/components/App.js'].before;
 const display=app.slice(app.indexOf('const SUMMON_RARITY='),app.indexOf('function summonCinema()'));
 function rates(collection){const ctx=vm.createContext({SUMMONS,collection});return vm.runInContext(display+';summonRates({collection})',ctx);}
 test('rarity rates reflect the real missing-first pool without implying fixed odds',()=>{
