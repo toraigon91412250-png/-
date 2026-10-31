@@ -10,6 +10,8 @@ const manifest=JSON.parse(fs.readFileSync(new URL('../reports/audit-20261022/aut
 const sha=x=>createHash('sha256').update(x).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const finalLabRetirement=JSON.parse(fs.readFileSync(new URL('../reports/v44-retire-final-lab/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(finalLabRetirement){assert.equal(sha(bytes),finalLabRetirement.afterSHA256,key+' approved final-only lab removal');assert.equal(sha(finalLabRetirement.before),finalLabRetirement.beforeSHA256,key+' exact v43 baseline');bytes=Buffer.from(finalLabRetirement.before);}
  const retiredDragon=JSON.parse(fs.readFileSync(new URL('../reports/v43-retire-dragon/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(retiredDragon){assert.equal(sha(bytes),retiredDragon.afterSHA256,key+' approved retirement of dragon trial UI');assert.equal(sha(retiredDragon.before),retiredDragon.beforeSHA256,key+' exact v42 baseline');bytes=Buffer.from(retiredDragon.before);}
  const labCleanup=JSON.parse(fs.readFileSync(new URL('../reports/v42-lab-cleanup/authorized-changes.json',import.meta.url),'utf8'))[key];
