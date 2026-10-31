@@ -14,7 +14,7 @@ test('legacy saved-rule observer preserves full combat/save/reward/RNG through l
  for(const [profile,seed] of [['wingAbyss',20261021],['wingJudge',46],['wingAbyss',19]]){const s=freshMain20(),old=clone(s),ledger={earnedP:180,trainingP:0,markP:0,fragmentP:{}};
   for(let floor=1;floor<=20;floor++){prepare(s,profile,'split',ledger);Object.assign(old,clone(s));const b=legacyAuthorityStrike(startMainBattle(s)),a=previous.startMainBattle(old);b.campaign.random=seed+floor;a.campaign.random=seed+floor;
    for(let n=0;!b.result&&n<200;n++){const id=pick(b,'mixed'),events=capture(b,id);previous.actMainBattle(a,id);assert.deepEqual(b,a,profile+'/'+floor+'/'+n);assert.ok(events.length);}
-   assert.equal(b.result,'win');const reward=settleMainBattle(s,b);const historic=previous.settleMainBattle(old,a);assert.deepEqual(reward,{...historic,unlocks:historic.unlocks.filter(x=>x!=='raid')});assert.deepEqual(exportSave(s),exportSave(old));ledger.earnedP+=reward.p;
+   assert.equal(b.result,'win');const reward=settleMainBattle(s,b);const historic=previous.settleMainBattle(old,a);const {summonPoints:earnedSummon,...unchangedReward}=reward;assert.equal(earnedSummon,250,'Only the approved summon currency may be added');assert.deepEqual(unchangedReward,{...historic,unlocks:historic.unlocks.filter(x=>x!=='raid')});const {summonPoints:nowPoints,...newLegacy}=JSON.parse(exportSave(s)),{summonPoints:oldPoints,...oldLegacy}=JSON.parse(exportSave(old));assert.equal(nowPoints,oldPoints+250);assert.deepEqual(newLegacy,oldLegacy);ledger.earnedP+=reward.p;
   }
  }
 });
