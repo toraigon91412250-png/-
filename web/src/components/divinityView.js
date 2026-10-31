@@ -1,3 +1,4 @@
+import {RESONANCES,resonanceLevel} from '../data/resonanceV3.js';
 import {DIV_IDS,DIV_NAMES,DIV_ART,DIV_STAGES,DIV_BRANCHES,DIV_SKILLS,DIV_TRIALS} from '../data/divinity.js';
 import {POWERS,RECIPES} from '../data/config.js';
 import {divinityTrialReason,divinityAwakenReason,divinityNext} from '../utils/divinityProgress.js';
@@ -24,6 +25,12 @@ export function divinityCommands(b){
   (cooperationEnabled(b.build)&&row.attune?(!b.powers.includes(row.attune)&&b.build.divinity.reclaimed.includes(row.attune)):
    b.build.awakening>=row.stage&&(!row.attune||b.build.divinity.reclaimed.includes(row.attune))))
   out.push([id,cooperationEnabled(b.build)&&row.attune?`交代：${DIV_NAMES[row.attune]}`:row.name,cooperationEnabled(b.build)&&row.attune?'1ターン消費・敵も行動する':row.text]);
+ for(const row of RESONANCES){
+  const learned=resonanceLevel(b.build,row.id);
+  const temp=b.trial?.kind==='resonance20'&&b.trial.tempId===row.id&&b.trial.proven;
+  if(row.parts.every(p=>b.powers.includes(p))&&(learned||temp))
+   out.push(['res_'+row.id,row.name, '共鳴Lv.'+(learned||1)+' / 必殺ゲージ100・共通CT2']);
+ }
  return out;
 }
 // Presentation-only helpers: battle actions and their effects remain in the combat engine.
