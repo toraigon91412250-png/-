@@ -63,7 +63,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
   assert.equal(b.trial.floor,floor);
   if(floor===20){
    actLegal(b,'feather');actLegal(b,'guard');
-   actLegal(b,'attune_fallen');actLegal(b,'fallenOath');
+   actLegal(b,'attune_fallen');actLegal(b,'attune_wing');actLegal(b,'fallenOath');
    actLegal(b,'attune_abyss');actLegal(b,'abyssTide');
    actLegal(b,'attune_judge');
    actLegal(b,'slash');actLegal(b,'power');
