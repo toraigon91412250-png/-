@@ -26,6 +26,14 @@ test('R authority fragment award is bounded',()=>{
  const out=summon(s,1,()=>rolls[i++]);
  assert.equal(out.prizes[0].authority,'judge');assert.equal(s.fragments.judge,8);
 });
+test('seeded summon sample stays within statistical tolerance of 3/17/80 rarity rates',()=>{
+ const s=make();s.summonPoints=3_000_000;let seed=209;const rng=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/0x1_0000_0000;};
+ const counts={SSR:0,SR:0,R:0};
+ for(let i=0;i<30_000;i++)counts[summon(s,1,rng).prizes[0].rarity]++;
+ assert.ok(Math.abs(counts.SSR/30_000-.03)<.005,JSON.stringify(counts));
+ assert.ok(Math.abs(counts.SR/30_000-.17)<.01,JSON.stringify(counts));
+ assert.ok(Math.abs(counts.R/30_000-.80)<.01,JSON.stringify(counts));
+});
 test('winner receives 250, trial and test receive zero',()=>{
  const s=make();s.summonPoints=0;
  assert.equal(addSummonWinReward(s,{result:'win',mode:'normal'}),250);

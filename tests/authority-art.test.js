@@ -23,5 +23,6 @@ test('all authority states render the same supplied artwork in list and detail w
 });
 test('star artwork and every non-presentation baseline source and asset remain exact',()=>{
  assert.equal(art.star,'assets/upgrade-ui/star-power.webp');const map=JSON.parse(fs.readFileSync('reports/authority-art-audit2/baseline-files.json'));
- for(const [file,hash]of Object.entries(map)){if(['web/src/components/App.js','web/src/components/game.css','tests/audit-baseline.js'].includes(file))continue;assert.equal(sha(tacticalBaselineRead(file)),hash,file);}
+ for(const [file,hash]of Object.entries(map)){if(['web/src/components/App.js','web/src/components/game.css','tests/audit-baseline.js','tools/browser-e2e.mjs'].includes(file))continue;assert.equal(sha(tacticalBaselineRead(file)),hash,file);}
+ const qa=JSON.parse(fs.readFileSync('reports/upgrade-ui/qa-patches.json'))['tools/browser-e2e.mjs'];let current=fs.readFileSync('tools/browser-e2e.mjs','utf8');assert.equal(sha(current),qa.afterSHA256,'current browser QA snapshot');for(const patch of qa.patches.slice().reverse()){assert.equal(current.split(patch.new).length-1,1,'exact browser QA change');current=current.replace(patch.new,patch.old);}assert.equal(sha(current),qa.beforeSHA256,'browser QA restores to recorded pre-update source');
 });

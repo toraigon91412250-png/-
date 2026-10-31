@@ -1,7 +1,6 @@
 import {RESONANCES,RESONANCE_BY_ID,resonanceState,learnResonance} from '../data/resonanceV3.js';
 import {startBattle,act,baseStats,enemyTurn,dealPlayer,log,playerStats} from './gameCore.js';
 import {syncDivinityLives} from './divinityCombat.js';
-import {SUMMON_WIN_REWARD,summonBalance} from './resonanceSummon.js';
 
 const BOSS_NAMES={
  1:'黒翼を狩る白騎士',3:'傷を映す堕天使',5:'名を記す審問官',
@@ -149,7 +148,6 @@ export function settleResonanceTrial(s,b){
  if(!d.cleared.includes(floor))d.cleared.push(floor);
  if(t.tempId&&learnResonance(s,t.tempId))reward.unlocks.push(RESONANCE_BY_ID[t.tempId].name);
  reward.resShards=10+floor*2;s.resShards+=reward.resShards;
- reward.summonPoints=SUMMON_WIN_REWARD;s.summonPoints=summonBalance(s)+SUMMON_WIN_REWARD;
  d.floor=Math.min(20,floor+1);
  if(floor===20){d.finished=true;reward.unlocks.push('神座への試練 制覇');}
  return reward;

@@ -15,7 +15,7 @@ export function resonanceReason(b,action){
  if(!row.parts.every(p=>b.powers.includes(p)))return '対応する2権能が必要です';
  if(!tempReady(b,id)&&!resonanceCanUse(b.build,id))return '共鳴権能を習得していません';
  if(b.cd.resonanceShared>0)return '共通CT '+b.cd.resonanceShared;
- if(b.gauge<100&&!tempReady(b,id))return '必殺ゲージ100%必要';
+ if(b.gauge<100)return '必殺ゲージ100%必要';
  if(['fallenjudge','kingfallen'].includes(id)&&hpRatio(b)>.5)return 'HP50%以下で発動';
  return null;
 }
@@ -24,13 +24,14 @@ const baseDamage=(b,mult,ignore,env)=>{
  const p=env.playerStats(b),e=env.enemyStats(b);
  return env.damage(p.atk,e.def,{mult,ignore});
 };
-function impact(b,n,env,ignore=0){
+function impact(b,n,env,ignore=0,hitIndex=0){
  let raw=baseDamage(b,n,ignore,env);
  if(env.damageGate)raw=env.damageGate(b,raw,{action:b.lastAction,landed:true});
  const actual=resonanceClamp(Math.floor(raw),0,b.enemy.hp);
  b.enemy.hp=Math.max(0,b.enemy.hp-actual);
  b.lastDamage+=actual;
- b.events.push({type:'hit',damage:actual,landed:true});
+ b.events.push({type:'hit',damage:actual,landed:true,hitIndex});
+ env.combatNotice?.(b,'hit',{damage:actual,landed:true,hitIndex});
  return actual;
 }
 function fixedDamage(b,amount,env){
@@ -38,11 +39,12 @@ function fixedDamage(b,amount,env){
  if(env.damageGate)raw=env.damageGate(b,raw,{action:b.lastAction,landed:true});
  const actual=resonanceClamp(Math.floor(raw),0,b.enemy.hp);
  b.enemy.hp=Math.max(0,b.enemy.hp-actual);b.lastDamage+=actual;
- b.events.push({type:'hit',damage:actual,landed:true});return actual;
+ b.events.push({type:'hit',damage:actual,landed:true,hitIndex:0});
+ env.combatNotice?.(b,'hit',{damage:actual,landed:true,hitIndex:0});return actual;
 }
 function multiHit(b,hits,total,ignore,env){
  let sum=0;
- for(let i=0;i<hits&&b.enemy.hp>0;i++)sum+=impact(b,total/hits,env,ignore);
+ for(let i=0;i<hits&&b.enemy.hp>0;i++)sum+=impact(b,total/hits,env,ignore,i);
  return sum;
 }
 function corrode(b,ratio){b.enemy.resonanceCorrosion=resonanceClamp((b.enemy.resonanceCorrosion||0)+ratio,0,.95);}
@@ -85,7 +87,7 @@ function activate(b,id,env){
    const bonus=Math.min(v.bonusHits,spend*2);
    d.feathers=Math.max(0,(d.feathers||0)-spend);
    for(let i=0;i<v.hits+bonus;i++){
-    if(b.enemy.hp>0)impact(b,v.hitMult,env,0);
+    if(b.enemy.hp>0)impact(b,v.hitMult,env,0,i);
     corrode(b,v.erosion);
    }
    break;
@@ -132,7 +134,6 @@ function activate(b,id,env){
 export function performResonanceAction(b,action,env){
  const id=resonanceId(action);if(!id)return false;
  const reason=resonanceReason(b,action);if(reason)throw Error(reason);
- if(tempReady(b,id))b.gauge=100;
  return activate(b,id,env);
 }
 export function adjustResonanceIncoming(b,raw,env){
@@ -158,7 +159,7 @@ export function afterResonanceTurn(b,action,env){
  if(rs.royalJudgment?.armed&&action==='guard'&&b.turn%4===0&&(rs.lastIncoming||0)>0){
   const v=rs.royalJudgment;v.armed=false;
   impact(b,v.counterMult,env,v.ignore);
-  if((rs.lastIncoming||0)>=env.playerStats(b).hp*.2&&b.enemy.hp>0)fixedDamage(b,b.enemy.base.hp*v.extraMaxHp,env);
+  if((rs.lastIncomingPower??rs.lastIncoming??0)>=env.playerStats(b).hp*.2&&b.enemy.hp>0)fixedDamage(b,b.enemy.base.hp*v.extraMaxHp,env);
   rs.royalJudgment=null;
  }
  if(rs.wingGuard?.left>0&&action!=='res_wingking'&&(rs.lastIncoming||0)>0){

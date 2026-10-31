@@ -4,6 +4,7 @@ import {RECIPES} from '../data/config.js';
 import {cooperationEnabled,canZeroRelease,cooperationStrikeMultiplier,registerCooperationAction,cooperationDialogue} from './divinityCooperation.js';
 import {hasDivinity} from './divinityProgress.js';
 import {attack,buff,heal,log,playerStats,enemyStats,damage,baseStats} from './gameCore.js';
+import {combatNotice} from './combatObservation.js';
 export const isDivinityBattle=b=>b?.character==='irena'&&hasDivinity(b.build);
 const DIV_LIVES={king:5,god:4,kingwing:7,kingjudge:6,abyssking:6};
 export function divBattleState(b){return b.divine ||= {lifePools:{...DIV_LIVES},feathers:0,proof:0,lastAttack:null,lastPower:null,guarded:false,counter:0,shield:0,revived:false,unified:0,links:0};}
@@ -43,20 +44,20 @@ export function divinityTrialFloor(b){
  return !t.awakened?.45:!t.used?.1:0;
 }
 export const divinityErosionCap=b=>Math.min(.95,1-divinityTrialFloor(b));
-export function divinityIncoming(b,amount){
+export function divinityIncoming(b,amount,unmitigatedAttack=amount){
  if(!isDivinityBattle(b)||b.statuses.invulnerable||amount<=0)return amount;const d=divBattleState(b),incomingRaw=amount;
  if(b.enemy.statuses.divinityWeaken)amount*=.7;
  if(d.nextReduction){amount*=.5;d.nextReduction=false;}
  const absorbed=Math.min(amount,d.shield);d.shield-=absorbed;amount-=absorbed;
  amount=adjustResonanceIncoming(b,amount,{playerStats});
- if(d.resonance)d.resonance.lastIncoming=incomingRaw;
+ if(d.resonance){d.resonance.lastIncoming=incomingRaw;d.resonance.lastIncomingPower=unmitigatedAttack;}
  if(absorbed>0){log(b,`障壁が${Math.round(absorbed)}を受け止めた`);b.events.push({type:'divinityShield',amount:absorbed});}
  if(amount>=playerStats(b).current&&b.build.awakening>=4&&!d.revived){d.revived=true;heal(b,.4);amount=Math.min(amount,Math.max(0,playerStats(b).current-playerStats(b).hp*.4));log(b,'神域の再臨：一度だけ、HP40%で再起');b.events.push({type:'divinityRevive'});}
  return amount;
 }
 export function divinityBefore(b,action){
  if(!isDivinityBattle(b))return;const d=divBattleState(b);d.guardAction=action==='guard'||divinityIsGuard(b,action);d.freshUnified=false;
- if(d.resonance)d.resonance.lastIncoming=0;
+ if(d.resonance){d.resonance.lastIncoming=0;d.resonance.lastIncomingPower=0;}
  if(action==='royalGuard'||action==='mantle')d.shield=Math.max(d.shield,playerStats(b).hp*(action==='royalGuard'&&divPowerLevel(b,'king')>=2?.35:.25));
  if(d.guardAction&&b.build.divinity.branches.king==='bastion'&&divHasPower(b,'king'))d.shield=Math.max(d.shield,playerStats(b).hp*.15);
  if(action==='fallenOath'){b.hp=Math.min(b.hp,b.base.hp*.45);if(divPowerLevel(b,'fallen')>=2)b.gauge=Math.min(100,b.gauge+15);}
@@ -84,7 +85,7 @@ export function divinityStrikeProfile(b,action){
 }
 export function performDivinityAction(b,action,rng,damageGate){
  if(!isDivinityBattle(b))return false;
- if(isResonanceAction(action))return performResonanceAction(b,action,{damage,playerStats,enemyStats,heal,log,damageGate});
+ if(isResonanceAction(action))return performResonanceAction(b,action,{damage,playerStats,enemyStats,heal,log,damageGate,combatNotice});
  if(!DIV_SKILLS[action])return false;
  const row=DIV_SKILLS[action],d=divBattleState(b);
  if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
@@ -122,5 +123,5 @@ export function divinityAfter(b,action){
   d.lastAttack=action;
  }
  if(d.unified&&!d.freshUnified){d.unified--;if(!d.unified){b.powers=d.savedPowers;syncDivinityLives(b);b.buffs=b.buffs.filter(x=>x.id!=='divineUnified');delete d.savedPowers;log(b,'神格解放が静まる。取り戻した記憶は残る。');}}
- afterResonanceTurn(b,action,{playerStats,enemyStats,damage,heal,log});
+ afterResonanceTurn(b,action,{playerStats,enemyStats,damage,heal,log,combatNotice});
 }

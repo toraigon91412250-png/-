@@ -10,7 +10,7 @@ export function planCombatPresentation(events,action,{reduced=false}={}){
  for(const e of events){let at=last;
   if(e.kind==='playerAction'){start=end+(actor?60:0);actor='player';end=start+(reduced?(action==='volley'?300:action==='ultimate'?420:action==='power'?500:180):spec.duration);at=start;}
   else if(e.kind==='enemyAction'){start=end+(actor?60:0);actor='enemy';mirrorMove=e.mirror?e.move:null;enemyHit=0;end=start+(mirrorMove?(reduced?400:mirrorMove==='ultimate'?1800:mirrorMove==='volley'?1050:760):(reduced?180:320));at=start;}
-  else if(e.kind==='hit')at=start+(reduced?(action==='ultimate'?220:action==='power'?320:80+(e.hitIndex||0)*120):(spec.hits[e.hitIndex||0]??spec.hits[0]??120));
+  else if(e.kind==='hit')at=start+(action.startsWith('res_')?80+(e.hitIndex||0)*(reduced?18:55):reduced?(action==='ultimate'?220:action==='power'?320:80+(e.hitIndex||0)*120):(spec.hits[e.hitIndex||0]??spec.hits[0]??120));
   else if(e.kind==='incomingHit'||e.kind==='enemyMiss'||e.kind==='enemyStopped')at=start+(mirrorMove?(reduced?120+enemyHit++*100:(mirrorMove==='ultimate'?1350:480)+enemyHit++*200):(reduced?80:140));
   else if(e.kind==='armorBreak')at=start+(reduced?(action==='ultimate'?160:action==='power'?260:50):spec.breakAt??180);
   else if(e.kind==='heal')at=actor==='enemy'?start+(reduced?120:240):last;
