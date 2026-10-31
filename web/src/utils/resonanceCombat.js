@@ -3,7 +3,7 @@ import {RESONANCE_BY_ID,resonanceLevel,resonanceCanUse} from '../data/resonanceV
 
 export const isResonanceAction=action=>typeof action==='string'&&action.startsWith('res_');
 export const resonanceId=action=>isResonanceAction(action)?action.slice(4):null;
-const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const resonanceClamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const soul=b=>b.divine.resonance ||= {};
 const hpRatio=b=>b.hp/Math.max(1,b.base.hp);
 const tierFromHp=ratio=>ratio<=.1?3:ratio<=.25?2:ratio<=.5?1:0;
@@ -27,7 +27,7 @@ const baseDamage=(b,mult,ignore,env)=>{
 function impact(b,n,env,ignore=0){
  let raw=baseDamage(b,n,ignore,env);
  if(env.damageGate)raw=env.damageGate(b,raw,{action:b.lastAction,landed:true});
- const actual=clamp(Math.floor(raw),0,b.enemy.hp);
+ const actual=resonanceClamp(Math.floor(raw),0,b.enemy.hp);
  b.enemy.hp=Math.max(0,b.enemy.hp-actual);
  b.lastDamage+=actual;
  b.events.push({type:'hit',damage:actual,landed:true});
@@ -36,7 +36,7 @@ function impact(b,n,env,ignore=0){
 function fixedDamage(b,amount,env){
  let raw=Math.max(0,Math.floor(amount));
  if(env.damageGate)raw=env.damageGate(b,raw,{action:b.lastAction,landed:true});
- const actual=clamp(Math.floor(raw),0,b.enemy.hp);
+ const actual=resonanceClamp(Math.floor(raw),0,b.enemy.hp);
  b.enemy.hp=Math.max(0,b.enemy.hp-actual);b.lastDamage+=actual;
  b.events.push({type:'hit',damage:actual,landed:true});return actual;
 }
@@ -45,7 +45,7 @@ function multiHit(b,hits,total,ignore,env){
  for(let i=0;i<hits&&b.enemy.hp>0;i++)sum+=impact(b,total/hits,env,ignore);
  return sum;
 }
-function corrode(b,ratio){b.enemy.resonanceCorrosion=clamp((b.enemy.resonanceCorrosion||0)+ratio,0,.95);}
+function corrode(b,ratio){b.enemy.resonanceCorrosion=resonanceClamp((b.enemy.resonanceCorrosion||0)+ratio,0,.95);}
 function addSeal(b,turns){const s=soul(b);s.sealTurns=Math.max(s.sealTurns||0,turns);}
 function activate(b,id,env){
  const row=RESONANCE_BY_ID[id],level=tempReady(b,id)?Math.max(resonanceLevel(b.build,id),1):resonanceLevel(b.build,id);
