@@ -180,7 +180,7 @@ export function afterResonanceTurn(b,action,env){
  if(rs.abyssBarrier?.remaining>0){
   const v=rs.abyssBarrier;
   env.heal(b,v.heal);corrode(b,v.erosion);
-  if(action!=='res_kingabyss'){
+  {
    v.remaining--;
    if(v.remaining<=0){
     if(b.enemy.hp>0)fixedDamage(b,v.prevented*v.storedMult,env);
