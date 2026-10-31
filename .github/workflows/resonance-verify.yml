@@ -27,3 +27,7 @@ jobs:
           cp -R migration-inputs/combat-ui-user-input ../combat-ui-user-input
           cp -R migration-inputs/supplied-raid ../supplied-raid
           npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Exercise browser flows
+        run: node tools/resonance-browser.mjs
