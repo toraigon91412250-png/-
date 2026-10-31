@@ -54,7 +54,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
  const s=eligible();s.level=100;s.stats.hp=10000;s.stats.atk=100000;s.stats.def=10000;
  const actLegal=(b,action)=>{
   const reason=available(b,action);
-  if(reason)throw Error('Floor '+b.trial.floor+' blocked '+action+': '+reason);
+  if(reason)throw Error('Floor '+b.trial.floor+' blocked '+action+': '+reason+' (HP '+(b.hp/b.base.hp).toFixed(3)+', log '+b.log.slice(-5).join(' | ')+')');
   actResonanceTrial(b,action,{rng:()=>.5});
  };
  for(let floor=1;floor<=20;floor++){
