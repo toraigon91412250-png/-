@@ -97,7 +97,7 @@ test('all twenty floors can be cleared in a real turn sequence without deadlocks
 });
 test('normal combat checkpoint round-trips cooperative action with deterministic replay',()=>{
  const s=eligible();
- s.level=1;s.stats.hp=500;s.stats.def=500;s.equipped=['wing','judge'];s.flags.stella=true;
+ s.level=1;s.stats.hp=500;s.stats.atk=0;s.stats.def=500;s.equipped=['wing','judge'];s.flags.stella=true;
  learnResonance(s,'wingjudge');
  const b=startMainBattle(s,{mode:'ex',floor:100});
  for(let n=0;n<4;n++)actMainBattle(b,'slash',{rng:()=>.5});
