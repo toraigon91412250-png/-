@@ -1,4 +1,5 @@
 import {DIV_SKILLS} from '../data/divinity.js';
+import {RESONANCES} from '../data/resonanceV3.js';
 import {specialBattleActions} from './battleHistory.js';
 import {authorityStrikeCurrent,legacyAuthorityStrike} from './authorityStrike.js';
 import {startBattle,act} from './gameCore.js';
@@ -23,7 +24,7 @@ export function restoreMarkBattle(record,validateBuild){
  if(record.authorityStrike!=='A1')legacyAuthorityStrike(b);
  if(!markBattleCheckpoint(b))return fail();
  for(const row of record.turns){
-  if(!row||!(record.schema===3?[...Object.keys(DIV_SKILLS),'slash','feather','pierce','volley','power','ultimate','guard','wait','divine','fallen','immortal','rebirth','meteor','godspeed','omnipotent','dominion','annihilate','transcend','grasp','erosion','release','sovereignty','genesis','ending']:['slash','feather','pierce','volley','power','ultimate','guard','wait']).includes(row.action)||row.route!==undefined&&!['A','B','C'].includes(row.route)||!Array.isArray(row.rolls)||row.rolls.length>4||row.rolls.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>=1))return fail();
+  if(!row||!(record.schema===3?[...Object.keys(DIV_SKILLS),...RESONANCES.map(row=>'res_'+row.id),'slash','feather','pierce','volley','power','ultimate','guard','wait','divine','fallen','immortal','rebirth','meteor','godspeed','omnipotent','dominion','annihilate','transcend','grasp','erosion','release','sovereignty','genesis','ending']:['slash','feather','pierce','volley','power','ultimate','guard','wait']).includes(row.action)||row.route!==undefined&&!['A','B','C'].includes(row.route)||!Array.isArray(row.rolls)||row.rolls.length>4||row.rolls.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>=1))return fail();
   let i=0;actMainBattle(b,row.action,{route:row.route||'A',rng:()=>{if(i>=row.rolls.length)return fail();return row.rolls[i++];}});
   if(i!==row.rolls.length||b.result)return fail();
  }
