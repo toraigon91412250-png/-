@@ -1,3 +1,4 @@
+import {addSummonWinReward} from './resonanceSummon.js';
 import {grantCooperationBattle} from './divinityCooperation.js';
 import {divinityAvailable,divinityIsGuard,divinityIncoming,divinityBefore,divinityStrikeProfile,performDivinityAction,divinityAfter,spendDivinityLife,divinityErosionCap} from './divinityCombat.js';
 import {recordSpecialBattleAction} from './battleHistory.js';
@@ -58,10 +59,10 @@ export function playerStats(b){const v={...b.base},ratio=b.hp/b.base.hp,p=b.powe
  for(const k in v)v[k]=clamp(v[k],1,1e15);
  return {...v,current:clamp(b.hp/b.base.hp*v.hp,0,v.hp),ratio};
 }
-export function enemyStats(b){const factor=Math.max(.05,1-b.erosion),v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*factor)]));for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
+export function enemyStats(b){const factor=Math.max(.05,1-b.erosion),v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*factor)]));const resonanceFactor=Math.max(.05,1-(b.enemy.resonanceCorrosion||0));for(const k of ['atk','def','spd'])v[k]*=resonanceFactor;for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
 export function damage(atk,def,{mult=1,ignore=0,final=1,extra=0,minimum=1}={}){const safe=(v,max=1e15)=>Number.isNaN(v)?0:Math.max(0,Math.min(max,v));const base=Math.max(1,safe(atk)*safe(mult,1e12)-safe(def)*(1-clamp(ignore,0,1)));return Math.floor(Math.min(1e15,Math.max(safe(minimum),base*safe(final,1e12)+safe(extra))));}
 export function buff(b,id,duration,mul={},extra={}){b.buffs=b.buffs.filter(x=>x.id!==id);b.buffs.push({id,remaining:duration,mul,...extra});}
-export function dealPlayer(b,amount){amount=divinityIncoming(b,amount);const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');combatNotice(b,'incomingHit',{damage:0});return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}
+export function dealPlayer(b,amount,unmitigatedAttack=amount){amount=divinityIncoming(b,amount,unmitigatedAttack);const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');combatNotice(b,'incomingHit',{damage:0});return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}
  b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;combatNotice(b,'incomingHit',{damage:Math.floor(actual)});const beforeMarkHeal=b.hp;triggerKingMark(b,kingEndured);if(b.hp!==beforeMarkHeal)combatNotice(b,'heal',{target:'player'});return actual;
 }
 export function heal(b,fraction){b.hp=Math.min(b.base.hp,b.hp+b.base.hp*fraction);combatNotice(b,'heal',{target:'player'});}
@@ -127,7 +128,7 @@ export function finalAction(b,action,route){if(action==='divine'||action==='fall
  else{if(route==='A')b.ignoreDefense=3;if(route==='B'){b.enemy.buffs=[];b.noBuff=10;}if(route==='C'){delete b.statuses.pressure;b.noPressure=5;}}
  log(b,`ルート ${route} 解決（追加攻撃なし）`);
 }
-function phase(b){if(!['ex','stella','final','god'].includes(b.mode))return;const ratio=b.enemy.hp/b.enemy.base.hp,newPhase=ratio<=.33?3:ratio<=.67?2:1;if(newPhase>b.enemy.phase){b.enemy.phase=newPhase;if(newPhase===3)b.phaseTurns=0;log(b,`第${newPhase}形態へ移行。HPは継続`);if(newPhase>=2&&!b.noBuff)b.enemy.buffs=[{mul:{atk:1.2},remaining:9999}];combatNotice(b,'phaseChange');}}
+function phase(b){if(!['ex','stella','final','god'].includes(b.mode))return;const ratio=b.enemy.hp/b.enemy.base.hp,newPhase=ratio<=.33?3:ratio<=.67?2:1;if(newPhase>b.enemy.phase){b.enemy.phase=newPhase;if(newPhase===3)b.phaseTurns=0;log(b,`第${newPhase}形態へ移行。HPは継続`);if(newPhase>=2&&!b.noBuff&&!b.divine?.resonance?.sealTurns)b.enemy.buffs=[{mul:{atk:1.2},remaining:9999}];combatNotice(b,'phaseChange');}}
 export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
  combatNotice(b,'enemyAction');
  if(b.enemyStop>0){b.enemyStop--;combatNotice(b,'enemyStopped');log(b,'敵の通常行動を停止');return;}
@@ -136,8 +137,9 @@ export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
  if(rng()<evasion){combatNotice(b,'enemyMiss');log(b,'速度優位：敵の攻撃を回避');return;}
  const stellaEnemyScale=b.mode==='stella'?(b.difficulty==='EXPERT'?1.2:b.difficulty==='NIGHTMARE'?1.4:1):1;
  let raw=b.mode==='stella'?[440,640,880][b.enemy.phase-1]*stellaEnemyScale:e.atk*(b.enemy.phase===2?1.12:b.enemy.phase===3?1.35:1);
+ const unmitigatedAttack=b.mode==='stella'?raw:raw*(b.turn%4===0?1.35:1);
  let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});if(guard)d=Math.max(1,Math.round(d*.3));if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
- b.enemyDamage=Math.floor(dealPlayer(b,d));log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
+ b.enemyDamage=Math.floor(dealPlayer(b,d,unmitigatedAttack));log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
  if(b.powers.includes('kingjudge'))b.stacks.kingjudge=Math.min(2,(b.stacks.kingjudge||0)+1);
  if(b.hp>0&&!b.noPressure&&b.enemy.phase>=2&&b.turn%4===0){b.statuses.pressure=3;log(b,'重圧：攻撃力低下');}
  if(b.hp>0&&b.mode==='ex'&&b.enemy.phase===2&&b.turn%5===0){b.statuses.seal=2;log(b,'第二形態：権能封印');}
@@ -179,14 +181,14 @@ export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn,da
 export function settle(s,b){if(!b.result||b.settled)return null;b.settled=true;
  const empty={p:0,fragments:0,bonusP:0,sp:0,levels:0,resShards:0,achievements:[],unlocks:[]};if(b.test)return {test:true,...empty};
  // Report actual changes without adding any fields to the persistent save format.
- const before={p:s.p,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
+ const before={p:s.p,summonPoints:s.summonPoints||0,sp:s.sp,level:s.level,resShards:s.resShards,achieved:new Set(s.achieved),powers:{...s.powers},lv50:s.cleared.includes(50),lv100:s.flags.lv100,ex:s.flags.ex,final:s.flags.final};
  const summary=(fragments=0,bonusP=0)=>{const unlocks=[];
   for(const id of ['fallen','king','judge','star'])if(!before.powers[id]&&s.powers[id])unlocks.push(id);
   if(!before.lv50&&s.cleared.includes(50))unlocks.push('resonance');
   if(!before.lv100&&s.flags.lv100)unlocks.push('mystery');if(!before.ex&&s.flags.ex)unlocks.push('god');if(!before.final&&s.flags.final)unlocks.push('final');
-  return {p:s.p-before.p,fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
+  return {p:s.p-before.p,...((s.summonPoints||0)>before.summonPoints?{summonPoints:(s.summonPoints||0)-before.summonPoints}:{}),fragments,bonusP,sp:s.sp-before.sp,levels:s.level-before.level,resShards:s.resShards-before.resShards,achievements:s.achieved.filter(id=>!before.achieved.has(id)),unlocks};};
  s.counts.special+=b.used.special;s.counts.ultimate+=b.used.ultimate;for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);if(b.result==='lose'){s.counts.streak=0;achievements(s);if(b.mode==='god')s.gauntlet=null;return summary();}
- const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;s.counts.wins++;s.counts.streak++;
+ const reward=35+b.floor*5+(b.mode==='ex'?500:b.mode==='stella'?800:b.mode==='final'?1200:0);s.p+=reward;addSummonWinReward(s,b);s.counts.wins++;s.counts.streak++;
  for(const m of b.used.marks)if(!s.markUsed.includes(m))s.markUsed.push(m);
  s.records.fast ||= b.turn<=5;s.records.low ||= b.used.low;s.records.expert ||= ['EXPERT','NIGHTMARE'].includes(b.difficulty);s.records.basic ||= b.character==='irena'&&b.used.special===0&&b.used.ultimate===0;s.records.endure ||= b.used.endure;s.records.nomark ||= b.marks.length===0;s.records.nopower ||= b.powers.length===0&&b.character==='irena';s.records.starfinish ||= b.used.marks.includes('starfall')&&b.lastAction==='ultimate'&&b.lastDamage>0;
  // Award fragments to ALL five types so consumed authorities can always be rebuilt.

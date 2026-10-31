@@ -14,7 +14,9 @@ const config=fs.readFileSync(new URL('../web/src/data/config.js',import.meta.url
 test('retired summoning has no API, rarity pool or navigation, and progression stays usable',()=>{
  assert.equal('summon' in progression,false);
  assert.doesNotMatch(config,/export const SUMMONS|summonCost/);
- assert.doesNotMatch(app,/function summonView\(|function summonRates\(|case 'summon':|case 'summonReveal':|黒翼召喚/);
+ assert.doesNotMatch(app,/function summonRates\(|case 'summon':|case 'summonReveal':|黒翼召喚/);
+ assert.match(app,/function summonView\(/,'The newly authorized material-only resonance summon has its own UI');
+ assert.match(app,/resonanceSummon/,'The new summon action is distinct from the retired black-wing lottery');
  assert.doesNotMatch(app,/\['summon','黒翼召喚'/);
  assert.equal(typeof progression.upgradePower,'function');
  assert.equal(typeof progression.buyMark,'function');

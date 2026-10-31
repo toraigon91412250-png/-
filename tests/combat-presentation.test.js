@@ -10,11 +10,19 @@ import {prepare,pick} from '../reports/balance-audit6/study.mjs';
 import * as previous from '../reports/combat-direction-audit11/previous-engine/utils/main20.js';
 const capture=(b,action,options={})=>{const events=[];observeCombat(b,e=>events.push(e),()=>actMainBattle(b,action,options));return events;};
 test('mirror shatter feedback combines the actual heal without changing enemy labels',()=>{assert.equal(mirrorShatterLabel({target:'player',text:'破鏡・生命回帰'},'回復＋120'),'破鏡 回復＋120');assert.equal(mirrorShatterLabel({target:'player',text:'破鏡・生命回帰'},'回復0（HP最大）'),'破鏡 回復0（HP最大）');assert.equal(mirrorShatterLabel({target:'enemy',text:'封印破砕'},'回復＋120'),'封印破砕');});
+test('resonance barrage presentation spaces every hit within a bounded timeline',()=>{
+ const events=[{kind:'playerAction'},...Array.from({length:45},(_,hitIndex)=>({kind:'hit',hitIndex,damage:1}))];
+ const full=planCombatPresentation(events,'res_wingfallen');
+ const reduced=planCombatPresentation(events,'res_wingfallen',{reduced:true});
+ const hits=full.frames.filter(x=>x.event.kind==='hit');
+ assert.equal(hits.length,45);assert.equal(hits[44].at-hits[0].at,44*55);
+ assert.ok(full.duration<3000);assert.ok(reduced.duration<1100);
+});
 test('legacy saved-rule observer preserves full combat/save/reward/RNG through legal main20 routes against audit10',()=>{
  for(const [profile,seed] of [['wingAbyss',20261021],['wingJudge',46],['wingAbyss',19]]){const s=freshMain20(),old=clone(s),ledger={earnedP:180,trainingP:0,markP:0,fragmentP:{}};
   for(let floor=1;floor<=20;floor++){prepare(s,profile,'split',ledger);Object.assign(old,clone(s));const b=legacyAuthorityStrike(startMainBattle(s)),a=previous.startMainBattle(old);b.campaign.random=seed+floor;a.campaign.random=seed+floor;
    for(let n=0;!b.result&&n<200;n++){const id=pick(b,'mixed'),events=capture(b,id);previous.actMainBattle(a,id);assert.deepEqual(b,a,profile+'/'+floor+'/'+n);assert.ok(events.length);}
-   assert.equal(b.result,'win');const reward=settleMainBattle(s,b);const historic=previous.settleMainBattle(old,a);assert.deepEqual(reward,{...historic,unlocks:historic.unlocks.filter(x=>x!=='raid')});assert.deepEqual(exportSave(s),exportSave(old));ledger.earnedP+=reward.p;
+   assert.equal(b.result,'win');const reward=settleMainBattle(s,b);const historic=previous.settleMainBattle(old,a);const {summonPoints:earnedSummon,...unchangedReward}=reward;assert.equal(earnedSummon,250,'Only the approved summon currency may be added');assert.deepEqual(unchangedReward,{...historic,unlocks:historic.unlocks.filter(x=>x!=='raid')});const {summonPoints:nowPoints,...newLegacy}=JSON.parse(exportSave(s)).state,{summonPoints:oldPoints,...oldLegacy}=JSON.parse(exportSave(old)).state;assert.equal(nowPoints,oldPoints+250);assert.deepEqual(newLegacy,oldLegacy);ledger.earnedP+=reward.p;
   }
  }
 });

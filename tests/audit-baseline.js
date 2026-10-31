@@ -8,8 +8,21 @@ import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const manifest=JSON.parse(fs.readFileSync(new URL('../reports/audit-20261022/authorized-changes.json',import.meta.url),'utf8'));
 const sha=x=>createHash('sha256').update(x).digest('hex');
+// V45 is an explicitly authorized gameplay expansion, not a presentation-only edit.
+// Verify the exact new bytes, then reverse to main so every earlier immutable audit
+// continues to verify the original historical source without changing its contracts.
+const resonanceV45=JSON.parse(fs.readFileSync(new URL('../reports/resonance-v45/authorized-changes.json',import.meta.url),'utf8'));
+const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const expansion=resonanceV45[key];
+ if(expansion){
+  assert.equal(gitBlobSha(bytes),expansion.afterGitSha,key+' exact authorized resonance-v45 source');
+  const original=Buffer.from(expansion.before,'utf8');
+  assert.equal(gitBlobSha(original),expansion.beforeGitSha,key+' intact pre-v45 source');
+  bytes=original;
+ }
+
  const finalLabRetirement=JSON.parse(fs.readFileSync(new URL('../reports/v44-retire-final-lab/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(finalLabRetirement){assert.equal(sha(bytes),finalLabRetirement.afterSHA256,key+' approved final-only lab removal');assert.equal(sha(finalLabRetirement.before),finalLabRetirement.beforeSHA256,key+' exact v43 baseline');bytes=Buffer.from(finalLabRetirement.before);}
  const retiredDragon=JSON.parse(fs.readFileSync(new URL('../reports/v43-retire-dragon/authorized-changes.json',import.meta.url),'utf8'))[key];

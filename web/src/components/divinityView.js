@@ -1,3 +1,4 @@
+import {RESONANCES,resonanceLevel} from '../data/resonanceV3.js';
 import {DIV_IDS,DIV_NAMES,DIV_ART,DIV_STAGES,DIV_BRANCHES,DIV_SKILLS,DIV_TRIALS} from '../data/divinity.js';
 import {POWERS,RECIPES} from '../data/config.js';
 import {divinityTrialReason,divinityAwakenReason,divinityNext} from '../utils/divinityProgress.js';
@@ -24,6 +25,12 @@ export function divinityCommands(b){
   (cooperationEnabled(b.build)&&row.attune?(!b.powers.includes(row.attune)&&b.build.divinity.reclaimed.includes(row.attune)):
    b.build.awakening>=row.stage&&(!row.attune||b.build.divinity.reclaimed.includes(row.attune))))
   out.push([id,cooperationEnabled(b.build)&&row.attune?`交代：${DIV_NAMES[row.attune]}`:row.name,cooperationEnabled(b.build)&&row.attune?'1ターン消費・敵も行動する':row.text]);
+ for(const row of RESONANCES){
+  const learned=resonanceLevel(b.build,row.id);
+  const temp=b.trial?.kind==='resonance20'&&b.trial.tempId===row.id&&b.trial.proven;
+  if(row.parts.every(p=>b.powers.includes(p))&&(learned||temp))
+   out.push(['res_'+row.id,row.name, '共鳴Lv.'+(learned||1)+' / 必殺ゲージ100・共通CT2']);
+ }
  return out;
 }
 // Presentation-only helpers: battle actions and their effects remain in the combat engine.
@@ -49,7 +56,9 @@ export function divinityBattleView(s,b,button,enemySrc,commandPage=0,mirrorText=
  const equipped=b.powers.map(id=>DIV_NAMES[id]||RECIPES.find(r=>r.id===id)?.name||POWERS.find(r=>r.id===id)?.name||id).join('・')||'未解放';
  const stateCard=(side,title,status,extra)=>{const entries=divinityStatusText(status).split('・');return `<button class="div-status-card div-status-${side}" data-action="divInfo" data-id="" aria-label="${title}：${divEsc(entries.join('・'))}、${extra}。詳細を開く"><span class="div-status-label">${divIcon(side==='player'?'guard':'counter')}${title}<em>${entries.length>1?'＋'+(entries.length-1):'›'}</em></span><strong>${divEsc(entries[0])}</strong><small>${extra}</small></button>`;};
  const hp=(side,name,current,max,ratio)=>`<div class="div-hp div-hp-${side}"><strong>${divEsc(name)}</strong><span class="div-hp-value">${divNum(current)} <small>/ ${divNum(max)}</small></span><meter aria-label="${side==='player'?'自分':'敵'}HP" min="0" max="1" value="${Math.max(0,Math.min(1,ratio))}"></meter><div class="div-hp-track" aria-hidden="true"><i style="width:${Math.max(0,Math.min(1,ratio))*100}%"></i></div></div>`;
- const objective=trial?(trial.cooperation?(trial.proven?'協力条件達成！ 勝利して試練を突破しよう。':`条件：${COOP_STYLES[trial.id]}。現在、条件未達。`):['truth','infinite'].includes(trial.id)?DIV_TRIALS[trial.id].condition+'（使用系統 '+trial.seen.length+'）':trial.awakened?(trial.used?'権能を使った。勝利して持ち帰れ！':'封印解除！ 新しい権能の技を選ぼう。'):DIV_TRIALS[trial.id].condition+`（防御 ${trial.guards} / 証 ${trial.proof}）`):'';
+ const t20=b.trial?.kind==='resonance20'?b.trial:null;
+ const challengeObjective=t20?(t20.floor===20?'神座の五重封印：'+t20.seals.length+'/5。五権能を役割ごとに使い分けて解除':t20.tempId?(t20.proven?'共闘成功。新しい共鳴技で突破しよう':'異なる攻撃や防御を組み合わせ、共闘のきっかけを作ろう'):'敵の動きを見極めて突破'):'';
+ const objective=challengeObjective?challengeObjective:trial?(trial.cooperation?(trial.proven?'協力条件達成！ 勝利して試練を突破しよう。':`条件：${COOP_STYLES[trial.id]}。現在、条件未達。`):['truth','infinite'].includes(trial.id)?DIV_TRIALS[trial.id].condition+'（使用系統 '+trial.seen.length+'）':trial.awakened?(trial.used?'権能を使った。勝利して持ち帰れ！':'封印解除！ 新しい権能の技を選ぼう。'):DIV_TRIALS[trial.id].condition+`（防御 ${trial.guards} / 証 ${trial.proof}）`):'';
  return `<section class="div-combat ${d.unified?'div-unified':''}" aria-label="神格戦闘" data-pages="${pages}" data-page="${page}" data-page-size="${pageSize}" style="--div-surface:url('${DIV_COMBAT_SURFACE}')">
  <header class="div-battle-head"><div class="div-title">${divIcon('sigil')}<div><h1>失われた神格</h1><small>${divEsc(trial?DIV_TRIALS[trial.id].name:b.main20?'再誕の物語 · 第'+b.floor+'階層':b.enemy.name)}</small></div></div><div class="div-battle-meta"><strong class="div-turn">TURN ${b.turn}</strong><span class="div-stage-badge">神格 <b>${b.build.awakening}</b></span></div></header>
  <div class="div-arena battle-stage"><img class="div-player" src="${DIV_ART[b.build.awakening]}" alt="いれーな・${DIV_STAGES[b.build.awakening].name}"><img class="div-enemy ${trial?'div-trial-shadow':''}" src="${trial?DIV_ART[['truth','infinite'].includes(trial.id)?5:2]:enemySrc||DIV_ART[5]}" alt="${divEsc(b.enemy.name)}">${cooperationEnabled(b.build)&&d.line?`<div class="cooperation-banter ${d.line.kind==='release'?'cooperation-banter-release':''}" aria-label="${divEsc(d.line.lines.map(x=>x.speaker+'：'+x.text).join('。'))}" style="--banter-duration:${d.line.lines.length*1.45+.25}s">${d.line.lines.map((x,i)=>`<div class="cooperation-banter-line" style="animation-delay:${(i*1.45).toFixed(2)}s"><b>${divEsc(x.speaker)}</b><span>${divEsc(x.text)}</span></div>`).join('')}</div>`:''}<div class="div-arena-divider" aria-hidden="true">${divIcon('sigil')}</div><div class="div-vfx-target div-vfx-player" aria-hidden="true"></div><div class="div-vfx-target div-vfx-enemy" aria-hidden="true"></div>${hp('player','いれーな',p.current,p.hp,p.ratio)}${hp('enemy',b.enemy.name,b.enemy.hp,e.hp,b.enemy.hp/e.hp)}${b.lastDamage?`<div class="div-damage" aria-label="与ダメージ${Math.floor(b.lastDamage)}">${divNum(b.lastDamage)}</div>`:''}</div>
