@@ -116,6 +116,8 @@ export function tacticalBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));
  let bytes=finaleBaselineRead(file);const change=JSON.parse(fs.readFileSync(new URL('../reports/tactical-marks-audit3/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(change){assert.equal(sha(bytes),change.afterSHA256,key+' exact tactical mark change');assert.equal(sha(change.before),change.beforeSHA256,key+' audit2 baseline');bytes=Buffer.from(change.before);}
+ const packageFix=JSON.parse(fs.readFileSync(new URL('../reports/package-fix/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(packageFix){assert.equal(sha(bytes),packageFix.afterSHA256,key+' approved package integrity fix');assert.equal(sha(packageFix.before),packageFix.beforeSHA256,key+' preserved package baseline');bytes=Buffer.from(packageFix.before);}
  return encoding?bytes.toString(encoding):bytes;
 }
 export function auditRead(file,encoding){

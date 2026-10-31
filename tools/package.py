@@ -6,6 +6,7 @@ root=Path(__file__).resolve().parents[1]
 out=root/'artifacts'
 out.mkdir(exist_ok=True)
 shutil.copy2(root/'irena-play.html',out/'irena-play.html')
+assert (out/'irena-play.html').read_bytes()==(root/'irena-play.html').read_bytes()
 with ZipFile(out/'irena-deploy.zip','w',ZIP_DEFLATED) as z:
     for p in sorted((root/'dist').rglob('*')):
         if p.is_file(): z.write(p,p.relative_to(root/'dist'))
@@ -27,7 +28,7 @@ for name in ['irena-source.zip','irena-deploy.zip','irena-review.zip']:
         if invalid: raise RuntimeError('Corrupted ZIP entry: '+invalid)
         if name=='irena-deploy.zip':
             assert 'index.html' in z.namelist()
-            assert z.read('index.html')==(root/'irena-play.html').read_bytes()
+            assert z.read('index.html')==(root/'dist'/'index.html').read_bytes()
         elif name=='irena-source.zip':
             for required in ['package.json','README.md','tools/build.mjs','web/src/utils/gameCore.js','tests/core.test.js']:
                 assert 'irena-reborn/'+required in z.namelist()
