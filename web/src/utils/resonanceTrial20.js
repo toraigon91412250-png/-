@@ -110,6 +110,8 @@ export function actResonanceTrial(b,action,options={}){
  const t=b.trial,prevTurn=b.turn;
  const beforeUsed=b.events.length;
  act(b,action,{...options,enemyAction:trialEnemyTurn,damageGate:trialGate});
+ // Floor 17's first-awakening sacrifice must remain under 50% even when King's passive heals 12% on the same hit.
+ if(t.floor===17&&t.tempId&&!t.tempUsed&&action==='fallenOath'&&b.hp>0){b.hp=Math.min(b.hp,b.base.hp*.45);log(b,'堕天王が堕天の決意を受け止めた。反逆の条件が整う。');}
  if(b.result==='lose')return b;
  // The final altar cannot be defeated by an indirect counter before all five seals break.
  if(t.floor===20&&t.seals.length<5&&b.enemy.hp<b.enemy.base.hp*.15){b.enemy.hp=b.enemy.base.hp*.15;b.result=null;}
