@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {freshDivinity} from '../web/src/utils/divinitySave.js';
 import {activateCooperation,cooperationDialogue} from '../web/src/utils/divinityCooperation.js';
@@ -7,6 +8,8 @@ import {startBattle,act} from '../web/src/utils/gameCore.js';
 import {divBattleState} from '../web/src/utils/divinityCombat.js';
 import {divinityBattleView} from '../web/src/components/divinityView.js';
 
+const battleCss=fs.readFileSync('web/src/components/game.css','utf8');
+const cssRule=selector=>{const start=battleCss.indexOf(selector+'{');assert.notEqual(start,-1,selector);return battleCss.slice(start,battleCss.indexOf('}',start)+1);};
 const make=(a='wing',b='king')=>{
  const s=activateCooperation(freshDivinity());s.equipped=[a,b];
  const battle=startBattle(s,{mode:'normal',floor:1,test:true});divBattleState(battle);
@@ -68,14 +71,26 @@ test('special dialogue triggers on power exchange, judgment, low-HP strike, and 
  assert.equal(cooperationDialogue(other).kind,'judge');
 });
 
-test('banter renders inside the arena, not as an extra command-height row',()=>{
+test('battle art shows through the glass header and HP panels while preserving safe areas',()=>{
+ assert.match(cssRule('.div-battle-head'),/position:absolute/);
+ assert.match(cssRule('.div-battle-head'),/rgba\(/);
+ assert.match(cssRule('.div-arena>img'),/height:100%/);
+ assert.match(cssRule('.div-hp'),/rgba\(/);
+ assert.match(battleCss,/safe-area-inset-bottom/);
+});
+
+test('banter stays in the arena while the persistent enemy forecast is absent',()=>{
  const {s,battle}=make('wing','judge');battle.turn=3;
  battle.divine.line=cooperationDialogue(battle);
  const html=divinityBattleView(s,battle,()=>'',null);
  const start=html.indexOf('class="div-arena battle-stage"');
  const target=html.indexOf('class="cooperation-banter ');
- const telegraph=html.indexOf('class="div-telegraph"');
- assert.ok(start>=0&&target>start&&telegraph>target);
+ assert.ok(start>=0&&target>start);
+ assert.doesNotMatch(html,/div-telegraph|敵の予告|敵の次の行動/);
+ assert.match(html,/class="div-hp div-hp-player"/);
+ assert.match(html,/class="div-hp div-hp-enemy"/);
+ assert.match(html,/class="div-command-dock"/);
+ assert.match(html,/class="div-combat-footer"/);
  assert.match(html,/animation-delay:1\.45s/);
  assert.match(html,/aria-label="黒翼：/);
  assert.equal((html.match(/class="cooperation-banter /g)||[]).length,1);
