@@ -1,0 +1,29 @@
+name: Resonance Feature Verification
+on:
+  pull_request:
+    paths:
+      - 'web/src/**'
+      - 'tests/resonance-*.test.js'
+      - '.github/workflows/resonance-verify.yml'
+permissions:
+  contents: read
+jobs:
+  feature-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run cooperative feature unit tests
+        run: node --test tests/resonance-*.test.js
+      - name: Check source syntax
+        run: npm run check
+      - name: Build game
+        run: |
+          cp -R migration-inputs/assets-to-integrate ../assets-to-integrate
+          cp -R migration-inputs/combat-ui-user-input ../combat-ui-user-input
+          cp -R migration-inputs/supplied-raid ../supplied-raid
+          npm run build
