@@ -111,6 +111,8 @@ export function actResonanceTrial(b,action,options={}){
  const beforeUsed=b.events.length;
  act(b,action,{...options,enemyAction:trialEnemyTurn,damageGate:trialGate});
  if(b.result==='lose')return b;
+ // The final altar cannot be defeated by an indirect counter before all five seals break.
+ if(t.floor===20&&t.seals.length<5&&b.enemy.hp<b.enemy.base.hp*.15){b.enemy.hp=b.enemy.base.hp*.15;b.result=null;}
  t.actions.push(action);if(t.actions.length>12)t.actions.shift();
  if(t.floor===20)roleSeal(b,action);
  else if(t.tempId){
@@ -129,18 +131,19 @@ export function actResonanceTrial(b,action,options={}){
   }
  }
  t.previous=action;
+ if(t.floor===20&&t.seals.length<5&&b.enemy.hp<b.enemy.base.hp*.15){b.enemy.hp=b.enemy.base.hp*.15;b.result=null;}
  if(b.enemy.hp<=0&&b.hp>0)b.result='win';
  return b;
 }
 export function settleResonanceTrial(s,b){
  const t=b?.trial;if(t?.kind!=='resonance20'||!b.result||b.settled)return null;
- b.settled=true;
  const reward={p:0,sp:0,fragments:0,levels:0,bonusP:0,achievements:[],unlocks:[],resShards:0,summonPoints:0};
- if(b.test||b.result!=='win')return reward;
+ if(b.test||b.result!=='win'){b.settled=true;return reward;}
  const d=resonanceState(s),floor=t.floor;
  if(floor!==d.floor)throw Error('共鳴試練の進行が一致しません');
  if(floor===20&&t.seals.length!==5)throw Error('五重封印を解除していません');
  if(t.tempId&&(!t.proven||!t.tempUsed))throw Error('共鳴が成立していません');
+ b.settled=true;
  if(!d.cleared.includes(floor))d.cleared.push(floor);
  if(t.tempId&&learnResonance(s,t.tempId))reward.unlocks.push(RESONANCE_BY_ID[t.tempId].name);
  reward.resShards=10+floor*2;s.resShards+=reward.resShards;
