@@ -1295,8 +1295,10 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 @media(max-width:767px){.div-arena>img{top:64px;height:calc(100% - 64px)}}
 
 /* ちびーなルームと人格別のマスコット表示 */
-.chibina-room-entry{display:block;position:relative;width:100%;min-width:0;min-height:0;aspect-ratio:1672/941;overflow:hidden;padding:0;border:1px solid #765483;border-radius:5px;background:#100d1d;box-shadow:inset 0 0 0 3px #100c17,0 5px 18px #07071180;line-height:0}
-.chibina-room-entry img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.chibina-room-entry{display:block;position:relative;align-self:stretch;width:100%;min-width:0;min-height:0;overflow:hidden;padding:0;border:1px solid #765483;border-radius:5px;background:#100d1d;box-shadow:inset 0 0 0 3px #100c17,0 5px 18px #07071180;line-height:0}
+.chibina-room-entry-backdrop{position:absolute;inset:-8px;background-position:center;background-size:auto 190%;filter:blur(10px) brightness(.62) saturate(.9);transform:scale(1.04);pointer-events:none}
+.chibina-room-entry:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0b0b1590,transparent 30% 70%,#0b0b1590);pointer-events:none}
+.chibina-room-entry-art{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
 .chibina-room-entry:hover{background:#171020;box-shadow:inset 0 0 0 3px #100c17,0 0 18px #a362c255}
 .chibina-room-entry:focus-visible{outline:2px solid #e2b9ee;outline-offset:3px}
 .chibina-page{max-width:1000px;margin-inline:auto}
@@ -1317,12 +1319,8 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .chibina-card[data-persona="abyss"] .chibina-character-art{animation-name:chibina-abyss-float;animation-duration:6s}
 .chibina-card h2{margin:1px 0 0;color:#f2e7f7;font-size:clamp(13px,2vw,18px);line-height:1.35}
 .chibina-card p{min-height:1.5em;margin:0;color:#c4b6d0;font-size:clamp(9px,1.4vw,12px);line-height:1.4}
-.chibina-candidate{width:100%;min-height:44px;padding:7px 5px;border-color:#795b85;border-radius:9px;background:#25182d;color:#e7d5f1;font-size:clamp(9px,1.35vw,12px);line-height:1.35}
-.chibina-candidate:disabled{border-color:#bda36e;background:#3b3022;color:#f4ddaa;opacity:1}
-.chibina-home-choice{padding:14px 16px;border:1px solid #72587c;border-radius:12px;background:linear-gradient(125deg,#191321,#101521);text-align:center}
-.chibina-home-choice p{margin:3px 0;color:#cdbbd7}
-.chibina-home-choice strong{color:#f3dfad}
-.chibina-home-choice .primary{width:100%;min-height:48px;margin-top:9px}
+.chibina-home-set{width:100%;min-height:44px;padding:7px 5px;border-color:#795b85;border-radius:9px;background:#25182d;color:#e7d5f1;font-size:clamp(9px,1.35vw,12px);line-height:1.35}
+.chibina-home-set:disabled{border-color:#bda36e;background:#3b3022;color:#f4ddaa;opacity:1}
 .chibina-room>.ghost{justify-self:start;min-height:44px}
 .chibina-card[data-persona="wing"] .chibina-character-tap.reacting .chibina-character-art{animation:chibina-wing-react 600ms ease-out both}
 .chibina-card[data-persona="judge"] .chibina-character-tap.reacting .chibina-character-art{animation:chibina-judge-react 500ms ease-out both}
@@ -1349,6 +1347,7 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 @keyframes chibina-fallen-react{0%{transform:translateY(0) rotate(0)}38%{transform:translateY(-16px) rotate(4deg)}72%{transform:translateY(-5px) rotate(-2deg)}100%{transform:translateY(0) rotate(0)}}
 @keyframes chibina-king-react{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes chibina-abyss-react{0%{transform:scale(1)}45%{transform:scale(.92)}100%{transform:scale(1)}}
-@media(max-width:700px){.chibina-room{gap:14px;margin-top:4px}.chibina-room-grid{gap:10px 7px}.chibina-card{gap:4px;padding:9px 4px 8px;border-radius:11px}.chibina-character-tap{height:clamp(100px,29vw,135px);padding:1px}.chibina-character-art{width:100%}.chibina-card h2{font-size:clamp(12px,3.4vw,16px)}.chibina-card p{font-size:clamp(8px,2.4vw,11px)}.chibina-candidate{min-height:44px;padding:6px 2px;font-size:clamp(8px,2.35vw,11px)}.chibina-home-choice{padding:12px 11px}}
-@media(max-width:350px){.chibina-room-grid{gap:8px 5px}.chibina-card{padding-inline:3px}.chibina-character-tap{height:100px}.chibina-home-choice{padding:11px 8px}}
+@media(max-width:700px){.chibina-room{gap:14px;margin-top:4px}.chibina-room-grid{gap:10px 7px}.chibina-card{gap:4px;padding:9px 4px 8px;border-radius:11px}.chibina-character-tap{height:clamp(100px,29vw,135px);padding:1px}.chibina-character-art{width:100%}.chibina-card h2{font-size:clamp(12px,3.4vw,16px)}.chibina-card p{font-size:clamp(8px,2.4vw,11px)}.chibina-home-set{min-height:44px;padding:6px 2px;font-size:clamp(8px,2.35vw,11px)}.chibina-room-entry-art{clip-path:inset(23% 0)}}
+@media(min-width:701px){.chibina-room-entry-art{clip-path:inset(14% 0)}}
+@media(max-width:350px){.chibina-room-grid{gap:8px 5px}.chibina-card{padding-inline:3px}.chibina-character-tap{height:100px}}
 @media(prefers-reduced-motion:reduce){.home-mascot,.home-mascot img,.chibina-character-art{animation:none!important;transform:none!important}}

@@ -30,10 +30,14 @@ test('room artwork retains all six approved source files byte-for-byte',()=>{
 test('room entry is the right-hand image card beside the final battle card',()=>{
  const home=app.slice(app.indexOf('function home(a){'),app.indexOf('function selectFinaleDifficulty('));
  assert.match(home,/id:'finale'/);
- assert.match(home,/class="chibina-room-entry" data-action="nav" data-id="chibina" aria-label="ちびーなルームを開く"><img src="\$\{CHIBINA_ROOM_BANNER\}" alt=""/);
+ assert.match(home,/class="chibina-room-entry" data-action="nav" data-id="chibina" aria-label="ちびーなルームを開く"><span class="chibina-room-entry-backdrop" style="background-image:url\('\$\{CHIBINA_ROOM_BANNER\}'\)" aria-hidden="true"><\/span><img class="chibina-room-entry-art" src="\$\{CHIBINA_ROOM_BANNER\}" alt=""/);
  assert.match(app,/const CHIBINA_ROOM_BANNER='assets\/home-ui\/chibina-room-banner\.png'/);
- assert.match(css,/\.chibina-room-entry\{[^}]*aspect-ratio:1672\/941/);
- assert.match(css,/\.chibina-room-entry img\{[^}]*object-fit:contain/);
+ assert.match(css,/\.chibina-room-entry\{[^}]*align-self:stretch/);
+ assert.doesNotMatch(css,/\.chibina-room-entry\{[^}]*aspect-ratio:/);
+ assert.match(css,/\.chibina-room-entry-backdrop\{[^}]*background-size:auto 190%[^}]*filter:blur\(/);
+ assert.match(css,/\.chibina-room-entry-art\{[^}]*object-fit:contain/);
+ assert.ok(css.includes('@media(max-width:700px)')&&css.includes('.chibina-room-entry-art{clip-path:inset(23% 0)}'));
+ assert.ok(css.includes('@media(min-width:701px)')&&css.includes('.chibina-room-entry-art{clip-path:inset(14% 0)}'));
 });
 
 test('the room maps all five personas and keeps image reactions separate from home selection',()=>{
@@ -51,12 +55,15 @@ test('the room maps all five personas and keeps image reactions separate from ho
  }
  const view=app.slice(app.indexOf('function chibinaRoomView()'),app.indexOf('function homeCard('));
  assert.match(view,/data-chibina-react="\$\{persona.id\}"/);
- assert.match(view,/data-action="chibinaSelect"/);
- assert.match(view,/chibinaApply/);
- const select=app.slice(app.indexOf("case 'chibinaSelect':"),app.indexOf("case 'nav':"));
- assert.match(select,/chibinaPendingId=id/);
+ assert.match(view,/data-action="chibinaSet"/);
+ assert.match(view,/ホームに設定/);
+ assert.match(view,/aria-pressed="\$\{persona\.id===chibinaHomeId\}"/);
+ assert.doesNotMatch(view,/chibinaPendingId|chibinaApply|chibinaSelect/);
+ const select=app.slice(app.indexOf("case 'chibinaSet':"),app.indexOf("case 'nav':"));
+ assert.match(select,/chibinaHomeId=persona\.id/);
  assert.match(select,/localStorage\.setItem\(CHIBINA_PREFERENCE_KEY,persona\.id\)/);
  assert.doesNotMatch(select,/persist\(\)/,'persona preference stays separate from the game save');
+ assert.doesNotMatch(app,/chibinaPendingId|chibinaApply|chibinaSelect/,'selection has one direct apply action');
 });
 
 test('persona idle movement differs, reacts once, and respects reduced motion',()=>{
