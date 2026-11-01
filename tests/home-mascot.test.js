@@ -24,7 +24,7 @@ test('original black-wing PNG stays unchanged and mascot uses the 435px lossless
 
 test('mascot markup exists only in the home view and keeps an accessible tap target',()=>{
  const home=app.slice(app.indexOf('function home(a){'),app.indexOf('function selectFinaleDifficulty('));
- assert.match(home,/class="home-mascot" data-persona="\$\{selectedChibina\.id\}" aria-label="\$\{selectedChibina\.name\}ちびキャラをタップして反応を見る"/);
+ assert.match(home,/class="home-mascot" data-persona="\$\{selectedChibina\.id\}" aria-label="\$\{selectedChibina\.name\}ちびキャラ。1回タップで反応、2回タップで次の目標を案内"/);
  assert.match(home,/src="\$\{selectedChibina\.art\}" alt="" width="\$\{selectedChibina\.width\}" height="\$\{selectedChibina\.height\}"/);
  assert.equal((app.match(/class="home-mascot"/g)||[]).length,1);
  assert.match(app,/const HOME_MASCOT_ART='assets\/home-ui\/optimized\/chibi-wing\.webp'/);
@@ -33,7 +33,21 @@ test('mascot markup exists only in the home view and keeps an accessible tap tar
 
 test('float and jump timings, safe-area spacing and mobile-navigation priority are explicit',()=>{
  const rule=css.match(/\.home-mascot\{[^}]+\}/)?.[0]||'';
- assert.ok(rule.includes('position:fixed')&&rule.includes('right:max(10px,env(safe-area-inset-right))')&&rule.includes('width:min(25vw,120px)')&&rule.includes('z-index:19'));
+ assert.ok(rule.includes('position:fixed')&&rule.includes('right:max(10px,env(safe-area-inset-right))')&&rule.includes('width:min(31.25vw,150px)')&&rule.includes('z-index:19'));
+ assert.ok(css.includes('.home-mascot-guide{position:fixed')&&css.includes('z-index:21'));
+ assert.match(app,/doubleTap=now-lastMascotTapAt<=360/);
+ assert.match(app,/if\(doubleTap\)\{mascotGuideOpen=true;render\(\);\}/);
+ assert.match(app,/case 'mascotGuideGo':\{const target=mascotGuideTarget\(a\);if\(!target\)throw Error/);
+ assert.match(app,/次は第\$\{floor\}階層へ行こうよ。案内するね！/);
+ assert.match(app,/次に裁くのは第\$\{floor\}階層だ。/);
+ assert.match(app,/次の目標は第\$\{floor\}階層。早くいけ。/);
+ assert.match(app,/次なる戦場、第\$\{floor\}階層へ参ろう。案内して差し上げる。/);
+ assert.match(app,/……次は、第\$\{floor\}階層。行くなら、触れて。/);
+ assert.equal((app.match(/const CHIBINA_PREFERENCE_KEY=/g)||[]).length,1,'guide preference remains separate from saves');
+ assert.ok(app.includes('if(a.floor<=20&&!a.cleared.includes(a.floor))'));
+ assert.ok(rule.includes('touch-action:manipulation'));
+ assert.ok(app.includes("if(battle&&!battle.result)return {kind:'resume',action:'nav',id:'battle'"));
+ assert.match(app,/return null;\n}/);
  assert.ok(rule.includes('animation:home-mascot-float 3s ease-in-out infinite'));
  assert.ok(css.includes('@keyframes home-mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}'));
  assert.ok(css.includes('.home-mascot.jumping img{animation:home-mascot-jump 600ms ease-out both}'));
@@ -41,6 +55,8 @@ test('float and jump timings, safe-area spacing and mobile-navigation priority a
  assert.ok(css.includes('@media(max-width:800px){.home-mascot{bottom:calc(80px + env(safe-area-inset-bottom))}}'));
 });
 
-test('jump listener ignores repeat taps until its 600ms animation finishes',()=>{
- assert.match(app,/const mascot=event\.target\.closest\('\.home-mascot'\);if\(mascot\)\{if\(mascot\.classList\.contains\('jumping'\)\)return;mascot\.classList\.add\('jumping'\);window\.setTimeout\(\(\)=>mascot\.classList\.remove\('jumping'\),chibinaPersona\(mascot\.dataset\.persona\)\.reactionMs\);/);
+test('single tap keeps the existing jump and double tap opens guidance without navigation',()=>{
+ assert.match(app,/doubleTap=now-lastMascotTapAt<=360/);
+ assert.match(app,/if\(!mascot\.classList\.contains\('jumping'\)\)\{mascot\.classList\.add\('jumping'\);window\.setTimeout\(\(\)=>mascot\.classList\.remove\('jumping'\),chibinaPersona\(mascot\.dataset\.persona\)\.reactionMs\);\}if\(doubleTap\)\{mascotGuideOpen=true;render\(\);\}return;/);
+ assert.match(app,/case 'mascotGuideGo':\{const target=mascotGuideTarget\(a\);if\(!target\)throw Error\('今は案内できる目標がありません'\);mascotGuideOpen=false;await handle\(target\.action,target\.id\);break;\}/);
 });

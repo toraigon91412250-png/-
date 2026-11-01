@@ -19,6 +19,8 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const mascotGuide=JSON.parse(fs.readFileSync(new URL('../reports/chibina-mascot-guide/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(mascotGuide){assert.equal(sha(bytes),mascotGuide.afterSHA256,key+' approved chibina mascot guidance');let source=bytes.toString('utf8');for(const edit of mascotGuide.replacements){assert.equal(source.split(edit.after).length-1,1,key+' exact approved mascot guide replacement');source=source.replace(edit.after,edit.before);}assert.equal(sha(source),mascotGuide.beforeSHA256,key+' exact pre-guide source');bytes=Buffer.from(source);}
  const combatRebuild=Object.assign({},...[1,2,3,4].map(i=>JSON.parse(fs.readFileSync(new URL('../reports/combat-rebuild/part-'+i+'.json',import.meta.url),'utf8'))))[key];
  if(combatRebuild){
   assert.equal(gitBlobSha(bytes),combatRebuild.afterGitSha,key+' exact authorized combat update');
