@@ -11,11 +11,11 @@ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(
 const base=process.env.GAME_URL||'http://127.0.0.1:4173/dist/index.html';
 const preferenceKey='irena-reborn-chibina-room-v1';
 const personas=[
- {id:'wing',name:'黒翼',asset:'blackwing-chibi.png',reaction:'chibina-wing-react',duration:'600ms'},
- {id:'judge',name:'断罪',asset:'chibi-danzai.png',reaction:'chibina-judge-react',duration:'500ms'},
- {id:'fallen',name:'堕天',asset:'chibi-daten.png',reaction:'chibina-fallen-react',duration:'650ms'},
- {id:'king',name:'堕天王',asset:'chibi-datenou.png',reaction:'chibina-king-react',duration:'600ms'},
- {id:'abyss',name:'深淵',asset:'chibi-shinen.png',reaction:'chibina-abyss-react',duration:'700ms'}
+ {id:'wing',name:'黒翼',asset:'optimized/chibi-wing.webp',reaction:'chibina-wing-react',duration:'600ms'},
+ {id:'judge',name:'断罪',asset:'optimized/chibi-judge.webp',reaction:'chibina-judge-react',duration:'500ms'},
+ {id:'fallen',name:'堕天',asset:'optimized/chibi-fallen.webp',reaction:'chibina-fallen-react',duration:'650ms'},
+ {id:'king',name:'堕天王',asset:'optimized/chibi-king.webp',reaction:'chibina-king-react',duration:'600ms'},
+ {id:'abyss',name:'深淵',asset:'optimized/chibi-abyss.webp',reaction:'chibina-abyss-react',duration:'700ms'}
 ];
 const state=activateCooperation(freshDivinity());state.started=true;
 const validState=validateDivinitySave(state);
@@ -46,7 +46,9 @@ async function assertWidths(url){
   ok(`${width}px room has a centered 3+2 layout`,geometry.length===5&&Math.abs(geometry[0].y-geometry[1].y)<30&&Math.abs(geometry[1].y-geometry[2].y)<30&&geometry[3].y>geometry[0].y&&geometry[3].x>geometry[0].x&&geometry[4].x<geometry[2].x);
   ok(`${width}px room cards do not overlap`,geometry.every((a,i)=>geometry.slice(i+1).every(b=>a.right<=b.x||b.right<=a.x||a.bottom<=b.y||b.bottom<=a.y)));
   await page.waitForFunction(()=>{const images=[...document.querySelectorAll('.chibina-character-art')];return images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0);});
-  ok(`${width}px all supplied character images decoded`,await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0)));
+  ok(`${width}px all optimized character images decode at 435px`,await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth===435)));
+  ok(`${width}px character transparency and full-image framing are preserved`,await page.locator('.chibina-character-art').evaluateAll(images=>images.every(img=>{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;let transparent=0,visible=0;for(let i=3;i<pixels.length;i+=4){if(pixels[i]===0)transparent++;if(pixels[i]>0)visible++;}return transparent>0&&visible>0&&getComputedStyle(img).objectFit==='contain'&&img.getBoundingClientRect().width<=160;})));
+  if(width===390)await page.screenshot({path:'/tmp/chibina-room-390-dpr1.png',fullPage:true});
   ok(`${width}px room has no mascot or horizontal overflow`,await page.locator('.home-mascot').count()===0&&!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth));
   const before=await page.evaluate(key=>localStorage.getItem(key),SAVE_KEY);
   for(const persona of personas){
@@ -78,17 +80,26 @@ async function assertWidths(url){
   await page.locator(`${width<700?'.mobile-nav':'.sidebar'} [data-action="nav"][data-id="battle"]`).click();
   ok(`${width}px battle navigation never displays the room mascot`,await page.locator('.home-mascot').count()===0&&await page.locator('.chibina-room-grid').count()===0);
   ok(`${width}px no uncaught browser errors`,pageErrors.length===0);
-  if(width===390)await page.screenshot({path:'/tmp/chibina-room-390.png',fullPage:true});
   await context.close();
  }
 }
 try{
  await assertWidths(base);
+ const retina=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
+ const {page:retinaPage,pageErrors:retinaErrors}=await seededPage(retina,base,'wing');
+ const homeResolution=await retinaPage.locator('.home-mascot img').evaluate(img=>({natural:img.naturalWidth,rendered:img.getBoundingClientRect().width}));
+ ok('390px high-DPR home mascot has at least three source pixels per screen pixel',homeResolution.natural>=homeResolution.rendered*3);
+ await retinaPage.locator('.chibina-room-entry').click();await retinaPage.locator('.chibina-room-grid').waitFor();
+ const retinaResolution=await retinaPage.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.naturalWidth===435&&img.naturalWidth>=img.getBoundingClientRect().width*3&&img.complete&&img.naturalHeight>0));
+ ok('390px high-DPR room retains sharp source density and complete art',retinaResolution);
+ await retinaPage.screenshot({path:'/tmp/chibina-room-390-dpr3.png',fullPage:true});
+ ok('high-DPR room has no browser errors',retinaErrors.length===0);
+ await retina.close();
  const standalone=base.includes('/dist/')?base.replace('/dist/index.html','/irena-play.html'):base;
  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
  const {page,pageErrors}=await seededPage(context,standalone);
  await page.locator('.chibina-room-entry').click();
- ok('standalone HTML loads entry and all five embedded images',await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0)));
+ ok('standalone HTML loads entry and all five embedded 435px images',await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth===435)));
  await page.locator('[data-action="chibinaSet"][data-id="abyss"]').click();await page.locator('.mobile-nav [data-action="nav"][data-id="home"]').click();
  ok('standalone HTML persists home selection',await page.locator('.home-mascot').getAttribute('data-persona')==='abyss'&&pageErrors.length===0);
  await context.close();
