@@ -21,22 +21,23 @@ const state=activateCooperation(freshDivinity());state.started=true;
 const validState=validateDivinitySave(state);
 const checks=[];
 const ok=(name,value)=>{assert.ok(value,name);checks.push(name);};
-async function seededPage(context,url){
+async function seededPage(context,url,preferredPersona=null){
  const page=await context.newPage();
- await page.addInitScript(({saveKey,gameSave})=>localStorage.setItem(saveKey,JSON.stringify(gameSave)),{saveKey:SAVE_KEY,gameSave:validState});
+ await page.addInitScript(({saveKey,gameSave,prefKey,persona})=>{if(localStorage.getItem(saveKey)===null)localStorage.setItem(saveKey,JSON.stringify(gameSave));if(persona&&localStorage.getItem(prefKey)===null)localStorage.setItem(prefKey,persona);},{saveKey:SAVE_KEY,gameSave:validState,prefKey:preferenceKey,persona:preferredPersona});
  const pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
  await page.goto(url);await page.locator('.home-mascot').waitFor();
  return {page,pageErrors};
 }
 async function assertWidths(url){
- for(const width of [320,375,390,430,1440]){
+ for(const [index,width] of [320,375,390,430,1440].entries()){
   const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:1,isMobile:width<700,hasTouch:width<700});
-  const {page,pageErrors}=await seededPage(context,url);
+  const initial=personas[index];
+  const {page,pageErrors}=await seededPage(context,url,initial.id);
   ok(`${width}px home has one mascot`,await page.locator('.home-mascot').count()===1);
   const entry=page.locator('.chibina-room-entry'),finale=page.locator('.home-card-route-finale');
   const card=await entry.boundingBox(),fight=await finale.boundingBox();
-  ok(`${width}px entry follows final card`,!!card&&!!fight&&Math.abs(card.y-fight.y)<2&&card.x>fight.x);
-  ok(`${width}px banner fits without duplicate overlay`,await page.locator('.chibina-room-entry img').evaluate(img=>img.complete&&img.naturalWidth===1672&&getComputedStyle(img).objectFit==='contain')&&!(await entry.innerText()).trim());
+  ok(`${width}px entry matches final card frame`,!!card&&!!fight&&Math.abs(card.y-fight.y)<2&&Math.abs(card.height-fight.height)<2&&card.x>fight.x);
+  ok(`${width}px banner art stays intact over a filled backdrop`,await page.locator('.chibina-room-entry-art').evaluate(img=>img.complete&&img.naturalWidth===1672&&getComputedStyle(img).objectFit==='contain'&&getComputedStyle(img).clipPath.startsWith('inset('))&&await page.locator('.chibina-room-entry-backdrop').evaluate(el=>{const s=getComputedStyle(el);return s.backgroundImage!=='none'&&s.backgroundSize==='auto 190%'})&&!(await entry.innerText()).trim());
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   ok(`${width}px home has no horizontal overflow`,!overflow);
   await entry.click();await page.locator('.chibina-room-grid').waitFor();
@@ -44,6 +45,7 @@ async function assertWidths(url){
   const geometry=await page.locator('.chibina-card').evaluateAll(cards=>cards.map(c=>{const r=c.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom};}));
   ok(`${width}px room has a centered 3+2 layout`,geometry.length===5&&Math.abs(geometry[0].y-geometry[1].y)<30&&Math.abs(geometry[1].y-geometry[2].y)<30&&geometry[3].y>geometry[0].y&&geometry[3].x>geometry[0].x&&geometry[4].x<geometry[2].x);
   ok(`${width}px room cards do not overlap`,geometry.every((a,i)=>geometry.slice(i+1).every(b=>a.right<=b.x||b.right<=a.x||a.bottom<=b.y||b.bottom<=a.y)));
+  await page.waitForFunction(()=>{const images=[...document.querySelectorAll('.chibina-character-art')];return images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0);});
   ok(`${width}px all supplied character images decoded`,await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0)));
   ok(`${width}px room has no mascot or horizontal overflow`,await page.locator('.home-mascot').count()===0&&!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth));
   const before=await page.evaluate(key=>localStorage.getItem(key),SAVE_KEY);
@@ -59,18 +61,20 @@ async function assertWidths(url){
    await page.waitForFunction(el=>!el.classList.contains('reacting'),await tap.elementHandle(),{timeout:1600});
    ok(`${width}px ${persona.name} returns from reaction`,await tap.evaluate(el=>!el.classList.contains('reacting')));
   }
-  ok(`${width}px tapping never changes the home selection`,await page.locator('.chibina-card.is-home-mascot').getAttribute('data-persona')==='wing'&&await page.evaluate(key=>localStorage.getItem(key),preferenceKey)===null);
-  await page.locator('[data-action="chibinaSelect"][data-id="fallen"]').click();
-  ok(`${width}px candidate choice is not yet committed`,await page.locator('.chibina-home-choice').innerText().then(x=>x.includes('設定する人格：堕天'))&&await page.evaluate(key=>localStorage.getItem(key),preferenceKey)===null);
-  if(width<700){await page.locator('[data-action="chibinaApply"]').evaluate(el=>el.scrollIntoView({block:'center'}));const safe=await page.evaluate(()=>({button:document.querySelector('[data-action="chibinaApply"]').getBoundingClientRect(),nav:document.querySelector('.mobile-nav').getBoundingClientRect()}));ok(`${width}px home-setting button clears the fixed navigation`,safe.button.bottom<=safe.nav.top);}
-  await page.locator('[data-action="chibinaApply"]').click();
-  ok(`${width}px explicit selection marks Fallen as current`,await page.locator('.chibina-card.is-home-mascot').getAttribute('data-persona')==='fallen');
+  ok(`${width}px tapping never changes the home selection`,await page.locator('.chibina-card.is-home-mascot').getAttribute('data-persona')===initial.id&&await page.evaluate(key=>localStorage.getItem(key),preferenceKey)===initial.id);
+  const chosen=personas[(index+1)%personas.length];
+  const setButton=page.locator(`.chibina-card[data-persona="${chosen.id}"] [data-action="chibinaSet"]`);
+  await setButton.scrollIntoViewIfNeeded();
+  ok(`${width}px ${chosen.name} setting action is enabled from ${initial.name}`,!await setButton.isDisabled()&&initial.id!==chosen.id);
+  if(width<700){const safe=await page.evaluate(button=>({button:button.getBoundingClientRect(),nav:document.querySelector('.mobile-nav').getBoundingClientRect()}),await setButton.elementHandle());ok(`${width}px persona-setting action clears the fixed navigation`,safe.button.bottom<=safe.nav.top);}
+  await setButton.click({timeout:5000});
+  ok(`${width}px explicit selection marks ${chosen.name} as current`,await page.locator('.chibina-card.is-home-mascot').getAttribute('data-persona')===chosen.id);
   const after=await page.evaluate(([saveKey,prefKey])=>[localStorage.getItem(saveKey),localStorage.getItem(prefKey)],[SAVE_KEY,preferenceKey]);
-  ok(`${width}px preference saves separately from game save`,after[0]===before&&after[1]==='fallen');
+  ok(`${width}px preference saves separately from game save`,after[0]===before&&after[1]===chosen.id);
   await page.locator(`${width<700?'.mobile-nav':'.sidebar'} [data-action="nav"][data-id="home"]`).click();
-  ok(`${width}px home uses one selected mascot`,await page.locator('.home-mascot').count()===1&&await page.locator('.home-mascot').getAttribute('data-persona')==='fallen'&&await page.locator('.home-mascot img').getAttribute('src').then(src=>src.includes('chibi-daten.png')));
+  ok(`${width}px home uses the chosen ${chosen.name} mascot`,await page.locator('.home-mascot').count()===1&&await page.locator('.home-mascot').getAttribute('data-persona')===chosen.id&&await page.locator('.home-mascot img').getAttribute('src').then(src=>src.includes(chosen.asset)));
   await page.reload();
-  ok(`${width}px selected mascot survives reload`,await page.locator('.home-mascot').getAttribute('data-persona')==='fallen');
+  ok(`${width}px ${chosen.name} mascot survives reload`,await page.locator('.home-mascot').getAttribute('data-persona')===chosen.id);
   await page.locator(`${width<700?'.mobile-nav':'.sidebar'} [data-action="nav"][data-id="battle"]`).click();
   ok(`${width}px battle navigation never displays the room mascot`,await page.locator('.home-mascot').count()===0&&await page.locator('.chibina-room-grid').count()===0);
   ok(`${width}px no uncaught browser errors`,pageErrors.length===0);
@@ -85,7 +89,7 @@ try{
  const {page,pageErrors}=await seededPage(context,standalone);
  await page.locator('.chibina-room-entry').click();
  ok('standalone HTML loads entry and all five embedded images',await page.locator('.chibina-character-art').evaluateAll(images=>images.length===5&&images.every(img=>img.complete&&img.naturalWidth>0)));
- await page.locator('[data-action="chibinaSelect"][data-id="abyss"]').click();await page.locator('[data-action="chibinaApply"]').click();await page.locator('.mobile-nav [data-action="nav"][data-id="home"]').click();
+ await page.locator('[data-action="chibinaSet"][data-id="abyss"]').click();await page.locator('.mobile-nav [data-action="nav"][data-id="home"]').click();
  ok('standalone HTML persists home selection',await page.locator('.home-mascot').getAttribute('data-persona')==='abyss'&&pageErrors.length===0);
  await context.close();
  const reduced=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
