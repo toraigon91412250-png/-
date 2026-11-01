@@ -61,7 +61,8 @@ try{
  await trial.waitFor();
  await trial.click();
  await page.getByText('黒翼を狩る白騎士').first().waitFor();
- await page.locator('button[data-action=divCommand][data-id=feather]').click();
+ await page.locator('button[data-action=divGroup][data-id=wing]').click();
+ await page.locator('button[data-action=divCommand][data-id=plume]').click();
  await page.waitForFunction(()=>document.documentElement.dataset.combatBusy==='false');
  const hpBeforeReload=await page.locator('.div-hp-enemy .div-hp-value').textContent();
  const savedBattle=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SAVE_KEY);
@@ -83,10 +84,10 @@ try{
  const mobile=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,commands:document.querySelector('.div-commands'),arena:document.querySelector('.div-arena')}));
  if(mobile.scrollWidth>mobile.width+1)throw Error('Mobile layout overflows horizontally: '+mobile.scrollWidth+'/'+mobile.width);
  if(!mobile.commands||mobile.commands.scrollHeight>mobile.commands.clientHeight+1)throw Error('Mobile combat commands require scrolling');
- await page.locator('button[data-action=divCommand][data-id=slash]').click();
+ await page.locator('button[data-action=divCommand][data-id=guard]').click();
  await page.waitForFunction(()=>document.documentElement.dataset.combatBusy==='false');
  if(!(await page.locator('.div-objective').textContent()).includes('共闘成功'))throw Error('First cooperative breakthrough did not appear in the trial objective');
- await page.locator('.div-page-next').click();
+ await page.locator('button[data-action=divGroup][data-id=system]').click();
  for(let i=0;i<10&&await page.locator('button[data-action=divCommand][data-id=res_wingjudge]').count()===0;i++)await page.locator('.div-page-next').click();
  await page.locator('button[data-action=divCommand][data-id=res_wingjudge]').click();
  await page.locator('.result h2').waitFor();
