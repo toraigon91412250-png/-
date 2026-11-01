@@ -92,3 +92,14 @@ test('stunned combat exposes recovery action in system group, never an empty aut
  const source=import.meta.url;
  assert.ok(source.includes('combat-authority-rebuild'));
 });
+
+test('switching authority during a rebuilt battle cannot reactivate dormant endurance imprint',()=>{
+ const s=powered(),b=startBattle(s,{mode:'ex',test:true,combatV2:true});
+ assert.deepEqual(b.base,baseStats({...s,markEquip:[]}));
+ const oldMax=b.base.hp;
+ act(b,'attune_king',{rng:hit});
+ assert.ok(b.powers.includes('king'));
+ assert.deepEqual(b.base,baseStats({...b.build,equipped:b.powers,markEquip:[]}));
+ assert.notEqual(b.base.hp,oldMax);
+ assert.equal(b.markLife,0);
+});

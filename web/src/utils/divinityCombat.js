@@ -91,7 +91,7 @@ export function performDivinityAction(b,action,rng,damageGate){
  if(isResonanceAction(action))return performResonanceAction(b,action,{damage,playerStats,enemyStats,heal,log,damageGate,combatNotice});
  if(!DIV_SKILLS[action])return false;
  const row=DIV_SKILLS[action],d=divBattleState(b);
- if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
+ if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers,...(b.combatV2?{markEquip:[]}: {})});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
  else if(action==='purify'){b.statuses={};heal(b,.25);log(b,'神威・浄化：異常解除・HP25%回復');}
  else if(action==='apotheosis'){
   d.unified=cooperationEnabled(b.build)?2:4;d.freshUnified=true;d.unifiedUsed=cooperationEnabled(b.build)||d.unifiedUsed;d.savedPowers=[...b.powers];b.powers=[...new Set([...b.powers,...DIV_IDS])];syncDivinityLives(b);buff(b,'divineUnified',5,{hp:3,atk:3,def:3,spd:3});b.gauge=100;log(b,cooperationEnabled(b.build)?'全権委任X — 零域全解放、五つの力が同調する':'真・神格解放 — 五つの力を、私の意思で');b.events.push({type:'apotheosis'});
