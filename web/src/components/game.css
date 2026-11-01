@@ -1277,4 +1277,4 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 @media(prefers-reduced-motion:reduce){.div-arena.battle-stage .cooperation-banter{animation:none}.div-arena .cooperation-banter-line{animation:none}.div-arena .cooperation-banter-line:not(:first-child){display:none}.div-arena .cooperation-banter-line:first-child{opacity:1}}
 
 /* On phones, keep faces clear of the overlaid battle heading. */
-@media(max-width:767px){.div-arena>img{top:24px;height:calc(100% - 24px)}}
+@media(max-width:767px){.div-arena>img{top:64px;height:calc(100% - 64px)}}
