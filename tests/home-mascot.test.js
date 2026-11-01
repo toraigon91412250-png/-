@@ -19,10 +19,11 @@ test('black-wing mascot uses the supplied transparent PNG bytes unchanged',()=>{
 
 test('mascot markup exists only in the home view and keeps an accessible tap target',()=>{
  const home=app.slice(app.indexOf('function home(a){'),app.indexOf('function selectFinaleDifficulty('));
- assert.match(home,/class="home-mascot" aria-label="黒翼ちびキャラをタップしてジャンプ"/);
- assert.match(home,/src="\$\{HOME_MASCOT_ART\}" alt="" width="1217" height="1293"/);
+ assert.match(home,/class="home-mascot" data-persona="\$\{selectedChibina\.id\}" aria-label="\$\{selectedChibina\.name\}ちびキャラをタップして反応を見る"/);
+ assert.match(home,/src="\$\{selectedChibina\.art\}" alt="" width="\$\{selectedChibina\.width\}" height="\$\{selectedChibina\.height\}"/);
  assert.equal((app.match(/class="home-mascot"/g)||[]).length,1);
  assert.match(app,/const HOME_MASCOT_ART='assets\/home-ui\/blackwing-chibi\.png'/);
+ assert.match(app,/id:'wing',name:'黒翼'.*?art:HOME_MASCOT_ART/);
 });
 
 test('float and jump timings, safe-area spacing and mobile-navigation priority are explicit',()=>{
@@ -36,5 +37,5 @@ test('float and jump timings, safe-area spacing and mobile-navigation priority a
 });
 
 test('jump listener ignores repeat taps until its 600ms animation finishes',()=>{
- assert.match(app,/document\.addEventListener\('click',event=>\{const mascot=event\.target\.closest\('\.home-mascot'\);if\(!mascot\|\|mascot\.classList\.contains\('jumping'\)\)return;mascot\.classList\.add\('jumping'\);window\.setTimeout\(\(\)=>mascot\.classList\.remove\('jumping'\),600\);\}\)/);
+ assert.match(app,/const mascot=event\.target\.closest\('\.home-mascot'\);if\(mascot\)\{if\(mascot\.classList\.contains\('jumping'\)\)return;mascot\.classList\.add\('jumping'\);window\.setTimeout\(\(\)=>mascot\.classList\.remove\('jumping'\),chibinaPersona\(mascot\.dataset\.persona\)\.reactionMs\);/);
 });
