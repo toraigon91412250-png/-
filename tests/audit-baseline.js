@@ -13,9 +13,12 @@ const sha=x=>createHash('sha256').update(x).digest('hex');
 // continues to verify the original historical source without changing its contracts.
 const resonanceV45=JSON.parse(fs.readFileSync(new URL('../reports/resonance-v45/authorized-changes.json',import.meta.url),'utf8'));
 const battleHud=JSON.parse(fs.readFileSync(new URL('../reports/battle-hud-20261031/authorized-changes.json',import.meta.url),'utf8'));
+const battleArtFraming=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-framing/authorized-changes.json',import.meta.url),'utf8'));
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const framingEdit=battleArtFraming[key];
+ if(framingEdit){assert.equal(sha(bytes),framingEdit.afterSHA256,key+' exact approved portrait framing');const restored=bytes.toString('utf8').replace(framingEdit.after,framingEdit.before);assert.notEqual(restored,bytes.toString('utf8'),key+' portrait framing edit present');assert.equal(sha(restored),framingEdit.beforeSHA256,key+' exact pre-framing source');bytes=Buffer.from(restored);}
  const hudEdit=battleHud[key];
  if(hudEdit){assert.equal(sha(bytes),hudEdit.afterSHA256,key+' exact approved battle HUD update');assert.equal(sha(hudEdit.before),hudEdit.beforeSHA256,key+' preserved pre-HUD source');bytes=Buffer.from(hudEdit.before);}
  const expansion=resonanceV45[key];

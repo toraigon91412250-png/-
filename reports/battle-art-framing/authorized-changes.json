@@ -1,0 +1,9 @@
+{
+  "web/src/components/game.css": {
+    "reason": "Mobile portrait crop moved to the top edge so faces clear the overlaid battle header; game logic and image assets are unchanged.",
+    "before": "object-position:50% 25%;mask-image:none;-webkit-mask-image:none",
+    "after": "object-position:50% 0%;mask-image:none;-webkit-mask-image:none",
+    "beforeSHA256": "130922573ca4d6b92d2c0ff419a79b1a798489c9d344b6b96e9d011beb3a1b38",
+    "afterSHA256": "e6699532bea04a85e6d37c0f2f09acba84e3dbb354c721716b3e7f00e81669b2"
+  }
+}
