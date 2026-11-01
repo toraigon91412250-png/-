@@ -119,7 +119,7 @@ export function divinityAfter(b,action){
  if(!isDivinityBattle(b)||b.hp<=0)return;const d=divBattleState(b),guard=d.guardAction;
  registerCooperationAction(b,action);d.line=cooperationDialogue(b);
  if(guard){
-  d.guarded=true;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
+  d.guarded=true;if(b.combatV2)d.lastAttack=null;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
   if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
   if(divHasPower(b,'wing')&&b.build.divinity.branches.wing==='shelter'){heal(b,.12);d.feathers=Math.min(5,d.feathers+1);}
  }else if(b.lastDamage>0){

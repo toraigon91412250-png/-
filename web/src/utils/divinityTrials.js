@@ -48,7 +48,7 @@ export function actDivinityTrial(b,action,options={}){
  if(guard)t.guards++;
  const attacked=b.events.some(e=>e.type==='hit'&&e.landed);
  if(attacked&&t.lastAttack!==action)t.proof=Math.min(2,t.proof+1);
- if(attacked)t.lastAttack=action;
+ if(attacked)t.lastAttack=action;if(b.combatV2&&guard)t.lastAttack=null;
  const signature=DIV_SKILLS[action]?.power;
  if(signature&&!t.seen.includes(signature))t.seen.push(signature);
  if(!t.awakened){
@@ -109,7 +109,7 @@ function actCooperationTrial(b,action,options){
  if(guard)t.guards++;
  const attacked=b.events.some(e=>e.type==='hit'&&e.landed&&e.damage>=0);
  if(attacked&&t.lastAttack!==action)t.proof=Math.min(2,t.proof+1);
- if(attacked)t.lastAttack=action;
+ if(attacked)t.lastAttack=action;if(b.combatV2&&guard)t.lastAttack=null;
  const own=DIV_SKILLS[action]?.power===t.id || t.id==='wing'&&['feather','pierce','volley'].includes(action);
  if(own)t.used=true;
  const verified={

@@ -1,6 +1,7 @@
 import {RESONANCES,RESONANCE_BY_ID,resonanceState,learnResonance} from '../data/resonanceV3.js';
 import {startBattle,act,baseStats,enemyTurn,dealPlayer,log,playerStats} from './gameCore.js';
 import {syncDivinityLives} from './divinityCombat.js';
+import {DIV_SKILLS} from '../data/divinity.js';
 
 const BOSS_NAMES={
  1:'黒翼を狩る白騎士',3:'傷を映す堕天使',5:'名を記す審問官',
@@ -97,7 +98,7 @@ function roleSeal(b,action,record){
   if(row&&((b.lastDamage>0)||['guard','royalJudgment','abyssBarrier','survival','silence'].includes(row.kind)))
    row.parts.forEach(add);
  }
- if(['feather','pierce','volley'].includes(action)&&b.lastDamage>0)add('wing');
+ if((['feather','pierce','volley'].includes(action)||b.combatV2&&DIV_SKILLS[action]?.power==='wing')&&b.lastDamage>0)add('wing');
  if(action==='guard'&&b.enemyDamage>0)add('king');
  if((b.erosion||0)>0||(b.enemy.resonanceCorrosion||0)>0)add('abyss');
  if(b.hp/b.base.hp<=.5&&b.lastDamage>0)add('fallen');
@@ -120,9 +121,9 @@ export function actResonanceTrial(b,action,options={}){
   if(action==='res_'+t.tempId&&b.events.some(x=>x.type==='resonance'))t.tempUsed=true;
   if(!t.proven){
    const different=new Set(t.actions.filter(x=>!x.startsWith('res_')&&x!=='wait'));
-   const attacks=t.actions.filter(x=>x==='slash'||x==='feather'||x==='power'||x==='pierce'||x==='volley');
+   const attacks=t.actions.filter(x=>['slash','feather','power','pierce','volley'].includes(x)||b.combatV2&&!!DIV_SKILLS[x]?.base);
    const defended=t.actions.includes('guard');
-   if(different.size>=2&&(t.floor===1?attacks.includes('feather')&&attacks.includes('slash'):
+   if(different.size>=2&&(t.floor===1?(b.combatV2?t.actions.includes('plume')&&defended:attacks.includes('feather')&&attacks.includes('slash')):
      [7,13,15].includes(t.floor)?defended&&attacks.length>=1:attacks.length>=2)){
     t.proven=true;
     b.gauge=100;

@@ -17,10 +17,11 @@ export function validateSave(input){
  for(const k of ['powers','resonance']){s[k]={};for(const id of (k==='powers'?POWERS:RECIPES).map(x=>x.id))if(a[k]?.[id])s[k][id]=clamp(num(a[k][id],1),1,5);}
  for(const id of POWERS.slice(0,5).map(x=>x.id)){s.fragments[id]=num(a.fragments?.[id],0);if(s.powers[id]&&!s.powerHistory.includes(id))s.powerHistory.push(id);if(s.powers[id]===5&&!s.maxHistory.includes(id))s.maxHistory.push(id);}
  for(const k of Object.keys(s.skills))s.skills[k]=clamp(num(a.skills?.[k],1),1,10);
- s.combatRebuildRefunded=a.combatRebuildRefunded===true;s.legacyCombatTrainingMaxed=a.legacyCombatTrainingMaxed===true;
+ if(a.combatRebuildRefunded===true)s.combatRebuildRefunded=true;if(a.legacyCombatTrainingMaxed===true)s.legacyCombatTrainingMaxed=true;
  for(const k of Object.keys(s.stats))s.stats[k]=num(a.stats?.[k],0,100000);
  for(const k of Object.keys(s.counts))s.counts[k]=num(a.counts?.[k],0);
  for(const k of Object.keys(s.records))s.records[k]=a.records?.[k]===true;
+ if(a.records?.highTierFinish===true)s.records.highTierFinish=true;if(a.records?.kingEndure===true)s.records.kingEndure=true;
  for(const k of Object.keys(s.flags))s.flags[k]=a.flags?.[k]===true;
  // Recover only unambiguous old fields. Unknown restoration schemas cannot be guessed.
  if(a.kaiserDefeated===100&&!s.cleared.includes(100))s.cleared.push(100);

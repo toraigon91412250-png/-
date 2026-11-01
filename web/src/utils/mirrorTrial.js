@@ -66,7 +66,7 @@ function mirrorAwaken(b){
  const m=b.trial;if(b.enemy.hp>0||b.hp<=0)return;
  if(m.awake){
   if(b.enemy.phase===2)m.normalCleared=true;
-  if(b.enemy.phase===2&&(m.developerGauntlet||m.shatters>=2&&m.guards>=2&&b.used.ultimate>=1&&m.families.length>=3))mirrorEnterBeyond(b);
+  if(b.enemy.phase===2&&(m.developerGauntlet||m.shatters>=2&&m.guards>=2&&(b.combatV2?b.used.special>=1:b.used.ultimate>=1)&&m.families.length>=3))mirrorEnterBeyond(b);
   return;
  }
  const erosionBefore=b.erosion;b.erosion=Math.min(b.erosion,MIRROR_RULES.phaseErosionCarryCap);
@@ -168,7 +168,7 @@ export function actMirrorTrial(b,action,{rng=Math.random,...options}={}){
  const m=b.trial;m.roundEcho=m.echo;m.severed=false;m.brokenThisAction=false;
  const third=b.enemy.phase===3,priorFamily=m.attackFamily,priorErosion=b.erosion,priorLives=b.lives,priorArmor=!!b.enemy.statuses.campaignArmor;
  const warned=third&&m.ritual>=2;
- if(warned&&((action==='ultimate')||(action==='guard'&&b.powers.includes('star')&&!m.starInterrupted))){m.interruptPending=true;if(action==='guard')m.starInterrupted=true;}
+ if(warned&&((action==='ultimate')||(action==='guard'&&(b.combatV2||b.powers.includes('star')&&!m.starInterrupted)))){m.interruptPending=true;if(action==='guard'&&!b.combatV2)m.starInterrupted=true;}
  if(b.enemy.phase===3&&m.repeat>=2&&m.attackFamily===(['feather','pierce','volley'].includes(action)?'feather':action)&&mirrorAttacks.has(action)){m.roundEcho='power';log(b,'鏡写し適応：連撃を読み、権能へ移行。別系統で崩せる');}
  const familyNow=['feather','pierce','volley'].includes(action)?'feather':action;
  // Enemy resistance expressed through the existing defense stat; defense-ignore retains its value.
