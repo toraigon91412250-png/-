@@ -19,6 +19,10 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const imageCompression=JSON.parse(fs.readFileSync(new URL('../reports/standalone-image-optimization/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(imageCompression){assert.equal(sha(bytes),imageCompression.afterSHA256,key+' approved standalone image optimization');assert.equal(sha(imageCompression.before),imageCompression.beforeSHA256,key+' preserved pre-optimization source');bytes=Buffer.from(imageCompression.before);}
+ const personaArt=JSON.parse(fs.readFileSync(new URL('../reports/five-personas-art/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(personaArt){assert.equal(sha(bytes),personaArt.afterSHA256,key+' approved five-persona portrait display');assert.equal(sha(personaArt.before),personaArt.beforeSHA256,key+' preserved pre-portrait source');bytes=Buffer.from(personaArt.before);}
  const lowerEdit=battleArtLower[key];
  if(lowerEdit){assert.equal(sha(bytes),lowerEdit.afterSHA256,key+' exact approved full portrait offset');const restored=bytes.toString('utf8').replace(lowerEdit.after,lowerEdit.before);assert.notEqual(restored,bytes.toString('utf8'),key+' full portrait offset present');assert.equal(sha(restored),lowerEdit.beforeSHA256,key+' exact pre-offset source');bytes=Buffer.from(restored);}
  const offsetEdit=battleArtOffset[key];

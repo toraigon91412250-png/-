@@ -1,0 +1,129 @@
+{
+  "images": {
+    "assets/mirror/phase3.webp": {
+      "beforeSHA256": "6b5d9f4c9c82ef9a60dc4cfff0853949ebc8b9091fceb91a5177239f2313141b",
+      "afterSHA256": "3cb41767efdc13d244c0ab321433f53c876f3a7b93dbc7e55800f0a6300e024e",
+      "beforeBytes": 2769010,
+      "afterBytes": 1200520,
+      "dimensions": "1536x1024",
+      "codec": "WebP",
+      "encoder": "FFmpeg libwebp",
+      "quality": 98,
+      "ssim": 0.969583
+    },
+    "assets/mirror/collision.webp": {
+      "beforeSHA256": "e7737f7181d12260f4cc8a35ac5ad420fa4745e8483f5a021d89a5602951199d",
+      "afterSHA256": "d8900d9344c73e75c5f83eba2caeac77508225f890906f43412add8d8e43f14b",
+      "beforeBytes": 2504676,
+      "afterBytes": 834776,
+      "dimensions": "1536x1024",
+      "codec": "WebP",
+      "encoder": "FFmpeg libwebp",
+      "quality": 98,
+      "ssim": 0.99609
+    }
+  },
+  "unusedImages": {
+    "assets/combat-vfx/black-feather.webp": {
+      "beforeSHA256": "eccc9cc85c57f56893f4bcbe32bde6dd97a156f92d00ab51f883321997ca760c",
+      "afterSHA256": "e001b5b027dc04a159c5cc60d796274376e547441c9f096aedefdbd5c3f66f15",
+      "beforeBytes": 66650,
+      "afterBytes": 35536,
+      "dimensions": "768x512",
+      "codec": "WebP",
+      "method": "WebP quality 5"
+    },
+    "assets/combat-vfx/hadan-reference.webp": {
+      "beforeSHA256": "6c1e3875a6941d1edbd7af49728c0069b2869ffd7f535b05c69c0d79d17b638a",
+      "afterSHA256": "b7cc41971afd8671f864e0ea5d37f6ac6b9784ca8ce3990272d24ae8bbb3d68d",
+      "beforeBytes": 149350,
+      "afterBytes": 68830,
+      "dimensions": "1280x640",
+      "codec": "WebP",
+      "method": "WebP quality 60"
+    },
+    "assets/finale/confrontation.png": {
+      "beforeSHA256": "60dfcd0d9c8bc0265ba768075b13f43206d80dd53339ffe045ebbd8988ef887c",
+      "afterSHA256": "1722a061487470d36b1760d314a79e0ef4769942bf709da140ed018cf9f57736",
+      "beforeBytes": 3404959,
+      "afterBytes": 943455,
+      "dimensions": "1672x940",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    },
+    "assets/combat-vfx/flow-v2/feather-lance.png": {
+      "beforeSHA256": "54f9fd572a6ab3dad243a142ffdd4952d6a1573252c3a5e024eecc44ccd016ce",
+      "afterSHA256": "75cdf616fda776911451a48080ecfe523e7f5d6269ab1af96ce80019a641feb5",
+      "beforeBytes": 1392086,
+      "afterBytes": 164675,
+      "dimensions": "1774x887",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    },
+    "assets/combat-vfx/flow-v2/irena-cutin.png": {
+      "beforeSHA256": "1b42a0542f34d893f9efd9d770c7f2ffe630d36887dcf4845c8b7ca38ecef468",
+      "afterSHA256": "e5cd14f99ea2cf8b89a6918d32ca334efd3b0f8b0e14e510835ea859a0af330a",
+      "beforeBytes": 3185800,
+      "afterBytes": 814205,
+      "dimensions": "1672x941",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    },
+    "assets/combat-vfx/ultimate-v1/impact.png": {
+      "beforeSHA256": "3e04a6e5c3fb8a3e825b6e12aefc29d56f45d038e28bf320087208de9e55b22e",
+      "afterSHA256": "12f1bf34acb7b01c32e9ccc3457a2f288719419f646ff313cd06e88299cb1376",
+      "beforeBytes": 2655710,
+      "afterBytes": 401721,
+      "dimensions": "1024x1536",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    },
+    "assets/combat-vfx/ultimate-v1/hero.png": {
+      "beforeSHA256": "9c4357a0af00b33a14400feaaf8bc6f720d552a65cfab7feb31fbfb3a0974e24",
+      "afterSHA256": "ff665c9e6de78e849db052949d0cd13630e8462c3d93168e235519d5331e4048",
+      "beforeBytes": 3415521,
+      "afterBytes": 924398,
+      "dimensions": "1536x1024",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    },
+    "assets/combat-vfx/ultimate-v1/eclipse.png": {
+      "beforeSHA256": "30f274b4bd10cdcdf808c4a71a5175f5819dbe9b553a59d9e80b2a9f79d3da8e",
+      "afterSHA256": "1ae09c9159e76a8f6645ce17f0ac3665411c6b4122b51721e2fe75534107ec53",
+      "beforeBytes": 2211866,
+      "afterBytes": 440913,
+      "dimensions": "1254x1254",
+      "codec": "PNG",
+      "method": "PNG8 128-color quantization"
+    }
+  },
+  "standalone": {
+    "beforeBytes": 52561103,
+    "afterBytes": 42894346,
+    "bytesSaved": 9666757,
+    "uniqueEmbeddedImagePayloads": 76,
+    "previousEmbeddedImagePayloads": 81
+  },
+  "duplicateGroups": [
+    [
+      "assets/combat-vfx/authority-v1/wing.png",
+      "assets/upgrade-ui/authority-unlock/wing.png"
+    ],
+    [
+      "assets/combat-vfx/authority-v1/judge.png",
+      "assets/upgrade-ui/authority-unlock/judge.png"
+    ],
+    [
+      "assets/combat-vfx/authority-v1/abyss.png",
+      "assets/upgrade-ui/authority-unlock/abyss.png"
+    ],
+    [
+      "assets/combat-vfx/authority-v1/fallen.png",
+      "assets/upgrade-ui/authority-unlock/fallen.png"
+    ],
+    [
+      "assets/combat-vfx/authority-v1/king.png",
+      "assets/upgrade-ui/authority-unlock/king.png"
+    ]
+  ]
+}
