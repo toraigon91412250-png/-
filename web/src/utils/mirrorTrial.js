@@ -12,9 +12,9 @@ export const MIRROR_TRAITS={fallen:'背反の堕天',king:'不滅の残像',judg
 const mirrorAttacks=new Set(Object.keys(MIRROR_RULES.moves));
 const doomForecast=m=>m.ritual===3?'終焉予兆：次の敵行動':'終焉予兆：敵行動2回後';
 export function mirrorLineage(id){const base=RECIPES.find(x=>x.id===id)?.parts[0]||id;return Object.hasOwn(MIRROR_TRAITS,base)?base:'neutral';}
-export function startMirrorTrial(source,{phase=1,relic='none',developerGauntlet=false}={}){
+export function startMirrorTrial(source,{phase=1,relic='none',developerGauntlet=false,combatV2=false}={}){
  if(![1,2,3].includes(phase)||!['none','echo','nameless'].includes(relic))throw Error('鏡界の開始条件が不正です');
- const b=startBattle(source,{mode:'normal',floor:1,test:true}),p=playerStats(b);
+ const b=startBattle(source,{mode:'normal',floor:1,test:true,combatV2}),p=playerStats(b);
  const featherFactor=b.powers.some(x=>['fallenwing','kingwing','judgewing','abysswing'].includes(x))?1.65:b.powers.includes('wing')?1:0;
  const playerLevel=Number(b.build?.level)||1;
  const levelPressure=Math.max(0,Math.min(1,(10-playerLevel)/10));
@@ -219,4 +219,4 @@ export function actMirrorTrial(b,action,{rng=Math.random,...options}={}){
  combatNotice(b,'mirrorState',{text:mirrorStateText(b)});
  return b;
 }
-export function retryMirrorTrial(b){return startMirrorTrial(clone(b.build),{phase:b.trial.startedPhase,relic:b.trial.relic,developerGauntlet:b.trial.developerGauntlet});}
+export function retryMirrorTrial(b){return startMirrorTrial(clone(b.build),{phase:b.trial.startedPhase,relic:b.trial.relic,developerGauntlet:b.trial.developerGauntlet,combatV2:!!b.combatV2});}

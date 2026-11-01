@@ -34,17 +34,17 @@ export function resonanceTrialReason(s){
  return s.divinity.infiniteWins>=1?null:'既存の「無窮の神座」を突破すると解放';
 }
 export function currentResonanceFloor(s){return resonanceState(s).floor;}
-export function startResonanceTrial(s){
+export function startResonanceTrial(s,{combatV2=false}={}){
  const reason=resonanceTrialReason(s);if(reason)throw Error(reason);
  const progress=resonanceState(s),floor=progress.floor;
  if(floor<1||floor>20)throw Error('試練の進行が不正です');
  const boss=RESONANCES.find(r=>r.floor===floor),name=BOSS_NAMES[floor]||'神座の試練者';
  // This trial is independent of the main story. Battle origin is a valid normal battle,
  // then a distinct trial marker switches rewards/progression to the trial handler.
- const b=startBattle(s,{mode:'normal',floor:20,test:false});
+ const b=startBattle(s,{mode:'normal',floor:20,test:false,combatV2});
  b.floor=floor;
  b.powers=boss?[...boss.parts]:[...s.equipped];
- b.base=baseStats({...s,equipped:b.powers});
+ b.base=baseStats({...s,equipped:b.powers,...(combatV2?{markEquip:[]}: {})});
  b.hp=b.base.hp;
  syncDivinityLives(b);
  const attack=playerStats(b).atk;
