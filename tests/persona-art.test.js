@@ -35,7 +35,7 @@ test('originals and optimized WebP assets match the supplied handoff checksums',
 test('standalone build stores each unique image payload once',()=>{
  const html=fs.readFileSync('irena-play.html','utf8');
  const payloads=[...html.matchAll(/data:image\/(?:svg\+xml|png|jpe?g|webp);base64,([^"\]]+)/g)].map(x=>x[1]);
- assert.equal(payloads.length,76);
+ assert.equal(payloads.length,77);
  assert.equal(new Set(payloads).size,payloads.length);
 });
 

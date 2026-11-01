@@ -245,6 +245,14 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .home-save-actions{margin-top:16px;gap:8px}
 .home-save-actions button{min-height:44px;font-size:12px}
 .home-page .utility-nav{border-color:#56405f;margin-top:20px;padding-top:18px}
+.home-mascot{position:fixed;right:max(10px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:19;display:block;width:min(25vw,120px);height:auto;min-height:0;aspect-ratio:1217/1293;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;line-height:0;animation:home-mascot-float 3s ease-in-out infinite;touch-action:pan-x pan-y pinch-zoom}
+.home-mascot:hover:enabled,.home-mascot:active:enabled{transform:none;background:transparent;border:0;box-shadow:none}
+.home-mascot:focus-visible{outline:2px solid #e8c782;outline-offset:3px}
+.home-mascot img{display:block;width:100%;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 3px 10px #05040b9c)}
+.home-mascot.jumping img{animation:home-mascot-jump 600ms ease-out both}
+@keyframes home-mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes home-mascot-jump{0%{transform:translateY(0)}42%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+@media(max-width:800px){.home-mascot{bottom:calc(80px + env(safe-area-inset-bottom))}}
 @media(max-width:1150px) and (min-width:701px){.home-topbar{grid-template-columns:minmax(150px,1fr) auto auto;gap:8px;padding:12px 20px}.home-header-tools{grid-column:3;grid-row:1}.home-wallet{grid-column:1/-1;display:flex;gap:25px}.home-profile{grid-column:2}.home-hero.hero,.home-hero-copy{min-height:400px}.home-card.modecard{padding:18px 15px;min-height:160px}.home-card-copy h3{font-size:21px}.home-card-copy p{font-size:13px}.home-card-illustrated .home-card-copy h3{font-size:21px}.home-archive{flex-wrap:wrap}.home-archive-title{flex-basis:55%}.home-archive>button{margin-left:auto}.home-goal{grid-template-columns:minmax(0,1fr)}.home-goal-reward{border-left:0;border-top:1px solid #bda2c84d;padding:8px 0 0}}
 @media(max-width:700px){
  .home-topbar{min-height:87px;height:auto;grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;padding:11px 12px 12px;gap:4px 9px}

@@ -19,6 +19,8 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const blackwingMascot=JSON.parse(fs.readFileSync(new URL('../reports/blackwing-mascot/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(blackwingMascot){assert.equal(sha(bytes),blackwingMascot.afterSHA256,key+' approved black-wing home mascot');if(blackwingMascot.before!==undefined){assert.equal(sha(blackwingMascot.before),blackwingMascot.beforeSHA256,key+' preserved pre-mascot source');bytes=Buffer.from(blackwingMascot.before);}else{const source=bytes.toString('utf8');assert.equal(source.split(blackwingMascot.inserted).length-1,1,key+' exact approved mascot CSS insertion');const restored=source.replace(blackwingMascot.inserted,'');assert.equal(sha(restored),blackwingMascot.beforeSHA256,key+' exact pre-mascot CSS');bytes=Buffer.from(restored);}}
  const imageCompression=JSON.parse(fs.readFileSync(new URL('../reports/standalone-image-optimization/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(imageCompression){assert.equal(sha(bytes),imageCompression.afterSHA256,key+' approved standalone image optimization');assert.equal(sha(imageCompression.before),imageCompression.beforeSHA256,key+' preserved pre-optimization source');bytes=Buffer.from(imageCompression.before);}
  const personaArt=JSON.parse(fs.readFileSync(new URL('../reports/five-personas-art/authorized-changes.json',import.meta.url),'utf8'))[key];
