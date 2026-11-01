@@ -1,0 +1,9 @@
+{
+  "web/src/components/game.css": {
+    "reason": "Following user direction, shift both mobile battle portraits substantially lower so the faces appear in the battle window.",
+    "before": "@media(max-width:767px){.div-arena>img{top:24px;height:calc(100% - 24px)}}",
+    "after": "@media(max-width:767px){.div-arena>img{top:64px;height:calc(100% - 64px)}}",
+    "beforeSHA256": "1dc9b7e3dbd78ccd1abf6e654bb6efebb5d43c46a595d92aa6c4f3fac33fa568",
+    "afterSHA256": "4eb56d56ced10a0e163a9813422ced67a23ed698918cc201b41860afc9bc26fd"
+  }
+}

@@ -15,9 +15,12 @@ const resonanceV45=JSON.parse(fs.readFileSync(new URL('../reports/resonance-v45/
 const battleHud=JSON.parse(fs.readFileSync(new URL('../reports/battle-hud-20261031/authorized-changes.json',import.meta.url),'utf8'));
 const battleArtFraming=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-framing/authorized-changes.json',import.meta.url),'utf8'));
 const battleArtOffset=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-offset/authorized-changes.json',import.meta.url),'utf8'));
+const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-lower/authorized-changes.json',import.meta.url),'utf8'));
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const lowerEdit=battleArtLower[key];
+ if(lowerEdit){assert.equal(sha(bytes),lowerEdit.afterSHA256,key+' exact approved full portrait offset');const restored=bytes.toString('utf8').replace(lowerEdit.after,lowerEdit.before);assert.notEqual(restored,bytes.toString('utf8'),key+' full portrait offset present');assert.equal(sha(restored),lowerEdit.beforeSHA256,key+' exact pre-offset source');bytes=Buffer.from(restored);}
  const offsetEdit=battleArtOffset[key];
  if(offsetEdit){assert.equal(sha(bytes),offsetEdit.afterSHA256,key+' exact approved mobile portrait offset');const restored=bytes.toString('utf8').replace(offsetEdit.after,offsetEdit.before);assert.notEqual(restored,bytes.toString('utf8'),key+' mobile portrait offset present');assert.equal(sha(restored),offsetEdit.beforeSHA256,key+' exact pre-offset source');bytes=Buffer.from(restored);}
  const framingEdit=battleArtFraming[key];
