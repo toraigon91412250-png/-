@@ -4,10 +4,10 @@ import {startBattle,act,damage,dealPlayer,playerStats,enemyStats,log,heal,baseSt
 import {divBattleState,syncDivinityLives,divinityTrialFloor} from './divinityCombat.js';
 import {cooperationEnabled,cooperationTier,cooperationTrialReason,grantCooperationTrial} from './divinityCooperation.js';
 export const divTrial=b=>b?.trial?.kind==='divinity';
-export function startDivinityTrial(s,id){
- if(cooperationEnabled(s)&&DIV_IDS.includes(id))return startCooperationTrial(s,id);
+export function startDivinityTrial(s,id,{combatV2=false}={}){
+ if(cooperationEnabled(s)&&DIV_IDS.includes(id))return startCooperationTrial(s,id,{combatV2});
  const reason=divinityTrialReason(s,id);if(reason)throw Error(reason);
- const b=startBattle(s,{mode:'normal',floor:1,test:true});b.test=false;b.mode='divinity';
+ const b=startBattle(s,{mode:'normal',floor:1,test:true,combatV2});b.test=false;b.mode='divinity';
  const late=['truth','infinite'].includes(id);
  b.trial={kind:'divinity',id,awakened:late,used:false,guards:0,proof:0,lastAttack:null,returnReady:false,heavyGuarded:false,incomingCorrosion:false,seen:[],seals:id==='infinite'?3:0,brokenTurn:0};
  b.enemy.name=DIV_TRIALS[id].enemy;b.enemy.base=late?{hp:id==='infinite'?1800000:160000,atk:1800,def:800,spd:12}:{hp:id==='wing'?1900:4800,atk:id==='wing'?72:115,def:id==='wing'?12:25,spd:12};
@@ -48,13 +48,13 @@ export function actDivinityTrial(b,action,options={}){
  if(guard)t.guards++;
  const attacked=b.events.some(e=>e.type==='hit'&&e.landed);
  if(attacked&&t.lastAttack!==action)t.proof=Math.min(2,t.proof+1);
- if(attacked)t.lastAttack=action;
+ if(attacked)t.lastAttack=action;if(b.combatV2&&guard)t.lastAttack=null;
  const signature=DIV_SKILLS[action]?.power;
  if(signature&&!t.seen.includes(signature))t.seen.push(signature);
  if(!t.awakened){
   const ready=t.id==='wing'?t.guards>=2:t.id==='abyss'?before.returnReady&&attacked:t.id==='fallen'?before.ratio<=.5&&attacked:t.id==='judge'?t.proof>=2&&guard:before.returnReady&&attacked;
   if(ready){t.awakened=true;b.build.powers[t.id]=Math.max(1,b.build.powers[t.id]||0);if(!b.powers.includes(t.id))b.powers.push(t.id);syncDivinityLives(b);
-   b.base=baseStats({...b.build,equipped:b.powers});b.hp=Math.min(b.base.hp,Math.max(b.hp,b.base.hp*.65));b.gauge=100;
+   b.base=baseStats({...b.build,equipped:b.powers,...(b.combatV2?{markEquip:[]}: {})});b.hp=Math.min(b.base.hp,Math.max(b.hp,b.base.hp*.65));b.gauge=100;
    log(b,`封印解除 — ${DIV_NAMES[t.id]}が目覚めた！ 新しい技で突破せよ`);b.events.push({type:'authorityAwakening',power:t.id});
   }
  }
@@ -88,15 +88,15 @@ export function settleDivinityTrial(s,b){
 
 // Cooperation trials reuse the established deterministic combat and boss
 // telegraphs, but test trust rather than granting an authority a second time.
-function startCooperationTrial(s,id){
+function startCooperationTrial(s,id,{combatV2=false}={}){
  const reason=cooperationTrialReason(s,id);if(reason)throw Error(reason);
  const tier=cooperationTier(s,id)+1;
- const b=startBattle(s,{mode:'normal',floor:1,test:true});b.test=false;b.mode='divinity';
+ const b=startBattle(s,{mode:'normal',floor:1,test:true,combatV2});b.test=false;b.mode='divinity';
  b.trial={kind:'divinity',cooperation:true,id,tier,awakened:true,used:false,
    guards:0,proof:0,lastAttack:null,heavyGuarded:false,incomingCorrosion:false,
    returnReady:false,proven:false};
  b.powers=[id,...s.equipped.filter(x=>x!==id)].slice(0,2);
- b.build.equipped=[...b.powers];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp;
+ b.build.equipped=[...b.powers];b.base=baseStats({...b.build,equipped:b.powers,...(b.combatV2?{markEquip:[]}: {})});b.hp=b.base.hp;
  b.enemy.name=`${DIV_NAMES[id]}・協力の試練 ${tier}`;
  b.enemy.base=tier===1?{hp:8000,atk:145,def:40,spd:12}:{hp:100000,atk:1150,def:500,spd:18};
  b.enemy.hp=b.enemy.base.hp;b.log=[`${DIV_NAMES[id]}の第${tier}協力試練。条件を達成して勝利せよ。`];
@@ -109,7 +109,7 @@ function actCooperationTrial(b,action,options){
  if(guard)t.guards++;
  const attacked=b.events.some(e=>e.type==='hit'&&e.landed&&e.damage>=0);
  if(attacked&&t.lastAttack!==action)t.proof=Math.min(2,t.proof+1);
- if(attacked)t.lastAttack=action;
+ if(attacked)t.lastAttack=action;if(b.combatV2&&guard)t.lastAttack=null;
  const own=DIV_SKILLS[action]?.power===t.id || t.id==='wing'&&['feather','pierce','volley'].includes(action);
  if(own)t.used=true;
  const verified={

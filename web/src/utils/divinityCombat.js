@@ -7,6 +7,7 @@ import {attack,buff,heal,log,playerStats,enemyStats,damage,baseStats} from './ga
 import {combatNotice} from './combatObservation.js';
 export const isDivinityBattle=b=>b?.character==='irena'&&hasDivinity(b.build);
 const DIV_LIVES={king:5,god:4,kingwing:7,kingjudge:6,abyssking:6};
+export const AUTHORITY_CT=Object.freeze({wing:2,abyss:3,king:3,judge:4,fallen:4});
 export function divBattleState(b){return b.divine ||= {lifePools:{...DIV_LIVES},feathers:0,proof:0,lastAttack:null,lastPower:null,guarded:false,counter:0,shield:0,revived:false,unified:0,links:0};}
 export function syncDivinityLives(b){if(!isDivinityBattle(b))return;const d=divBattleState(b);b.lives=b.powers.reduce((n,id)=>n+(d.lifePools[id]||0),0);}
 export function spendDivinityLife(b){if(!isDivinityBattle(b))return;const d=divBattleState(b),id=b.powers.find(x=>d.lifePools[x]>0);if(id)d.lifePools[id]--;}
@@ -18,6 +19,8 @@ export function divinityAvailable(b,action){
  if(['slash','guard','wait'].includes(action))return undefined;
  const row=DIV_SKILLS[action],d=divBattleState(b);
  if(row){
+  if(b.combatV2&&action==='mantle')return '羽衣は新戦闘で廃止されました';
+  if(b.combatV2&&row.power&&b.cd.authorityShared>0)return '権能共通CT '+b.cd.authorityShared;
   if(row.attune){if(!b.build.divinity.reclaimed.includes(row.attune))return '未奪還の権能です';if(d.unified)return '統合中は全権能を使用できます';if(b.powers.includes(row.attune))return '既に装備しています';}
   if(action==='apotheosis'&&cooperationEnabled(b.build)){
    if(d.unifiedUsed)return '零域全解放は1戦闘1回';
@@ -88,7 +91,7 @@ export function performDivinityAction(b,action,rng,damageGate){
  if(isResonanceAction(action))return performResonanceAction(b,action,{damage,playerStats,enemyStats,heal,log,damageGate,combatNotice});
  if(!DIV_SKILLS[action])return false;
  const row=DIV_SKILLS[action],d=divBattleState(b);
- if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
+ if(row.attune){const ratio=b.hp/b.base.hp;b.powers=cooperationEnabled(b.build)?[...b.powers.slice(-1),row.attune]:b.powers.length?[b.powers[0],row.attune]:[row.attune];b.base=baseStats({...b.build,equipped:b.powers,...(b.combatV2?{markEquip:[]}: {})});b.hp=b.base.hp*ratio;syncDivinityLives(b);log(b,row.name+'：2枠目を切り替えた');}
  else if(action==='purify'){b.statuses={};heal(b,.25);log(b,'神威・浄化：異常解除・HP25%回復');}
  else if(action==='apotheosis'){
   d.unified=cooperationEnabled(b.build)?2:4;d.freshUnified=true;d.unifiedUsed=cooperationEnabled(b.build)||d.unifiedUsed;d.savedPowers=[...b.powers];b.powers=[...new Set([...b.powers,...DIV_IDS])];syncDivinityLives(b);buff(b,'divineUnified',5,{hp:3,atk:3,def:3,spd:3});b.gauge=100;log(b,cooperationEnabled(b.build)?'全権委任X — 零域全解放、五つの力が同調する':'真・神格解放 — 五つの力を、私の意思で');b.events.push({type:'apotheosis'});
@@ -108,13 +111,15 @@ export function performDivinityAction(b,action,rng,damageGate){
   if(action==='royalReturn')heal(b,.2);
   log(b,row.name+' 発動');
  }
- b.cd[action]=row.ct+1;return true;
+ if(b.combatV2&&row.power)b.cd.authorityShared=AUTHORITY_CT[row.power]+1;
+ else b.cd[action]=row.ct+1;
+ return true;
 }
 export function divinityAfter(b,action){
  if(!isDivinityBattle(b)||b.hp<=0)return;const d=divBattleState(b),guard=d.guardAction;
  registerCooperationAction(b,action);d.line=cooperationDialogue(b);
  if(guard){
-  d.guarded=true;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
+  d.guarded=true;if(b.combatV2)d.lastAttack=null;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
   if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
   if(divHasPower(b,'wing')&&b.build.divinity.branches.wing==='shelter'){heal(b,.12);d.feathers=Math.min(5,d.feathers+1);}
  }else if(b.lastDamage>0){

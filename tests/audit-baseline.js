@@ -19,6 +19,14 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const combatRebuild=Object.assign({},...[1,2,3,4].map(i=>JSON.parse(fs.readFileSync(new URL('../reports/combat-rebuild/part-'+i+'.json',import.meta.url),'utf8'))))[key];
+ if(combatRebuild){
+  assert.equal(gitBlobSha(bytes),combatRebuild.afterGitSha,key+' exact authorized combat update');
+  const protectedSource=Buffer.from(combatRebuild.before,'utf8');
+  assert.equal(gitBlobSha(protectedSource),combatRebuild.beforeGitSha,key+' unchanged original game source');
+  bytes=protectedSource;
+ }
+
  const chibinaAssets=JSON.parse(fs.readFileSync(new URL('../reports/chibina-asset-optimization/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(chibinaAssets){assert.equal(sha(bytes),chibinaAssets.afterSHA256,key+' approved display-sized Chibina WebP assets');let source=bytes.toString('utf8');for(const edit of chibinaAssets.replacements){assert.equal(source.split(edit.after).length-1,1,key+' exact approved Chibina asset replacement');source=source.replace(edit.after,edit.before);}assert.equal(sha(source),chibinaAssets.beforeSHA256,key+' exact pre-optimization source');bytes=Buffer.from(source);}
  const chibinaRoomFix=JSON.parse(fs.readFileSync(new URL('../reports/chibina-room-fix/authorized-changes.json',import.meta.url),'utf8'))[key];

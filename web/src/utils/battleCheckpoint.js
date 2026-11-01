@@ -12,11 +12,11 @@ export function markBattleCheckpoint(b){
  if(!b||b.test||b.result||b.lab20||b.trial&&b.trial.kind!=='resonance20'||b.experiment||b.campaign&&!b.main20)return null;
  if(b.trial?.kind==='resonance20'){
   const build={...b.build};delete build.markBattle;
-  return {schema:4,mode:'resonance20',floor:b.trial.floor,...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),build:clone(build),turns:clone(b.replay||[])};
+  return {schema:4,mode:'resonance20',floor:b.trial.floor,...(b.combatV2?{combatV2:true}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),build:clone(build),turns:clone(b.replay||[])};
  }
  const legacyEligible=b.build.divinity?.schema!==1&&b.character==='irena'&&b.marks.some(id=>['abyssmark','wind','iron','fire','moon','crown','life'].includes(id));
  const build={...b.build};delete build.markBattle;
- return {schema:legacyEligible?(b.main20Rules==='B1'?2:1):3,...(b.main20Rules==='B1'?{rules:'B1'}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),mode:b.mode,floor:b.floor,difficulty:b.difficulty,build:clone(build),turns:clone(b.character==='irena'?(b.replay||[]):specialBattleActions(b))};
+ return {schema:legacyEligible?(b.main20Rules==='B1'?2:1):3,...(b.combatV2?{combatV2:true}:{}),...(b.main20Rules==='B1'?{rules:'B1'}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),mode:b.mode,floor:b.floor,difficulty:b.difficulty,build:clone(build),turns:clone(b.character==='irena'?(b.replay||[]):specialBattleActions(b))};
 }
 export function restoreMarkBattle(record,validateBuild){
  if(record==null)return null;
@@ -24,9 +24,10 @@ export function restoreMarkBattle(record,validateBuild){
  const resonanceTrial=record.schema===4;
  if(![1,2,3,4].includes(record.schema)||!(resonanceTrial?record.mode==='resonance20':(record.schema===3?['normal','ex','god','stella','final']:['normal','ex','god']).includes(record.mode))||!Array.isArray(record.turns)||!record.build||typeof record.build!=='object'||Object.hasOwn(record.build,'state'))return fail();
  if(record.authorityStrike!==undefined&&record.authorityStrike!=='A1')return fail();
+ if(record.combatV2!==undefined&&(record.combatV2!==true||record.schema<3))return fail();
  const build={...record.build};delete build.markBattle;const s=validateBuild(build);
  if((record.schema===2||record.rules==='B1')&&(record.rules!=='B1'||s.route20!==1||record.mode!=='normal'))return fail();
- const b=resonanceTrial?startResonanceTrial(s):startMainBattle(s,{mode:record.mode,floor:record.floor,difficulty:record.difficulty,rules:record.schema===2||record.rules==='B1'?'B1':'classic'});
+ const b=resonanceTrial?startResonanceTrial(s,{combatV2:!!record.combatV2}):startMainBattle(s,{mode:record.mode,floor:record.floor,difficulty:record.difficulty,rules:record.schema===2||record.rules==='B1'?'B1':'classic',combatV2:!!record.combatV2});
  if(resonanceTrial&&record.floor!==b.trial.floor)return fail();
  if(record.authorityStrike!=='A1')legacyAuthorityStrike(b);
  if(!markBattleCheckpoint(b))return fail();

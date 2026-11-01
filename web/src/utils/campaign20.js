@@ -25,10 +25,10 @@ export function createCampaign({variant='tempo',seed=20261021}={}){
 }
 export function campaignNext(run){return run.cleared.length<20?'normal':!run.stella?'stella':!run.ex?'ex':'complete';}
 export function campaignRng(b){b.campaign.random=(Math.imul(b.campaign.random,1664525)+1013904223)>>>0;return b.campaign.random/4294967296;}
-export function startCampaignBattle(run,{replay=false}={}){
+export function startCampaignBattle(run,{replay=false,combatV2=false}={}){
  const next=campaignNext(run);if(next==='complete')throw Error('試作ルートは完了しています');
  const mode=replay?'normal':next,floor=mode==='normal'?run.floor:20;
- const b=startBattle(run.build,{mode,floor,test:true});const variant=run.variant==='tempo'?CAMPAIGN_VARIANTS[floor<=5?'swift':floor<=10?'tactical':'endurance']:CAMPAIGN_VARIANTS[run.variant];
+ const b=startBattle(run.build,{mode,floor,test:true,combatV2});const variant=run.variant==='tempo'?CAMPAIGN_VARIANTS[floor<=5?'swift':floor<=10?'tactical':'endurance']:CAMPAIGN_VARIANTS[run.variant];
  if(mode==='normal'){const row=CAMPAIGN_FLOORS[floor-1];b.enemy.name=row.name;b.enemy.base={hp:row.hp*variant.hp,atk:row.atk*variant.attack,def:row.def,spd:row.spd};}
  if(mode==='ex'){b.enemy.base.hp*=.5;b.enemy.base.atk*=.4;b.enemy.name='EXカイザー・短縮ルート【試作】';}
  b.enemy.hp=b.enemy.base.hp;
@@ -53,7 +53,7 @@ export function actCampaign(b,action,options={}){
  if((!b.test&&!b.main20)||b.campaign?.kind!=='campaign20')throw Error('20階層試作専用です');
  const reason=available(b,action,options.route);if(reason)throw Error(reason);
  b.campaign.applied=false;
- const focus=b.buffs.some(x=>x.id==='campaignFocus')&&['slash','power'].includes(action);
+ const focus=b.buffs.some(x=>x.id==='campaignFocus')&&(['slash','power'].includes(action)||b.combatV2&&!!DIV_SKILLS[action]?.base);
  if(focus)buff(b,'campaignFocusAttack',1,{atk:CAMPAIGN_RULES.focus});
  act(b,action,{...options,rng:options.rng?(b.main20?()=>{campaignRng(b);return options.rng();}:options.rng):(()=>campaignRng(b)),enemyAction:campaignEnemy});campaignLanded(b);
  if(focus&&b.lastDamage>0){b.buffs=b.buffs.filter(x=>x.id!=='campaignFocus');log(b,'蓄勢を解放した');}

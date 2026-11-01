@@ -6,7 +6,7 @@ export function authorityStrikeCurrent(b){return !legacyAuthorityBattles.has(b);
 export const AUTHORITY_STRIKE_RULES={fallen:{thresholds:[[.1,1.35],[.25,1.25],[.5,1.15]]},king:{heal:.12},judge:{ignore:.6},abyss:{erosion:.06},wing:{gauge:20}};
 export function authorityStrikeEffect(b,action='power'){
  const none={id:null,final:1,ignore:0,heal:0,erosion:0,gauge:0};
- if(action!=='power'||b.character!=='irena'||!authorityStrikeCurrent(b))return none;
+ if(action!=='power'||b.character!=='irena'||b.combatV2||!authorityStrikeCurrent(b))return none;
  const id=b.powers?.[0],rule=Object.hasOwn(AUTHORITY_STRIKE_RULES,id||'')?AUTHORITY_STRIKE_RULES[id]:null;
  if(!rule)return none;
  return {...none,id,final:rule.thresholds?.find(([ratio])=>b.hp/b.base.hp<=ratio)?.[1]||1,ignore:rule.ignore||0,heal:rule.heal||0,erosion:rule.erosion||0,gauge:rule.gauge||0};

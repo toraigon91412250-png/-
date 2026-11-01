@@ -44,7 +44,7 @@ export function startMainBattle(s,options={}){
  if(s.route20!==1||mode!=='normal')return startBattle(s,options);
  if(!Number.isInteger(floor)||floor<1||floor>Math.min(20,s.floor))throw Error('解放条件を満たしていません');
  const run=createCampaign();run.build=s;run.floor=floor;
- const b=startCampaignBattle(run);if(hasDivinity(s)&&floor>1){b.enemy.base.hp*=floor<=5?4:2.5;b.enemy.base.atk*=1.55;b.enemy.hp=b.enemy.base.hp;}b.test=!!options.test;b.main20=true;b.difficulty=options.difficulty||'NORMAL';
+ const b=startCampaignBattle(run,{combatV2:!!options.combatV2});if(hasDivinity(s)&&floor>1){b.enemy.base.hp*=floor<=5?4:2.5;b.enemy.base.atk*=1.55;b.enemy.hp=b.enemy.base.hp;}b.test=!!options.test;b.main20=true;b.difficulty=options.difficulty||'NORMAL';
  if(!['NORMAL',...Object.keys(MAIN20_DIFFICULTY_SCALE)].includes(b.difficulty))throw Error('戦闘設定が不正です');
  if(b.difficulty==='NIGHTMARE'&&!main20NightmareUnlocked(s))throw Error('全20階層クリア後に解放されます');
  const scale=MAIN20_DIFFICULTY_SCALE[b.difficulty];if(scale){b.enemy.base.hp*=scale.hp;b.enemy.base.atk*=scale.atk;b.enemy.base.spd*=scale.spd;b.enemy.hp=b.enemy.base.hp;}

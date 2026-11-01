@@ -2,8 +2,17 @@ import {freshMain20,loadMain20,validateMain20} from './main20.js';
 import {divinityState,hasDivinity,migrateDivinity} from './divinityProgress.js';
 import {SAVE_KEY} from './storage.js';
 import {activateCooperation,cooperationEnabled} from './divinityCooperation.js';
-export function freshDivinity(){const s=freshMain20();s.powers={};s.equipped=[];s.powerHistory=[];s.divinity=divinityState();return s;}
-export function validateDivinitySave(input){return migrateDivinity(validateMain20(input));}
+import {achievements} from './progression.js';
+export function refundRetiredCombatTraining(s){
+ if(s.combatRebuildRefunded)return 0;
+ const levels=['feather','destruction','ultimate'].map(id=>s.skills[id]||1);
+ const refund=levels.reduce((sum,level)=>sum+35*level*(level-1)/2,0);
+ s.legacyCombatTrainingMaxed ||= levels[0]===10&&levels[1]===10;
+ s.skills={feather:1,destruction:1,ultimate:1};s.p+=refund;s.combatRebuildRefunded=true;
+ achievements(s);return refund;
+}
+export function freshDivinity(){const s=freshMain20();s.powers={};s.equipped=[];s.powerHistory=[];s.divinity=divinityState();s.combatRebuildRefunded=true;return s;}
+export function validateDivinitySave(input){const s=migrateDivinity(validateMain20(input));refundRetiredCombatTraining(s);return s;}
 export function loadDivinity(storage=globalThis.localStorage){
  try{
  const result=loadMain20(storage);if(result.error)return result;if(!result.key)return {...result,state:activateCooperation(freshDivinity())};
@@ -12,6 +21,7 @@ export function loadDivinity(storage=globalThis.localStorage){
   const key='irena-before-cooperation-v1';if(!storage.getItem(key))storage.setItem(key,storage.getItem(result.key));
   activateCooperation(result.state);
  }
+ refundRetiredCombatTraining(result.state);
  return result;
  }catch(error){return {state:null,key:SAVE_KEY,error:'移行前バックアップを保存できません。元のセーブは変更していません。'+error.message};}
 }
