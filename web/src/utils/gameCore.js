@@ -33,16 +33,16 @@ export function enemyConfig(mode,floor,index=0){let base=normalEnemy(floor),name
  return {name,base};
 }
 export function canStart(s,mode,floor){if(mode==='normal')return Number.isInteger(floor)&&floor>=1&&floor<=Math.min(100,s.floor);if(mode==='raid')return false; /* Lab-only guard-break trial still uses a test battle template. */if(mode==='ex'||mode==='stella')return s.flags.stella;if(mode==='final')return s.flags.final;if(mode==='god')return s.flags.ex&&!!s.gauntlet;return false;}
-export function startBattle(s,{mode='normal',floor=s.floor,difficulty='NORMAL',test=false}={}){
+export function startBattle(s,{mode='normal',floor=s.floor,difficulty='NORMAL',test=false,combatV2=false}={}){
  const validDifficulty=['NORMAL','EXPERT'].includes(difficulty)||difficulty==='NIGHTMARE'&&['ex','stella','final','raid','god'].includes(mode);
  if(!['normal','ex','raid','stella','final','god'].includes(mode)||!Number.isInteger(floor)||floor<1||floor>100||!validDifficulty)throw Error('戦闘設定が不正です');
  if(!test&&!canStart(s,mode,floor))throw Error('解放条件を満たしていません');
- const character=mode==='stella'?'stella':mode==='final'?'final':'irena',base=baseStats(s,character),enemy=enemyConfig(mode,floor,s.gauntlet?.index||0);
+ const character=mode==='stella'?'stella':mode==='final'?'final':'irena',base=baseStats(combatV2?{...s,markEquip:[]}:s,character),enemy=enemyConfig(mode,floor,s.gauntlet?.index||0);
  if(difficulty==='EXPERT'){enemy.base.hp*=1.3;enemy.base.atk*=1.2;enemy.base.spd*=1.1;}
  if(difficulty==='NIGHTMARE'){enemy.base.hp*=1.6;enemy.base.atk*=1.4;enemy.base.spd*=1.2;}
- const powers=character==='irena'?[...s.equipped]:[],marks=character==='irena'?[...s.markEquip]:[];
+ const powers=character==='irena'?[...s.equipped]:[],marks=character==='irena'&&!combatV2?[...s.markEquip]:[];
  let lives=powers.includes('king')?5:0;for(const [id,n]of [['god',4],['kingwing',7],['kingjudge',6],['abyssking',6]])if(powers.includes(id))lives+=n;
- return {mode,floor,difficulty,test,character,build:clone({...s,markBattle:undefined}),replay:[],base,hp:base.hp,enemy:{...enemy,hp:enemy.base.hp,phase:1,buffs:[],statuses:{}},turn:1,gauge:0,balance:0,cd:{},buffs:[],statuses:{},erosion:0,stacks:{},lives,markLife:marks.includes('endure')?1:0,godThresholds:[],rebirths:0,meteor:false,phaseTurns:0,powers,marks,used:{special:0,ultimate:0,marks:[],endure:false,low:false},result:null,settled:false,lastFeather:null,log:['境界に立つ者よ、失われた力を取り戻せ。'],lastDamage:0,enemyDamage:0,enemyStop:0,events:[],noBuff:0,noPressure:0,ignoreDefense:0};
+ return {...(combatV2&&character==='irena'?{combatV2:true}:{}),mode,floor,difficulty,test,character,build:clone({...s,markBattle:undefined}),replay:[],base,hp:base.hp,enemy:{...enemy,hp:enemy.base.hp,phase:1,buffs:[],statuses:{}},turn:1,gauge:0,balance:0,cd:{},buffs:[],statuses:{},erosion:0,stacks:{},lives,markLife:marks.includes('endure')?1:0,godThresholds:[],rebirths:0,meteor:false,phaseTurns:0,powers,marks,used:{special:0,ultimate:0,marks:[],endure:false,low:false},result:null,settled:false,lastFeather:null,log:['境界に立つ者よ、失われた力を取り戻せ。'],lastDamage:0,enemyDamage:0,enemyStop:0,events:[],noBuff:0,noPressure:0,ignoreDefense:0};
 }
 export function log(b,text){b.log.push(text);if(b.log.length>100)b.log.shift();}
 export function fallenMultiplier(r){return r<=.1?3.8:r<=.25?3.1:r<=.5?2.4:1;}
@@ -77,6 +77,9 @@ function passiveStart(b){if(b.character!=='irena')return;const p=b.powers;if(p.s
 export function stage(gauge){return Math.abs(gauge)>=100?3:Math.abs(gauge)>=60?2:Math.abs(gauge)>=30?1:0;}
 export function available(b,action,route){if(b.result)return '戦闘終了';if(b.cd[action]>0)return `CT ${b.cd[action]}`;
  if(b.statuses.stun&&action!=='wait')return '行動不能：待機してください';
+ if(b.combatV2&&b.character==='irena'){
+  if(['feather','pierce','volley','power','ultimate'].includes(action)||action==='slash'&&b.powers.length)return '新戦闘では権能専用技を使用してください';
+ }
  if(['slash','guard','wait'].includes(action))return null;
  if(b.statuses.seal&&!(action==='purify'&&b.build.divinity?.schema===1))return '封印中：通常攻撃か防御を選択';
  const divReason=divinityAvailable(b,action);if(divReason!==undefined)return divReason;
