@@ -73,6 +73,8 @@ export function playCombatPresentation({arena,events,action,authority,before,onF
  const screenShake=(big=false)=>{if(reduced||!arena?.animate)return;const distance=big?7:4;const a=arena.animate([{transform:'translate3d(0,0,0)'},{transform:`translate3d(${distance}px,-1px,0)`,offset:.2},{transform:`translate3d(-${distance}px,1px,0)`,offset:.4},{transform:`translate3d(${distance*.45}px,0,0)`,offset:.62},{transform:'translate3d(0,0,0)'}],{duration:big?280:170,easing:'ease-out'});animations.add(a);a.finished.catch(()=>{}).finally(()=>animations.delete(a));};
  const bladeSlash=()=>{const el=document.createElement('div');el.className='blade-strike';el.setAttribute('aria-hidden','true');el.innerHTML='<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path class="blade-halo" d="M 6 84 Q 48 45 94 18"/><path class="blade-core" d="M 6 84 Q 48 45 94 18"/><path class="blade-second" d="M 21 92 Q 66 57 88 12"/></svg>';arena?.append(el);if(!el.isConnected)return;nodes.add(el);later(650,()=>{el.remove();nodes.delete(el);});};
  arena?.classList.add('vfx-playing');
+  // Defense is declared before either actor moves; enemy-first hits still meet the shield.
+  if(action==='guard'&&arena?.classList.contains('div-arena')){arena.classList.add('vfx-guarding');add('vfx-shield',figure('player'));}
  const playNext=(index=0,delayExtra=0)=>{const {at,event:e}=plan.frames[index];later((index?at-plan.frames[index-1].at:at)+delayExtra,()=>{
   if(e.kind==='enemyAction'&&e.mirror){
    const label=add('vfx-mirror-name',arena,e.label);if(label)animate(label,[{opacity:0,transform:'translateY(6px)'},{opacity:1,offset:.18},{opacity:1,offset:.75},{opacity:0,transform:'translateY(-6px)'}],{duration:reduced?250:e.move==='ultimate'?1650:700,fill:'both'});
@@ -83,7 +85,7 @@ export function playCombatPresentation({arena,events,action,authority,before,onF
   if(e.kind==='mirrorShatter'){number(e.target||'player',mirrorShatterLabel(e,pendingMirrorHeal),'vfx-heal vfx-fact-label');pendingMirrorHeal=null;onSound?.('break');}
   if(e.kind==='mirrorOpen')number('enemy','鏡裂','vfx-label');
   if(e.kind==='playerAction'){
-   if(action==='guard'){arena?.classList.add('vfx-guarding');add('vfx-shield',figure('player'));}if(action==='ultimate'){arena?.classList.add('vfx-ultimate-casting');ultimateStart();}
+   if(action==='guard'){arena?.classList.add('vfx-guarding');if(!arena?.classList.contains('div-arena'))add('vfx-shield',figure('player'));}if(action==='ultimate'){arena?.classList.add('vfx-ultimate-casting');ultimateStart();}
    if(divinity?.authoritySkill&&action!=='ultimate')authorityBegin();
    if(action==='feather'){if(!divinity?.authoritySkill)later(80,()=>cutin(divinity?.skillName||'黒翼・羽弾'));later(520,()=>fire());}
    if(action==='pierce'){later(80,()=>cutin('穿羽',760,'pierce'));later(580,pierceCharge);later(880,()=>fire(240,'pierce'));}
@@ -96,8 +98,9 @@ export function playCombatPresentation({arena,events,action,authority,before,onF
    else if(e.damage>0){if(divinity?.authoritySkill)authorityImpact();if(action==='pierce'&&!reduced){const trail=add('vfx-pierce-trail',figure('enemy'));if(trail)animate(trail,[{opacity:1,transform:'scaleX(.2)'},{opacity:1,offset:.35,transform:'scaleX(1)'},{opacity:0,transform:'scaleX(1.15)'}],{duration:320,fill:'both'});}const ring=add('vfx-impact'+(action==='ultimate'?' vfx-impact-ultimate':''),figure('enemy'));if(ring)animate(ring,[{opacity:1,transform:'translate(-50%,-50%) scale(.25)'},{opacity:1,offset:.25},{opacity:0,transform:'translate(-50%,-50%) scale(1.5)'}],{duration:reduced?120:240,fill:'both'});number('enemy',Math.floor(e.damage).toLocaleString('ja-JP'),'vfx-out vfx-shot-'+(e.hitIndex||0));pulse('enemy',['pierce','ultimate'].includes(action));if(divinity){bladeSlash();screenShake(divinity.authoritySkill||['pierce','ultimate'].includes(action));}const slash=add('vfx-strike'+(action==='ultimate'?' vfx-finisher':''),figure('enemy'));arena?.classList.remove('vfx-ultimate-casting');if(slash)animate(slash,[{opacity:0,transform:'rotate(-25deg) scaleX(.1)'},{opacity:1,offset:.25},{opacity:0,transform:'rotate(-25deg) scaleX(1.2)'}],{duration:reduced?100:180});onSound?.(action==='ultimate'?'ultimate':'hit');}
    else number('enemy',e.landed===false?'MISS':'0','vfx-zero vfx-shot-'+(e.hitIndex||0));
   }
-  if(e.kind==='incomingHit'){number('player',e.damage>0?'−'+Math.floor(e.damage).toLocaleString('ja-JP'):'0','vfx-in');if(e.damage>0){pulse('player');onSound?.(action==='guard'?'guard':'incoming');}}
-  if(e.kind==='enemyMiss')number('player','回避','vfx-zero');
+  if(e.kind==='incomingHit'){if(action==='guard'&&arena?.classList.contains('div-arena')){const flash=add('vfx-shield-impact',figure('player'));if(flash)animate(flash,[{opacity:0,transform:'scale(.7)'},{opacity:1,offset:.25,transform:'scale(1)'},{opacity:0,transform:'scale(1.18)'}],{duration:reduced?100:260,fill:'both'});if(!reduced)screenShake(false);}number('player',e.damage>0?'−'+Math.floor(e.damage).toLocaleString('ja-JP'):'0','vfx-in');if(e.damage>0){pulse('player');onSound?.(action==='guard'?'guard':'incoming');}}
+  if(e.kind==='kingEndure'){const hex=add('vfx-king-hex',figure('player'));if(hex)animate(hex,[{opacity:0,transform:'scale(.75)'},{opacity:1,offset:.18,transform:'scale(1.02)'},{opacity:1,offset:.5,transform:'scale(1)'},{opacity:0,transform:'scale(1.3)'}],{duration:reduced?140:560,fill:'both'});if(!reduced){screenShake(true);onSound?.('guard');}}
+   if(e.kind==='enemyMiss')number('player','回避','vfx-zero');
   if(e.kind==='enemyStopped')number('enemy','行動停止','vfx-zero');
   if(e.kind==='armorBreak'){const el=texture(COMBAT_VFX.break,'vfx-crystal',figure('enemy'));if(el)animate(el,[{opacity:1,transform:'scale(.88)'},{opacity:0,transform:'scale(1.12)'}],{duration:reduced?120:220,fill:'both'});number('enemy',e.frame.mirror?'羽衣崩壊':'殻解除','vfx-label');onSound?.('break');}
   if(e.kind==='armorForm')number('enemy',e.frame.mirror?'反照羽衣':'殻形成','vfx-label');

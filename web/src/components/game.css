@@ -1368,3 +1368,9 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield{inset:9% 12% 7%;border:0;border-radius:0;opacity:.87;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:linear-gradient(160deg,rgba(176,113,241,.33),rgba(80,47,139,.21)),repeating-linear-gradient(60deg,rgba(205,160,255,.13) 0px,rgba(205,160,255,.13) 2px,transparent 2px,transparent 17px);box-shadow:inset 0 0 25px #bb81ff,0 0 20px #8738df;filter:drop-shadow(0 0 8px #b36ffb)}
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield:after{content:'';position:absolute;inset:6px;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:rgba(18,9,35,.2);box-shadow:inset 0 0 20px #cc99ff}
 @media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-shield{filter:none}}
+
+/* Rebuilt combat: defensive impact and king's once-per-hit endurance are visuals only. */
+.div-combat-v2 .div-arena .div-vfx-player .vfx-shield-impact{inset:4% 6%;z-index:6;pointer-events:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:radial-gradient(circle,rgba(236,211,255,.3),rgba(145,72,227,.25) 60%,transparent 75%);box-shadow:0 0 20px #bb75f9}
+.div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex{inset:3% 8%;z-index:7;pointer-events:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(150deg,rgba(241,203,98,.65),rgba(12,9,19,.85) 52%,rgba(198,144,54,.8));box-shadow:inset 0 0 30px #e7af60,0 0 25px #e4c06e;filter:drop-shadow(0 0 9px #d4a344)}
+.div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex:after{content:'';position:absolute;inset:7px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:rgba(9,8,19,.77);box-shadow:inset 0 0 20px #ad7a37}
+@media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex{filter:none}}
