@@ -1,3 +1,4 @@
+import {ACHIEVEMENTS} from '../data/config.js';
 // Read-only UI facts, except the explicit player-requested replacement transaction.
 export const FINALE_ART='assets/finale/confrontation.webp';
 export function featherAuthorityNote(b){const p=b?.powers||[];const notes=[];if(p.includes('wing'))notes.push('黒翼 最終×5');if(p.some(x=>['fallenwing','kingwing','judgewing','abysswing'].includes(x)))notes.push('共鳴 最終×10');return notes.join(' / ');}
@@ -13,4 +14,15 @@ export function swapAuthoritySlots(s,activeBattle=false){
  if(activeBattle)throw Error('戦闘終了または撤退後に権能の順番を変更できます');
  const list=s.equipped;if(!Array.isArray(list)||list.length!==2||list[0]===list[1]||!list.every(id=>s.powers[id]||s.resonance[id]))throw Error('所持している権能を2つ装備してください');
  list.reverse();return s;
+}
+
+// The home summary and mascot share this read-only destination resolver.
+export function nextHomeGoal(a,battle=null){
+ if(battle&&!battle.result)return {kind:'resume',action:'nav',id:'battle',label:'進行中の戦闘に戻る'};
+ if(a.floor<=20&&!a.cleared.includes(a.floor))return {kind:'floor',action:'fight',id:'normal',floor:a.floor,label:`第${a.floor}階層へ進む`};
+ if(a.flags.lv100&&!a.flags.warp)return {kind:'warp',action:'warp',id:'',label:'境界を越える'};
+ if(!a.flags.ex||!a.flags.stellaClear||!a.flags.finalClear)return {kind:'finale',action:'nav',id:'finale',label:'最終決戦を確認する'};
+ if(a.awakening<5)return {kind:'awakening',action:'nav',id:'awakening',label:'神格覚醒を確認する'};
+ if(a.achieved.length<ACHIEVEMENTS.length)return {kind:'archive',action:'nav',id:'archive',label:'実績を確認する'};
+ return null;
 }

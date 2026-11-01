@@ -44,10 +44,9 @@ test('float and jump timings, safe-area spacing and mobile-navigation priority a
  assert.match(app,/次なる戦場、第\$\{floor\}階層へ参ろう。案内して差し上げる。/);
  assert.match(app,/……次は、第\$\{floor\}階層。行くなら、触れて。/);
  assert.equal((app.match(/const CHIBINA_PREFERENCE_KEY=/g)||[]).length,1,'guide preference remains separate from saves');
- assert.ok(app.includes('if(a.floor<=20&&!a.cleared.includes(a.floor))'));
+ assert.ok(app.includes('function mascotGuideTarget(a){return nextHomeGoal(a,battle);}'));
  assert.ok(rule.includes('touch-action:manipulation'));
- assert.ok(app.includes("if(battle&&!battle.result)return {kind:'resume',action:'nav',id:'battle'"));
- assert.match(app,/return null;\n}/);
+
  assert.ok(rule.includes('animation:home-mascot-float 3s ease-in-out infinite'));
  assert.ok(css.includes('@keyframes home-mascot-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}'));
  assert.ok(css.includes('.home-mascot.jumping img{animation:home-mascot-jump 600ms ease-out both}'));

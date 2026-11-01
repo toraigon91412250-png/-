@@ -1375,3 +1375,15 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex{inset:3% 8%;z-index:7;pointer-events:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(150deg,rgba(241,203,98,.65),rgba(12,9,19,.85) 52%,rgba(198,144,54,.8));box-shadow:inset 0 0 30px #e7af60,0 0 25px #e4c06e;filter:drop-shadow(0 0 9px #d4a344)}
 .div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex:after{content:'';position:absolute;inset:7px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:rgba(9,8,19,.77);box-shadow:inset 0 0 20px #ad7a37}
 @media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex{filter:none}}
+
+/* Compact home guidance and explicit, single-use achievement reward collection. */
+.home-goal.home-goal-compact{display:flex;gap:10px;min-width:0;margin:9px 0 14px;padding:11px 14px;border-radius:9px;box-shadow:none}
+.home-goal-compact .home-goal-kicker{flex:none;margin:0;font-size:11px;letter-spacing:.03em}
+.home-goal-compact p{min-width:0;margin:0;color:#f4e4c7;font-size:clamp(11px,3.1vw,14px);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.achievement-claim-all{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 18px;padding:14px;border:1px solid #9d5c4e;border-radius:12px;background:#21151d}
+.achievement-claim-all p{margin:0;font-size:14px}.achievement-claim-all strong{color:#f8d991}
+.achievement-claim-all .claim-all-button{min-width:160px;min-height:48px;padding:10px 18px;border:1px solid #ffe19b;border-radius:10px;background:linear-gradient(110deg,#f5d67b 0%,#eeaa59 46%,#ec5b58 100%);color:#291018;font-weight:800;box-shadow:inset 0 1px 0 #fff8,0 3px 12px #9e252b33;text-shadow:0 1px 0 #ffffff3b}
+.achievement-claim-all .claim-all-button:hover:enabled{background:linear-gradient(110deg,#ffe49b,#f5bb74 46%,#f77970);border-color:#fff1c7}
+.achievement-claim-all .claim-all-button:focus-visible{outline:2px solid #ffe4ad;outline-offset:3px}
+.achievement-claim-all .claim-all-button:disabled{box-shadow:none;filter:saturate(.4);opacity:.55}
+@media(max-width:480px){.achievement-claim-all .claim-all-button{width:100%}}
