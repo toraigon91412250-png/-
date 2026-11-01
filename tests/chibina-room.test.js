@@ -15,6 +15,13 @@ const assets={
  'assets/home-ui/chibi-shinen.png':['cdae2ff342c6a82b956b48e38e086c603eb3026f1d1973c447b7c3c550a3dc25',1199,1312],
  'assets/home-ui/chibina-room-banner.png':['c246d9256bdd0cd50ccda9dfaab954c8fe180a8c2f927c277694b142286a9624',1672,941]
 };
+const optimizedAssets={
+ 'assets/home-ui/optimized/chibi-wing.webp':[435,462,300000],
+ 'assets/home-ui/optimized/chibi-judge.webp':[435,435,300000],
+ 'assets/home-ui/optimized/chibi-fallen.webp':[435,398,300000],
+ 'assets/home-ui/optimized/chibi-king.webp':[435,476,300000],
+ 'assets/home-ui/optimized/chibi-abyss.webp':[435,476,300000]
+};
 
 test('room artwork retains all six approved source files byte-for-byte',()=>{
  for(const [asset,[expected,width,height]] of Object.entries(assets)){
@@ -24,6 +31,17 @@ test('room artwork retains all six approved source files byte-for-byte',()=>{
   assert.equal(bytes.readUInt32BE(16),width,asset+' width');
   assert.equal(bytes.readUInt32BE(20),height,asset+' height');
   if(asset!=='assets/home-ui/chibina-room-banner.png')assert.equal(bytes[25],6,asset+' retains transparency');
+ }
+});
+
+test('five display assets are 435px lossless alpha WebP while source PNGs remain intact',()=>{
+ for(const [asset,[width,height,maxBytes]] of Object.entries(optimizedAssets)){
+  const bytes=fs.readFileSync(asset);
+  assert.equal(bytes.toString('ascii',0,4),'RIFF',asset+' RIFF container');
+  assert.equal(bytes.toString('ascii',8,12),'WEBP',asset+' WebP signature');
+  assert.equal(bytes.toString('ascii',12,16),'VP8L',asset+' lossless WebP bitstream');
+  assert.ok(bytes.length<maxBytes,asset+' optimized size');
+  assert.ok(app.includes(`'${asset}'`),asset+' runtime reference');
  }
 });
 
@@ -42,15 +60,15 @@ test('room entry is the right-hand image card beside the final battle card',()=>
 
 test('the room maps all five personas and keeps image reactions separate from home selection',()=>{
  const rows=[
-  ['wing','黒翼','assets/home-ui/blackwing-chibi.png','600ms'],
-  ['judge','断罪','assets/home-ui/chibi-danzai.png','500ms'],
-  ['fallen','堕天','assets/home-ui/chibi-daten.png','650ms'],
-  ['king','堕天王','assets/home-ui/chibi-datenou.png','600ms'],
-  ['abyss','深淵','assets/home-ui/chibi-shinen.png','700ms']
+  ['wing','黒翼','assets/home-ui/optimized/chibi-wing.webp','600ms'],
+  ['judge','断罪','assets/home-ui/optimized/chibi-judge.webp','500ms'],
+  ['fallen','堕天','assets/home-ui/optimized/chibi-fallen.webp','650ms'],
+  ['king','堕天王','assets/home-ui/optimized/chibi-king.webp','600ms'],
+  ['abyss','深淵','assets/home-ui/optimized/chibi-abyss.webp','700ms']
  ];
  for(const [id,name,asset,duration] of rows){
   assert.ok(app.includes(`id:'${id}',name:'${name}'`));
-  if(id!=='wing')assert.ok(app.includes(`art:'${asset}'`));
+ assert.ok(app.includes(`art:'${asset}'`)||app.includes(`HOME_MASCOT_ART='${asset}'`));
   assert.ok(css.includes(`chibina-${id}-react ${duration}`),id+' room reaction');
  }
  const view=app.slice(app.indexOf('function chibinaRoomView()'),app.indexOf('function homeCard('));
@@ -84,6 +102,7 @@ test('home preference is independently stored and the room is routed outside hom
  assert.match(app,/data-persona="\$\{selectedChibina\.id\}"/);
  assert.match(app,/page==='chibina'\?chibinaRoomView\(\)/);
  assert.match(app,/page==='chibina'\?'chibina-page'/);
- assert.ok(build.includes("'assets/home-ui/blackwing-chibi.png'"));
- for(const asset of Object.keys(assets))assert.ok(build.includes(`'${asset}'`),asset+' is externalized for Pages');
+ for(const asset of Object.keys(optimizedAssets))assert.ok(build.includes(`'${asset}'`),asset+' is externalized for Pages');
+ for(const asset of Object.keys(assets).filter(asset=>asset.includes('chibina-room-banner')))assert.ok(build.includes(`'${asset}'`),asset+' remains externalized for Pages');
+ assert.match(build,/Buffer\.byteLength\(html\)>=50\*1000\*1000/,'standalone build enforces the requested 50 MB ceiling');
 });

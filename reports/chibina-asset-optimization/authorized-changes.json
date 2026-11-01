@@ -1,0 +1,48 @@
+{
+  "web/src/components/App.js": {
+    "reason": "Use the five display-sized lossless WebP variants while retaining their original PNG sources. The home route, mascot reaction, selection persistence, and chibina room behavior are unchanged.",
+    "beforeSHA256": "6e6218b1f92d74c98bea89e2ac62af09d945f515c4d3b63a7532fa042481198e",
+    "afterSHA256": "90c2c491953e9ffa7b10196429d4022a4c4cc2da43624e92dbd14121abb2f36f",
+    "replacements": [
+      {
+        "before": "const HOME_MASCOT_ART='assets/home-ui/blackwing-chibi.png';",
+        "after": "const HOME_MASCOT_ART='assets/home-ui/optimized/chibi-wing.webp';"
+      },
+      {
+        "before": "{id:'wing',name:'黒翼',character:'自由・軽快',art:HOME_MASCOT_ART,width:1217,height:1293,reactionMs:600}",
+        "after": "{id:'wing',name:'黒翼',character:'自由・軽快',art:HOME_MASCOT_ART,width:435,height:462,reactionMs:600}"
+      },
+      {
+        "before": "{id:'judge',name:'断罪',character:'冷静・厳格',art:'assets/home-ui/chibi-danzai.png',width:1254,height:1254,reactionMs:500}",
+        "after": "{id:'judge',name:'断罪',character:'冷静・厳格',art:'assets/home-ui/optimized/chibi-judge.webp',width:435,height:435,reactionMs:500}"
+      },
+      {
+        "before": "{id:'fallen',name:'堕天',character:'反逆的・活発',art:'assets/home-ui/chibi-daten.png',width:1312,height:1199,reactionMs:650}",
+        "after": "{id:'fallen',name:'堕天',character:'反逆的・活発',art:'assets/home-ui/optimized/chibi-fallen.webp',width:435,height:398,reactionMs:650}"
+      },
+      {
+        "before": "{id:'king',name:'堕天王',character:'王者の余裕',art:'assets/home-ui/chibi-datenou.png',width:1199,height:1312,reactionMs:600}",
+        "after": "{id:'king',name:'堕天王',character:'王者の余裕',art:'assets/home-ui/optimized/chibi-king.webp',width:435,height:476,reactionMs:600}"
+      },
+      {
+        "before": "{id:'abyss',name:'深淵',character:'寡黙・虚無',art:'assets/home-ui/chibi-shinen.png',width:1199,height:1312,reactionMs:700}",
+        "after": "{id:'abyss',name:'深淵',character:'寡黙・虚無',art:'assets/home-ui/optimized/chibi-abyss.webp',width:435,height:476,reactionMs:700}"
+      }
+    ]
+  },
+  "tools/build.mjs": {
+    "reason": "Externalize only the five display-sized Chibina WebPs for Pages and enforce the requested standalone size ceiling.",
+    "beforeSHA256": "8ac92c7dbeaba8ff38ae707c7c45b45cc055d176c86421f61d4a62a03cc4f1c2",
+    "afterSHA256": "0d4c308afd9ab0589eb1a06e1209c53ac10fb1db4c7ad1b9647956d500cad450",
+    "replacements": [
+      {
+        "before": "const externalAssets=['assets/home-ui/blackwing-chibi.png','assets/home-ui/chibi-danzai.png','assets/home-ui/chibi-daten.png','assets/home-ui/chibi-datenou.png','assets/home-ui/chibi-shinen.png','assets/home-ui/chibina-room-banner.png','assets/divinity/stage-1.webp','assets/divinity/stage-2.webp','assets/divinity/stage-3.webp','assets/divinity/stage-4.webp','assets/divinity/stage-5.webp','assets/divinity/personas/wing_黒翼.webp','assets/divinity/personas/abyss_深淵.webp','assets/divinity/personas/fallen_堕天.webp','assets/divinity/personas/judge_断罪.webp','assets/divinity/personas/king_堕天王.webp','assets/mirror/phase3.webp','assets/mirror/beyond.webp','assets/mirror/phase2.webp','assets/mirror/phase2-cutin.webp','assets/mirror/release.webp','assets/mirror/release-sprite.webp','assets/mirror/collision.webp','assets/mirror/red.webp','assets/mirror/gold.webp','assets/mirror/cutin.webp','assets/mirror/cathedral.webp','assets/sortie/sortie-ex-kaiser.png','assets/sortie/sortie-stella.png','assets/sortie/sortie-final-irena.png','assets/sortie/sortie-normal-final.png','assets/finale/confrontation.webp','assets/combat-vfx/ultimate-v1/hero.webp','assets/combat-vfx/authority-v1/wing.png','assets/combat-vfx/authority-v1/judge.png','assets/combat-vfx/authority-v1/abyss.png','assets/combat-vfx/authority-v1/fallen.png','assets/combat-vfx/authority-v1/king.png'];const externalByHash=new Map();",
+        "after": "const externalAssets=['assets/home-ui/optimized/chibi-wing.webp','assets/home-ui/optimized/chibi-judge.webp','assets/home-ui/optimized/chibi-fallen.webp','assets/home-ui/optimized/chibi-king.webp','assets/home-ui/optimized/chibi-abyss.webp','assets/home-ui/chibina-room-banner.png','assets/divinity/stage-1.webp','assets/divinity/stage-2.webp','assets/divinity/stage-3.webp','assets/divinity/stage-4.webp','assets/divinity/stage-5.webp','assets/divinity/personas/wing_黒翼.webp','assets/divinity/personas/abyss_深淵.webp','assets/divinity/personas/fallen_堕天.webp','assets/divinity/personas/judge_断罪.webp','assets/divinity/personas/king_堕天王.webp','assets/mirror/phase3.webp','assets/mirror/beyond.webp','assets/mirror/phase2.webp','assets/mirror/phase2-cutin.webp','assets/mirror/release.webp','assets/mirror/release-sprite.webp','assets/mirror/collision.webp','assets/mirror/red.webp','assets/mirror/gold.webp','assets/mirror/cutin.webp','assets/mirror/cathedral.webp','assets/sortie/sortie-ex-kaiser.png','assets/sortie/sortie-stella.png','assets/sortie/sortie-final-irena.png','assets/sortie/sortie-normal-final.png','assets/finale/confrontation.webp','assets/combat-vfx/ultimate-v1/hero.webp','assets/combat-vfx/authority-v1/wing.png','assets/combat-vfx/authority-v1/judge.png','assets/combat-vfx/authority-v1/abyss.png','assets/combat-vfx/authority-v1/fallen.png','assets/combat-vfx/authority-v1/king.png'];const externalByHash=new Map();"
+      },
+      {
+        "before": "",
+        "after": "if(Buffer.byteLength(html)>=50*1000*1000)throw Error('Standalone HTML must remain below 50 MB');\n"
+      }
+    ]
+  }
+}
