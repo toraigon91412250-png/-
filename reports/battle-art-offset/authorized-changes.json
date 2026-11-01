@@ -1,0 +1,9 @@
+{
+  "web/src/components/game.css": {
+    "reason": "On phones, move the divinity portraits below the overlaid heading so faces remain visible.",
+    "before": "",
+    "after": "\n/* On phones, keep faces clear of the overlaid battle heading. */\n@media(max-width:767px){.div-arena>img{top:24px;height:calc(100% - 24px)}}\n",
+    "beforeSHA256": "e6699532bea04a85e6d37c0f2f09acba84e3dbb354c721716b3e7f00e81669b2",
+    "afterSHA256": "1dc9b7e3dbd78ccd1abf6e654bb6efebb5d43c46a595d92aa6c4f3fac33fa568"
+  }
+}

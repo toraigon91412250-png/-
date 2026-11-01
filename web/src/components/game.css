@@ -1275,3 +1275,6 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 @keyframes coopBanterPanel{0%{opacity:0}6%,88%{opacity:1}100%{opacity:0;visibility:hidden}}
 @media(max-width:767px){.div-arena.battle-stage .cooperation-banter{top:10%;height:44px;width:93%;font-size:11px}.div-arena .cooperation-banter-line{gap:6px;padding:4px 8px}.div-arena .cooperation-banter-line b{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.div-arena.battle-stage .cooperation-banter{animation:none}.div-arena .cooperation-banter-line{animation:none}.div-arena .cooperation-banter-line:not(:first-child){display:none}.div-arena .cooperation-banter-line:first-child{opacity:1}}
+
+/* On phones, keep faces clear of the overlaid battle heading. */
+@media(max-width:767px){.div-arena>img{top:24px;height:calc(100% - 24px)}}
