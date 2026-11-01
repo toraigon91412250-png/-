@@ -1,5 +1,5 @@
 import {RESONANCES,resonanceLevel} from '../data/resonanceV3.js';
-import {DIV_IDS,DIV_NAMES,DIV_ART,DIV_STAGES,DIV_BRANCHES,DIV_SKILLS,DIV_TRIALS} from '../data/divinity.js';
+import {DIV_IDS,DIV_NAMES,DIV_ART,DIV_PERSONA_ART,DIV_STAGES,DIV_BRANCHES,DIV_SKILLS,DIV_TRIALS} from '../data/divinity.js';
 import {POWERS,RECIPES} from '../data/config.js';
 import {divinityTrialReason,divinityAwakenReason,divinityNext} from '../utils/divinityProgress.js';
 import {divBattleState,divHasPower,divPowerLevel} from '../utils/divinityCombat.js';
@@ -79,9 +79,10 @@ function cooperationPowersView(s,button){
  return `<div class="cooperation-grid">${['wing','king','fallen','judge','abyss'].map(id=>{
   const rate=s.divinity.cooperation[id],cap=cooperationCap(s,id),tier=cooperationTier(s,id),why=cooperationTrialReason(s,id);
   const level=s.powers[id]||1,cost=level*8;
-  return `<article class="card cooperation-card"><div class="row between"><h3>${DIV_NAMES[id]}</h3><b>${rate.toFixed(1)}% <small>/ ${cap}%</small></b></div>
+  return `<article class="card cooperation-card"><div class="cooperation-persona"><img src="${DIV_PERSONA_ART[id]}" alt="${DIV_NAMES[id]}の完成立ち絵" loading="lazy" decoding="async"><div class="cooperation-persona-info"><div class="row between"><h3>${DIV_NAMES[id]}</h3><b>${rate.toFixed(1)}% <small>/ ${cap}%</small></b></div>
    <progress max="100" value="${rate}" aria-label="${DIV_NAMES[id]}の協力率"></progress><p class="small">${COOP_STYLES[id]}</p>
    <p class="small">協力試練 ${tier}/2 · 権能 Lv.${level}/5 · 成長上限 ${cap}%</p>
+   </div></div>
    <div class="div-actions">${button(s.equipped.includes(id)?'装備解除':'装備する','equipPower',id,'ghost')}
    ${tier<2?button(why||`第${tier+1}協力試練へ`,'divTrial',id,'primary',!!why):'<span class="tag">試練制覇</span>'}
    ${button(level===5?'権能Lv.MAX':`権能育成 ${cost}片`,'upgradePower',id,'ghost',level===5||s.fragments[id]<cost)}</div>

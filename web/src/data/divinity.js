@@ -1,6 +1,7 @@
 // Divinity reconstruction: explicit rules, independent from legacy v4/v5 combat.
 export const DIV_IDS=['wing','abyss','fallen','judge','king'];
 export const DIV_NAMES={wing:'黒翼',abyss:'深淵',fallen:'堕天',judge:'断罪',king:'堕天王'};
+export const DIV_PERSONA_ART={wing:'assets/divinity/personas/wing_黒翼.webp',abyss:'assets/divinity/personas/abyss_深淵.webp',fallen:'assets/divinity/personas/fallen_堕天.webp',judge:'assets/divinity/personas/judge_断罪.webp',king:'assets/divinity/personas/king_堕天王.webp'};
 export const DIV_ART=['assets/divinity/stage-1.webp','assets/divinity/stage-1.webp','assets/divinity/stage-2.webp','assets/divinity/stage-3.webp','assets/divinity/stage-4.webp','assets/divinity/stage-5.webp'];
 export const DIV_STAGES=[
  {name:'封じられた神格',effect:'斬撃と防御から、記憶を辿る。',memory:'失ったのではない。閉じたのだ。けれど、何を守ろうとしたのかは思い出せない。'},
