@@ -1363,3 +1363,8 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .div-combat-v2 .div-commands{min-height:64px}
 .div-combat-v2 .div-command-dock{gap:4px}
 @media(max-width:360px){.div-combat-v2 .div-v2-tabs button{font-size:11px;padding:4px 2px}}
+
+/* Purple hex shield for standard authority defense, scoped to the rebuilt combat screen. */
+.div-combat-v2 .div-arena .div-vfx-player .vfx-shield{inset:9% 12% 7%;border:0;border-radius:0;opacity:.87;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:linear-gradient(160deg,rgba(176,113,241,.33),rgba(80,47,139,.21)),repeating-linear-gradient(60deg,rgba(205,160,255,.13) 0px,rgba(205,160,255,.13) 2px,transparent 2px,transparent 17px);box-shadow:inset 0 0 25px #bb81ff,0 0 20px #8738df;filter:drop-shadow(0 0 8px #b36ffb)}
+.div-combat-v2 .div-arena .div-vfx-player .vfx-shield:after{content:'';position:absolute;inset:6px;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:rgba(18,9,35,.2);box-shadow:inset 0 0 20px #cc99ff}
+@media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-shield{filter:none}}

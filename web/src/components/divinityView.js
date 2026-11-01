@@ -53,7 +53,7 @@ function divIcon(kind){const paths={
 export function divinityBattleView(s,b,button,enemySrc,commandPage=0,mirrorText='',pageSize=4,commandGroup=''){
  const p=playerStats(b),e=enemyStats(b),d=divBattleState(b),skills=divinityCommands(b),trial=divTrial(b)?b.trial:null;
  const powerTabs=b.combatV2?DIV_IDS.filter(id=>divHasPower(b,id)&&divPowerLevel(b,id)>0):[];
- const activeGroup=b.combatV2?(powerTabs.includes(commandGroup)?commandGroup:commandGroup==='system'?'system':powerTabs[0]||'system'):'';
+ const activeGroup=b.combatV2?(b.statuses.stun?'system':powerTabs.includes(commandGroup)?commandGroup:commandGroup==='system'?'system':powerTabs[0]||'system'):'';
  const groupedSkills=!b.combatV2?skills:activeGroup==='system'?skills.filter(([id])=>!DIV_SKILLS[id]?.power&&id!=='guard'):skills.filter(([id])=>DIV_SKILLS[id]?.power===activeGroup);
  const pages=Math.max(1,Math.ceil(groupedSkills.length/pageSize)),page=Math.max(0,Math.min(commandPage,pages-1)),cmds=groupedSkills.slice(page*pageSize,page*pageSize+pageSize);
  const equipped=b.powers.map(id=>DIV_NAMES[id]||RECIPES.find(r=>r.id===id)?.name||POWERS.find(r=>r.id===id)?.name||id).join('・')||'未解放';

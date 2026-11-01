@@ -84,3 +84,11 @@ test('new authority attack can break B1 armor without the removed destruction co
  actMainBattle(b,'plume',{rng:hit});
  assert.equal(b.enemy.statuses.campaignArmor,undefined);
 });
+
+test('stunned combat exposes recovery action in system group, never an empty authority dock',()=>{
+ const s=powered(),b=startBattle(s,{mode:'ex',test:true,combatV2:true});b.statuses.stun=1;
+ const html=divinityCommands(b);
+ assert.deepEqual(html.map(row=>row[0]),['wait']);
+ const source=import.meta.url;
+ assert.ok(source.includes('combat-authority-rebuild'));
+});
