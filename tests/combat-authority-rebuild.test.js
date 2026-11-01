@@ -4,6 +4,7 @@ import {fresh,clone} from '../web/src/utils/progression.js';
 import {freshDivinity,divinityDeveloper,refundRetiredCombatTraining,validateDivinitySave} from '../web/src/utils/divinitySave.js';
 import {startBattle,act,available,baseStats,dealPlayer} from '../web/src/utils/gameCore.js';
 import {observeCombat} from '../web/src/utils/combatObservation.js';
+import {divBattleState} from '../web/src/utils/divinityCombat.js';
 import {startMainBattle,actMainBattle} from '../web/src/utils/main20.js';
 import {divinityCommands} from '../web/src/components/divinityView.js';
 import {markBattleCheckpoint,restoreMarkBattle} from '../web/src/utils/battleCheckpoint.js';
@@ -107,7 +108,7 @@ test('switching authority during a rebuilt battle cannot reactivate dormant endu
 
 test('new king endurance emits only a cosmetic hex event on the actual lethal hit',()=>{
  const s=powered();s.equipped=['king','wing'];const b=startBattle(s,{mode:'ex',test:true,combatV2:true});
- b.hp=b.base.hp*.5;const seen=[];
+ b.hp=b.base.hp*.5;divBattleState(b).revived=true;const seen=[];
  observeCombat(b,event=>seen.push(event),()=>dealPlayer(b,1e12));
  assert.ok(b.hp>0);assert.ok(b.lives>=0);
  assert.equal(seen.filter(x=>x.kind==='kingEndure').length,1);
