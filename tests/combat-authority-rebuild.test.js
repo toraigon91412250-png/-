@@ -73,7 +73,7 @@ test('new-rule checkpoint replays unchanged with shared cooldown',()=>{
  actMainBattle(b,'plume',{rng:hit});
  assert.equal(b.result,null);
  const cp=markBattleCheckpoint(b);
- assert.equal(cp.combatV2,true);assert.equal(cp.schema,3);
+ assert.equal(cp.combatV2,true);assert.equal(cp.schema,5);
  const restored=restoreMarkBattle(cp,validateSave);
  assert.equal(restored.combatV2,true);
  assert.equal(restored.gauge,b.gauge);
