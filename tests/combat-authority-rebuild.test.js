@@ -111,6 +111,7 @@ test('new king endurance emits only a cosmetic hex event on the actual lethal hi
  b.hp=b.base.hp*.5;divBattleState(b).revived=true;const seen=[];
  observeCombat(b,event=>seen.push(event),()=>dealPlayer(b,1e12));
  assert.ok(b.hp>0);assert.ok(b.lives>=0);
+ assert.equal(b.divine.lifePools.king,4);
  assert.equal(seen.filter(x=>x.kind==='kingEndure').length,1);
  assert.equal(seen.filter(x=>x.kind==='incomingHit').length,1);
  assert.equal(seen.find(x=>x.kind==='kingEndure').remaining,b.lives);
