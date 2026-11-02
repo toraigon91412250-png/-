@@ -76,7 +76,7 @@ try{
  await page.getByRole('button',{name:/戦闘に戻る/}).click();
  await page.getByText('黒翼を狩る白騎士').first().waitFor();
  const standaloneCheckpoint=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SAVE_KEY);
- if(standaloneCheckpoint.markBattle?.schema!==4||await page.locator('.div-hp-enemy .div-hp-value').textContent()!==hpAfterReload)throw Error('Standalone build did not resume the active trial checkpoint');
+ if(standaloneCheckpoint.markBattle?.schema!==6||await page.locator('.div-hp-enemy .div-hp-value').textContent()!==hpAfterReload)throw Error('Standalone build did not resume the active trial checkpoint');
  await page.goto(base);
  await page.getByRole('button',{name:/戦闘に戻る/}).click();
  await page.getByText('黒翼を狩る白騎士').first().waitFor();
