@@ -178,8 +178,8 @@ export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
  const stellaEnemyScale=b.mode==='stella'?(b.difficulty==='EXPERT'?1.2:b.difficulty==='NIGHTMARE'?1.4:1):1;
  let raw=b.mode==='stella'?[440,640,880][b.enemy.phase-1]*stellaEnemyScale:e.atk*(b.enemy.phase===2?1.12:b.enemy.phase===3?1.35:1);
  const unmitigatedAttack=b.mode==='stella'?raw:raw*(b.turn%4===0?1.35:1);
- let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});if(guard)d=Math.max(1,Math.round(d*.3));if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
- b.enemyDamage=Math.floor(dealPlayer(b,d,unmitigatedAttack));log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
+ let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});const beforeGuard=d;if(guard)d=Math.max(1,Math.round(d*.3));b.guardPrevented=guard?Math.max(0,beforeGuard-d):0;if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
+ b.enemyDamage=Math.floor(dealPlayer(b,d,unmitigatedAttack));b.guardPrevented=0;log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
  if(b.powers.includes('kingjudge'))b.stacks.kingjudge=Math.min(2,(b.stacks.kingjudge||0)+1);
  if(b.hp>0&&!b.noPressure&&b.enemy.phase>=2&&b.turn%4===0){b.statuses.pressure=3;log(b,'重圧：攻撃力低下');}
  if(b.hp>0&&b.mode==='ex'&&b.enemy.phase===2&&b.turn%5===0){b.statuses.seal=2;log(b,'第二形態：権能封印');}
@@ -187,12 +187,13 @@ export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
 export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn,damageGate=null}={}){
  const reason=available(b,action,route);if(reason)throw Error(reason);const rolls=[],originalRng=rng;rng=()=>{const value=originalRng();rolls.push(value);return value;};b.events=[];b.lastDamage=0;b.enemyDamage=0;b.lastAction=action;
  if(b.character==='irena'){markState(b);b.enemy.markTurns=(b.enemy.markTurns||0)+1;}passiveStart(b);combatNotice(b,'passive');b.used.low ||= b.hp/b.base.hp<=.1;
- divinityBefore(b,action);const guarding=action==='guard'||divinityIsGuard(b,action);
+ divinityBefore(b,action);fallenFinisher(b,damageGate);const guarding=action==='guard'||divinityIsGuard(b,action);
  const early=enemyStats(b).spd>playerStats(b).spd;
  // Enemy-first turns allow immortality/guard to resolve defensively before incoming damage.
  if(action==='immortal')b.statuses.invulnerable=1;
- if(early)enemyAction(b,guarding,rng);
- if(b.hp>0){combatNotice(b,'playerAction',{action});if(action==='wait'){log(b,'反動で行動できない');}
+ if(early&&b.enemy.hp>0)enemyAction(b,guarding,rng);
+ if(early)fallenFinisher(b,damageGate);
+ if(b.hp>0&&b.enemy.hp>0){combatNotice(b,'playerAction',{action});if(action==='wait'){log(b,'反動で行動できない');}
  else if(action==='guard'){markGuard(b);b.gauge=Math.min(100,b.gauge+18);log(b,'防御：被ダメージ70%軽減');}
  else if(performDivinityAction(b,action,rng,damageGate)){}
  else if(b.character==='final'&&!['slash'].includes(action))finalAction(b,action,route);
@@ -202,8 +203,9 @@ export function act(b,action,{route='A',rng=Math.random,enemyAction=enemyTurn,da
  else if(action==='meteor'){b.enemy.hp=Math.max(0,b.enemy.hp-5000);b.lastDamage=5000;b.meteor=true;b.used.special++;combatNotice(b,'hit',{damage:5000,hitIndex:0,landed:true});log(b,'天象支配：隕石 5,000 ダメージ');}
  else attack(b,'slash',rng);
  }else attack(b,action,rng,damageGate);}
- phase(b);
+ fallenFinisher(b,damageGate);phase(b);
  if(!early&&b.hp>0&&b.enemy.hp>0)enemyAction(b,guarding,rng);
+ if(!early)fallenFinisher(b,damageGate);phase(b);
  // Phase deadlines are measured in full rounds, irrespective of speed and normal-action stops.
  if(['ex','final'].includes(b.mode)&&b.enemy.phase===3&&b.enemy.hp>0){b.phaseTurns++;if(b.phaseTurns>=BALANCE.exLimit){b.hp=0;combatNotice(b,'deadline');log(b,'終末判定：通常停止・無敵・耐性を貫通');}}
  if(b.enemy.hp<=0&&b.hp>0)b.result='win';else if(b.hp<=0)b.result='lose';
