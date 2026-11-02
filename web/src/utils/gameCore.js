@@ -109,25 +109,44 @@ export function available(b,action,route){if(b.result)return '戦闘終了';if(b
  const skill=FINAL_SKILLS[action];if(!skill)return '使用できない技';if(b.buffs.some(x=>x.id==='transcend'))return '絶界昇華中は権能を使用できません';
  if(skill.side&&(Math.sign(b.balance)!==skill.side||stage(b.balance)<(skill.stage||0)))return '対応する側の段階が不足';return null;
  }return '使用できません';}
-export function attack(b,action,rng=Math.random,damageGate=null){let p=playerStats(b),e=enemyStats(b);const special=['feather','pierce','volley','power'].includes(action),feather=['feather','pierce','volley'].includes(action),ultimate=action==='ultimate';let mult=1,final=1,ignore=0,extra=0;const divineStrike=divinityStrikeProfile(b,action);final*=divineStrike.mult;ignore=Math.max(ignore,divineStrike.ignore);const tacticalRules=b.tacticalB||(b.lab20?.variant==='B'?b.lab20.rules:null);const markMultiplier=beginMarkAttack(b,action),strike=authorityStrikeEffect(b,action);final*=strike.final;ignore=Math.max(ignore,strike.ignore);
+export function attack(b,action,rng=Math.random,damageGate=null){let p=playerStats(b),e=enemyStats(b);const special=['feather','pierce','volley','power'].includes(action),feather=['feather','pierce','volley'].includes(action),ultimate=action==='ultimate';let mult=1,final=1,ignore=0,extra=0;const divineStrike=divinityStrikeProfile(b,action);final*=divineStrike.mult;ignore=Math.max(ignore,divineStrike.ignore);
+ const newCombat=b.combatV2&&b.character==='irena',divState=b.divine,skill=DIV_SKILLS[b.lastAction];
+ const canWing=newCombat&&hasPassive(b,'wing')&&(action==='slash'||!!skill?.power);
+ const canDrain=newCombat&&hasPassive(b,'fallen')&&b.hp/b.base.hp<=.25&&(action==='slash'||!!skill?.power);
+ if(newCombat&&skill?.power==='fallen'&&divState?.fallenEmpowered){final*=2;divState.fallenEmpowered=false;}const tacticalRules=b.tacticalB||(b.lab20?.variant==='B'?b.lab20.rules:null);const markMultiplier=beginMarkAttack(b,action),strike=authorityStrikeEffect(b,action);final*=strike.final;ignore=Math.max(ignore,strike.ignore);
  if(feather){mult=1.95*(1+(b.build.skills.feather-1)*.07);if(action==='pierce')mult*=1.3;if(action==='volley')mult*=.7;if(b.powers.includes('wing'))final*=5;if(b.powers.some(x=>['fallenwing','kingwing','judgewing','abysswing'].includes(x)))final*=10;
  if(b.lastFeather&&b.lastFeather!==action&&['pierce','volley'].includes(action)){final*=1.15;log(b,'羽撃ち分け：交互連携＋15%');}b.lastFeather=action;if(action!=='feather')markUsed(b,'split');}
- if(action==='power')mult=2.4*(1+(b.build.skills.destruction-1)*.1);
+ if(action==='power')mult=2.4*(1+(b.build.skills.destruction-1)*.1)*(newCombat&&b.lastAction==='fallenOath'?2:1);
  if(ultimate){mult=5.4*(1+(b.build.skills.ultimate-1)*.08);if(b.marks.includes('starfall')){final*=1.12;markUsed(b,'starfall');}}
  if(tacticalRules&&b.enemy.statuses.campaignArmor&&feather)final*=tacticalRules.shellFeather;if(tacticalRules&&b.enemy.statuses.researchExposed)final*=tacticalRules.exposed;if(b.powers.includes('star'))final*=2;
  const rank=badgeRank(b.build,b.build.badge);if(b.build.badge==='A')final*=[1,1.05,1.09,1.12][rank];if(b.build.badge==='B'){if(special)final*=[1,1.08,1.12,1.15][rank];if(ultimate)final*=[1,1,1.08,1.12][rank];}
  // Each equipped execution authority has its own hit-only counter; wing version only feathers.
- const judges=b.powers.filter(x=>['judge','fallenjudge','kingjudge','judgewing','abyssjudge'].includes(x)&& (x!=='judgewing'||feather));
- let total=0,hit=false;const hits=action==='volley'?2:1,parts=[];
+ const judges=b.powers.filter(x=>['judge','fallenjudge','kingjudge','judgewing','abyssjudge'].includes(x)&&!(newCombat&&x==='judge')&& (x!=='judgewing'||feather));
+ let total=0,hit=false,realDealt=0,wingBasis=0;const hits=action==='volley'?2:1,parts=[];
+ if(newCombat&&divState?.judgeBonus){extra+=divState.judgeBonus;divState.judgeBonus=0;}
  for(let shot=0;shot<hits&&b.enemy.hp>0;shot++){
   const landed=rng()>=clamp((e.spd-p.spd)/Math.max(1,e.spd)*.12,0,.12);hit ||= landed;let shotMult=mult,shotIgnore=ignore,shotExtra=extra,judgeTriggered=false;
   if(landed){if(tacticalRules&&b.enemy.statuses.campaignArmor&&(['power','ultimate'].includes(action)||b.combatV2&&!!DIV_SKILLS[b.lastAction]?.power)){b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='campaignArmor');delete b.enemy.statuses.campaignArmor;b.enemy.statuses.campaignSever=tacticalRules.duration;b.enemy.statuses.researchExposed=tacticalRules.duration;e=enemyStats(b);final*=tacticalRules.exposed;combatNotice(b,'armorBreak');}for(const id of judges){if((b.stacks[id]||0)>=2){if(id==='judge')judgeTriggered=true;shotMult*=id==='fallenjudge'?4:3;shotIgnore=Math.max(shotIgnore,id==='fallenjudge'?.9:.6);shotExtra+=b.enemy.hp*.2;if(id==='abyssjudge')shotMult*=1+b.erosion+Object.keys(b.enemy.statuses).length*.1;b.stacks[id]=0;log(b,'断罪発動：敵の攻撃前現在HP20%を加算');}else b.stacks[id]=(b.stacks[id]||0)+1;}}
   const judgeMark=judgeMarkMultiplier(b,judgeTriggered);const minimum=Math.max(1,...b.buffs.map(x=>x.minimum||1));const d=landed?damage(p.atk,e.def,{mult:shotMult,ignore:Math.max(shotIgnore,b.ignoreDefense?1:0),final:final*markMultiplier*judgeMark,extra:shotExtra*markMultiplier,minimum}):0;
   const applied=damageGate?damageGate(b,d,{action,shot,landed}):d;
-  const actual=b.trial?.kind==='divinity'?Math.min(b.enemy.hp,applied):d;
-  b.enemy.hp=Math.max(0,b.enemy.hp-applied);total+=actual;parts.push(actual);b.events.push({type:'hit',damage:actual,...(b.trial?.kind==='divinity'?{landed}:{})});combatNotice(b,'hit',{damage:actual,hitIndex:shot,landed});
+  const actual=newCombat?Math.min(b.enemy.hp,Math.max(0,applied)):(b.trial?.kind==='divinity'?Math.min(b.enemy.hp,applied):d);
+  b.enemy.hp=Math.max(0,b.enemy.hp-applied);total+=actual;realDealt+=Math.max(0,actual);if(landed&&wingBasis===0)wingBasis=Math.max(0,actual);parts.push(actual);b.events.push({type:'hit',damage:actual,...(b.trial?.kind==='divinity'?{landed}:{})});combatNotice(b,'hit',{damage:actual,hitIndex:shot,landed});
  }
- b.lastDamage=total;log(b,`${b.combatV2&&DIV_SKILLS[b.lastAction]?.power?DIV_SKILLS[b.lastAction].name:action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
+ if(newCombat&&canWing&&hit&&wingBasis>0){
+  for(let i=0;i<12&&b.enemy.hp>0;i++){
+   if(i>0&&rng()>=(i===1?.5:i===2?.25:.1))break;
+   let extraDamage=Math.floor(wingBasis*(i===0?.3:i===1?.15:.1));
+   if(damageGate)extraDamage=damageGate(b,extraDamage,{action:b.lastAction,shot:hits+i,landed:true});
+   const applied=Math.min(b.enemy.hp,Math.max(0,extraDamage));b.enemy.hp-=applied;total+=applied;realDealt+=applied;parts.push(applied);
+   b.events.push({type:'hit',damage:applied,landed:true});combatNotice(b,'hit',{damage:applied,hitIndex:hits+i,landed:true});
+  }
+ }
+ if(newCombat&&divState?.kingBonus!==undefined){
+  let bonus=hit?Math.floor(divState.kingBonus):0;divState.kingBonus=0;
+  if(bonus>0&&b.enemy.hp>0){if(damageGate)bonus=damageGate(b,bonus,{action:b.lastAction,landed:true});const applied=Math.min(b.enemy.hp,Math.max(0,bonus));b.enemy.hp-=applied;total+=applied;parts.push(applied);b.events.push({type:'hit',damage:applied,landed:true});combatNotice(b,'hit',{damage:applied,hitIndex:hits+12,landed:true});}
+ }
+ if(canDrain&&realDealt>0)heal(b,Math.min(.08,realDealt/b.base.hp*.2));
+ b.hitLanded=hit;b.lastDamage=total;log(b,`${b.combatV2&&DIV_SKILLS[b.lastAction]?.power?DIV_SKILLS[b.lastAction].name:action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
  if(hit&&feather&&b.powers.includes('abysswing'))erosion(b,.09);
  if(hit&&strike.heal){heal(b,strike.heal);log(b,'堕天王の権能：最大HP12%回復');}
  if(hit&&strike.erosion){const before=b.erosion;erosion(b,strike.erosion);combatNotice(b,'authorityEffect',{authority:'abyss',text:'追加侵食＋'+Math.round((b.erosion-before)*100)+'%'});log(b,'深淵の権能：追加侵食 '+Math.round((b.erosion-before)*100)+'%');}
