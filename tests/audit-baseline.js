@@ -19,6 +19,16 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ // Exactly authorized five-authority gameplay changes: verify every new byte,
+ // then restore the immediately preceding main revision for historical audits.
+ const authorityV2=JSON.parse(fs.readFileSync(new URL('../reports/authority-redesign-20261102/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(authorityV2){
+  assert.equal(gitBlobSha(bytes),authorityV2.afterGitSha,key+' approved five-authority redesign source');
+  const original=Buffer.from(authorityV2.before,'utf8');
+  assert.equal(gitBlobSha(original),authorityV2.beforeGitSha,key+' preserved pre-redesign source');
+  bytes=original;
+ }
+
  const homeCleanup=JSON.parse(fs.readFileSync(new URL('../reports/home-cleanup/authorized-changes.json',import.meta.url),'utf8'))[key];
  if(homeCleanup){assert.equal(sha(bytes),homeCleanup.afterSHA256,key+' approved batch rewards and home cleanup');let source=bytes.toString('utf8');for(const edit of homeCleanup.replacements){assert.equal(source.split(edit.after).length-1,1,key+' exact approved home cleanup replacement');source=source.replace(edit.after,edit.before);}assert.equal(sha(source),homeCleanup.beforeSHA256,key+' exact pre-cleanup source');bytes=Buffer.from(source);}
  const mascotGuide=JSON.parse(fs.readFileSync(new URL('../reports/chibina-mascot-guide/authorized-changes.json',import.meta.url),'utf8'))[key];

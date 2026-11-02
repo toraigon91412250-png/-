@@ -7,14 +7,20 @@ import {attack,buff,heal,log,playerStats,enemyStats,damage,baseStats} from './ga
 import {combatNotice} from './combatObservation.js';
 export const isDivinityBattle=b=>b?.character==='irena'&&hasDivinity(b.build);
 const DIV_LIVES={king:5,god:4,kingwing:7,kingjudge:6,abyssking:6};
-export const AUTHORITY_CT=Object.freeze({wing:2,abyss:3,king:3,judge:4,fallen:4});
+export const AUTHORITY_CT=Object.freeze({wing:2,abyss:3,king:3,judge:4,fallen:2});
 export function divBattleState(b){return b.divine ||= {lifePools:{...DIV_LIVES},feathers:0,proof:0,lastAttack:null,lastPower:null,guarded:false,counter:0,shield:0,revived:false,unified:0,links:0};}
-export function syncDivinityLives(b){if(!isDivinityBattle(b))return;const d=divBattleState(b);b.lives=b.powers.reduce((n,id)=>n+(d.lifePools[id]||0),0);}
-export function spendDivinityLife(b){if(!isDivinityBattle(b))return;const d=divBattleState(b),id=b.powers.find(x=>d.lifePools[x]>0);if(id)d.lifePools[id]--;}
+// Zero release unlocks skills without granting five simultaneous passive sets.
+export const redesignedCombat=b=>!!b?.combatV2&&!b?.authorityRulesV1;
+export const passivePowerIds=b=>redesignedCombat(b)&&b?.divine?.unified?(b.divine.savedPowers||[]):(b?.powers||[]);
+export const hasPassive=(b,id)=>passivePowerIds(b).includes(id);
+export const authorityBoss=b=>!!b.trial||b.mode!=='normal'||!!b.experiment||!!b.lab20||(!!b.main20&&(b.floor%5===0||b.difficulty==='NIGHTMARE'));
+export function syncDivinityLives(b){if(!isDivinityBattle(b))return;const d=divBattleState(b);b.lives=passivePowerIds(b).reduce((n,id)=>n+(d.lifePools[id]||0),0);}
+export function spendDivinityLife(b){if(!isDivinityBattle(b))return;const d=divBattleState(b),id=passivePowerIds(b).find(x=>d.lifePools[x]>0);if(id)d.lifePools[id]--;}
 export function divHasPower(b,id){return b.powers.includes(id)||b.powers.some(x=>RECIPES.find(r=>r.id===x)?.parts.includes(id));}
 export function divPowerLevel(b,id){return b.build.powers[id]|| (divHasPower(b,id)?5:0);}
 export function divinityAvailable(b,action){
  if(!isDivinityBattle(b))return undefined;
+ if(redesignedCombat(b)&&hasPassive(b,'fallen')&&b.hp/b.base.hp<=.15&&(action==='guard'||DIV_SKILLS[action]?.guard||resonanceGuard(b,action)))return '堕天：HP15%以下では防御不可';
  if(isResonanceAction(action))return resonanceReason(b,action);
  if(['slash','guard','wait'].includes(action))return undefined;
  const row=DIV_SKILLS[action],d=divBattleState(b);
@@ -52,6 +58,7 @@ export function divinityIncoming(b,amount,unmitigatedAttack=amount){
  if(b.enemy.statuses.divinityWeaken)amount*=.7;
  if(d.nextReduction){amount*=.5;d.nextReduction=false;}
  const absorbed=Math.min(amount,d.shield);d.shield-=absorbed;amount-=absorbed;
+ if(redesignedCombat(b)&&d.guardAction&&hasPassive(b,'king'))d.preventedThisGuard=(d.preventedThisGuard||0)+Math.max(0,b.guardPrevented||0)+absorbed;
  amount=adjustResonanceIncoming(b,amount,{playerStats});
  if(d.resonance){d.resonance.lastIncoming=incomingRaw;d.resonance.lastIncomingPower=unmitigatedAttack;}
  if(absorbed>0){log(b,`障壁が${Math.round(absorbed)}を受け止めた`);b.events.push({type:'divinityShield',amount:absorbed});}
@@ -61,9 +68,10 @@ export function divinityIncoming(b,amount,unmitigatedAttack=amount){
 export function divinityBefore(b,action){
  if(!isDivinityBattle(b))return;const d=divBattleState(b);d.guardAction=action==='guard'||divinityIsGuard(b,action);d.freshUnified=false;
  if(d.resonance){d.resonance.lastIncoming=0;d.resonance.lastIncomingPower=0;}
+ if(redesignedCombat(b))d.preventedThisGuard=0;
  if(action==='royalGuard'||action==='mantle')d.shield=Math.max(d.shield,playerStats(b).hp*(action==='royalGuard'&&divPowerLevel(b,'king')>=2?.35:.25));
  if(d.guardAction&&b.build.divinity.branches.king==='bastion'&&divHasPower(b,'king'))d.shield=Math.max(d.shield,playerStats(b).hp*.15);
- if(action==='fallenOath'){b.hp=Math.min(b.hp,b.base.hp*.45);if(divPowerLevel(b,'fallen')>=2)b.gauge=Math.min(100,b.gauge+15);}
+ if(action==='fallenOath'){b.hp=Math.min(b.hp,b.base.hp*(redesignedCombat(b)?.25:.45));if(divPowerLevel(b,'fallen')>=2)b.gauge=Math.min(100,b.gauge+15);}
 }
 export function divinityStrikeProfile(b,action){
  if(!isDivinityBattle(b))return {mult:1,ignore:0};const d=divBattleState(b),row=DIV_SKILLS[b.lastAction],branch=b.build.divinity.branches;let mult=1,ignore=0;
@@ -79,10 +87,11 @@ export function divinityStrikeProfile(b,action){
  if(row?.power==='judge'){
   if(d.resonance?.silence){ignore=Math.max(ignore,d.resonance.silence.ignore);if(d.proof>=2){mult*=d.resonance.silence.proofMult;d.proof=0;}d.resonance.silence=null;}
   if(branch.judge==='sentence')mult*=1.35;
-  if(d.proof>=2){mult*=b.lastAction==='judgment'?3:2;ignore=1;d.proof=0;log(b,'断罪の証：防御を貫き、執行');}
+  if(d.proof>=2){mult*=redesignedCombat(b)?3*(b.lastAction==='judgment'?3:2):(b.lastAction==='judgment'?3:2);ignore=1;if(redesignedCombat(b)){d.judgePending=true;d.judgeBonus=b.enemy.hp*.2;}d.proof=0;log(b,'断罪の証：防御を貫き、執行');}
   if(branch.judge==='insight'){b.enemy.buffs=[];d.nextReduction=true;}
  }
  if(d.counter&&row?.power==='king'){mult*=1+d.counter*(branch.king==='revenge'?2:1);d.counter=0;}
+ if(redesignedCombat(b)&&b.lastAction==='royalReturn'&&hasPassive(b,'king')){d.kingBonus=Math.min(d.counterStored||0,playerStats(b).atk*2,b.enemy.base.hp*.05);d.counterStored=0;}
  if(b.lastAction==='convergence'){mult*=4;ignore=1;}
  return {mult,ignore};
 }
@@ -99,7 +108,7 @@ export function performDivinityAction(b,action,rng,damageGate){
  else {
   if(row.power==='abyss'){
    const extra=(b.build.divinity.branches.abyss==='dominate'?.06:0)+(divPowerLevel(b,'abyss')>=2?.03:0);
-   b.erosion=Math.min(divinityErosionCap(b),b.erosion+.12+extra);b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='divinityEnemyWard');b.enemy.statuses.divinityWeaken=3;
+   b.erosion=Math.min(divinityErosionCap(b),b.erosion+.12+extra);if(redesignedCombat(b))b.enemy.hp=Math.min(b.enemy.hp,enemyStats(b).hp);b.enemy.buffs=b.enemy.buffs.filter(x=>x.id!=='divinityEnemyWard');b.enemy.statuses.divinityWeaken=3;
    if(b.trial?.incomingCorrosion){b.trial.incomingCorrosion=false;heal(b,.15);log(b,'侵食を逆流させ、HP15%を取り戻した');}
    if(b.build.divinity.branches.abyss==='drain')heal(b,.15);
   }
@@ -111,7 +120,7 @@ export function performDivinityAction(b,action,rng,damageGate){
   if(action==='royalReturn')heal(b,.2);
   log(b,row.name+' 発動');
  }
- if(b.combatV2&&row.power)b.cd.authorityShared=AUTHORITY_CT[row.power]+1;
+ if(b.combatV2&&row.power)b.cd.authorityShared=(redesignedCombat(b)?AUTHORITY_CT[row.power]:row.power==='fallen'?4:AUTHORITY_CT[row.power])+1;
  else b.cd[action]=row.ct+1;
  return true;
 }
@@ -119,14 +128,16 @@ export function divinityAfter(b,action){
  if(!isDivinityBattle(b)||b.hp<=0)return;const d=divBattleState(b),guard=d.guardAction;
  registerCooperationAction(b,action);d.line=cooperationDialogue(b);
  if(guard){
-  d.guarded=true;if(b.combatV2)d.lastAttack=null;if(divHasPower(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
-  if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
-  if(divHasPower(b,'wing')&&b.build.divinity.branches.wing==='shelter'){heal(b,.12);d.feathers=Math.min(5,d.feathers+1);}
- }else if(b.lastDamage>0){
-  if(divHasPower(b,'wing')&&!['plume','thousandWings'].includes(action))d.feathers=Math.min(5,d.feathers+1);
-  if(divHasPower(b,'judge')&&action!==d.lastAttack&&!['verdict','judgment'].includes(action))d.proof=Math.min(2,d.proof+(divPowerLevel(b,'judge')>=2&&d.attackWasGuarded?2:1));
+  d.guarded=true;if(b.combatV2)d.lastAttack=null;if(hasPassive(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
+  if(redesignedCombat(b)){if(hasPassive(b,'king')&&(d.preventedThisGuard||0)>0){d.counter=Math.min(2,d.counter+1);d.counterStored=Math.min((d.counterStored||0)+d.preventedThisGuard,playerStats(b).atk*2,b.enemy.base.hp*.05);}}else if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
+  if(hasPassive(b,'wing')&&b.build.divinity.branches.wing==='shelter'){heal(b,.12);d.feathers=Math.min(5,d.feathers+1);}
+ }else if(b.lastDamage>0||(redesignedCombat(b)&&b.hitLanded)){
+  if(hasPassive(b,'wing')&&!['plume','thousandWings'].includes(action))d.feathers=Math.min(5,d.feathers+1);
+  if(hasPassive(b,'judge')&&(redesignedCombat(b)||action!==d.lastAttack)&&!['verdict','judgment'].includes(action))d.proof=Math.min(2,d.proof+(divPowerLevel(b,'judge')>=2&&d.attackWasGuarded?2:1));
   d.lastAttack=action;
  }
+ if(redesignedCombat(b)&&d.judgePending){d.proof=b.hitLanded?1:2;d.judgePending=false;}
+ if(redesignedCombat(b))d.lastPlayerGuard=guard;
  if(d.unified&&!d.freshUnified){d.unified--;if(!d.unified){b.powers=d.savedPowers;syncDivinityLives(b);b.buffs=b.buffs.filter(x=>x.id!=='divineUnified');delete d.savedPowers;log(b,'神格解放が静まる。取り戻した記憶は残る。');}}
  afterResonanceTurn(b,action,{playerStats,enemyStats,damage,heal,log,combatNotice});
 }

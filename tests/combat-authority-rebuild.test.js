@@ -22,8 +22,10 @@ test('new combat presents only available equipped authority skills and defense',
  const s=powered(),b=startBattle(s,{mode:'ex',test:true,combatV2:true});
  const keys=divinityCommands(b).map(x=>x[0]);
  for(const id of ['plume','thousandWings','verdict','judgment','guard'])assert.ok(keys.includes(id),id);
- for(const id of ['slash','feather','pierce','volley','power','ultimate','mantle'])assert.ok(!keys.includes(id),id);
- for(const id of ['slash','feather','pierce','volley','power','ultimate','mantle'])assert.ok(available(b,id),id);
+ assert.ok(keys.includes('slash'),'CT-free slash is available with equipped authorities');
+ for(const id of ['feather','pierce','volley','power','ultimate','mantle'])assert.ok(!keys.includes(id),id);
+ assert.equal(available(b,'slash'),null);
+ for(const id of ['feather','pierce','volley','power','ultimate','mantle'])assert.ok(available(b,id),id);
  assert.equal(b.marks.length,0);
  assert.equal(b.markLife,0);
  assert.deepEqual(b.base,baseStats({...s,markEquip:[]}));
@@ -71,7 +73,7 @@ test('new-rule checkpoint replays unchanged with shared cooldown',()=>{
  actMainBattle(b,'plume',{rng:hit});
  assert.equal(b.result,null);
  const cp=markBattleCheckpoint(b);
- assert.equal(cp.combatV2,true);assert.equal(cp.schema,3);
+ assert.equal(cp.combatV2,true);assert.equal(cp.schema,5);
  const restored=restoreMarkBattle(cp,validateSave);
  assert.equal(restored.combatV2,true);
  assert.equal(restored.gauge,b.gauge);
