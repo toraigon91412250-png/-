@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {freshDivinity,divinityDeveloper} from '../web/src/utils/divinitySave.js';
 import {startBattle,act,available,playerStats,enemyStats,dealPlayer} from '../web/src/utils/gameCore.js';
 import {divBattleState,syncDivinityLives,passivePowerIds} from '../web/src/utils/divinityCombat.js';
+import {startMainBattle,actMainBattle} from '../web/src/utils/main20.js';
+import {markBattleCheckpoint,restoreMarkBattle} from '../web/src/utils/battleCheckpoint.js';
+import {validateSave} from '../web/src/utils/storage.js';
 
 const noEnemy=()=>{};
 function battle(powers=['wing','judge']){
@@ -118,4 +121,32 @@ test('zero release grants skills but not unselected passive king lives',()=>{
  assert.equal(b.lives,0);
  b.hp=b.base.hp*.9;
  assert.equal(playerStats(b).atk,b.base.atk);
+});
+
+test('pre-redesign combatV2 checkpoint keeps legacy authority damage and RNG behavior',()=>{
+ const s=divinityDeveloper(freshDivinity(),2);s.equipped=['wing','judge'];
+ const b=startMainBattle(s,{floor:10,combatV2:true});
+ b.authorityRulesV1=true;
+ actMainBattle(b,'plume',{rng:()=>.99});
+ assert.equal(b.result,null);
+ const record=markBattleCheckpoint(b);
+ assert.equal(record.schema,3);
+ const restored=restoreMarkBattle(record,validateSave);
+ assert.equal(restored.authorityRulesV1,true);
+ assert.equal(restored.enemy.hp,b.enemy.hp);
+ assert.equal(restored.gauge,b.gauge);
+ assert.deepEqual(restored.divine,b.divine);
+});
+test('new versioned checkpoint replays variable-length wing follow-up RNG',()=>{
+ const s=divinityDeveloper(freshDivinity(),5);s.equipped=['wing','judge'];
+ s.flags.stella=true;s.stats.spd=1000;
+ const b=startBattle(s,{mode:'ex',combatV2:true});
+ act(b,'plume',{rng:()=>0,enemyAction:noEnemy});
+ assert.equal(b.result,null);
+ const record=markBattleCheckpoint(b);
+ assert.equal(record.schema,5);
+ assert.ok(record.turns[0].rolls.length>4);
+ const restored=restoreMarkBattle(record,validateSave);
+ assert.equal(restored.enemy.hp,b.enemy.hp);
+ assert.equal(restored.divine.feathers,b.divine.feathers);
 });
