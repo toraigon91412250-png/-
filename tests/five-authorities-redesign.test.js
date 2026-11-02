@@ -36,7 +36,7 @@ test('abyss erosion accelerates and boss stat caps stay independent',()=>{
  assert.ok(Math.abs(b.erosion-.15)<1e-10);
  act(b,'guard',{rng:()=>.99,enemyAction:noEnemy});
  assert.ok(Math.abs(b.erosion-.27)<1e-10);
- b.erosion=.95;
+ b.erosion=.95;b.enemy.base.spd=100;
  const p=enemyStats(b);
  assert.ok(Math.abs(p.hp/b.enemy.base.hp-.6)<1e-10);
  assert.ok(Math.abs(p.atk/b.enemy.base.atk-.7)<1e-10);
@@ -71,7 +71,7 @@ test('judge proof no longer doubles hidden stacks and is refunded only after ver
 test('fallen oath lowers to 25% and uses shortened shared cooldown',()=>{
  const b=battle(['fallen']);
  act(b,'fallenOath',{rng:()=>.99,enemyAction:noEnemy});
- assert.ok(Math.abs(b.hp/b.base.hp-.25)<1e-10);
+ assert.ok(b.hp/b.base.hp>=.25 && b.hp/b.base.hp<=.33+1e-10,'oath sacrifice is followed by at most 8% lifesteal');
  assert.equal(b.cd.authorityShared,2);
 });
 test('fallen finisher is automatic above 1 HP, but never triggers at 1 HP',()=>{
