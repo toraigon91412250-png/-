@@ -120,7 +120,7 @@ export function performDivinityAction(b,action,rng,damageGate){
   if(action==='royalReturn')heal(b,.2);
   log(b,row.name+' 発動');
  }
- if(b.combatV2&&row.power)b.cd.authorityShared=AUTHORITY_CT[row.power]+1;
+ if(b.combatV2&&row.power)b.cd.authorityShared=(redesignedCombat(b)?AUTHORITY_CT[row.power]:row.power==='fallen'?4:AUTHORITY_CT[row.power])+1;
  else b.cd[action]=row.ct+1;
  return true;
 }
