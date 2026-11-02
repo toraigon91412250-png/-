@@ -146,7 +146,7 @@ export function attack(b,action,rng=Math.random,damageGate=null){let p=playerSta
   if(bonus>0&&b.enemy.hp>0){if(damageGate)bonus=damageGate(b,bonus,{action:b.lastAction,landed:true});const applied=Math.min(b.enemy.hp,Math.max(0,bonus));b.enemy.hp-=applied;total+=applied;parts.push(applied);b.events.push({type:'hit',damage:applied,landed:true});combatNotice(b,'hit',{damage:applied,hitIndex:hits+12,landed:true});}
  }
  if(canDrain&&realDealt>0)heal(b,Math.min(.08,realDealt/b.base.hp*.2));
- b.hitLanded=hit;b.lastDamage=total;log(b,`${b.combatV2&&DIV_SKILLS[b.lastAction]?.power?DIV_SKILLS[b.lastAction].name:action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
+ if(newCombat)b.hitLanded=hit;b.lastDamage=total;log(b,`${b.combatV2&&DIV_SKILLS[b.lastAction]?.power?DIV_SKILLS[b.lastAction].name:action==='slash'?'斬撃':action==='ultimate'?'超堕天撃':action==='power'?'破壊の権能':action==='pierce'?'穿羽':action==='volley'?'連羽 ×2':'黒翼・羽弾'} → ${hit?parts.map(x=>x.toLocaleString()).join(' ＋ ')+' ダメージ':'回避された'}`);
  if(hit&&feather&&b.powers.includes('abysswing'))erosion(b,.09);
  if(hit&&strike.heal){heal(b,strike.heal);log(b,'堕天王の権能：最大HP12%回復');}
  if(hit&&strike.erosion){const before=b.erosion;erosion(b,strike.erosion);combatNotice(b,'authorityEffect',{authority:'abyss',text:'追加侵食＋'+Math.round((b.erosion-before)*100)+'%'});log(b,'深淵の権能：追加侵食 '+Math.round((b.erosion-before)*100)+'%');}
@@ -178,8 +178,8 @@ export function enemyTurn(b,guard,rng){if(b.enemy.hp<=0||b.hp<=0)return;
  const stellaEnemyScale=b.mode==='stella'?(b.difficulty==='EXPERT'?1.2:b.difficulty==='NIGHTMARE'?1.4:1):1;
  let raw=b.mode==='stella'?[440,640,880][b.enemy.phase-1]*stellaEnemyScale:e.atk*(b.enemy.phase===2?1.12:b.enemy.phase===3?1.35:1);
  const unmitigatedAttack=b.mode==='stella'?raw:raw*(b.turn%4===0?1.35:1);
- let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});const beforeGuard=d;if(guard)d=Math.max(1,Math.round(d*.3));b.guardPrevented=guard?Math.max(0,beforeGuard-d):0;if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
- b.enemyDamage=Math.floor(dealPlayer(b,d,unmitigatedAttack));b.guardPrevented=0;log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
+ let d=b.mode==='stella'?raw:damage(raw,p.def,{mult:b.turn%4===0?1.35:1});const beforeGuard=d;if(guard)d=Math.max(1,Math.round(d*.3));if(b.combatV2)b.guardPrevented=guard?Math.max(0,beforeGuard-d):0;if(b.build.badge==='C'&&badgeRank(b.build,'C')===3)d*=.92;
+ b.enemyDamage=Math.floor(dealPlayer(b,d,unmitigatedAttack));if(b.combatV2)delete b.guardPrevented;log(b,`敵の${b.turn%4===0?'重撃':'反撃'} → ${Math.floor(d).toLocaleString()}`);
  if(b.powers.includes('kingjudge'))b.stacks.kingjudge=Math.min(2,(b.stacks.kingjudge||0)+1);
  if(b.hp>0&&!b.noPressure&&b.enemy.phase>=2&&b.turn%4===0){b.statuses.pressure=3;log(b,'重圧：攻撃力低下');}
  if(b.hp>0&&b.mode==='ex'&&b.enemy.phase===2&&b.turn%5===0){b.statuses.seal=2;log(b,'第二形態：権能封印');}
