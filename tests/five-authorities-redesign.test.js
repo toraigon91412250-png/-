@@ -159,7 +159,7 @@ test('pre-redesign fallen oath keeps the original HP sacrifice and shared cooldo
  assert.equal(b.cd.authorityShared,4);
 });
 
-test('deterministic EX combat survey across five authorities and levels 1, 3, 5',()=>{
+test('deterministic EX combat survey across five authority ranks at player Lv61',()=>{
  const results=[];
  const choices={
   wing:['thousandWings','plume','slash'],
@@ -169,7 +169,7 @@ test('deterministic EX combat survey across five authorities and levels 1, 3, 5'
   king:['royalReturn','royalGuard','slash']
  };
  for(const id of Object.keys(choices))for(const level of [1,3,5]){
-  const s=divinityDeveloper(freshDivinity(),level);s.equipped=[id];
+  const s=divinityDeveloper(freshDivinity(),5);s.powers[id]=level;s.equipped=[id];
   const b=startBattle(s,{mode:'ex',combatV2:true,test:true});
   const initialHP=b.enemy.hp;
   for(let turn=0;turn<12&&!b.result;turn++){
@@ -181,8 +181,36 @@ test('deterministic EX combat survey across five authorities and levels 1, 3, 5'
    assert.ok(b.enemy.hp>=0&&b.lives>=0,id+' '+level+' negative state');
    assert.ok(b.enemy.hp<=enemyStats(b).hp+1e-6,id+' '+level+' invalid enemy max HP');
   }
-  results.push({authority:id,level,turns:b.turn,result:b.result||'ongoing',damage:Math.round(initialHP-b.enemy.hp),playerHP:Math.round(b.hp/b.base.hp*1000)/10});
+  results.push({authority:id,authorityLevel:level,playerLevel:s.level,turns:b.turn,result:b.result||'ongoing',damage:Math.round(initialHP-b.enemy.hp),playerHP:Math.round(b.hp/b.base.hp*1000)/10});
  }
  assert.equal(results.length,15);
  console.log('AUTHORITY_EX_12_TURN_SURVEY',JSON.stringify(results));
+});
+
+test('two-slot representative EX combat scenarios progress without softlocks',()=>{
+ const pairs=[['wing','fallen'],['abyss','king'],['wing','judge'],['fallen','king'],['abyss','judge']];
+ const choices={
+  wing:['thousandWings','plume'],
+  abyss:['abyssEnd','abyssTide'],
+  fallen:['fallenEnd','fallenOath'],
+  judge:['judgment','verdict'],
+  king:['royalReturn','royalGuard']
+ };
+ const rows=[];
+ for(const pair of pairs){
+  const s=divinityDeveloper(freshDivinity(),5);s.equipped=pair;
+  const b=startBattle(s,{mode:'ex',combatV2:true,test:true});
+  const initial=b.enemy.hp;let playerTurns=0;
+  while(!b.result&&playerTurns<12){
+   const candidates=b.statuses.stun?['wait']:[...choices[pair[playerTurns%2]],...choices[pair[(playerTurns+1)%2]],'slash','guard'];
+   const action=candidates.find(x=>available(b,x)===null);
+   assert.ok(action,'no legal action for '+pair.join('+'));
+   act(b,action,{rng:()=>.9});playerTurns++;
+   assert.ok(Number.isFinite(b.hp)&&Number.isFinite(b.enemy.hp));
+   assert.ok(b.hp>=0&&b.enemy.hp>=0,'negative HP');
+  }
+  rows.push({pair:pair.join('+'),playerLevel:s.level,playerTurns,result:b.result||'ongoing',damage:Math.round(initial-b.enemy.hp),playerHP:Math.round(b.hp/b.base.hp*1000)/10});
+ }
+ assert.equal(rows.length,pairs.length);
+ console.log('AUTHORITY_EX_TWO_SLOT_SURVEY',JSON.stringify(rows));
 });
