@@ -158,3 +158,31 @@ test('pre-redesign fallen oath keeps the original HP sacrifice and shared cooldo
  assert.ok(Math.abs(b.hp/b.base.hp-.45)<1e-10);
  assert.equal(b.cd.authorityShared,4);
 });
+
+test('deterministic EX combat survey across five authorities and levels 1, 3, 5',()=>{
+ const results=[];
+ const choices={
+  wing:['thousandWings','plume','slash'],
+  abyss:['abyssEnd','abyssTide','slash'],
+  fallen:['fallenEnd','fallenOath','slash'],
+  judge:['judgment','verdict','slash'],
+  king:['royalReturn','royalGuard','slash']
+ };
+ for(const id of Object.keys(choices))for(const level of [1,3,5]){
+  const s=divinityDeveloper(freshDivinity(),level);s.equipped=[id];
+  const b=startBattle(s,{mode:'ex',combatV2:true,test:true});
+  const initialHP=b.enemy.hp;
+  for(let turn=0;turn<12&&!b.result;turn++){
+   const candidates=b.statuses.stun?['wait']:(id==='fallen'&&b.hp/b.base.hp>.25?['fallenOath','slash']:id==='judge'&&divBattleState(b).proof<2?['slash']:choices[id]);
+   const action=candidates.find(x=>available(b,x)===null) || 'slash';
+   assert.equal(available(b,action),null,id+' '+level+' '+action);
+   act(b,action,{rng:()=>.9});
+   assert.ok(Number.isFinite(b.hp)&&Number.isFinite(b.enemy.hp),id+' '+level+' nonfinite HP');
+   assert.ok(b.enemy.hp>=0&&b.lives>=0,id+' '+level+' negative state');
+   assert.ok(b.enemy.hp<=enemyStats(b).hp+1e-6,id+' '+level+' invalid enemy max HP');
+  }
+  results.push({authority:id,level,turns:b.turn,result:b.result||'ongoing',damage:Math.round(initialHP-b.enemy.hp),playerHP:Math.round(b.hp/b.base.hp*1000)/10});
+ }
+ assert.equal(results.length,15);
+ console.log('AUTHORITY_EX_12_TURN_SURVEY',JSON.stringify(results));
+});
