@@ -8,7 +8,7 @@ import {combatNotice} from './combatObservation.js';
 export const isDivinityBattle=b=>b?.character==='irena'&&hasDivinity(b.build);
 const DIV_LIVES={king:5,god:4,kingwing:7,kingjudge:6,abyssking:6};
 export const AUTHORITY_CT=Object.freeze({wing:2,abyss:3,king:3,judge:4,fallen:2});
-export function divBattleState(b){return b.divine ||= {lifePools:{...DIV_LIVES},feathers:0,proof:0,lastAttack:null,lastPower:null,guarded:false,counter:0,counterStored:0,shield:0,revived:false,unified:0,links:0};}
+export function divBattleState(b){return b.divine ||= {lifePools:{...DIV_LIVES},feathers:0,proof:0,lastAttack:null,lastPower:null,guarded:false,counter:0,shield:0,revived:false,unified:0,links:0};}
 // Zero release unlocks skills without granting five simultaneous passive sets.
 export const passivePowerIds=b=>b?.combatV2&&b?.divine?.unified?(b.divine.savedPowers||[]):(b?.powers||[]);
 export const hasPassive=(b,id)=>passivePowerIds(b).includes(id);
@@ -67,7 +67,7 @@ export function divinityIncoming(b,amount,unmitigatedAttack=amount){
 export function divinityBefore(b,action){
  if(!isDivinityBattle(b))return;const d=divBattleState(b);d.guardAction=action==='guard'||divinityIsGuard(b,action);d.freshUnified=false;
  if(d.resonance){d.resonance.lastIncoming=0;d.resonance.lastIncomingPower=0;}
- d.preventedThisGuard=0;
+ if(b.combatV2)d.preventedThisGuard=0;
  if(action==='royalGuard'||action==='mantle')d.shield=Math.max(d.shield,playerStats(b).hp*(action==='royalGuard'&&divPowerLevel(b,'king')>=2?.35:.25));
  if(d.guardAction&&b.build.divinity.branches.king==='bastion'&&divHasPower(b,'king'))d.shield=Math.max(d.shield,playerStats(b).hp*.15);
  if(action==='fallenOath'){b.hp=Math.min(b.hp,b.base.hp*(b.combatV2?.25:.45));if(divPowerLevel(b,'fallen')>=2)b.gauge=Math.min(100,b.gauge+15);}
@@ -128,7 +128,7 @@ export function divinityAfter(b,action){
  registerCooperationAction(b,action);d.line=cooperationDialogue(b);
  if(guard){
   d.guarded=true;if(b.combatV2)d.lastAttack=null;if(hasPassive(b,'wing'))d.feathers=Math.min(5,d.feathers+(divPowerLevel(b,'wing')>=2?2:1)+(action==='mantle'?1:0));
-  if(hasPassive(b,'king')&&(d.preventedThisGuard||0)>0){d.counter=Math.min(2,d.counter+1);d.counterStored=(d.counterStored||0)+d.preventedThisGuard;}
+  if(b.combatV2){if(hasPassive(b,'king')&&(d.preventedThisGuard||0)>0){d.counter=Math.min(2,d.counter+1);d.counterStored=Math.min((d.counterStored||0)+d.preventedThisGuard,playerStats(b).atk*2,b.enemy.base.hp*.05);}}else if(divHasPower(b,'king'))d.counter=Math.min(2,d.counter+1);
   if(hasPassive(b,'wing')&&b.build.divinity.branches.wing==='shelter'){heal(b,.12);d.feathers=Math.min(5,d.feathers+1);}
  }else if(b.lastDamage>0){
   if(hasPassive(b,'wing')&&!['plume','thousandWings'].includes(action))d.feathers=Math.min(5,d.feathers+1);
@@ -136,7 +136,7 @@ export function divinityAfter(b,action){
   d.lastAttack=action;
  }
  if(b.combatV2&&d.judgePending){d.proof=b.hitLanded?1:2;d.judgePending=false;}
- d.lastPlayerGuard=guard;
+ if(b.combatV2)d.lastPlayerGuard=guard;
  if(d.unified&&!d.freshUnified){d.unified--;if(!d.unified){b.powers=d.savedPowers;syncDivinityLives(b);b.buffs=b.buffs.filter(x=>x.id!=='divineUnified');delete d.savedPowers;log(b,'神格解放が静まる。取り戻した記憶は残る。');}}
  afterResonanceTurn(b,action,{playerStats,enemyStats,damage,heal,log,combatNotice});
 }
