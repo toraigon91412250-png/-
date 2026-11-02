@@ -24,7 +24,7 @@ export const DIV_SKILLS={
  mantle:{name:'黒翼・羽衣',power:'wing',level:3,ct:3,guard:true,text:'防御＋障壁25%・羽を2枚蓄積 / CT3'},
  abyssTide:{name:'深淵・還蝕',power:'abyss',level:1,ct:3,base:'power',text:'侵食＋12%・敵弱体化。予告された侵食を逆用 / CT3'},
  abyssEnd:{name:'深淵・無底',power:'abyss',level:5,ct:4,base:'power',text:'侵食を保ったまま、その深さで威力上昇 / CT4'},
- fallenOath:{name:'堕天・誓約',power:'fallen',level:1,ct:3,base:'power',text:'HPを最大値の45%まで捧げて攻撃 / CT3'},
+ fallenOath:{name:'堕天・誓約',power:'fallen',level:1,ct:3,base:'power',text:'HPを最大値の25%まで捧げて攻撃 / CT2'},
  fallenEnd:{name:'堕天・逆天',power:'fallen',level:5,ct:4,base:'ultimate',text:'HP25%以下で使用。ゲージ不要の逆転奥義 / CT4'},
  verdict:{name:'断罪・刻印',power:'judge',level:1,ct:2,base:'power',text:'異なる攻撃2回で証を蓄積、決定打で消費 / CT2'},
  judgment:{name:'断罪・終審',power:'judge',level:5,ct:4,base:'ultimate',text:'証2つを消費、防御貫通の終審 / CT4'},
