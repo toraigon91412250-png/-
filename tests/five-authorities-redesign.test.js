@@ -214,3 +214,15 @@ test('two-slot representative EX combat scenarios progress without softlocks',()
  assert.equal(rows.length,pairs.length);
  console.log('AUTHORITY_EX_TWO_SLOT_SURVEY',JSON.stringify(rows));
 });
+
+test('wing chained hits exclude the judgment max-HP percentage bonus',()=>{
+ const b=battle(['wing','judge']);
+ divBattleState(b).proof=2;
+ const hpBefore=b.enemy.hp;
+ act(b,'verdict',{rng:()=>.99,enemyAction:noEnemy});
+ const hits=b.events.filter(e=>e.type==='hit');
+ assert.equal(hits.length,2);
+ const percentExtra=Math.floor(hpBefore*.2);
+ assert.ok(hits[0].damage>percentExtra,'execution percent bonus should be present on original hit');
+ assert.equal(hits[1].damage,Math.floor((hits[0].damage-percentExtra)*.3));
+});
