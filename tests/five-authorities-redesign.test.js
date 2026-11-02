@@ -141,7 +141,7 @@ test('new versioned checkpoint replays variable-length wing follow-up RNG',()=>{
  const s=divinityDeveloper(freshDivinity(),5);s.equipped=['wing','judge'];
  s.flags.stella=true;s.stats.spd=1000;
  const b=startBattle(s,{mode:'ex',combatV2:true});
- act(b,'plume',{rng:()=>0,enemyAction:noEnemy});
+ act(b,'plume',{rng:()=>0});
  assert.equal(b.result,null);
  const record=markBattleCheckpoint(b);
  assert.equal(record.schema,5);
