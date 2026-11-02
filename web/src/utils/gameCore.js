@@ -1,6 +1,6 @@
 import {addSummonWinReward} from './resonanceSummon.js';
 import {grantCooperationBattle} from './divinityCooperation.js';
-import {divinityAvailable,divinityIsGuard,divinityIncoming,divinityBefore,divinityStrikeProfile,performDivinityAction,divinityAfter,spendDivinityLife,divinityErosionCap} from './divinityCombat.js';
+import {divinityAvailable,divinityIsGuard,divinityIncoming,divinityBefore,divinityStrikeProfile,performDivinityAction,divinityAfter,spendDivinityLife,divinityErosionCap,passivePowerIds,hasPassive,divBattleState,authorityBoss} from './divinityCombat.js';
 import {recordSpecialBattleAction} from './battleHistory.js';
 import {authorityStrikeEffect} from './authorityStrike.js';
 import {combatNotice} from './combatObservation.js';
@@ -47,11 +47,13 @@ export function startBattle(s,{mode='normal',floor=s.floor,difficulty='NORMAL',t
 }
 export function log(b,text){b.log.push(text);if(b.log.length>100)b.log.shift();}
 export function fallenMultiplier(r){return r<=.1?3.8:r<=.25?3.1:r<=.5?2.4:1;}
+export const fallenStage=r=>r>.75?[.6,.7]:r>.5?[.8,.85]:r>.25?[1,1]:r>.15?[1.8,1.1]:r>.1?[2.7,1.15]:[3.8,1.25];
 export function playerStats(b){const v={...b.base},ratio=b.hp/b.base.hp,p=b.powers;
- let all=1;if(p.includes('fallen')||p.includes('fallenjudge')||p.includes('abyssfallen'))all=Math.max(all,fallenMultiplier(ratio));
+ let all=1;if(!b.combatV2&&(p.includes('fallen')||p.includes('fallenjudge')||p.includes('abyssfallen')))all=Math.max(all,fallenMultiplier(ratio));
  if(p.includes('fallenwing'))all=Math.max(all,ratio<=.1?7.6:ratio<=.25?6.2:ratio<=.5?4.8:1);
  if(p.includes('god'))all=Math.max(all,...b.buffs.filter(x=>x.id.startsWith('godlow')).map(x=>x.multiplier||1));
  for(const k in v)v[k]*=all;
+ if(b.combatV2&&hasPassive(b,'fallen')){const [off,def]=fallenStage(ratio);v.atk*=off;v.spd*=off;v.def*=def;}
  if(p.includes('abyssking')){v.atk*=1+b.erosion*.7;v.def*=1.3+Math.min(.75,b.erosion);}
  if(p.includes('abyssfallen'))v.atk*=1+b.erosion;
  for(const x of b.buffs)for(const [k,n] of Object.entries(x.mul||{}))v[k]*=n;
@@ -60,26 +62,41 @@ export function playerStats(b){const v={...b.base},ratio=b.hp/b.base.hp,p=b.powe
  for(const k in v)v[k]=clamp(v[k],1,1e15);
  return {...v,current:clamp(b.hp/b.base.hp*v.hp,0,v.hp),ratio};
 }
-export function enemyStats(b){const factor=Math.max(.05,1-b.erosion),v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*factor)]));const resonanceFactor=Math.max(.05,1-(b.enemy.resonanceCorrosion||0));for(const k of ['atk','def','spd'])v[k]*=resonanceFactor;for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
+export function enemyStats(b){const boss=b.combatV2&&authorityBoss(b),erosion=b.erosion||0;const limits=boss?{hp:.4,atk:.3,def:.7,spd:.7}:{hp:.95,atk:.95,def:.95,spd:.95};const v=Object.fromEntries(Object.entries(b.enemy.base).map(([k,n])=>[k,Math.max(1,n*(1-Math.min(erosion,limits[k]??.95)))]));const resonanceFactor=Math.max(.05,1-(b.enemy.resonanceCorrosion||0));for(const k of ['atk','def','spd'])v[k]*=b.combatV2?Math.min(1,resonanceFactor/Math.max(.05,1-Math.min(erosion,limits[k]))):resonanceFactor;for(const x of b.enemy.buffs)for(const [k,n]of Object.entries(x.mul))v[k]*=n;if(b.ignoreDefense)v.def=0;return v;}
 export function damage(atk,def,{mult=1,ignore=0,final=1,extra=0,minimum=1}={}){const safe=(v,max=1e15)=>Number.isNaN(v)?0:Math.max(0,Math.min(max,v));const base=Math.max(1,safe(atk)*safe(mult,1e12)-safe(def)*(1-clamp(ignore,0,1)));return Math.floor(Math.min(1e15,Math.max(safe(minimum),base*safe(final,1e12)+safe(extra))));}
 export function buff(b,id,duration,mul={},extra={}){b.buffs=b.buffs.filter(x=>x.id!==id);b.buffs.push({id,remaining:duration,mul,...extra});}
-export function dealPlayer(b,amount,unmitigatedAttack=amount){amount=divinityIncoming(b,amount,unmitigatedAttack);const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');combatNotice(b,'incomingHit',{damage:0});return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;if(lethal){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}
+export function dealPlayer(b,amount,unmitigatedAttack=amount){amount=divinityIncoming(b,amount,unmitigatedAttack);const p=playerStats(b);if(b.statuses.invulnerable){log(b,'不滅：ダメージを完全に無効化');combatNotice(b,'incomingHit',{damage:0});return 0;}amount=reduceKingMarkHit(b,amount);let actual=amount,kingEndured=false;const lethal=p.current<=amount;let fallenEndured=false;
+ if(lethal&&b.combatV2&&hasPassive(b,'fallen')&&!divBattleState(b).fallenEndured){const state=divBattleState(b);state.fallenEndured=true;state.fallenEmpowered=true;state.fallenOneLock=true;actual=p.current-1;fallenEndured=true;log(b,'不屈の堕天：HP1で耐え、次の堕天技を強化');}
+ if(lethal&&!fallenEndured){if(b.powers.includes('god')){const ratio=p.ratio;const threshold=[.5,.25,.05].find(x=>ratio<=x&&!b.godThresholds.includes(x));if(threshold!==undefined){b.godThresholds.push(threshold);actual=p.current-1;log(b,'堕天の神：段階耐性');}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`致死耐性 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}else if(b.lives>0){b.lives--;spendDivinityLife(b);kingEndured=b.powers.includes('king');actual=p.current-1;log(b,`堕天王：HP1で耐えた / 残り${b.lives}回`);}else if(b.markLife){b.markLife--;actual=p.current-1;b.used.endure=true;markUsed(b,'endure');log(b,'不屈の印：HP1で耐えた');}else{b.hp=0;combatNotice(b,'incomingHit',{damage:Math.floor(amount)});return amount;}}
  b.hp=Math.max(0,b.hp-actual*b.base.hp/p.hp);if(lethal){b.hp=1e-9;const newMax=playerStats(b).hp;b.hp=b.base.hp/newMax;}b.used.low ||= b.hp/b.base.hp<=.1;combatNotice(b,'incomingHit',{damage:Math.floor(actual)});const beforeMarkHeal=b.hp;if(b.combatV2&&kingEndured){b.used.kingEndured=true;combatNotice(b,'kingEndure',{remaining:b.lives});}triggerKingMark(b,kingEndured);if(b.hp!==beforeMarkHeal)combatNotice(b,'heal',{target:'player'});return actual;
 }
 export function heal(b,fraction){b.hp=Math.min(b.base.hp,b.hp+b.base.hp*fraction);combatNotice(b,'heal',{target:'player'});}
 function markUsed(b,id){if(b.marks.includes(id)&&!b.used.marks.includes(id))b.used.marks.push(id);}
 function tickMap(map){for(const k in map){map[k]--;if(map[k]<=0)delete map[k];}}
 function erosion(b,amount){const before=b.erosion,maxBefore=enemyStats(b).hp;b.erosion=clamp(b.erosion+amount,0,divinityErosionCap(b));b.enemy.hp=Math.min(b.enemy.hp,enemyStats(b).hp);combatNotice(b,'erosion',{before,after:b.erosion,maxBefore,maxAfter:enemyStats(b).hp});}
-function passiveStart(b){if(b.character!=='irena')return;const p=b.powers;if(p.some(x=>['abyss','abyssfallen','abyssking','abysswing','abyssjudge'].includes(x)))erosion(b,p.includes('abyss')?.06:.09);
+function passiveStart(b){if(b.character!=='irena')return;const p=passivePowerIds(b);if(p.some(x=>['abyss','abyssfallen','abyssking','abysswing','abyssjudge'].includes(x))){let amount=p.includes('abyss')?.06:.09;if(b.combatV2&&p.includes('abyss')){const d=divBattleState(b);const n=d.abyssActiveTurns||0;amount=n===0?.06:n===1?.09:.12;d.abyssActiveTurns=n+1;}erosion(b,amount);}
  if(p.includes('god')){const r=b.hp/b.base.hp,m=r<=.05?4:r<=.25?3:r<=.5?2:1;if(m>1)buff(b,'godlow',2,{}, {multiplier:m});}
  if(p.includes('star'))heal(b,.05);
  if(b.marks.includes('endure'))markUsed(b,'endure');
+}
+function fallenFinisher(b,damageGate){
+ if(!b.combatV2||b.character!=='irena'||b.hp<=0||b.enemy.hp<=0||!hasPassive(b,'fallen'))return;
+ const d=divBattleState(b),ratio=b.hp/b.base.hp,realHp=playerStats(b).current;
+ if(ratio>.05){d.fallenOneLock=false;return;}
+ if(realHp<=1.000001){d.fallenOneLock=true;return;}
+ if(d.finisherUsed||d.fallenOneLock||d.lastPlayerGuard)return;
+ d.finisherUsed=true;const boss=authorityBoss(b);let amount=boss?Math.floor(b.enemy.base.hp*.15):b.enemy.hp;
+ if(damageGate)amount=damageGate(b,amount,{action:'fallenFinisher',landed:true});
+ const applied=Math.min(b.enemy.hp,Math.max(0,amount));b.enemy.hp-=applied;
+ b.events.push({type:'fallenFinisher',damage:applied,boss});combatNotice(b,'hit',{damage:applied,landed:true,hitIndex:0});
+ log(b,'堕天・終局覚醒：'+Math.floor(applied).toLocaleString()+'ダメージ');
 }
 export function stage(gauge){return Math.abs(gauge)>=100?3:Math.abs(gauge)>=60?2:Math.abs(gauge)>=30?1:0;}
 export function available(b,action,route){if(b.result)return '戦闘終了';if(b.cd[action]>0)return `CT ${b.cd[action]}`;
  if(b.statuses.stun&&action!=='wait')return '行動不能：待機してください';
  if(b.combatV2&&b.character==='irena'){
-  if(['feather','pierce','volley','power','ultimate'].includes(action)||action==='slash'&&b.powers.length)return '新戦闘では権能専用技を使用してください';
+  if(hasPassive(b,'fallen')&&b.hp/b.base.hp<=.15&&(action==='guard'||DIV_SKILLS[action]?.guard))return '堕天：HP15%以下では防御不可';
+  if(['feather','pierce','volley','power','ultimate'].includes(action))return '新戦闘では権能専用技を使用してください';
  }
  if(['slash','guard','wait'].includes(action))return null;
  if(b.statuses.seal&&!(action==='purify'&&b.build.divinity?.schema===1))return '封印中：通常攻撃か防御を選択';
