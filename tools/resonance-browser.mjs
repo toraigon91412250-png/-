@@ -66,7 +66,7 @@ try{
  await page.waitForFunction(()=>document.documentElement.dataset.combatBusy==='false');
  const hpBeforeReload=await page.locator('.div-hp-enemy .div-hp-value').textContent();
  const savedBattle=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)),SAVE_KEY);
- if(savedBattle.markBattle?.schema!==4||savedBattle.markBattle.turns.length!==1)throw Error('Resonance trial turn was not checkpointed');
+ if(savedBattle.markBattle?.schema!==6||savedBattle.markBattle.turns.length!==1)throw Error('Resonance trial turn was not checkpointed');
  await page.reload();
  await page.getByRole('button',{name:/戦闘に戻る/}).click();
  await page.getByText('黒翼を狩る白騎士').first().waitFor();
