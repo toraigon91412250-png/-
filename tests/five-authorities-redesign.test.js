@@ -150,3 +150,11 @@ test('new versioned checkpoint replays variable-length wing follow-up RNG',()=>{
  assert.equal(restored.enemy.hp,b.enemy.hp);
  assert.equal(restored.divine.feathers,b.divine.feathers);
 });
+
+test('pre-redesign fallen oath keeps the original HP sacrifice and shared cooldown',()=>{
+ const b=battle(['fallen']);
+ b.authorityRulesV1=true;
+ act(b,'fallenOath',{rng:()=>.99,enemyAction:noEnemy});
+ assert.ok(Math.abs(b.hp/b.base.hp-.45)<1e-10);
+ assert.equal(b.cd.authorityShared,4);
+});
