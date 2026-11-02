@@ -12,17 +12,17 @@ export function markBattleCheckpoint(b){
  if(!b||b.test||b.result||b.lab20||b.trial&&b.trial.kind!=='resonance20'||b.experiment||b.campaign&&!b.main20)return null;
  if(b.trial?.kind==='resonance20'){
   const build={...b.build};delete build.markBattle;
-  return {schema:4,mode:'resonance20',floor:b.trial.floor,...(b.combatV2?{combatV2:true}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),build:clone(build),turns:clone(b.replay||[])};
+  return {schema:b.combatV2?6:4,mode:'resonance20',floor:b.trial.floor,...(b.combatV2?{combatV2:true}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),build:clone(build),turns:clone(b.replay||[])};
  }
  const legacyEligible=b.build.divinity?.schema!==1&&b.character==='irena'&&b.marks.some(id=>['abyssmark','wind','iron','fire','moon','crown','life'].includes(id));
  const build={...b.build};delete build.markBattle;
- return {schema:legacyEligible?(b.main20Rules==='B1'?2:1):3,...(b.combatV2?{combatV2:true}:{}),...(b.main20Rules==='B1'?{rules:'B1'}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),mode:b.mode,floor:b.floor,difficulty:b.difficulty,build:clone(build),turns:clone(b.character==='irena'?(b.replay||[]):specialBattleActions(b))};
+ return {schema:b.combatV2?5:legacyEligible?(b.main20Rules==='B1'?2:1):3,...(b.combatV2?{combatV2:true}:{}),...(b.main20Rules==='B1'?{rules:'B1'}:{}),...(authorityStrikeCurrent(b)?{authorityStrike:'A1'}:{}),mode:b.mode,floor:b.floor,difficulty:b.difficulty,build:clone(build),turns:clone(b.character==='irena'?(b.replay||[]):specialBattleActions(b))};
 }
 export function restoreMarkBattle(record,validateBuild){
  if(record==null)return null;
  const fail=()=>{throw Error('刻印戦闘の保存データが不正です。元のJSONを保持してください');};
- const resonanceTrial=record.schema===4;
- if(![1,2,3,4].includes(record.schema)||!(resonanceTrial?record.mode==='resonance20':(record.schema===3?['normal','ex','god','stella','final']:['normal','ex','god']).includes(record.mode))||!Array.isArray(record.turns)||!record.build||typeof record.build!=='object'||Object.hasOwn(record.build,'state'))return fail();
+ const resonanceTrial=[4,6].includes(record.schema);
+ if(![1,2,3,4,5,6].includes(record.schema)||!(resonanceTrial?record.mode==='resonance20':([3,5].includes(record.schema)?['normal','ex','god','stella','final']:['normal','ex','god']).includes(record.mode))||!Array.isArray(record.turns)||!record.build||typeof record.build!=='object'||Object.hasOwn(record.build,'state'))return fail();
  if(record.authorityStrike!==undefined&&record.authorityStrike!=='A1')return fail();
  if(record.combatV2!==undefined&&(record.combatV2!==true||record.schema<3))return fail();
  const build={...record.build};delete build.markBattle;const s=validateBuild(build);
@@ -32,7 +32,7 @@ export function restoreMarkBattle(record,validateBuild){
  if(record.authorityStrike!=='A1')legacyAuthorityStrike(b);
  if(!markBattleCheckpoint(b))return fail();
  for(const row of record.turns){
-  if(!row||!(record.schema>=3?[...Object.keys(DIV_SKILLS),...RESONANCES.map(row=>'res_'+row.id),'slash','feather','pierce','volley','power','ultimate','guard','wait','divine','fallen','immortal','rebirth','meteor','godspeed','omnipotent','dominion','annihilate','transcend','grasp','erosion','release','sovereignty','genesis','ending']:['slash','feather','pierce','volley','power','ultimate','guard','wait']).includes(row.action)||row.route!==undefined&&!['A','B','C'].includes(row.route)||!Array.isArray(row.rolls)||row.rolls.length>4||row.rolls.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>=1))return fail();
+  if(!row||!(record.schema>=3?[...Object.keys(DIV_SKILLS),...RESONANCES.map(row=>'res_'+row.id),'slash','feather','pierce','volley','power','ultimate','guard','wait','divine','fallen','immortal','rebirth','meteor','godspeed','omnipotent','dominion','annihilate','transcend','grasp','erosion','release','sovereignty','genesis','ending']:['slash','feather','pierce','volley','power','ultimate','guard','wait']).includes(row.action)||row.route!==undefined&&!['A','B','C'].includes(row.route)||!Array.isArray(row.rolls)||row.rolls.length>(record.schema>=5?20:4)||row.rolls.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>=1))return fail();
   let i=0;const options={route:row.route||'A',rng:()=>{if(i>=row.rolls.length)return fail();return row.rolls[i++];}};
   if(resonanceTrial)actResonanceTrial(b,row.action,options);else actMainBattle(b,row.action,options);
   if(i!==row.rolls.length||b.result)return fail();
