@@ -47,6 +47,8 @@ test('redesigned combat groups slash and guard under Basic and keeps full skill 
  assert.deepEqual([...tabHtml.matchAll(/data-action="divGroup" data-id="([^"]+)"/g)].map(m=>m[1]),['basic','wing','judge','system']);
  assert.match(tabHtml,/aria-pressed="true">基本<\/button>/);
  assert.deepEqual(commands(basic),['slash','guard']);
+ assert.match(basic,/<div class="div-v2-caption"><strong>基本<\/strong><span>権能共通CT 0<\/span><\/div>/);
+ assert.match(basic,/<div class="div-command-tabs single-page" aria-label="コマンドページ" aria-hidden="true"><\/div>/);
  assert.match(basic,/class="div-command-info"><summary>効果を見る<\/summary><p>通常攻撃・ゲージ＋26<\/p><\/details>/);
  assert.doesNotMatch(basic,/class="div-command-info open"|<details[^>]* open/);
  const wing=divinityBattleView(save,battle,button,'',0,'',4,'wing');
