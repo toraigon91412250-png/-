@@ -38,6 +38,7 @@ const ART='assets/irena-placeholder.svg';
 const HOME_ART={hero:'assets/home-ui/irena-hero.jpeg',stella:'assets/home-ui/stella.jpeg',kaiser:'assets/home-ui/kaiser.jpeg'};
 const HOME_MASCOT_ART='assets/home-ui/optimized/chibi-wing.webp';
 const CHIBINA_ROOM_BANNER='assets/home-ui/chibina-room-banner.png';
+const CHIBINA_LOADING_ART='assets/home-ui/chibina-loading.webp';
 const CHIBINA_PREFERENCE_KEY='irena-reborn-chibina-room-v1';
 const CHIBINA_PERSONAS=[
  {id:'wing',name:'黒翼',character:'自由・軽快',art:HOME_MASCOT_ART,width:435,height:462,reactionMs:600},
@@ -108,6 +109,28 @@ function mascotGuideLine(persona,target){
  return target?lines[target.kind][persona]:({wing:'今は案内できる目標がないみたい。また一緒に探そう！',judge:'今すぐ向かう目標はない。',fallen:'今は行く先がない。あとで確認しろ。',king:'今は新たに目指す場所がございません。',abyss:'……今は、目標なし。'})[persona];
 }
 function buildChibinaRoomMarkup(){return renderChibinaRoomView(CHIBINA_PERSONAS,chibinaHomeId,pendingChibinaEvent);}
+let chibinaLoading=false,chibinaAssetsReady=null;
+function preloadChibinaAssets(){
+ if(chibinaAssetsReady)return chibinaAssetsReady;
+ const paths=[CHIBINA_LOADING_ART,...CHIBINA_PERSONAS.map(row=>row.art),'assets/home-ui/chibina-flight/wing-back.webp','assets/home-ui/chibina-flight/wing-front.webp','assets/home-ui/chibina-flight/body.webp','assets/home-ui/chibina-flight/daten-left.webp','assets/home-ui/chibina-flight/daten-right.webp','assets/home-ui/chibina-flight/daten-body.webp'];
+ chibinaAssetsReady=Promise.all(paths.map(src=>new Promise(resolve=>{const image=new Image();image.onload=resolve;image.onerror=resolve;image.src=src;if(image.complete)resolve();})));
+ return chibinaAssetsReady;
+}
+const waitMs=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function enterChibinaRoom(){
+ if(chibinaLoading||page==='chibina')return;
+ chibinaLoading=true;const started=performance.now();
+ const overlay=document.createElement('div');overlay.className='chibina-loading-screen is-enter-dip';overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');
+ overlay.innerHTML=`<img class="chibina-loading-art" src="${CHIBINA_LOADING_ART}" alt=""><div class="chibina-loading-shade"></div><div class="chibina-loading-copy"><span class="chibina-loading-spark" aria-hidden="true">✦</span><strong>ちびーなルーム</strong><span>みんなを呼んでいます…</span><i class="chibina-loading-indicator" aria-hidden="true"></i></div>`;
+ document.body.append(overlay);requestAnimationFrame(()=>setTimeout(()=>{overlay.classList.remove('is-enter-dip');overlay.classList.add('is-visible');},65));
+ try{
+  const ready=preloadChibinaAssets();await waitMs(130);await ready;
+  await waitMs(Math.max(0,520-(performance.now()-started)));
+  overlay.classList.add('is-dipping');await waitMs(105);
+  page='chibina';render();$('#app [data-chibina-room]')?.classList.add('chibina-room-entering');
+  overlay.classList.add('is-exiting');await waitMs(190);overlay.remove();
+ }finally{overlay.remove();chibinaLoading=false;}
+}
 function homeCard({title,desc,icon,action,id,tone='gold',art=null,backgroundArt=null,unlocked=true,condition=''}){return `<section class="modecard home-card home-card-${tone} home-card-route-${id} ${art?'home-card-illustrated':''} ${backgroundArt?'home-card-backed':''} ${unlocked?'':'home-card-locked'}">${art||backgroundArt?`<img class="${art?'home-card-art':'home-card-background'}" src="${art||backgroundArt}" alt="${art?esc(title):''}" loading="lazy" decoding="async">`:`<span class="home-card-sigil">${uiIcon(icon,80)}</span>`}<div class="home-card-copy">${!art?uiIcon(icon,27):''}<h3>${title}</h3><p>${unlocked?desc:condition}</p></div>${button(`<span class="home-card-verb">${unlocked?'開く':'未解放'}</span><span class="home-card-arrow">›</span>`,action,id,'home-card-link',!unlocked).replace('<button ',`<button aria-label="${esc(title)}${unlocked?'':'：'+esc(condition)}" `)}</section>`;}
 function resonanceTrialEntry(a){
  if(!hasDivinity(a))return '';
@@ -329,7 +352,7 @@ async function handle(action,id){if(/^(?:lab20(?:Open|Fight|Lobby|Edit|AskReset|
  case 'mascotGuideGo':{const target=mascotGuideTarget(a);if(!target)throw Error('今は案内できる目標がありません');mascotGuideOpen=false;await handle(target.action,target.id);break;}
  case 'chibinaEventTest':{const event=CHIBINA_EVENTS.find(row=>row.id===$('#chibina-event-id')?.value);if(!event)throw Error('イベントIDを選択してください');pendingChibinaEvent=event.id;page='chibina';render();window.scrollTo(0,0);break;}
  case 'chibinaSet':{const persona=CHIBINA_PERSONAS.find(row=>row.id===id);if(!persona)throw Error('ちびキャラが見つかりません');chibinaHomeId=persona.id;let stored=true;try{localStorage.setItem(CHIBINA_PREFERENCE_KEY,persona.id);}catch{stored=false;}page='chibina';render();if(!stored)toast('ホーム表示は変更しましたが、この端末に設定を保存できませんでした。');break;}
- case 'nav':if(id==='raid')throw Error('このモードは削除されました');if(id==='upgrade')tab='overview';page=id;render();window.scrollTo(0,0);break;
+ case 'nav':if(id==='raid')throw Error('このモードは削除されました');if(id==='chibina'){await enterChibinaRoom();break;}if(id==='upgrade')tab='overview';page=id;render();window.scrollTo(0,0);break;
  case 'openupgrade':page='upgrade';tab=id;render();window.scrollTo(0,0);break;
  case 'resonanceSummon':{
   if(battle&&!battle.result)throw Error('戦闘中は召喚できません');

@@ -1391,6 +1391,26 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 @media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-shield{filter:none}}
 
 /* Chibina flight room prototype: full-height safe-area scene and readable manual dialogue. */
+.chibina-loading-screen{position:fixed;inset:0;z-index:9999;overflow:hidden;isolation:isolate;background:#090817;color:#fff3dd;opacity:0;transition:opacity .12s ease,filter .1s linear}
+.chibina-loading-screen.is-enter-dip{opacity:1;transition:opacity .06s linear}
+.chibina-loading-screen.is-visible{opacity:1}
+.chibina-loading-screen.is-enter-dip .chibina-loading-art,.chibina-loading-screen.is-enter-dip .chibina-loading-shade,.chibina-loading-screen.is-enter-dip .chibina-loading-copy{opacity:0}
+.chibina-loading-art,.chibina-loading-shade,.chibina-loading-copy{transition:opacity .12s ease}
+.chibina-loading-screen.is-visible .chibina-loading-art,.chibina-loading-screen.is-visible .chibina-loading-shade,.chibina-loading-screen.is-visible .chibina-loading-copy{opacity:1}
+.chibina-loading-screen.is-dipping{filter:brightness(.07);transition:filter .1s linear}
+.chibina-loading-screen.is-exiting{opacity:0;transition:opacity .18s ease}
+.chibina-loading-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;filter:brightness(.82) saturate(.92)}
+.chibina-loading-shade{position:absolute;inset:0;background:linear-gradient(180deg,#09081770,transparent 25% 52%,#0908172b 72%,#0908179c)}
+.chibina-loading-copy{position:absolute;top:23%;left:12px;right:12px;display:grid;justify-items:center;gap:7px;text-align:center;text-shadow:0 2px 12px #080611,0 0 22px #080611}
+.chibina-loading-copy strong{color:#fff0d2;font:700 clamp(21px,6vw,28px)/1.2 "Yu Mincho",serif;letter-spacing:.08em}
+.chibina-loading-copy>span:not(.chibina-loading-spark){color:#e1d4ea;font-size:13px;letter-spacing:.08em}
+.chibina-loading-spark{color:#f3d28b;font-size:20px;line-height:1;filter:drop-shadow(0 0 7px #f3d28b88)}
+.chibina-loading-indicator{display:block;width:17px;height:17px;margin-top:6px;border:2px solid #f3e5d359;border-top-color:#f3d28b;border-radius:50%;animation:chibina-loading-spin .85s linear infinite}
+.chibina-room-entering{animation:chibina-room-enter .2s ease-out both}
+@keyframes chibina-loading-spin{to{transform:rotate(360deg)}}
+@keyframes chibina-room-enter{from{opacity:.62;filter:brightness(.62)}to{opacity:1;filter:brightness(1)}}
+@media(min-aspect-ratio:4/5){.chibina-loading-art{object-fit:contain}}
+@media(prefers-reduced-motion:reduce){.chibina-loading-screen,.chibina-loading-screen.is-dipping,.chibina-loading-screen.is-exiting{transition-duration:.01ms}.chibina-loading-indicator{animation:none}.chibina-room-entering{animation-duration:.01ms}}
 #app.chibina-live .sidebar,#app.chibina-live .topbar,#app.chibina-live .utility-nav,#app.chibina-live .mobile-nav{display:none!important}
 #app.chibina-live .shell{width:100%!important;height:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important}
 #app.chibina-live .content.chibina-page{width:100%!important;max-width:none!important;height:100%!important;margin:0!important;padding:0!important;overflow:hidden!important}
