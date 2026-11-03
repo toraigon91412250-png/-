@@ -31,3 +31,10 @@ test('equipment and temporary shared-release rows are fully removed',()=>{
  assert.doesNotMatch(view,/div-unified-badge|解放 · \$\{d\.unified\}行動/);
  assert.doesNotMatch(css,/\.div-unified-badge\{/);
 });
+
+test('authority technique names stay on one line and the longest finisher gets room',()=>{
+ assert.match(css,/\.div-commands button>strong\{[^}]*white-space:nowrap/);
+ assert.match(css,/\.div-commands-pair button>strong\{font-size:clamp\(/);
+ assert.match(css,/\.div-command-entry:has\(>button\.div-command-god\)\{grid-column:1\/-1\}/);
+ assert.match(css,/@media\(max-width:360px\)\{\.div-combat \.div-commands button\{grid-template-columns:minmax\(0,1fr\)/);
+});

@@ -1390,6 +1390,21 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield:after{content:'';position:absolute;inset:6px;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:rgba(18,9,35,.2);box-shadow:inset 0 0 20px #cc99ff}
 @media(prefers-reduced-motion:reduce){.div-combat-v2 .div-arena .div-vfx-player .vfx-shield{filter:none}}
 
+/* Refined authority cards: restrained corner filigree and single-line skill names. */
+.div-combat .div-commands button{--div-card-edge:#e0c68f;border-color:color-mix(in srgb,var(--div-card-edge) 74%,#5d5263);box-shadow:inset 0 1px 0 #fff3,inset 0 0 18px #d7b66a12,0 4px 12px #0007}
+.div-combat .div-commands .div-command-guard{--div-card-edge:#8ee5ed}
+.div-combat .div-commands .div-command-feather{--div-card-edge:#d5b5f1}
+.div-combat .div-commands button[data-power="wing"]{--div-card-edge:#d6b8ef}
+.div-combat .div-commands button[data-power="abyss"]{--div-card-edge:#88c9d2}
+.div-combat .div-commands button[data-power="fallen"]{--div-card-edge:#df8b9b}
+.div-combat .div-commands button[data-power="judge"]{--div-card-edge:#dfc28f}
+.div-combat .div-commands button[data-power="king"]{--div-card-edge:#8ed9cc}
+.div-combat .div-commands button::after{inset:4px;border:1px solid #f3ddb22e;border-radius:6px;background:linear-gradient(var(--div-card-edge),var(--div-card-edge)) left top/9px 1px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) left top/1px 9px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) right top/9px 1px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) right top/1px 9px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) left bottom/9px 1px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) left bottom/1px 9px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) right bottom/9px 1px no-repeat,linear-gradient(var(--div-card-edge),var(--div-card-edge)) right bottom/1px 9px no-repeat}
+.div-commands button>strong{min-width:0;max-width:100%;font-size:clamp(12px,3.7vw,15px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:clip;letter-spacing:0}
+.div-commands-pair button>strong{font-size:clamp(13px,3.8vw,15px)}
+.div-command-entry:has(>button.div-command-god){grid-column:1/-1}
+@media(max-width:360px){.div-combat .div-commands button{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;justify-items:center;gap:2px 5px;padding:6px 8px;text-align:center}.div-combat .div-commands button>.div-icon{width:20px;height:20px}.div-combat .div-commands button>strong{justify-self:center;width:100%;text-align:center;font-size:13px}.div-combat .div-commands-pair button{grid-template-columns:minmax(0,1fr);min-height:68px;padding:6px}}
+
 /* Rebuilt combat: defensive impact and king's once-per-hit endurance are visuals only. */
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield-impact{inset:4% 6%;z-index:6;pointer-events:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:radial-gradient(circle,rgba(236,211,255,.3),rgba(145,72,227,.25) 60%,transparent 75%);box-shadow:0 0 20px #bb75f9}
 .div-combat-v2 .div-arena .div-vfx-player .vfx-king-hex{inset:3% 8%;z-index:7;pointer-events:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);background:linear-gradient(150deg,rgba(241,203,98,.65),rgba(12,9,19,.85) 52%,rgba(198,144,54,.8));box-shadow:inset 0 0 30px #e7af60,0 0 25px #e4c06e;filter:drop-shadow(0 0 9px #d4a344)}
