@@ -1365,6 +1365,18 @@ body{background:radial-gradient(ellipse at 95% 0,#26213f60,transparent 48%),var(
 .div-combat-v2 .div-command-dock{gap:4px}
 @media(max-width:360px){.div-combat-v2 .div-v2-tabs button{font-size:11px;padding:4px 2px}}
 
+/* Keep combat actions clear while exposing full skill text on touch screens. */
+.div-command-entry{position:relative;display:grid;grid-template-rows:auto auto;gap:3px;min-width:0;align-content:start}
+.div-command-info{min-width:0;font-size:11px;color:#d9cce8}
+.div-command-info>summary{display:flex;align-items:center;justify-content:center;gap:5px;min-height:28px;padding:3px 6px;border:1px solid #514465;border-radius:6px;background:#171523;color:#d9c9ed;cursor:pointer;list-style:none;text-align:center;touch-action:manipulation}
+.div-command-info>summary::-webkit-details-marker{display:none}
+.div-command-info>summary::after{content:'＋';font-size:10px;color:#d9baf4}
+.div-command-info[open]>summary::after{content:'−'}
+.div-combat .div-command-info>summary:focus-visible{outline:2px solid #fff3cd;outline-offset:2px}
+.div-command-info[open]{z-index:10}
+.div-command-info>p{display:none;margin:0}
+.div-command-info[open]>p{position:absolute;left:0;right:0;bottom:calc(100% + 4px);display:block;max-height:34vh;overflow:auto;padding:9px 10px;border:1px solid #9f83bd;border-radius:8px;background:rgba(15,13,25,.98);box-shadow:0 6px 22px #000b;color:#f4eafa;font-size:12px;line-height:1.5;white-space:normal}
+
 /* Purple hex shield for standard authority defense, scoped to the rebuilt combat screen. */
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield{inset:9% 12% 7%;border:0;border-radius:0;opacity:.87;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:linear-gradient(160deg,rgba(176,113,241,.33),rgba(80,47,139,.21)),repeating-linear-gradient(60deg,rgba(205,160,255,.13) 0px,rgba(205,160,255,.13) 2px,transparent 2px,transparent 17px);box-shadow:inset 0 0 25px #bb81ff,0 0 20px #8738df;filter:drop-shadow(0 0 8px #b36ffb)}
 .div-combat-v2 .div-arena .div-vfx-player .vfx-shield:after{content:'';position:absolute;inset:6px;clip-path:polygon(25% 2%,75% 2%,98% 50%,75% 98%,25% 98%,2% 50%);background:rgba(18,9,35,.2);box-shadow:inset 0 0 20px #cc99ff}

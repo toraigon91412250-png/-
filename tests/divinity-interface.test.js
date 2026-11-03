@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {divinityDeveloper} from '../web/src/utils/divinitySave.js';
 import {startDivinityTrial,actDivinityTrial} from '../web/src/utils/divinityTrials.js';
-import {divBattleState} from '../web/src/utils/divinityCombat.js';
+import {divBattleState,redesignedCombat} from '../web/src/utils/divinityCombat.js';
+import {startBattle} from '../web/src/utils/gameCore.js';
 import {divinityBattleView,divinityCommands,divinityPageSize,divinityStatusText} from '../web/src/components/divinityView.js';
 const button=(text,action,id='',cls='',disabled=false)=>`<button data-action="${action}" data-id="${id}" class="${cls}" ${disabled?'disabled':''}>${text}</button>`;
 const commands=html=>[...html.matchAll(/data-action="divCommand" data-id="([^"]+)"/g)].map(m=>m[1]);
@@ -36,6 +37,23 @@ test('mid-trial awakening and true divinity commands remain reachable through pa
 test('stun and out-of-range pages keep the recovery command accessible',()=>{
  const s=divinityDeveloper({},5),b=startDivinityTrial(s,'infinite');b.statuses.stun=1;
  for(const page of [-20,99])assert.deepEqual(commands(divinityBattleView(s,b,button,'',page)),['wait']);
+});
+
+test('redesigned combat groups slash and guard under Basic and keeps full skill text collapsed',()=>{
+ const save=divinityDeveloper({},5),battle=startBattle(save,{mode:'normal',floor:1,test:true,combatV2:true});
+ divBattleState(battle);const before=structuredClone(battle);assert.equal(redesignedCombat(battle),true);
+ const basic=divinityBattleView(save,battle,button,'');
+ const tabHtml=basic.match(/<div class="div-v2-tabs"[^>]*>(.*?)<\/div>/)?.[1]||'';
+ assert.deepEqual([...tabHtml.matchAll(/data-action="divGroup" data-id="([^"]+)"/g)].map(m=>m[1]),['basic','wing','judge','system']);
+ assert.match(tabHtml,/aria-pressed="true">基本<\/button>/);
+ assert.deepEqual(commands(basic),['slash','guard']);
+ assert.match(basic,/class="div-command-info"><summary>効果を見る<\/summary><p>通常攻撃・ゲージ＋26<\/p><\/details>/);
+ assert.doesNotMatch(basic,/class="div-command-info open"|<details[^>]* open/);
+ const wing=divinityBattleView(save,battle,button,'',0,'',4,'wing');
+ assert.deepEqual(commands(wing),['plume','thousandWings']);assert.match(wing,/羽を全消費。1枚につき威力＋25% \/ 共通CT 2/);
+ const system=divinityBattleView(save,battle,button,'',0,'',4,'system');
+ assert.ok(!commands(system).includes('slash'));assert.ok(!commands(system).includes('guard'));
+ assert.deepEqual(battle,before);
 });
 
 test('state labels distinguish friendly and enemy effects and retain all duration details',()=>{
