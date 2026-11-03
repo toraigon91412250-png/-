@@ -44,8 +44,8 @@ const CHIBINA_PERSONAS=[
  {id:'wing',name:'黒翼',character:'自由・軽快',art:HOME_MASCOT_ART,width:435,height:462,reactionMs:600},
  {id:'judge',name:'断罪',character:'冷静・厳格',art:'assets/home-ui/optimized/chibi-judge.webp',width:435,height:435,reactionMs:500},
  {id:'fallen',name:'堕天',character:'反逆的・活発',art:'assets/home-ui/optimized/chibi-fallen.webp',width:435,height:398,reactionMs:650},
- {id:'king',name:'堕天王',character:'王者の余裕',art:'assets/home-ui/optimized/chibi-king.webp',width:435,height:476,reactionMs:600},
- {id:'abyss',name:'深淵',character:'寡黙・虚無',art:'assets/home-ui/optimized/chibi-abyss.webp',width:435,height:476,reactionMs:700}
+ {id:'king',name:'堕天王',character:'王者の余裕',art:'assets/home-ui/chibina-flight/throne.webp',width:1254,height:1254,reactionMs:600},
+ {id:'abyss',name:'深淵',character:'寡黙・虚無',art:'assets/home-ui/chibina-flight/shinen-cushion.webp',width:1254,height:1254,reactionMs:700}
 ];
 function readChibinaHome(){try{const id=localStorage.getItem(CHIBINA_PREFERENCE_KEY);return CHIBINA_PERSONAS.some(persona=>persona.id===id)?id:'wing';}catch{return 'wing';}}
 let chibinaHomeId=readChibinaHome(),mascotGuideOpen=false,lastMascotTapAt=0,chibinaRoomRuntime=null,pendingChibinaEvent='';
