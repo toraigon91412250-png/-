@@ -19,6 +19,10 @@ const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-l
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ // The latest command-navigation presentation is checked exactly, then reversed
+ // so older immutable audits continue to compare against their original inputs.
+ const basicCommandUi=JSON.parse(fs.readFileSync(new URL('../reports/combat-basic-tab-details/authorized-changes.json',import.meta.url),'utf8'))[key];
+ if(basicCommandUi){assert.equal(sha(bytes),basicCommandUi.afterSHA256,key+' approved basic combat commands and skill details');assert.equal(sha(basicCommandUi.before),basicCommandUi.beforeSHA256,key+' preserved preceding source');bytes=Buffer.from(basicCommandUi.before);}
  // Exactly authorized five-authority gameplay changes: verify every new byte,
  // then restore the immediately preceding main revision for historical audits.
  const authorityV2=JSON.parse(fs.readFileSync(new URL('../reports/authority-redesign-20261102/authorized-changes.json',import.meta.url),'utf8'))[key];
