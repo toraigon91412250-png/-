@@ -1,12 +1,13 @@
 import {tacticalBaselineRead,finaleBaselineRead} from './audit-baseline.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import {createHash} from 'node:crypto';
 import {fresh,powerGrowth,powerUpgradeInfo} from '../web/src/utils/progression.js';import {POWERS,ACHIEVEMENTS} from '../web/src/data/config.js';
+import {suppliedInput} from './supplied-inputs.js';
 const sha=x=>createHash('sha256').update(x).digest('hex');const app=fs.readFileSync('web/src/components/App.js','utf8');
 const art=vm.runInNewContext('('+app.match(/const UPGRADE_ART=(.*?);/)[1]+')');const images=JSON.parse(fs.readFileSync('reports/authority-art-audit2/images.json'));
 const edits=JSON.parse(fs.readFileSync('reports/authority-art-audit2/presentation-changes.json'));
 test('all five supplied images map to the exact intended ID and retain original PNG bytes',()=>{
  const intended={fallen:'堕天',king:'堕天王',judge:'断罪',abyss:'深淵',wing:'黒翼'};
- for(const [id,name]of Object.entries(intended)){const row=images.find(x=>x.id===id);assert.equal(row.name,name);assert.equal(row.original,'../assets-to-integrate/authority-unlock/'+name+'.png');assert.equal(art[id],row.runtime);const bytes=fs.readFileSync(art[id]);assert.deepEqual(bytes,fs.readFileSync(row.original));assert.equal(sha(bytes),row.sha256);assert.equal(bytes.toString('hex',0,8),'89504e470d0a1a0a');assert.equal(bytes.readUInt32BE(16),1672);assert.equal(bytes.readUInt32BE(20),941);}
+ for(const [id,name]of Object.entries(intended)){const row=images.find(x=>x.id===id);assert.equal(row.name,name);assert.equal(row.original,'../assets-to-integrate/authority-unlock/'+name+'.png');assert.equal(art[id],row.runtime);const bytes=fs.readFileSync(art[id]);assert.deepEqual(bytes,fs.readFileSync(suppliedInput(row.original)));assert.equal(sha(bytes),row.sha256);assert.equal(bytes.toString('hex',0,8),'89504e470d0a1a0a');assert.equal(bytes.readUInt32BE(16),1672);assert.equal(bytes.readUInt32BE(20),941);}
 });
 test('image-only App changes and CSS are exactly limited to the five artwork substitutions and contain display',()=>{
  let expected=edits['web/src/components/App.js'].before;

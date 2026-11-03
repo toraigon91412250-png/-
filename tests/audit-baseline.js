@@ -16,9 +16,14 @@ const battleHud=JSON.parse(fs.readFileSync(new URL('../reports/battle-hud-202610
 const battleArtFraming=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-framing/authorized-changes.json',import.meta.url),'utf8'));
 const battleArtOffset=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-offset/authorized-changes.json',import.meta.url),'utf8'));
 const battleArtLower=JSON.parse(fs.readFileSync(new URL('../reports/battle-art-lower/authorized-changes.json',import.meta.url),'utf8'));
+const commandCardArtManifest=JSON.parse(fs.readFileSync(new URL('../reports/command-card-art/authorized-changes.json',import.meta.url),'utf8')).files;
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ // The approved command-card artwork is verified as an exact source snapshot,
+ // then reversed so all older immutable presentation audits remain meaningful.
+ const commandCardArt=commandCardArtManifest[key];
+ if(commandCardArt){assert.equal(sha(bytes),commandCardArt.afterSHA256,key+' approved command-card artwork');assert.equal(sha(commandCardArt.before),commandCardArt.beforeSHA256,key+' preserved pre-artwork source');bytes=Buffer.from(commandCardArt.before);}
  // The latest command-navigation presentation is checked exactly, then reversed
  // so older immutable audits continue to compare against their original inputs.
  const basicCommandUi=JSON.parse(fs.readFileSync(new URL('../reports/combat-basic-tab-details/authorized-changes.json',import.meta.url),'utf8'))[key];
