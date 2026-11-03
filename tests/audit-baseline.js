@@ -20,8 +20,10 @@ const commandCardArtManifest=JSON.parse(fs.readFileSync(new URL('../reports/comm
 const battleCommandCardsManifest=JSON.parse(fs.readFileSync(new URL('../reports/battle-command-cards/authorized-changes.json',import.meta.url),'utf8')).files;
 const combatScreenDensityManifest=JSON.parse(fs.readFileSync(new URL('../reports/combat-screen-density/authorized-changes.json',import.meta.url),'utf8')).files;
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+const chibinaFlyingRoomManifest=JSON.parse(fs.readFileSync(new URL('../reports/chibina-room-flying-v1/authorized-changes.json',import.meta.url),'utf8'));
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const flying=chibinaFlyingRoomManifest[key];if(flying){assert.equal(sha(bytes),flying.afterSHA256,key+' approved chibina flying room');assert.equal(sha(flying.before),flying.beforeSHA256,key+' preserved pre-room source');bytes=Buffer.from(flying.before);}
  // Verify and reverse the latest one-line command-title and card-frame polish.
  const battleCommandCards=battleCommandCardsManifest[key];
  if(battleCommandCards){assert.equal(sha(bytes),battleCommandCards.afterSHA256,key+' approved one-line battle command cards');assert.equal(sha(battleCommandCards.before),battleCommandCards.beforeSHA256,key+' preserved pre-card-polish source');bytes=Buffer.from(battleCommandCards.before);}

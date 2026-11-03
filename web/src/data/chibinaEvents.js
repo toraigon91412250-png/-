@@ -1,0 +1,12477 @@
+// Canonical 220-event script pack. Values are copied from assets/chibina-room/events_220.json.
+export const CHIBINA_EVENTS = [
+  {
+    "id": "CR-001",
+    "title": "隣にいたい",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "黒翼が断罪の近くに来て、断罪が待機している",
+    "animation_proposal": {
+      "motion": "黒翼が軽快に接近。断罪は一瞬だけ黒翼に近づき、すぐ元の距離に戻る",
+      "expression": "黒翼＝明るい笑顔／断罪＝無表情→わずかに目を細める",
+      "afterglow": "二人が数秒間だけ同じ方向を向いて浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ 何してるの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何もしていない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ一緒に遊ぼ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……暇なのか、お前は"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか。なら、付き合ってやる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-002",
+    "title": "言葉の選び方",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "黒翼が高速移動した直後、断罪の近くで停止",
+    "animation_proposal": {
+      "motion": "断罪が黒翼に向き直る。最後に顔をそらし、浮遊速度が少し上がる",
+      "expression": "黒翼＝きょとん→笑顔／断罪＝厳しい目→照れ隠しの横顔",
+      "afterglow": "断罪が離れすぎない速度で横へ移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "黒翼。お前は……"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ん？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……その、無防備すぎる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、そうかな？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……だから、私の近くにいろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "心配してくれてるんだ！ ありがとう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そういうことにしておけ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-003",
+    "title": "今日も戦いに行こう",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "堕天が深淵へ自発的に接近、深淵は低速移動中",
+    "animation_proposal": {
+      "motion": "堕天が一度沈み、急上昇して深淵を追いかける",
+      "expression": "堕天＝期待→落胆→満面の笑み→慌てる／深淵＝眠そう→呆れ",
+      "afterglow": "深淵が横へずれ、堕天が少し遅れて追う"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 戦いに行くぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は面倒"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一戦だけなら"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "本当か！？ よし！ じゃあ三戦だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……帰る"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ま、待てー！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-004",
+    "title": "特別扱い",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "深淵が長く静止中、堕天が近づいて停止",
+    "animation_proposal": {
+      "motion": "堕天が勢いよく近づき、深淵の隣で小刻みに跳ねる",
+      "expression": "堕天＝強気→驚き→得意げ／深淵＝半目のまま",
+      "afterglow": "二人が隣り合って同じ高さで浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 私と一緒に休憩しないか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう休んでる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……隣、空いてるけど"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "！！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "し、仕方ないな！ そこまで言うなら！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何も言ってない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-005",
+    "title": "堕天王の気遣い",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "黒翼と堕天王の接近中、断罪が視界内にいる",
+    "animation_proposal": {
+      "motion": "堕天王が少し後ろに下がり、断罪と黒翼が並ぶ",
+      "expression": "黒翼＝嬉しそう／断罪＝平静から少し満足げ／堕天王＝穏やかな笑顔",
+      "afterglow": "堕天王が静かに見守り、断罪と黒翼が同じ方向へゆっくり動く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王！ ちょっと手伝って！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "もちろん。何をすればいい？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私でもできる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "本当！？ じゃあ断罪、お願い！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。頼りになるな、断罪は"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……当然だ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-006",
+    "title": "面倒な相談",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天王",
+      "堕天"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "深淵が堕天王の近くで止まり、堕天が接近",
+    "animation_proposal": {
+      "motion": "堕天が得意げに飛び回り、堕天王はゆっくりうなずく",
+      "expression": "深淵＝無気力→少し安心／堕天＝得意げ／堕天王＝微笑",
+      "afterglow": "堕天が先導し、深淵は少しだけ姿勢を緩める"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……堕天王。これ、代わりにやって"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "構わないけど、自分でやってみないか？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、私がやるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあお願い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ま、任せろ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……助かる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 当然だ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……ふふ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-007",
+    "title": "静かな時間",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "深淵"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "深淵が長時間ほぼ静止し、周囲の近距離判定内にほかの4人がいない。堕天は同じルーム内の離れた位置から声をかける（5人の常時表示は維持）",
+    "animation_proposal": {
+      "motion": "深淵はほぼ動かず、目を閉じる。堕天は離れた位置から声をかけ、最後に深淵の浮遊高度がわずかに下がる",
+      "expression": "深淵＝眠そう→無表情／離れた堕天は通常表情（画面外扱いにしない）",
+      "afterglow": "深淵は姿勢を変えず静止に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……静か"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "遠くから",
+        "text": "深淵ー！！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……やっぱり面倒"
+      }
+    ],
+    "status": "台本正式採用・未実装",
+    "distant_speakers": [
+      "堕天"
+    ]
+  },
+  {
+    "id": "CR-008",
+    "title": "珍しいお願い",
+    "group": "恋愛A",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "ユーザー提供の原案（台詞を維持）",
+    "trigger_proposal": "断罪と黒翼が長く近くにいて、周囲にほかの3人がいない",
+    "animation_proposal": {
+      "motion": "断罪が先に停止。二人が並んでゆっくり浮遊する",
+      "expression": "黒翼＝素直な笑顔／断罪＝戸惑い→普段より穏やか",
+      "afterglow": "二人の距離が普段より近いまま少し続く"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "どうしたの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今日は、もう少しここにいろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "いいよ！ 何かあった？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……別に。何もない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ一緒にいよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………ありがとう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-009",
+    "title": "急ブレーキ",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が断罪の前を横切って急停止",
+    "animation_proposal": {
+      "motion": "黒翼がぴたりと止まり、断罪が半歩ぶん距離を取って向き直る",
+      "expression": "黒翼＝きょとん→笑顔／断罪＝険しい目→安堵",
+      "afterglow": "断罪が黒翼と速度を合わせて進む"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……急に止まるな。ぶつかるだろうが"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ごめん！ 断罪がいたから！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "理由になっていない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ次はゆっくり近づくね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-010",
+    "title": "迷ったふり",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪が黒翼を追うように進路変更を2回した直後",
+    "animation_proposal": {
+      "motion": "黒翼が振り返り、断罪が少しだけ上昇してごまかす",
+      "expression": "黒翼＝楽しそう／断罪＝平静を装う",
+      "afterglow": "黒翼が先導する形で短く一緒に移動"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪もこっちに来るの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前が何を見つけたのか、気になっただけだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、じゃあ並んで行こう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……勝手にしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やった！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-011",
+    "title": "見つけた目印",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が落とした小さな飾りを探す仕草をし、断罪が近くへ来る",
+    "animation_proposal": {
+      "motion": "黒翼が床近くをきょろきょろ見回し、断罪が少し離れた場所を視線で示す。小物自体の描画は必須にしない",
+      "expression": "黒翼＝困る→明るい笑顔／断罪＝真顔→わずかに安心",
+      "afterglow": "黒翼が嬉しそうに上昇、断罪は短くうなずく"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何を探している"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "落とした飾り！ なかなか見つからなくて"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……あそこにある"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "本当だ！ 見つけてくれてありがとう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……見えただけだ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-012",
+    "title": "一周だけ",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼がルーム端から反対側へ移動したあと断罪へ接近",
+    "animation_proposal": {
+      "motion": "黒翼がくるりと小さく一周、断罪は控えめに後を追う",
+      "expression": "黒翼＝期待／断罪＝渋い顔→少し柔らかい",
+      "afterglow": "黒翼は満足げに一回転、断罪は短く頷く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ねえ断罪！ 一緒に部屋を一周しよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何が楽しいんだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "一緒なら楽しいよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……一周だけだぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 約束！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-013",
+    "title": "褒め方が違う",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼がゆっくり丁寧な旋回に成功した直後",
+    "animation_proposal": {
+      "motion": "断罪が短く頷く。黒翼が嬉しそうに跳ねる",
+      "expression": "黒翼＝得意げ→嬉しい／断罪＝真顔→困惑",
+      "afterglow": "断罪がわずかに首を傾げたまま浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今日はまだ、ましな飛び方だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、褒められた！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……褒めてはいない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、ちゃんと見ててくれたんでしょ？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それは、そうだが"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-014",
+    "title": "目をそらした理由",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "最終監査により旧CR-014の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が断罪の正面に浮き、目を合わせているとき",
+    "animation_proposal": {
+      "motion": "二人が向かい合って止まる。黒翼がバランスを崩しかけると断罪が先に近づき、すぐ元の位置へ",
+      "expression": "黒翼＝真剣→嬉しそう／断罪＝集中→一瞬焦る→平静",
+      "afterglow": "黒翼が笑いながら数センチ浮き、断罪も黙って隣に浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ 目をそらしたら負けの勝負しよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ……始め！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": "姿勢を崩しかける",
+        "text": "……あっ、ちょっと傾いた！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……姿勢を戻せ。危ない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あ！ 今、目をそらしたね！ 私の勝ち！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……倒れそうだっただろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ ありがとう！ 勝った上に助けてもらっちゃった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……勝敗の話はもういい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-015",
+    "title": "伝わらない忠告",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が短時間に何人も手伝い、少し疲れた様子で断罪の近くに来る",
+    "animation_proposal": {
+      "motion": "黒翼が元気に話しながらも少し減速。断罪が立ち止まり、様子をじっと見る",
+      "expression": "黒翼＝笑顔→少し考える／断罪＝厳しい目→穏やかな目元",
+      "afterglow": "黒翼が一度だけ休む。断罪はそばにとどまる"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何でも一人で引き受けるな。疲れるぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、みんなが元気になると嬉しいよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前が疲れたら意味がない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ疲れたときは、断罪に頼ってもいい？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-016",
+    "title": "小さな合図",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "二人が離れた位置から視線を合わせたとき",
+    "animation_proposal": {
+      "motion": "黒翼が手を振り、断罪が遅れて一度だけ手を上げる",
+      "expression": "黒翼＝大きな笑顔／断罪＝気まずそう",
+      "afterglow": "黒翼が嬉しそうに距離を詰め、断罪は逃げずに待つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪ー！ 見えてる？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……見えている"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ手を振って！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……必要なのか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……一回だけだ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-017",
+    "title": "見せたい場所",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が一度離れて戻り、断罪へ嬉しそうに声をかける",
+    "animation_proposal": {
+      "motion": "黒翼が少し離れたところから戻ってきて、断罪の前で止まる。断罪が振り返る",
+      "expression": "黒翼＝期待の笑顔／断罪＝驚く→少し柔らかい目",
+      "afterglow": "黒翼が先導し、断罪がいつもより自然に隣へ並ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ただいま！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ずいぶん早いな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪に見せたい場所、見つけたんだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私に？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 一緒に行こ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……仕方ない。案内しろ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-018",
+    "title": "真似してみた",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪がゆっくり直線移動しているとき",
+    "animation_proposal": {
+      "motion": "黒翼が断罪の直線軌道を真似するが少し遅れ、断罪がさりげなく速度を下げる",
+      "expression": "黒翼＝真剣→嬉しい／断罪＝真顔→少し柔らかい目",
+      "afterglow": "二人が同じ速さで並んで浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪の飛び方ってかっこいいね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私も真似していい？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わあ、同じ速さって意外と難しい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……焦るな。合わせてやる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-019",
+    "title": "心配の理由",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が誰かを助けようとして無理をしそうになり、断罪が止めた直後",
+    "animation_proposal": {
+      "motion": "断罪が強い目で制止する。黒翼が一度立ち止まり、断罪が視線をそらす",
+      "expression": "黒翼＝きょとん→納得／断罪＝険しい目→安堵",
+      "afterglow": "黒翼が少しペースを落とし、断罪は近くで見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前は考えなしに突っ込むな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっと……気をつける！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……怪我をしてからでは遅い"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "心配だったんだね？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうだ。だから止めた"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-020",
+    "title": "秘密の練習",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪が単独で小さく手を動かしているところに黒翼が近づく",
+    "animation_proposal": {
+      "motion": "断罪が手を止め、黒翼が顔をのぞき込む",
+      "expression": "黒翼＝不思議そう→笑顔／断罪＝固まる→目をそらす",
+      "afterglow": "【必須・会話のオチ】黒翼が完全に離れてから、断罪が一度だけ小さく手を振る。この一動作を表示した後に通常動作へ戻す。"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "何の練習してたの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何でもない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "手を振ってた？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……違う。動きを確かめていた"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあまたね！ ばいばい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-021",
+    "title": "半歩の距離",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が断罪のすぐ隣に来て、しばらく同じ高度で浮く",
+    "animation_proposal": {
+      "motion": "断罪が半歩下がりかけて止まり、同じ位置へ戻る",
+      "expression": "黒翼＝穏やかな笑顔／断罪＝無表情→安心",
+      "afterglow": "二人は近い距離のまま低速で漂う"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "このあたり、落ち着くね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪もそう思う？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今は、悪くない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあもう少しいよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-022",
+    "title": "気づかない優先席",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が断罪の進路の空いた側へ寄る",
+    "animation_proposal": {
+      "motion": "断罪が黒翼の通る側を広く空ける。黒翼はくるりと回る",
+      "expression": "黒翼＝満足げ／断罪＝平然",
+      "afterglow": "断罪が黒翼の横に移って同じ速度で飛ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わっ、ここ通りやすい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……邪魔なものはない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪が空けてくれたの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……通るなら早く通れ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ありがと！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-023",
+    "title": "似合わない掛け声",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "最終監査により旧CR-023の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が小さく跳ねて喜び、断罪が近くで見ているとき",
+    "animation_proposal": {
+      "motion": "黒翼が両手を挙げて喜ぶ。断罪はやり方を聞き、控えめに拳を上げる",
+      "expression": "黒翼＝はしゃぐ→期待／断罪＝戸惑い→少し得意げ",
+      "afterglow": "黒翼が満足そうにうなずき、断罪は拳をゆっくり下ろす"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やったー！ うまく曲がれた！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それはよかったな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪も、成功したとき何て言うの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……特に何も"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ一回だけ！ 一緒に「やった！」って！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "声をほんの少し出す",
+        "text": "……やった"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "聞こえた！ すごい、断罪の「やった」だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そんなに珍しいものか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ また聞きたい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……次に何か成功したらな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-024",
+    "title": "何度でも呼ぶ",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が断罪の名前を呼びながら二度接近",
+    "animation_proposal": {
+      "motion": "黒翼が右と左から顔を出し、断罪が視線だけで追う",
+      "expression": "黒翼＝いたずらっぽい笑顔／断罪＝呆れ→微かな笑み",
+      "afterglow": "断罪が声の主へまっすぐ向き直る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……だから、何だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "呼んでみたかっただけ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……用がないなら……いや、もういい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-025",
+    "title": "待っていた理由",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が一度離れて戻ったとき、断罪が同じ場所に残っていて、話しかけるタイミングを待っている",
+    "animation_proposal": {
+      "motion": "黒翼が近づいて停止。断罪は一度ためらってから向き直る",
+      "expression": "黒翼＝驚き→嬉しい／断罪＝平静を装う→少し安堵",
+      "afterglow": "黒翼が喜んで少し跳ね、断罪はその場で少しだけ見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "まだここにいたんだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……伝えたいことがある"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なになに？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……いつも、助かっている"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そんなこと！ いつでも呼んでね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-026",
+    "title": "三歩だけ",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が停止中の深淵に接近",
+    "animation_proposal": {
+      "motion": "堕天が前へ三回小さく跳ね、深淵が一回だけゆっくり動く",
+      "expression": "堕天＝やる気十分／深淵＝眠そう",
+      "afterglow": "深淵が元の位置に戻り、堕天が隣へ合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵、少し動こう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何歩？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "三歩だけだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一歩"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし、じゃあ一歩からだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-027",
+    "title": "誉められ待ち",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵の視界内で勢いよく一回転する",
+    "animation_proposal": {
+      "motion": "堕天が深淵の前でぴたりと止まり、返事を待って上下する",
+      "expression": "堕天＝得意げ→不安→大喜び／深淵＝半目",
+      "afterglow": "堕天がもう一度控えめに回る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "どうだ！ 今の回転！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……見てた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、それで？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……きれいだった"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ 当然だな！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-028",
+    "title": "寝てない",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が目を閉じて長く静止、堕天が近づく",
+    "animation_proposal": {
+      "motion": "堕天が深淵の顔をのぞく。深淵は目だけ開ける",
+      "expression": "堕天＝心配→安堵／深淵＝半目",
+      "afterglow": "堕天が声量を落とし、深淵の横で待つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 寝ているのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……起きてる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら勝負を……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今は静かにして"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……わ、分かった。静かにする"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-029",
+    "title": "勝負の条件",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵に勝負を申し込む移動モーションを取ったとき",
+    "animation_proposal": {
+      "motion": "堕天が拳を握り、深淵は身じろぎせず指を一本立てる",
+      "expression": "堕天＝挑戦的→困惑／深淵＝無表情",
+      "afterglow": "堕天が考え込み、深淵は静かに目を閉じる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 今日こそ私と勝負だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……勝ったら休める？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "当たり前だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……負けても休める？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "えっ……それは……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、もう休む"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-030",
+    "title": "返事ひとつで",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵のそばで二度声をかけたあと",
+    "animation_proposal": {
+      "motion": "堕天がゆっくり沈み、深淵の返事で一気に元へ戻る",
+      "expression": "堕天＝落胆→笑顔／深淵＝淡々",
+      "afterglow": "堕天が深淵と同じ高度を保ち続ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵、聞いてるか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……忙しいのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……聞いてるよ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ なら続けるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……短くね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-031",
+    "title": "楽な道",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が直線移動の途中で止まり、堕天が追いつく",
+    "animation_proposal": {
+      "motion": "深淵が最短ルートへ向きを変え、堕天が大きく回り込む",
+      "expression": "深淵＝平然／堕天＝張り切る→驚き",
+      "afterglow": "堕天が深淵の横に戻って速度を合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私が案内する！ こっちだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……遠回り"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "景色が見られるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……近道がいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか。じゃあ私もそっちだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-032",
+    "title": "一緒なら",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が長時間単独待機し、堕天が遠くから接近",
+    "animation_proposal": {
+      "motion": "深淵がゆっくり一歩だけ寄る。堕天は驚いて空中停止",
+      "expression": "深淵＝小さな微笑／堕天＝驚き→照れ隠し",
+      "afterglow": "二人が近い距離で静かに漂う"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は来ないのかと思った"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、私を待っていたのか！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……少し静かだったから"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ なら来て正解だったな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-033",
+    "title": "空振りの挨拶",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "【ローカル時刻必須】端末の現地時刻が12:00〜14:59で、堕天が深淵の前を通り過ぎて戻る。時刻取得不可・無効時は抽選対象外。",
+    "animation_proposal": {
+      "motion": "堕天が急旋回、深淵は目線だけで追跡",
+      "expression": "堕天＝張り切る→気まずい／深淵＝眠そう",
+      "afterglow": "堕天がゆっくり近づき直す"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ おはよう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう昼"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうだったか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……挨拶は、まあいいけど"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 改めてこんにちはだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-034",
+    "title": "静かな応援",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が一人で飛行練習を続けていると深淵が接近",
+    "animation_proposal": {
+      "motion": "深淵が視界端で止まって見守る。堕天が少し高度を上げる",
+      "expression": "堕天＝集中→嬉しそう／深淵＝静かに目を細める",
+      "afterglow": "深淵が小さく頷いてから元の場所へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "見ていたのか、深淵！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "どうだった？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……前より安定してる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ もっと上手くなるぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-035",
+    "title": "今日は無理",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が長時間停止中、堕天が遊びに誘う",
+    "animation_proposal": {
+      "motion": "堕天が一度しょんぼりするが、深淵の言葉で勢いよく上昇する。深淵は動かず見送る",
+      "expression": "堕天＝期待→落胆→張り切る／深淵＝眠そう→かすかな笑み",
+      "afterglow": "堕天は一人で出かける。深淵は帰りを待つように静止"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 外に行くぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は動きたくない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか……じゃあ私一人で行ってくる！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……帰ってきたら、話だけ聞く"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……！ なら、とびきりの話を持って帰るぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-036",
+    "title": "待ち合わせはここ",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "二人が離れた場所から互いに接近",
+    "animation_proposal": {
+      "motion": "堕天が中間地点を通り越し、深淵がその場で停止",
+      "expression": "堕天＝やる気→焦り／深淵＝淡々",
+      "afterglow": "堕天が戻り、二人が同時に落ち着く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私が迎えに行くぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、ここで待つ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "任せろ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……行き過ぎ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むっ！ すぐ戻る！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-037",
+    "title": "少しだけ速く",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵を先導しているが距離が離れすぎたとき",
+    "animation_proposal": {
+      "motion": "深淵が一瞬だけ通常より速く動き、堕天が気づいて減速",
+      "expression": "堕天＝驚き→嬉しそう／深淵＝無表情",
+      "afterglow": "二人の移動速度が中間で揃う"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！？ 今、速かったな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……置いていかれると面倒"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私が合わせるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それがいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 一緒だ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-038",
+    "title": "褒め言葉の重さ",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵に新しい飛び方を見せた直後",
+    "animation_proposal": {
+      "motion": "堕天が落ち着かなく上下し、深淵は短く首を傾ける",
+      "expression": "堕天＝期待→照れ笑い／深淵＝少し優しい目",
+      "afterglow": "堕天が同じ動きをもう一度だけ見せる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今の、どうだった！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……その飛び方、好き"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "す、好き……！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。無駄がなくて"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そ、そうか！ 次はもっと上手くやるぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-039",
+    "title": "寝場所の攻防",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵の静止位置のすぐ近くを堕天が何度も往復",
+    "animation_proposal": {
+      "motion": "深淵が位置をずらし、堕天がその空間に一度止まる",
+      "expression": "深淵＝少し困る／堕天＝不思議そう→嬉しそう",
+      "afterglow": "二人が互いにぶつからない位置に落ち着く"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そこ、よく通るね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私の練習コースだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、少し避ける"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いや！ 私も休む！ 一緒に！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……どうぞ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-040",
+    "title": "断られ方の違い",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵に二度目の誘いをしたとき",
+    "animation_proposal": {
+      "motion": "堕天が前へ出て、返事を聞いて少し沈む。深淵が一度手を振る",
+      "expression": "堕天＝期待→落胆→考える／深淵＝静か",
+      "afterglow": "堕天が少し距離を取り、深淵は安心して休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今なら一緒に遊べるか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は無理"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そうか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……明日なら、考える"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "明日だな！ 覚えておくぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-041",
+    "title": "勝利のポーズ",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-041の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天がひとりで勝利ポーズを練習中、深淵がそばにいる",
+    "animation_proposal": {
+      "motion": "堕天が大きく腕を広げて反り返る。深淵の返答ごとにポーズが小さくなり最後は直立",
+      "expression": "堕天＝自信満々→困惑→満足／深淵＝半目→小さく笑う",
+      "afterglow": "堕天は小さいガッツポーズを一回決め、深淵が一度だけ拍手する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 勝ったときの決めポーズ、どれがいいと思う？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今のは、うるさい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "まだ声も出していないぞ！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動きが、うるさい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "ポーズを半分にする",
+        "text": "な、ならこれはどうだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……さっきより、いい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ではこれで決まりだな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう少し小さくてもいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "こ、これ以上小さくしたら見えないだろう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ちゃんと見てるよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-042",
+    "title": "小さな話し声",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵のそばで静かに待っていて、深淵が先に顔を向ける",
+    "animation_proposal": {
+      "motion": "深淵がほんの少し堕天側に寄る。堕天が驚いて跳ねかけ、声を抑える",
+      "expression": "深淵＝眠そう→少し穏やか／堕天＝驚き→嬉しそう",
+      "afterglow": "堕天が抑えた声で話し、深淵がゆっくり頷く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……何か話そうか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……少しだけ、話して"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ じゃあ昨日の勝負の話を！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……声は小さめで"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、分かった。私に任せろ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-043",
+    "title": "誘いの回数",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵の近くで短時間に何度も方向転換",
+    "animation_proposal": {
+      "motion": "堕天が小さく三回跳ねる。深淵は指を一本立てる",
+      "expression": "堕天＝勢いがある→少し反省／深淵＝面倒そう→やや柔らかい",
+      "afterglow": "堕天が声量と速度を落として隣へ並ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日、何回誘った？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "まだ三回だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……多い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……次は一回にして"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "分かった！ 一回に全部込める！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-044",
+    "title": "静かに遊ぼう",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が低速で浮く深淵の近くに停止",
+    "animation_proposal": {
+      "motion": "黒翼が飛ぶ勢いを落とし、深淵と同じ高さに揃える",
+      "expression": "黒翼＝元気→穏やかな笑顔／深淵＝眠そう→少し安心",
+      "afterglow": "二人が静止したまま少しだけ左右に揺れる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵！ 一緒に遊ばない？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動かない遊びなら"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、どっちが長くじっとしていられるか勝負！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それなら勝てる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "よーし、負けないよ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-045",
+    "title": "省エネの先生",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が連続で大きく上下したあと深淵へ接近",
+    "animation_proposal": {
+      "motion": "黒翼が元気に跳ね、深淵が少しだけ肩をすくめる",
+      "expression": "黒翼＝はしゃぐ→考える顔／深淵＝半目",
+      "afterglow": "黒翼が一度だけゆっくり飛ぶ練習をする"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵って、どうしてそんなにゆっくり飛ぶの？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……速いと疲れるから"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なるほど！ 私も試してみる！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……すぐ飽きそう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、そうかも！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-046",
+    "title": "聞き役の交代",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が深淵の横で一定時間話しているとき",
+    "animation_proposal": {
+      "motion": "黒翼が口を閉じて待ち、深淵がほんの少し顔を上げる",
+      "expression": "黒翼＝興味津々／深淵＝無表情→落ち着く",
+      "afterglow": "黒翼が頷き、深淵は目を細める"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私ばっかり話してたね！ 深淵は何かある？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今はない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ静かにしてよう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ、助かる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-047",
+    "title": "どこにも行かない遠足",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が深淵の移動を誘って断られた直後",
+    "animation_proposal": {
+      "motion": "黒翼がその場で小さく旋回し、深淵が目だけ動かす",
+      "expression": "黒翼＝ひらめき→嬉しい／深淵＝眠そう→ほんの少し目が開く",
+      "afterglow": "黒翼が深淵の表情を見て満足げに浮き、深淵はその場で休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "遠くまで探検しようよ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……遠いのは嫌"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、ここから見えるものを探検！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それなら、いい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "最初の発見！ 深淵、さっきよりちょっと楽しそう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……目が覚めただけ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-048",
+    "title": "鏡みたいな二人",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-048の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼と堕天が向かい合って動きを真似しようとしたとき",
+    "animation_proposal": {
+      "motion": "片方が左に動けばもう片方も自分の左に動き、互い違いになる。最後に二人とも左右を反転",
+      "expression": "黒翼＝わくわく→大笑い／堕天＝得意げ→真剣→笑う",
+      "afterglow": "二人がやっと同じ方へ動けて、互いに手を振る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天！ 私の動き、鏡みたいに真似して！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 簡単だ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": "黒翼が自分の右へ",
+        "text": "じゃあ、右！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "堕天も自分の右へ",
+        "text": "右だな！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれ？ 離れちゃった！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "む……向かい合っているからか！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今度は逆にしてみよっか！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ ……おお、揃った！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やった！ 最初からこれをすればよかったね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "最初の失敗も練習だ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-049",
+    "title": "素直な質問",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵の方を何度も振り返っているとき",
+    "animation_proposal": {
+      "motion": "黒翼が首を傾げ、堕天が慌てて進行方向を変える",
+      "expression": "黒翼＝きょとん／堕天＝動揺→強がる",
+      "afterglow": "堕天が少し距離を取り、黒翼が軽く手を振る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天、深淵のこと探してるの？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ち、違う！ たまたま見ただけだ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ深淵を見かけても教えなくていいね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "い、いや、教えてくれても構わんぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 分かった！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-050",
+    "title": "並んで回転",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼がくるくる回り、堕天が近くでそれを見る",
+    "animation_proposal": {
+      "motion": "二人が同時に回転。堕天が少し速くなりすぎて揺れる",
+      "expression": "黒翼＝笑顔→驚き／堕天＝得意げ→照れ隠し",
+      "afterglow": "二人が笑顔で速度を落とす"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "一緒にくるっと回ろ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いいだろう！ 私の方がうまいぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わあ、速い！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "当然……うわっ、回りすぎた！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "大丈夫？ ゆっくりでも楽しいよ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-051",
+    "title": "先生だって難しい",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-051の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天王が一人で少し変わった回転を試しているところに黒翼が来る",
+    "animation_proposal": {
+      "motion": "堕天王が慎重に半回転して止まる。黒翼が軽やかに回り、堕天王も真似するが途中で止まる",
+      "expression": "黒翼＝驚き→はりきる／堕天王＝困った微笑→楽しそう",
+      "afterglow": "黒翼が堕天王の横でゆっくり同じ回転をする"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれっ、堕天王も新しい飛び方を練習してるの？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。でも思ったより難しいね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": "軽く半回転する",
+        "text": "私、そこだけなら得意だよ！ 見てて！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "なるほど。そこから向きを変えるのか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そうそう！ 今度は一緒に！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。今日は私が教わる番だね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "任せて！ でも、急がなくていいからね！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ありがとう。頼もしい先生だな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-052",
+    "title": "朝の挨拶",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "【ローカル時刻必須】端末の現地時刻が06:00〜10:59で黒翼と堕天王が接近したとき。端末時刻が取得不能・無効なら抽選対象外。",
+    "animation_proposal": {
+      "motion": "黒翼が朝らしく大きく一伸び、堕天王が小さく頷く",
+      "expression": "黒翼＝満面の笑顔／堕天王＝柔らかい微笑",
+      "afterglow": "黒翼が新しい位置へ元気に移動"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王！ おはよう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "おはよう。今日も元気だな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 今日は何しようかな？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "急がなくてもいい。楽しそうなことから始めよう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それいいね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-053",
+    "title": "半分こする時間",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が繰り返し堕天王に話しかけ、堕天王が長く停止",
+    "animation_proposal": {
+      "motion": "黒翼が上へ跳ねてから落ち着き、堕天王が視線を合わせる",
+      "expression": "黒翼＝楽しそう／堕天王＝温かな笑顔",
+      "afterglow": "二人がゆっくり同じ方向へ移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王は休まなくて大丈夫？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "少し休もうと思っていたところだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ私も休む！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ、付き合ってくれるのか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "もちろん！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-054",
+    "title": "気づいてくれる人",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が長く飛び回ったあと堕天王の近くで減速",
+    "animation_proposal": {
+      "motion": "堕天王が黒翼に合わせて下降、黒翼はふっと力を抜く",
+      "expression": "黒翼＝元気→少し疲れ顔／堕天王＝気遣う微笑",
+      "afterglow": "黒翼が小さく頷き、その場で休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日はずいぶん飛んだな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ！ 楽しくて止まれなくて！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "疲れたなら、少し休んでいいんだよ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……うん！ そうする！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-055",
+    "title": "短すぎた指示",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "最終監査により旧CR-055の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "断罪が進む向きを深淵へ短く伝えようとするとき",
+    "animation_proposal": {
+      "motion": "断罪と深淵が向かい合う。断罪が左右に視線を送ると、深淵は一度だけ反対を向き、二人で向き直る",
+      "expression": "断罪＝真顔→微妙に気まずい／深淵＝眠そう→少し呆れる",
+      "afterglow": "二人は最初から口で説明した方向へすっと移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……右だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何が？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……行き先だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私から見たら左"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私から見て右。お前の左だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最初から、そう言えば"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……短く済ませたつもりだった"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……長い方が、早かったね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうだな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-056",
+    "title": "静けさの価値",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "二人が他メンバーから離れた場所でしばらく待機",
+    "animation_proposal": {
+      "motion": "二人ともほぼ動かず、深淵だけ少し高度を下げる",
+      "expression": "断罪＝緊張のない真顔／深淵＝目を閉じる",
+      "afterglow": "無言の時間を少し長めに確保"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……静かでいいね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……無駄口がないからな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……同感だ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-057",
+    "title": "率直すぎる答え",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪が深淵に視線を向けて停止",
+    "animation_proposal": {
+      "motion": "断罪が腕を組み、深淵は首をほんの少し傾ける",
+      "expression": "断罪＝少し険しい／深淵＝淡々",
+      "afterglow": "断罪が先に静かに去る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前はいつも眠そうだな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。眠い"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……少しは気を引き締めろ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ、疲れる"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そういう問題か"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-058",
+    "title": "負けず嫌いの見本",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が連続旋回して失敗、断罪が近くで見ている",
+    "animation_proposal": {
+      "motion": "堕天がすぐ同じ動きに再挑戦、断罪が静かに軌道を示す",
+      "expression": "堕天＝悔しい→真剣／断罪＝厳しい顔",
+      "afterglow": "堕天が練習を続け、断罪は少し離れて見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "くっ、もう一回だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……同じ失敗を繰り返すな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "分かっている！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら角度を変えろ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……なるほど！ 次こそ成功させる！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-059",
+    "title": "似ていない二人",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "二人が同じ方向に向かって別速度で浮いている",
+    "animation_proposal": {
+      "motion": "堕天が断罪を追い越し、断罪が一定速度を保つ",
+      "expression": "断罪＝無表情／堕天＝張り切る",
+      "afterglow": "二人が結局同じ地点に止まり、短く目を合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "どうしてそんなにゆっくり飛ぶんだ？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……無駄に急ぐ必要がない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "速い方が強そうだろう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……強さの話はしていない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むっ……そうだったな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-060",
+    "title": "意外な理解",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵への誘いに失敗した直後、断罪の近くで停止",
+    "animation_proposal": {
+      "motion": "堕天が落ち込んで高度を下げ、断罪は視線だけ向ける",
+      "expression": "堕天＝しょんぼり→強気／断罪＝少し気遣うが厳しい顔",
+      "afterglow": "堕天が気力を戻して離れ、断罪は短く見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……深淵に、また断られた"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……しつこくしたのだろう"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そんなことはない！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……相手の都合も考えろ。それだけだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……分かった。次はそうする"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-061",
+    "title": "次の相談相手",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が堕天王から離れた直後、断罪が近づく",
+    "animation_proposal": {
+      "motion": "断罪が少し距離を置いて止まり、堕天王が穏やかに向き直る",
+      "expression": "断罪＝しかめ面／堕天王＝静かな微笑",
+      "afterglow": "堕天王が先に離れ、断罪が黒翼の進行方向を見る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼は、お前のところへよく来るな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "話をするのが好きなんだろう"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "次はお前にも相談するかもしれないな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……頼まれれば、やる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-062",
+    "title": "声の大きさ",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪が黒翼の危ない行動を止めたあと、堕天王が近づく",
+    "animation_proposal": {
+      "motion": "堕天王が近づいて静止する。断罪は黒翼のいる方向を一度見てから、堕天王へ向き直る",
+      "expression": "断罪＝険しい目→わずかに安心／堕天王＝優しい目",
+      "afterglow": "断罪が黒翼のいる方向を一度だけ確認してから元の位置へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "さっき、黒翼が少し驚いていたみたいだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……危なかったから止めただけだ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。心配していたことも、伝わるといいな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……当然、伝わっただろう"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。そうだといいね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-063",
+    "title": "見守る距離",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が遠くで元気に飛んでおり、断罪と堕天王が近い",
+    "animation_proposal": {
+      "motion": "断罪が黒翼の方を見たまま停止、堕天王は少し下がる",
+      "expression": "断罪＝真剣／堕天王＝優しい目",
+      "afterglow": "堕天王が別の方向へ飛び、断罪がその場に残る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "黒翼は今日も元気だな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……無茶をしなければいいが"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "心配なら、声をかけてやるといい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……必要なら、そうする"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。それで十分だ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-064",
+    "title": "一分だけのお願い",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-064の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天王が普段よりゆっくり一人で浮遊し、深淵が横を通る",
+    "animation_proposal": {
+      "motion": "堕天王が深淵に顔を向け、深淵は一歩だけ離れかけて戻る",
+      "expression": "深淵＝面倒そう→少し気を緩める／堕天王＝穏やか→安堵",
+      "afterglow": "二人が黙って同じ高さを保つ。堕天王は深淵に用事を押し付けない"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "深淵、少しだけ頼みたいことがあるんだけど"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動く用事なら、あとで"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ううん。ここに一分、付き合ってくれる？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それだけ？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。私も少し、誰かとゆっくりしたくて"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一分なら、いい"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ありがとう"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……延長は、気分次第"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それで十分だよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-065",
+    "title": "最低限の頑張り",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が自分から短距離を移動し、堕天王のそばで停止",
+    "animation_proposal": {
+      "motion": "堕天王が目を合わせ、深淵が小さく頷く",
+      "expression": "深淵＝眠そうだが少し満足／堕天王＝嬉しそう",
+      "afterglow": "堕天王が急かさず同じ速度で漂う"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日は自分から来てくれたんだな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……頼むより、近かったから"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それでも立派な一歩だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……大げさ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ、そうかな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-066",
+    "title": "休むのも大事",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が低速のまま長く浮き、堕天王が通りかかる",
+    "animation_proposal": {
+      "motion": "堕天王が深淵のそばで停止、深淵は目を閉じたまま応答",
+      "expression": "深淵＝眠そう／堕天王＝優しい表情",
+      "afterglow": "堕天王が静かに離れ、深淵は少し高く浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "無理はしていないか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何もしてない"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それならよかった"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……心配されるほど動いてない"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それでも、たまには様子を聞かせてくれ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-067",
+    "title": "応援のひとこと",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が深淵の方向を眺め、堕天王が横に来る",
+    "animation_proposal": {
+      "motion": "堕天がびくっと跳ね、堕天王は穏やかに止まる",
+      "expression": "堕天＝慌てる→赤面気味／堕天王＝温かな微笑",
+      "afterglow": "堕天が勢いよく飛び出し、堕天王は見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日も深淵を誘うのか？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ま、まだ誘うと決めたわけじゃないぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。応援しているよ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そ、それは前にも聞いた！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "なら、焦らずにね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-068",
+    "title": "先回りの親切",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が堕天王に頼み事をしようとしたあと、堕天が接近",
+    "animation_proposal": {
+      "motion": "堕天王が堕天に進路を譲り、堕天が胸を張って浮く",
+      "expression": "堕天＝気合い十分／堕天王＝安心した微笑",
+      "afterglow": "堕天が深淵の方へ向かい、堕天王は静かに別方向へ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵が何か困っていたな！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ああ。少し手を貸してほしいそうだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私に任せろ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "助かるよ。ありがとう"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 私ならすぐだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-069",
+    "title": "言葉が足りない辞典",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "最終監査により旧CR-069の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が断罪と深淵の間に浮いて、気になった言葉を考えている",
+    "animation_proposal": {
+      "motion": "黒翼が身ぶりでふわふわを表現。断罪は真顔のまま、深淵は肩をすくめる",
+      "expression": "黒翼＝ひらめき→笑顔／断罪＝真剣→困惑／深淵＝半目→少し愉快そう",
+      "afterglow": "黒翼が二人の短い言葉をまねして、一瞬だけ真顔になる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ねえ、「ふわふわ」を別の言葉で言うなら何だろう？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……浮遊だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……楽"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ぜんぜん違う！ でも、どっちも分かる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前はどう言う"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うーん……空に抱っこされてる感じ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……長い"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……説明だな、それは"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ「抱っこ」！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……変わった"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-070",
+    "title": "合図が二つ",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-070の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が断罪と堕天に同時に合図を送ろうとする",
+    "animation_proposal": {
+      "motion": "黒翼が右手を上げると堕天が進み、断罪は停止。黒翼は手を上下させ、二人が揃って止まる",
+      "expression": "黒翼＝きょとん→元気／断罪＝疑問顔→納得／堕天＝張り切る→不満→笑う",
+      "afterglow": "三人が一度だけ同時に小さく前進してから元の位置へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "二人とも、私の合図で動いてね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "任せろ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……合図は何だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": "片手を上げる",
+        "text": "手を上げたら、せーの！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "飛び出す",
+        "text": "よし、行くぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……「せーの」と言っていない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ！ どっちが合図だったっけ！？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "手か声か、どちらかにしてくれ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……その意見には賛成だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ声だけ！ せーの！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-071",
+    "title": "二人分の気遣い",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天王がほかの仲間の相談に続けて応じたあと、黒翼と断罪が近づく",
+    "animation_proposal": {
+      "motion": "堕天王がふっと停止する。黒翼が励ますように近づき、断罪も横から静かに声をかける",
+      "expression": "黒翼＝明るい笑顔／断罪＝真剣→少し穏やか／堕天王＝驚き→穏やかな笑み",
+      "afterglow": "黒翼と断罪がそろって周囲を見回り、堕天王は少しだけ休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王、いつもみんなのこと見てくれてありがとう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。どうしたの、急に？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……たまには休め。誰かに任せろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そうそう！ 今日は私たちが見回るね！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……ありがとう。少し、甘えさせてもらおうかな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-072",
+    "title": "休憩の定義",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が遊びに誘うとき、深淵の隣に堕天がいる",
+    "animation_proposal": {
+      "motion": "黒翼がくるっと回り、堕天も小さく跳ねる。深淵は動かない",
+      "expression": "黒翼＝わくわく／堕天＝やる気／深淵＝半目",
+      "afterglow": "黒翼と堕天が小さな円を描き、深淵は中心で休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "三人で遊ぼう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いいぞ！ 私が先頭だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私は休憩中"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ深淵の周りを一周する遊び！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それなら見てる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 見ていてくれ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-073",
+    "title": "表情の答え合わせ",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-073の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼と堕天王が深淵の前で何かを気にしている",
+    "animation_proposal": {
+      "motion": "黒翼が深淵の顔を近くでのぞき、堕天王が少し距離を取る。深淵は目だけ動かす",
+      "expression": "黒翼＝悩む→驚く／深淵＝半目→平然／堕天王＝穏やかな笑顔",
+      "afterglow": "黒翼が深淵の横へ並び、深淵が表情をほとんど変えず軽くうなずく"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ねえ堕天王、今の深淵って怒ってると思う？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うーん、少し考えごとをしているようにも見えるね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "表情当てクイズ！ 今どんな気分？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……お腹すいた"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっちだった！？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。聞いてみないと分からないね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……当てるより、聞く方が早い"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-074",
+    "title": "上達のコツ",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼と堕天が飛行練習中、堕天王が近くを通る",
+    "animation_proposal": {
+      "motion": "黒翼が円を描き、堕天が速度を上げる。堕天王が手で緩い軌道を示す",
+      "expression": "黒翼＝好奇心／堕天＝負けず嫌い／堕天王＝穏やか",
+      "afterglow": "二人とも少しゆっくり飛び直す"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "もっと速く回るぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私も！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "まず、止まる場所を決めてみるといい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ 止まるところから！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むっ……確かに大事だな！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そう。急がずにな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-075",
+    "title": "口数の差",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が話し続け、深淵と断罪が同時に近くで待機",
+    "animation_proposal": {
+      "motion": "堕天が身振りを交え、深淵と断罪は目線だけで応じる",
+      "expression": "堕天＝楽しそう→不安／深淵＝半目／断罪＝真顔",
+      "afterglow": "堕天が少し落ち着き、深淵が隣に残る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それでだな！ 私は次にこう飛ぶ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……説明が長い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、何！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……少しだけ短くして"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……分かった。今から一言で言う！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それがいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-076",
+    "title": "決める人がいない",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-076の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "断罪・深淵・堕天王の三人が次にどこに移動するか迷う",
+    "animation_proposal": {
+      "motion": "堕天王が二人の顔を見比べる。断罪と深淵は同時に違う方向を指し、三人とも止まる",
+      "expression": "断罪＝真剣→困惑／深淵＝半目／堕天王＝穏やか→可笑しそう",
+      "afterglow": "最後に堕天王が一歩進むと、二人が意外そうに付いていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日はどこへ行こうか？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……堕天王が決めればいい"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私も、任せる"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "二人とも私に任せるんだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……普段はお前が一番よく見ている"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……決めるの、得意でしょ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "じゃあ今日は、私が行きたい方に行ってもいい？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……当然だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。そう言ってもらえると嬉しいな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-077",
+    "title": "意地の張り合い",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "断罪が堕天の飛び方を注意したあと堕天王が近づく",
+    "animation_proposal": {
+      "motion": "堕天が腕を組み、堕天王が間で穏やかに頷く",
+      "expression": "断罪＝厳しい／堕天＝むっとする／堕天王＝穏やか",
+      "afterglow": "堕天が角度を変えて再挑戦し、断罪は見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……雑だ。何度やっても同じだぞ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！ そこまで言うか！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "堕天、最後の角度はさっきより安定していたね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……だが、まだ甘い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふん！ 次は文句を言わせない！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。二人とも真剣だな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-078",
+    "title": "誰が手伝う？",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が堕天王のそばで助けを求め、堕天も見える位置にいる",
+    "animation_proposal": {
+      "motion": "堕天王が一歩下がり、堕天が深淵の隣へ並んで行き先を示す",
+      "expression": "深淵＝無気力→少し安心／堕天＝期待→得意げ／堕天王＝微笑",
+      "afterglow": "堕天が先導し、深淵が自分の速度で後を追う。堕天はときどき振り返る"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……あっちまで行くの、面倒"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "誰かと一緒ならどうだろう？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私が一緒に行くぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ頼む"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ ゆっくり行こう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "気をつけて行っておいで"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-079",
+    "title": "元気と静けさ",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が3人の集まる場所へ飛び込む",
+    "animation_proposal": {
+      "motion": "黒翼が中心で一度回り、断罪が少し身を引く。深淵は停止、堕天王は微笑む",
+      "expression": "黒翼＝元気／断罪＝呆れ／深淵＝眠そう／堕天王＝柔らかい笑顔",
+      "afterglow": "黒翼が声を落とし、全員が同じ高さで浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな、何してるの？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何も"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……見れば分かるだろう"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "静かに過ごしていたところだよ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ 私も静かにする！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……自分から静かにするんだ。助かる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-080",
+    "title": "飛び方交換会",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "4人が同じエリアに集まっている",
+    "animation_proposal": {
+      "motion": "黒翼が素早く回り、堕天が大きく跳ねる。深淵はわずかに揺れ、堕天王はゆったり滑る",
+      "expression": "黒翼＝期待／堕天＝自信満々／深淵＝眠そう／堕天王＝楽しげ",
+      "afterglow": "それぞれ自分の速度で散っていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなの飛び方、真似してみたい！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私のが一番難しいぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私は真似しやすい"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それぞれ違うから面白いんだな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 全部やってみたい！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-081",
+    "title": "一列になるまで",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "5人が偶然近くを通過し、同じ方向を向いたとき",
+    "animation_proposal": {
+      "motion": "【台詞フェーズ】黒翼を先頭に五人が緩やかな縦一列で飛ぶ。堕天が追い越しかけ、断罪が速度を整え、深淵が遅れてつく。吹き出しの表示中は大きく移動しない。【台詞終了後フェーズ】全員が減速して静かに横一列へ広がる。",
+      "expression": "黒翼＝嬉しい／断罪＝集中／深淵＝半目／堕天＝負けず嫌い／堕天王＝微笑",
+      "afterglow": "【会話終了後必須】縦一列→横一列の変化を約2秒で見せ、短く横並びを保持。その後各自の通常位置へ戻る。字幕と移動が重ならないようにする。"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わあ！ みんな同じ方向！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私が先頭だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……押すな。列が崩れる"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう並んだことにしない？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。せっかくだ、少しだけ続けよう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-082",
+    "title": "小さな発見",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "黒翼"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が部屋を一周し、空いた位置で停止",
+    "animation_proposal": {
+      "motion": "黒翼がその場で一回転して上を見上げる",
+      "expression": "黒翼＝好奇心→笑顔",
+      "afterglow": "見つけた方向へゆっくり動き出す"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "さっきと同じ場所なのに、違って見える！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "次はゆっくり見てみようかな！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……あっ、あそこも楽しそう！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-083",
+    "title": "自分で拍手",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "黒翼"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "黒翼が狭い範囲で丁寧な旋回に成功",
+    "animation_proposal": {
+      "motion": "黒翼が両手を小さく叩き、嬉しそうに跳ねる",
+      "expression": "黒翼＝集中→得意げ",
+      "afterglow": "自分の旋回を確かめるようにもう一度回る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "できた！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "さっきよりきれいに回れたよね！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、もう一回！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-084",
+    "title": "声をかける練習",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "さきほど黒翼が急に飛び出したのを見た断罪が、一人になってから立ち止まる",
+    "animation_proposal": {
+      "motion": "断罪が黒翼を呼ぶように軽く手を上げ、少し考えてから腕を組む",
+      "expression": "断罪＝真剣→わずかに困惑",
+      "afterglow": "断罪が黒翼の方を一度だけ見てから元の浮遊に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼、そこは危険だ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……先に、こっちへ来いと言うべきか"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………どちらも同じだな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-085",
+    "title": "小さすぎる勝利",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "断罪"
+    ],
+    "provenance": "最終監査により旧CR-085の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "断罪が周囲に誰もいない時、ひとりで難しい向き変えを成功させる",
+    "animation_proposal": {
+      "motion": "断罪が慎重に旋回を成功させ、拳を小さく握る。誰もいないか周囲を確認して元に戻る",
+      "expression": "断罪＝集中→一瞬だけ嬉しそう→平常",
+      "afterglow": "いつもの無表情に戻ってから、ほんの一瞬だけまた拳を握る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今のは、悪くない"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……いや。かなり上手くいった"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "周囲を確かめる",
+        "text": "……誰も見ていないな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "極小のガッツポーズ",
+        "text": "…………よし"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何をしているんだ、私は"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-086",
+    "title": "起きる理由",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "深淵"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が一定時間目を閉じている",
+    "animation_proposal": {
+      "motion": "深淵が一度だけ目を開け、すぐ半目に戻す",
+      "expression": "深淵＝眠そう→わずかに呆れ",
+      "afterglow": "浮遊高度がわずかに下がる"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……起きた"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……起きる理由、なかった"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-087",
+    "title": "風任せの予定変更",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "深淵"
+    ],
+    "provenance": "最終監査により旧CR-087の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "深淵がいつもと違う方向へ風に流され、特に目的もないとき",
+    "animation_proposal": {
+      "motion": "深淵が翼を少し広げて緩やかに横へ流される。途中で姿勢だけ直し、最後に静止",
+      "expression": "深淵＝ぼんやり→少し意外→満足",
+      "afterglow": "元の場所へ戻ろうとせず、流れ着いた位置でゆっくり浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は、こっちのつもりじゃなかった"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……でも、風が運んでくれた"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ここも静かだ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……予定、変更"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何もしてないのに、いい場所見つけた"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-088",
+    "title": "勝ったつもり",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が自分の飛行記録を更新したように長めの直線移動を終える",
+    "animation_proposal": {
+      "motion": "堕天が大きく胸を張り、勢い余って少し前に流れる",
+      "expression": "堕天＝得意げ→驚き",
+      "afterglow": "堕天が姿勢を整えてもう一度胸を張る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 今のは完璧だったな！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……おっと、止まるところまでが勝負だった！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "次はもっときれいに決めるぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-089",
+    "title": "誘い文句の練習",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天が一人で何度も小さく近づく動作を繰り返す",
+    "animation_proposal": {
+      "motion": "堕天が深呼吸して姿勢を正し、言い終えると高く跳ねる",
+      "expression": "堕天＝真剣→照れ→気合い",
+      "afterglow": "堕天が深淵のいる方向へ少し進んで立ち止まる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 一緒に……いや、違うな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "たまたま暇なら、私と勝負しないか！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……よし！ 自然だ！ 完璧だ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-090",
+    "title": "静かな見回り",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "堕天王が部屋の端から端までゆっくり移動したとき",
+    "animation_proposal": {
+      "motion": "堕天王が中央で静止し、四方を一度ずつ見渡す",
+      "expression": "堕天王＝落ち着いた微笑",
+      "afterglow": "誰も困っていないのを確認したようにゆっくり移動再開"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日はみんな、思い思いに過ごしているな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……うん。それでいい"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私も少し、休ませてもらおうかな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-091",
+    "title": "五人で同時停止",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "5人が近い範囲に揃ったとき、黒翼が「同時に止まる遊び」を提案する",
+    "animation_proposal": {
+      "motion": "【CR-092との差別化】音量ではなく動作の同期が主題。黒翼の合図後、各自の停止タイミングが少しずつズレる→二度目の合図で五人が同一タイミングに停止する。",
+      "expression": "黒翼＝わくわく／断罪＝渋い顔→少し納得／深淵＝眠そう／堕天＝負けず嫌い／堕天王＝微笑",
+      "afterglow": "【必須演出】最後の同期停止を短く保持してから個別の浮遊へ復帰。「静かにするゲーム」にはしない。"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなで同時に止まってみよう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いいぞ！ 私が一番ぴったり止まる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……騒がしいが、一度だけだ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動かなくていいなら得意"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。じゃあ黒翼、合図をお願い"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-092",
+    "title": "静けさの記録",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が静止している近くに他の4人が揃い、黒翼が静かさ勝負を思いつく",
+    "animation_proposal": {
+      "motion": "黒翼が勝負を提案。堕天が先に声を出してしまい、深淵は全く動かず、ほかの3人も少しずつ減速",
+      "expression": "黒翼＝我慢→笑顔／断罪＝真剣／深淵＝満足／堕天＝必死／堕天王＝穏やか",
+      "afterglow": "勝負が始まったばかりの状態で、堕天が口を閉じる。深淵は満足げに静止する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ねえ、誰が一番静かにしていられるかな？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私に決まっている！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今、もう喋ったぞ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "し、しまった！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私の勝ちでいい？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ、まだ始まったばかりだよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-093",
+    "title": "ゆっくりの連鎖",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "深淵が極低速で移動し、残り4人が周辺にいる",
+    "animation_proposal": {
+      "motion": "深淵の速度に堕天王が合わせ、続いて断罪・黒翼・堕天が徐々に減速",
+      "expression": "深淵＝半目／堕天王＝微笑／断罪＝少し納得／黒翼＝面白そう／堕天＝もどかしい",
+      "afterglow": "全員が短時間だけ同じ速度で横へ漂う"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日は深淵の歩調に合わせてみようか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ、楽"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "こんなにゆっくりでも一緒に進めるんだね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むむ……遅いが、悪くない！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ぶつからないなら、それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-094",
+    "title": "突然の五人集合",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-094の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が面白い翼の動きを思いつき五人を近くに集める",
+    "animation_proposal": {
+      "motion": "黒翼が小さく羽ばたき、全員の翼の動きが連鎖して変わる。深淵だけ最後まで最小動作",
+      "expression": "黒翼＝目を輝かせる／断罪＝警戒→呆れ／深淵＝半目／堕天＝張り切る／堕天王＝微笑",
+      "afterglow": "五人が同じ形を目指すも、最後は思い思いの羽ばたきに戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな見て！ 翼だけで挨拶できるかな？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "大きく羽ばたく",
+        "text": "ふふん！ 私ならもっと大きくできるぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……挨拶なら手で十分だろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、翼の方が遠くから見えるよ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": "控えめに翼を動かす",
+        "text": "面白いね。私はこうかな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "羽先だけ小さく動かす",
+        "text": "……これでいい？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "み、見えんぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私は見えた"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私も！ 深淵のは秘密の挨拶みたい！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……なら、秘密のままで"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-095",
+    "title": "はじめての全員挨拶",
+    "group": "特別",
+    "rarity": null,
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "ルームで5人が初めて同時に揃ったとき、未再生なら通常の確率抽選をせず1回だけ優先再生する。既に別イベントが再生中なら終了後まで保留する",
+    "animation_proposal": {
+      "motion": "黒翼が一回転、堕天が跳ね、深淵は低速、断罪は短く頷き、堕天王が中央へ",
+      "expression": "黒翼＝元気／断罪＝真顔／深淵＝眠そう／堕天＝得意げ／堕天王＝穏やか",
+      "afterglow": "5人がそれぞれ別の方向へ自然に散る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな揃ったね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 今日も負けないぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何と戦うの"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……騒がしい"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。みんな、よろしく頼むよ"
+      }
+    ],
+    "status": "台本正式採用・未実装",
+    "selection_policy": "first_time_guaranteed_once",
+    "event_type": "初回イベント"
+  },
+  {
+    "id": "CR-096",
+    "title": "真ん中は誰？",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "五人がほぼ同じ場所へ集まり、黒翼が中心役一人を決める輪作りを提案したとき",
+    "animation_proposal": {
+      "motion": "全員がぶつからないように小さく散り、堕天王が半歩下がる",
+      "expression": "黒翼＝楽しげ／断罪＝真剣／深淵＝面倒そう／堕天＝張り切る／堕天王＝温かい笑顔",
+      "afterglow": "深淵のいる位置を空けて四人がゆっくり輪を描く"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなで真ん中に一人、まわりを輪にする遊びしよう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私が真ん中に立つぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……真ん中、移動が少なくていい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……押し合うな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "では、誰も無理せず輪を作ろう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-097",
+    "title": "一番小さな変化",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "5人が近くにいて、黒翼が離れた位置から深淵を呼び、深淵が珍しく自分から近づく",
+    "animation_proposal": {
+      "motion": "深淵がゆっくり黒翼へ近づき、黒翼が嬉しそうに出迎える。堕天は進路を空け、ほかの2人は自然に見守る",
+      "expression": "黒翼＝嬉しそうな目／深淵＝眠そう／堕天＝自然な笑顔／断罪＝無表情／堕天王＝静かな微笑み。大げさな歓声は入れない。",
+      "afterglow": "黒翼と深淵が短く並んで浮き、堕天たちは大げさに騒がずに各自の飛行へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、深淵！ 来てくれたんだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……呼ばれたから"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "おっ、こっちが通りやすいぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……大げさだ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。来てくれてよかったね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう休んでいい？"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-098",
+    "title": "主役は最後の人",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-098の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "五人が集まり、黒翼が短い始まりの一言を誰かに頼もうとする",
+    "animation_proposal": {
+      "motion": "黒翼が全員を見回す。堕天が前へ出るが深淵が小さく手を上げ、皆が深淵に向き直る",
+      "expression": "黒翼＝驚き→満面の笑顔／断罪＝少し意外／深淵＝眠そう／堕天＝張り切る→驚き／堕天王＝微笑",
+      "afterglow": "深淵の短い号令で五人がそれぞれ好きな動作を始める"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今日は誰の「はじめ！」で遊ぼっか？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "もちろん私が！ 一番大きな声で言えるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私でもいい？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "お、お前が！？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……珍しいな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いいね。お願いできる？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……はじめ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やった！ 深淵が始めてくれた！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう喋らなくていい？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、私の出番はまだか！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。これからだよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-099",
+    "title": "ちょうどいい距離",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "5人が密集しすぎて互いに避け合った直後",
+    "animation_proposal": {
+      "motion": "堕天王が緩やかな円を描いて位置取りを示し、各自が好みの距離へ離れる",
+      "expression": "黒翼＝楽しげ／断罪＝少し安心／深淵＝安堵／堕天＝きょとん／堕天王＝穏やか",
+      "afterglow": "5人が違う距離のまま同じ方向を眺める"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "近すぎたかな？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ちょっと"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "もっとくっつけばいいのでは？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ぶつかると言っている"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "じゃあ、少しずつ離れてみようか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ それぞれでいいんだね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-100",
+    "title": "いつもの部屋",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "新規提案",
+    "trigger_proposal": "長時間のルーム滞在後、5人が自然に同じ画面内へ集まる",
+    "animation_proposal": {
+      "motion": "黒翼が一周、堕天が軽く跳ね、深淵が最低限動き、断罪が短く頷き、堕天王がゆっくり全員を見渡す",
+      "expression": "黒翼＝笑顔／断罪＝普段より柔らかい目／深淵＝眠そうだが穏やか／堕天＝満足げ／堕天王＝包容力のある微笑",
+      "afterglow": "5人がそれぞれの個性どおりに自由浮遊へ戻る。ルームの通常BGMだけが残る想定"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なんだか、みんなでいると楽しいね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "当然だ！ 私もいるからな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……騒がしいけど、まあいい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……静かな時間も必要だがな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。ここは、みんなの居場所だからね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-102",
+    "title": "高度の差",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が断罪より高い位置でゆっくり浮いている",
+    "animation_proposal": {
+      "motion": "黒翼が上下に揺れ、断罪はわずかに上昇して視線を合わせる",
+      "expression": "黒翼＝好奇心／断罪＝きりっとした顔→少し照れ",
+      "afterglow": "二人の高度が自然にそろう"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪、そこからだと私が大きく見える？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前の大きさは変わらない。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "見え方はどう？ じゃあ、こっちなら？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……動くな。話しにくい。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あ、そっか！ ここで話そう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。それでいい。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-106",
+    "title": "端の特等席",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪が普段より見晴らしの良い端で一人で浮いている",
+    "animation_proposal": {
+      "motion": "黒翼が隣に並びかけ、断罪が少し場所を空ける",
+      "expression": "黒翼＝わくわく／断罪＝平静を装う",
+      "afterglow": "隣に並ぶが、断罪は少しだけ正面を向き続ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ここ、景色がいいね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪の場所、取っちゃった？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……半分で足りる。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ半分ずつだね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最初から、そう言っている。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-109",
+    "title": "ふわりと後ろ",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が普段と違うゆっくりした速度で移動",
+    "animation_proposal": {
+      "motion": "断罪が追い抜こうとしてやめ、同じ速度で後ろにつく",
+      "expression": "黒翼＝不思議そう／断罪＝視線をそらす",
+      "afterglow": "断罪は黒翼の後方の安全な位置を維持する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今日は追い抜かないんだね？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……先に行く理由がない。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ一緒に歩く？ あ、飛ぶか！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……どちらでもいい。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "よーし、ゆっくり行こう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……急に加速するなよ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-112",
+    "title": "間違えても二人",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "最終監査により旧CR-112の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が初めての進路を前に少し迷い、断罪が隣にいる",
+    "animation_proposal": {
+      "motion": "黒翼が前を見たり戻ったりする。断罪は先導せず黒翼が選ぶまで同じ位置で待つ",
+      "expression": "黒翼＝迷い→安心→笑顔／断罪＝真剣→小さな安堵",
+      "afterglow": "黒翼が自分で選んだ方向へ進み、断罪が少し後ろから付いていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……さっきから何を迷っている"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "こっち、行ったことないんだ。間違えたらどうしようって"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……戻ればいい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、一人で迷うのはちょっと嫌だな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら、一人ではない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ。一緒に来てくれるの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前が決めろ。私はついていく"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあこっち！ 間違えても二人だね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-114",
+    "title": "見つめていたもの",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "最終監査により旧CR-114の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼が何もない空間をじっと見ていて、断罪が近くを通る",
+    "animation_proposal": {
+      "motion": "黒翼が空中の一点を見つめて止まる。断罪がその場所を確かめてから黒翼の方へ振り向く",
+      "expression": "黒翼＝期待→明るい笑顔／断罪＝不思議そう→わずかに照れる",
+      "afterglow": "断罪が黒翼の方を向いたまま少し浮遊。黒翼は満足そうに小さく一回転する"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何を見ている。そこには何もないぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ふふ、当ててみて！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……空だろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "違うよ！ 断罪がこっちを向くか見てたの！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それなら最初から呼べ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "だって、呼ばずに気づいてくれたら嬉しいなって！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……もう、気づいた"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ ちゃんとこっち向いてる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それで満足なのか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "もちろん！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-116",
+    "title": "二度目の確認",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が断罪に先に行くよう手を振っている",
+    "animation_proposal": {
+      "motion": "断罪が一度進みかけた後、戻って黒翼の速度を確かめる",
+      "expression": "黒翼＝首をかしげる／断罪＝淡々",
+      "afterglow": "黒翼が断罪を追いかけ、同じ速度で移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "先に行ってていいよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前は？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ちょっと後から行く！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……遅れるなら、待つ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、いいの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……二度も聞くな。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-117",
+    "title": "慣れないお礼",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が断罪の飛行経路にある障害を避けるよう知らせる",
+    "animation_proposal": {
+      "motion": "断罪が急な回避をせず方向を変え、短く頭を下げる",
+      "expression": "黒翼＝ぱっと笑う／断罪＝わずかに気まずい",
+      "afterglow": "断罪が黒翼の横で速度を合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪、そっち狭いよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……分かった。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "よかった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……助かった。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "どういたしまして！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……大げさに喜ぶな。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-118",
+    "title": "気づいたのは先",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪がいつもより小さな揺れで静止し、近くを飛んでいた黒翼が気づく",
+    "animation_proposal": {
+      "motion": "黒翼が速度を緩めて断罪の横に並ぶ。断罪は最初そっぽを向くが、少しだけ肩の力を抜く",
+      "expression": "黒翼＝明るい気遣い／断罪＝平静→わずかな安堵",
+      "afterglow": "黒翼は断罪を急かさず隣を漂い、断罪も普段より近い距離を保つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ ちょっとここで一緒にのんびりしよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前が休みたいのか。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ううん。断罪がずっとみんなを見てて、休んでないなって！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……余計な世話だ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ。じゃあ、私もここで休むね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 一緒だね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-120",
+    "title": "呼び止めたかった",
+    "group": "恋愛A",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が部屋の端へ去りかけ、断罪が珍しく追いかける",
+    "animation_proposal": {
+      "motion": "断罪が黒翼の横に並ぶまで慎重に加速、黒翼が振り向いて静止",
+      "expression": "黒翼＝きょとん→笑顔／断罪＝少し緊張",
+      "afterglow": "断罪が一度だけ安堵したように息をつき、二人は別々の飛行に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれ、どうしたの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……さっきの話。まだ終わっていない。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そうだったっけ？ じゃあ続きを聞く！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……大した話ではない。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも断罪の話なら聞きたいな！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……分かった。少しだけだ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-121",
+    "title": "選べる近道",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が二つの飛行ルートを比べている",
+    "animation_proposal": {
+      "motion": "堕天が高速で二つのルートを往復し、深淵は動かない",
+      "expression": "堕天＝真剣／深淵＝眠そう",
+      "afterglow": "堕天が一番短い線をまっすぐ飛び、深淵は少しだけついていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ どっちの道が速いと思う？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……短い方。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "どっちが短いか聞いてるんだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動かなければ、ゼロ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、それは道じゃない！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そう？"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-122",
+    "title": "言い訳が多い",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が深淵の隣をしばらく飛び続けている",
+    "animation_proposal": {
+      "motion": "堕天がわざと少し前に出てすぐ戻り、深淵は浮遊を続ける",
+      "expression": "堕天＝得意げ→気まずい／深淵＝半目",
+      "afterglow": "深淵が移動を再開すると堕天も平然を装って並ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ずっといるね。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "た、たまたま進路が同じなだけだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……三回曲がったけど。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私も三回曲がりたくなったんだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ふうん。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なんだその顔は！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-123",
+    "title": "作戦の穴",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が次の勝負の手順を一人で声に出して考え、休んでいた深淵の近くに来る",
+    "animation_proposal": {
+      "motion": "堕天が三回小さく方向を示す。深淵は二回目の動きだけ見て短く指摘し、堕天が途中で停止する",
+      "expression": "堕天＝自信満々→驚き→嬉しさを隠す顔／深淵＝眠そうなまま淡々",
+      "afterglow": "堕天が修正した作戦を一人で確認し、深淵は静かな場所で浮遊を続ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "まず突っ込む！ 次に回り込む！ そして一気に戻る！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……二つ目で、戻る道がなくなる。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！？ ……確かに！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……声、大きいから聞こえた。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら、二つ目のあとに回り道を……。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最初の一手を変えた方が早い。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むむ……！ お前、ちゃんと考えてくれていたんだな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……考えるのは一回だけ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ その一回で十分だ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-125",
+    "title": "名前のない特技",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-125の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天が深淵に新しい小さな飛行技を見せようとしている",
+    "animation_proposal": {
+      "motion": "堕天が小さく斜めに回って着地寸前で止まる。深淵はほとんど動かず評価",
+      "expression": "堕天＝自慢げ→不服→得意／深淵＝眠そう→少し笑う",
+      "afterglow": "堕天がもう一度同じ技を静かに披露し、深淵が首を少し傾ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 新しい技を見せてやろう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……名前は？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "小さく一回転して止まる",
+        "text": "まだない！ 見てから決めるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……あわてた鳥"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！？ もっと強そうな名前はないのか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最後、ちょっと慌ててた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むむ……なら次こそ完璧に止まってみせる！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう一回なら、見る"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ じゃあ技名はあとで決める！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-128",
+    "title": "静かな散歩",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "深淵が珍しくゆっくり移動を始める",
+    "animation_proposal": {
+      "motion": "堕天が慌てて追い付き、歩調を合わせようと何度も速度を微調整",
+      "expression": "堕天＝嬉しそう／深淵＝無表情",
+      "afterglow": "二人が会話なしでしばらく同じ方向へ漂う"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ どこかへ行くのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……少し移動。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私も行こう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……走らなくていいよ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "は、走ってなどいない！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……飛んでるしね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-130",
+    "title": "数えない勝負",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が空中で小さく上下して数を数える",
+    "animation_proposal": {
+      "motion": "堕天が軽快に上下し、深淵は一度だけ数センチ上昇",
+      "expression": "堕天＝本気／深淵＝退屈そう",
+      "afterglow": "堕天が数を止め、深淵の横で一緒に浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "上下した回数で勝負だ！ 一、二、三！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……面倒。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "一回だけでもいい！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それだけか！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もう終わったから。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-132",
+    "title": "先に気づいたのは",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-132の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天が小さな旋回を練習中、深淵がそばで見ている",
+    "animation_proposal": {
+      "motion": "堕天が羽の動きを少し乱す瞬間に深淵が短く指摘、堕天は一度止まり姿勢を直す",
+      "expression": "堕天＝自信→驚き→嬉しい／深淵＝半目→穏やか",
+      "afterglow": "堕天がゆっくり同じ動作を成功させ、深淵が控えめに頷く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "次の旋回は完璧に決めるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……右の翼、少し遅い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なぜ分かる！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……さっきから、見てたから"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか……私のことを見ていたのか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……危なそうだったし"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら、直してやってみせる！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。今の方がいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ お前が気づいてくれたおかげだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-133",
+    "title": "本音が短すぎる",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が深淵の隣を並走しながら様子をうかがっている",
+    "animation_proposal": {
+      "motion": "深淵が少しだけ堕天の方へ向き、堕天は驚いて加速を緩める",
+      "expression": "堕天＝気にする→照れる／深淵＝無表情",
+      "afterglow": "堕天が照れを隠すように少し先を飛ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私といるの、面倒じゃないか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……面倒。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そうか……。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……でも、嫌じゃない。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ 私もだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それは知ってる。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-136",
+    "title": "遠回りでも",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が曲がりくねったルートを選び深淵を振り返る",
+    "animation_proposal": {
+      "motion": "深淵が最短経路に進みかけるが、堕天に合わせて緩く曲がる",
+      "expression": "堕天＝驚き→嬉しい／深淵＝眠そう",
+      "afterglow": "堕天が先導せず、深淵の横に戻って並ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今日はこっちを通りたい！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……遠い。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "やっぱり嫌か？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は付き合う。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "本当か！？ なぜだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……たまにはね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-138",
+    "title": "見つけた休憩所",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "深淵が落ち着く場所へ向かい堕天が同じ場所を探している",
+    "animation_proposal": {
+      "motion": "深淵が先に位置を決め、堕天は勢いよく寄って急減速",
+      "expression": "堕天＝元気→静かに嬉しい／深淵＝安堵",
+      "afterglow": "堕天が深淵の横で低速浮遊に切り替える"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ここ、静か。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そうか！ なら私もここにする！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……大声は禁止。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、分かった！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今は守れてる。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん、私に不可能はない！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-139",
+    "title": "帰り道の目印",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が少し離れた場所から深淵の元に戻る途中",
+    "animation_proposal": {
+      "motion": "堕天が勢いよく飛ぶが、深淵の手前でゆっくりになる",
+      "expression": "堕天＝意外そう／深淵＝さりげない優しさ",
+      "afterglow": "堕天がゆっくり並び、深淵が先に進む"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ ここで待っていたのか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……移動が面倒だっただけ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうか！ 私はちょうど戻ってきた！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。おかえり。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……！ ただいま！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……声、大きい。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-143",
+    "title": "ひとつだけ答え",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が質問を続け、深淵が目を閉じかけている",
+    "animation_proposal": {
+      "motion": "黒翼が質問のたびに近づき、最後は距離を空ける",
+      "expression": "黒翼＝楽しそう／深淵＝無気力",
+      "afterglow": "黒翼が深淵の休憩を邪魔しない位置へ移る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵！ 質問してもいい？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ひとつだけ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "好きな時間っていつ？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……誰も起こさない時間。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ今は邪魔しないね！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ありがと。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-144",
+    "title": "天然二人の作戦",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼と堕天が同じ曲がり角で立ち止まる",
+    "animation_proposal": {
+      "motion": "二人が同時に反対方向へ旋回し、互いを追って小さく一周する",
+      "expression": "黒翼＝笑顔／堕天＝真剣→照れ隠し",
+      "afterglow": "二人が笑いながら別の方向へ飛んでいく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "次は右だ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、私は左だと思った！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら勝負で決めるか！？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "いいね！ 何の勝負？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……何がいいと思う？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えーっと、相談しよう！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-147",
+    "title": "お手伝いの順番",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼がやることを一度に思い出して慌てて移動する",
+    "animation_proposal": {
+      "motion": "堕天王が進路を塞がず横に並び、黒翼の速度が落ちる",
+      "expression": "黒翼＝焦り→安心／堕天王＝穏やか",
+      "afterglow": "黒翼が一つずつ用事を片づけに向かう"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれもこれも忘れてた！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。まずは一つずつだね。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えーっと、どれからがいいかな？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "一番近くにあるものからでいいんじゃないかな。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なるほど！ じゃあ行ってくる！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いってらっしゃい。慌てなくていいよ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-148",
+    "title": "きれいな順路",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が部屋を一周して堕天王の前に戻る",
+    "animation_proposal": {
+      "motion": "黒翼が指で空中に軌跡を描き、堕天王はゆっくり首を動かす",
+      "expression": "黒翼＝自慢げ／堕天王＝微笑",
+      "afterglow": "堕天王が黒翼の描いた方向をなぞって移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "見て！ 今日の私の秘密の道！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "へえ、よく考えたね。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ここを曲がると、またここに戻れるんだよ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それなら迷子にならないね。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でしょ！ 堕天王もやってみて！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "じゃあ、案内してくれるかな。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-150",
+    "title": "返ってきた相談",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天王がひとりで進路を考え、黒翼が寄ってくる",
+    "animation_proposal": {
+      "motion": "黒翼が前に出て堕天王の進路を先導しようとする",
+      "expression": "黒翼＝張り切る／堕天王＝穏やか",
+      "afterglow": "二人が並んで目的地へ向かう"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王、困ってる？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "少しだけね。どこから手をつけようかと思って。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ私に聞いて！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうだね。黒翼ならどうする？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "最初に目についたところ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。案外、それが正解かもしれないね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-151",
+    "title": "無言の近道",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪と深淵が同じ狭い通路に向かっている",
+    "animation_proposal": {
+      "motion": "断罪が止まって深淵を先に通すが、深淵も止まる",
+      "expression": "断罪＝無表情／深淵＝半目",
+      "afterglow": "断罪が先を通り、深淵が低速で後を進む"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……先に行け。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そっちが先でいい。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……譲っている。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……待つ方が楽。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-154",
+    "title": "声量の勝負",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が大きな声で飛行の勝利宣言をしている",
+    "animation_proposal": {
+      "motion": "断罪が近づいて停止、堕天は胸を張って浮く",
+      "expression": "断罪＝迷惑そう／堕天＝張り切り",
+      "afterglow": "堕天が少し声量を落として再出発する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私の勝ちだー！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……うるさい。何に勝った。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "さっきの旋回に決まっている！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……相手は誰だ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……昨日の私だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら好きにしろ。静かにな。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-156",
+    "title": "逆転の採点",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "最終監査により旧CR-156の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "断罪と堕天がそれぞれ違う飛行方法を試している",
+    "animation_proposal": {
+      "motion": "堕天が速く短距離を飛び、断罪が狭く小回りする。次に二人が相手の動きを試す",
+      "expression": "断罪＝真剣→意外そう／堕天＝自信満々→苦戦→笑う",
+      "afterglow": "二人はどちらも自分の得意な速さへ戻り、一度だけ互いに頷く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "断罪！ 私の速さに文句があるなら見せてみろ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……速さだけで曲がれるものではない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "小さく旋回するが膨らむ",
+        "text": "ふん！ ならお前の小回りを真似してやる！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……む。意外と難しいな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "少し加速する",
+        "text": "……お前の直線も、無駄が少ない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そうだろう！ ……って、今褒めたのか？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……事実を言っただけだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 次は両方できるようになるぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それは悪くない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-157",
+    "title": "見ている場所が違う",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-157の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天王が遠くの仲間の動きを見守り、断罪が隣に立つ",
+    "animation_proposal": {
+      "motion": "堕天王は仲間の表情を確かめ、断罪は移動経路を目で追う。同じ相手を違う角度から見ている",
+      "expression": "断罪＝集中→納得／堕天王＝穏やか→少し驚く",
+      "afterglow": "二人がそれぞれ別の方向を確認してから静かに別れる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "あの子、今日は楽しそうだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……次の曲がり角で速度を落とすべきだ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。私とは見ているところが違うんだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前は表情を見ていたのか"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。少し無理して笑っていないか、気になって"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私は動きしか見ていなかった"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は進路まで気づかなかったよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら、両方見ればいい"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうだね。二人なら見落としも減りそう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-158",
+    "title": "頼まれた見回り",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天王が周囲を見回したあと断罪へ近づく",
+    "animation_proposal": {
+      "motion": "堕天王が進路を示し、断罪は短くうなずいて方向転換",
+      "expression": "断罪＝真剣／堕天王＝信頼する笑み",
+      "afterglow": "断罪が静かに見回りへ向かう"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "断罪、向こうを少し見てきてもらえるかな。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……分かった。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "助かるよ。頼りにしている。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それくらい当然だ。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。ありがとう。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……礼は帰ってからでいい。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-159",
+    "title": "まだ聞かない",
+    "group": "その他ペア",
+    "rarity": "超レア",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪が普段より長く堕天王のそばにとどまる",
+    "animation_proposal": {
+      "motion": "堕天王は距離を詰めず一緒に静止、断罪が少し肩の力を抜く",
+      "expression": "断罪＝迷い→静かな顔／堕天王＝穏やか",
+      "afterglow": "二人が言葉少なに同じ方向を向く"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……一つ、聞きたいことがある。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。聞くよ。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……やはり、今はいい。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうか。話したくなったときでいいよ。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……追及しないのか。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "無理に聞く必要はないからね。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-161",
+    "title": "気づいた寝不足",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天王がいつもより遅い速度で浮いている",
+    "animation_proposal": {
+      "motion": "深淵が自分から少し近づき堕天王を見る",
+      "expression": "深淵＝ぼんやりだが気にする／堕天王＝少し驚く",
+      "afterglow": "堕天王が休み、深淵も横で低速浮遊に入る"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は遅いね。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "少し疲れたかな。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……休んで。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "おや、珍しいね。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……倒れると、困るから。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それじゃあ、お言葉に甘えよう。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-164",
+    "title": "何も言わない応援",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が深淵のいる方へ向かいかけて止まる。堕天王が近くを通り、あえて声をかけずにいる",
+    "animation_proposal": {
+      "motion": "堕天が堕天王をちらりと見る。堕天王は道を空け、堕天が自分のタイミングで飛び出す",
+      "expression": "堕天＝そわそわ→強気／堕天王＝穏やかな微笑",
+      "afterglow": "堕天は自分から深淵の方へ向かい、堕天王は距離を保って見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……今日は何も言わないのか？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。堕天が決めることだからね。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふ、ふん！ 別に助けてほしいわけではない！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "分かっているよ。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……なら、見ていろ。今度は自分で話す！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。行っておいで。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "だ、だから急かすな！ ……今行くところだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-172",
+    "title": "理由のない笑い",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-172の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "黒翼がひとりで笑いそうになっているところに深淵と堕天王が近づく",
+    "animation_proposal": {
+      "motion": "黒翼が口元を押さえて浮き、堕天王もつられて笑う。深淵はほとんど表情を変えない",
+      "expression": "黒翼＝笑いをこらえる→大笑い／堕天王＝不思議→笑顔／深淵＝半目→わずかに口元が緩む",
+      "afterglow": "三人で静かに浮いたあと、黒翼だけもう一度笑い出す"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "黒翼、何か面白いことがあったの？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "分かんない！ 急に笑いたくなっちゃって！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……理由、ないの？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ でも堕天王も笑ってる！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。なんだか、つられてしまったね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ、困る"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、どうして？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私もちょっと笑いそう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あはは！ じゃあ一緒に笑お！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-173",
+    "title": "出しゃばらない応援",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が深淵に小さな挑戦を見せる準備をし堕天王が近くにいる",
+    "animation_proposal": {
+      "motion": "堕天が深淵に小さな挑戦を見せようとする。堕天王は二人の表情を見て気づき、会話の途中でゆっくり場を離れる。堕天王が主導・解説せず、残る二人の間合いを主役にする。",
+      "expression": "堕天＝張り切り／深淵＝半目／堕天王＝温かい笑み",
+      "afterglow": "堕天王が二人の視界から外れ、堕天と深淵が短く並んで浮く。退場の動作を省略しない。"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 今度は上手く飛べるぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……見てる。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それじゃあ私は向こうを見てくるね。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "わ、分かった！ すぐ戻る必要はないぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。楽しんでおいで。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……急がなくていいよ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-174",
+    "title": "遠回りの価値",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪が二つの移動方向を比べ、近くにいる深淵と堕天王に短く相談する",
+    "animation_proposal": {
+      "motion": "断罪が直線方向を示す。深淵は先に短い方を指すが、障害の説明後に安全な方へ向け直す。堕天王がゆっくりうなずく",
+      "expression": "断罪＝真剣／深淵＝面倒そう→納得／堕天王＝落ち着いた笑み",
+      "afterglow": "断罪は安全な遠回りの経路へ進み、深淵はその場の静かな浮遊に戻る。堕天王は進路を譲る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最短で行くべきか、回るべきか。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……短い方。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……途中に障害がある。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それなら、少し遠くても安全な方かな。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ぶつかったら、余計に面倒。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら遠回りだ。判断は一致した。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。それがよさそうだね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-176",
+    "title": "三つの休み方",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "三人が近距離でしばらく浮いている",
+    "animation_proposal": {
+      "motion": "断罪は背筋を伸ばして静止、深淵は高度を下げ、堕天王はゆったり漂う",
+      "expression": "断罪＝落ち着き／深淵＝眠そう／堕天王＝穏やか",
+      "afterglow": "三人が互いに干渉せずしばらく休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日は少し休もうか。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……休むなら、周囲は確認する。"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私は寝る。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。二人とも自分らしいね。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前も休め。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。そうさせてもらうよ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-177",
+    "title": "言葉の裏側",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が全員でできる遊びを考えており、断罪と堕天王が近くに集まる",
+    "animation_proposal": {
+      "motion": "断罪が黒翼の前に出て短く意見を言う。黒翼が一度首をかしげ、堕天王が少し離れて補足する",
+      "expression": "黒翼＝わくわく→驚き→笑顔／断罪＝真顔／堕天王＝穏やかな笑み",
+      "afterglow": "黒翼が次の遊びを考えながら飛び、断罪は少し後ろをついていく。堕天王は二人を見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなで遊ぶなら、何から決めればいいかな？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……嫌がる奴がいたら、無理に誘うな。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あ、そうだよね！ 見てるだけでもいいようにしようかな？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……まだ何も始めていないだろう。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "断罪は、みんなが楽しめるように考えてくれたんだよ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ、見てるだけでも楽しい遊びにする！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それでいい。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。断罪のおかげで、いい案が浮かんだね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-178",
+    "title": "ふたりを追う",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が深淵と堕天に同時に遊びを持ちかける",
+    "animation_proposal": {
+      "motion": "黒翼が先に小さく旋回、堕天が続くが深淵は止まったまま",
+      "expression": "黒翼＝無邪気／堕天＝張り切り／深淵＝面倒そう",
+      "afterglow": "黒翼と堕天が深淵のところへ戻ってくる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "二人とも！ 追いかけっこしよ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いいぞ！ 深淵も来るか！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私は審判。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあどっちが勝ったか見ててね！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……分かった。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よーし！ 勝つのは私だ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-182",
+    "title": "三つ目の楽しみ",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "黒翼"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が一人で浮遊しながら、嬉しかったことを指で数え始める",
+    "animation_proposal": {
+      "motion": "黒翼が一つ、二つと指を立てるように身振りをし、三つ目で一度止まってから軽く跳ねる",
+      "expression": "黒翼＝嬉しそう→考え中→晴れやかな笑顔",
+      "afterglow": "黒翼が次の楽しいことを探すように、機嫌よくゆっくり移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今日の嬉しかったこと、三つ数えてみよう！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "一つ！ みんなと同じ部屋にいられること！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "二つ！ 断罪ともお話しできたこと！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "三つ……あれ？ まだ決まらない！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、これから一つ見つけようっと！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-183",
+    "title": "預けられる背中",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪が誰もいない場所で一瞬立ち止まり、遠くにいる仲間の方を見る",
+    "animation_proposal": {
+      "motion": "断罪が一度だけ背後を振り返る。昔を思い出すように視線を伏せ、ゆっくり正面に戻る",
+      "expression": "断罪＝硬い表情→遠い目→静かな安堵",
+      "afterglow": "断罪が普段どおりの速度で戻るが、進む向きは仲間たちのいる方になる"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……あの時から、ひとりでいいと思っていた。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……もう誰にも背中を預けない。それで済むはずだった。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今は、隣に誰かがいても邪魔だと思わない。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………悪くない変化だ。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-184",
+    "title": "ひとりの確認",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "断罪"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "断罪が離れた位置から部屋全体を見ている",
+    "animation_proposal": {
+      "motion": "断罪がゆっくり一周視線を巡らせ、入口側に戻る",
+      "expression": "断罪＝真顔",
+      "afterglow": "確認を終えた断罪が少しだけ姿勢を緩める"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……異常なし。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……騒がしいが、危険ではない。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それならいい。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-188",
+    "title": "一問だけの勝負",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "堕天が深淵の休んでいる方角を見つめ、一人で何か思いつこうとしている",
+    "animation_proposal": {
+      "motion": "堕天が小さく上下しながら考え込み、ふと止まってから自信ありげにうなずく",
+      "expression": "堕天＝難しい顔→ひらめき→照れ隠しの得意顔",
+      "afterglow": "堕天は声を出さないまま一度うなずき、深淵のいる方へ少しずつ近づく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵が動かずに楽しめる遊び……。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そうだ！ なぞなぞ勝負なら、その場でできる！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "十問勝負で私が圧勝して……いや、十問は面倒がるか。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "まずは一問！ 私が絶対に勝つ難問を……。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……あいつが答えたくなる問題にしてやる！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "べ、別に特別扱いではないぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-189",
+    "title": "いつもと逆の道",
+    "group": "単独",
+    "rarity": "日常",
+    "participants": [
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-189の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天王が見回りを終えて自由に動けるとき",
+    "animation_proposal": {
+      "motion": "堕天王がいつもの方向へ一歩進み、ふと立ち止まって反対側へゆっくり向き直る",
+      "expression": "堕天王＝考える→少し嬉しそう",
+      "afterglow": "普段と逆の道を眺めながらゆっくり浮いていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……さて、いつもの方から回ろうかな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……あれ？ 今日は急ぐ用事もなかったね"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "たまには、反対側から歩いてみようかな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。同じ部屋なのに、少し新鮮だね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-190",
+    "title": "一人だけの大声",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-190の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "trigger_proposal": "堕天王が周りに誰もいない時、堕天の元気な掛け声を思い出す",
+    "animation_proposal": {
+      "motion": "堕天王が肩を整え、ほんの少し勢いよく片手を挙げる。自分で笑って元の姿勢に戻る",
+      "expression": "堕天王＝真剣→照れ笑い→穏やか",
+      "afterglow": "誰もいないことを一度だけ確かめ、小さく頷いて移動する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "堕天はいつも、あんなに元気に言えるんだね"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……私も、一回だけ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": "普段より大きな声",
+        "text": "よしっ、行くぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……ふふ。私が言うと、少し変な感じだな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "でも、悪くないね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-193",
+    "title": "話の続きを守る",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "黒翼が断罪の話を聞いている途中、堕天王に呼びかけようとする",
+    "animation_proposal": {
+      "motion": "断罪が話を止め、堕天王がさりげなく離れて二人の時間を作る",
+      "expression": "黒翼＝自然な笑顔／断罪＝少し戸惑う／堕天王＝穏やかな笑み",
+      "afterglow": "黒翼が断罪の方へ向き直り、堕天王は静かに去る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、堕天王だ！ ちょっと相談して……。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。今は断罪とお話ししていたんじゃないかな。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あ、そうだった！ 続きを聞かせて！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……大した話ではない。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は後で大丈夫だよ。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ありがとう！ 断罪、どこまで話したっけ？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最初からでも構わない。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-194",
+    "title": "気づいた静けさ",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "深淵が普段より高度を下げて静止し、堕天が気づいたところへ堕天王が通りかかる",
+    "animation_proposal": {
+      "motion": "近寄ろうとした堕天が深淵の様子を見て減速する。堕天王は二人の間へ割り込まず少し距離を取る",
+      "expression": "深淵＝眠そう→小さな安堵／堕天＝張り切る→気遣い→照れ／堕天王＝優しい笑み",
+      "afterglow": "堕天が深淵の隣で静かに浮き、堕天王は二人を邪魔せず離れていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は静かな方がいい。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……いつもより疲れているのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……少し。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ なら私もここでは騒がない！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今の声だけ大きい。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ぐっ……気をつける。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。よく気づいたね、堕天。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "と、当然だ！ べ、別にずっと見ていたわけではないぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……見てたけどね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-196",
+    "title": "質問は一人一つ",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "5人が近くに集まり、黒翼がふと思いついた質問遊びを提案する",
+    "animation_proposal": {
+      "motion": "黒翼が中央でわくわく揺れ、堕天が前のめりになる。深淵はほぼ動かず、断罪が短く視線を向け、堕天王が場をまとめる",
+      "expression": "黒翼＝楽しげ／堕天＝勢いよく自信満々→むっとする／深淵＝眠そう／断罪＝冷静／堕天王＝微笑",
+      "afterglow": "黒翼は楽しそうに小さく回り、堕天がまだ考え込む横で深淵は休憩を続ける。断罪と堕天王は穏やかに見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな！ 一人ひとつだけ、誰かに質問してみよう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 深淵、今いちばんしたいことは何だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何もしないこと。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それ以外だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今ので質問を使い切っただろう。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むっ！ なら、お前はどうなんだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それは二つ目だ。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。では私から。黒翼は、みんなの答えを聞いてどう思った？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな違ってて面白い！ 深淵もちゃんと答えてくれたし！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一回だけね。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-197",
+    "title": "誰かが戻る場所",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "5人が離れた位置にいる状態から一人ずつ中央付近へ戻ってくる",
+    "animation_proposal": {
+      "motion": "黒翼が最初に戻り、断罪が安全な距離に合流、堕天が深淵を追って到着、堕天王が最後にゆっくり合流",
+      "expression": "黒翼＝嬉しそう／断罪＝落ち着き／深淵＝眠そう／堕天＝満足げ／堕天王＝穏やか",
+      "afterglow": "一度集まったあと、それぞれ好きな方向へ自然に散る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれ、みんな戻ってきた！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "偶然だな！ 私も今来たところだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……近かったから。"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……人が集まると狭い。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それでも、ここが落ち着くのかもしれないね。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ なんだか安心する！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-199",
+    "title": "みんなの小さな約束",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "第二弾・新規提案",
+    "trigger_proposal": "5人が同じ周辺に集まり、遊ぶ声と休む静けさが重なったタイミング",
+    "animation_proposal": {
+      "motion": "黒翼が中央に寄って提案し、深淵はその場で静止。堕天が勢いよく上がり、断罪の指摘で減速する。堕天王が各自の距離を整える",
+      "expression": "黒翼＝明るい提案顔／深淵＝眠そう／堕天＝張り切る→慌てる／断罪＝真剣／堕天王＝柔らかな笑顔",
+      "afterglow": "深淵が静かに休み、堕天は声を抑えて浮遊。黒翼と断罪は少し離れて過ごし、堕天王が全体を見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ねえ！ みんなが好きに過ごせるように、約束を一つ作ろう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……休んでるときは、静かにしてほしい。"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら勝負のときは全力で応援していいな！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……誰かが休んでいるとき以外だ。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "まず、深淵に聞いてみようか。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なるほど！ 深淵、今は静かにしたい？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "了解！ 声、小さくするね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 私も……し、静かにするぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……まだ大きい。"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。少しずつ覚えていこう。"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-201",
+    "title": "断りすぎた日",
+    "group": "恋愛B",
+    "rarity": "超レア",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #01を台本化（提案・要審査）",
+    "original_idea_no": 1,
+    "trigger_proposal": "同じ訪問中、堕天からの誘いが連続して断られ、堕天が距離を取ったまま一定時間戻らない",
+    "animation_proposal": {
+      "motion": "いつも跳ねる堕天の高度が徐々に下がって部屋の端へ移動。深淵は静止してから自発的に横断し、隣で止まる",
+      "expression": "堕天＝強がり→沈んだ目→少し明るい／深淵＝平静→目線を探す→静かな申し訳なさ",
+      "afterglow": "会話後しばらく二人は低速で並んで浮く。堕天はすぐ全速力には戻らない"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵、今度こそ一緒に何か……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……さっきも断った"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……分かってる。今日はもう誘わない"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……じゃあ、私はあっちにいる"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "少し時間を置いて",
+        "text": "……静かになった"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……戻ってこない"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "隣へ移動して",
+        "text": "……さっきは、ごめん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……別に、気にしていない"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……嘘。いつもと違う"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……私だって、たまには静かにする"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は、私から誘う。一緒に休まない？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……ああ。そうしよう"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-202",
+    "title": "黒翼が初めて断る",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "元案 #2 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 2,
+    "trigger_proposal": "黒翼が珍しく自分の用事を優先すると決めたとき、断罪が近くにいる",
+    "animation_proposal": {
+      "motion": "黒翼が直進しようとしていったん止まり、自分で進行方向を決める。断罪は道を空け、追いかけない",
+      "expression": "黒翼＝少し迷う→晴れやかな顔／断罪＝意外そう→いつもの表情",
+      "afterglow": "黒翼は自分で決めた方向に移動。断罪は距離を保って見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……次の頼まれごとも引き受けるのか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ううん。今日は私のやりたいことがあるから断るよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……珍しいな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "へへ、なんだか変かな？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……別に。いつも引き受けすぎだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そ、そうかな？ 私、頼まれると嬉しくて"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前の時間だ。お前が決めろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……うん！ 今日はそうする！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら、行ってこい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-203",
+    "title": "昔の感覚",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "断罪",
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #03を台本化（提案・要審査）",
+    "original_idea_no": 3,
+    "trigger_proposal": "黒翼と堕天が無邪気に相談している場所の近くで、断罪が立ち止まる",
+    "animation_proposal": {
+      "motion": "二人は手振りの代わりに小刻みに上下しながら話す。断罪は少し遠くで止まり、最後にゆっくり近づく。断罪の心の声が表示されるあいだ、他二人は反応せず自然な会話動作を継続する。",
+      "expression": "断罪＝遠い目→一瞬曇る→平常／黒翼＝楽しそう／堕天＝得意げ",
+      "afterglow": "断罪は二人の輪に無理なく加わり、会話終了時は同じ方向を向く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "任せろ！ 私が先頭なら上手くいく！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、私の案も聞いてほしいな！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "む……なら聞いてやる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "【心の声・他キャラには聞こえない】",
+        "text": "……昔も、こんなふうに話していた"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "【心の声・他キャラには聞こえない】",
+        "text": "……信じていた。だからこそ……"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ そっちの意見も聞きたい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私か"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 三人の方が考えやすいよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……まず、目的から決めろ。話が飛びすぎだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ では目的は……何だったか？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そこからだったね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "小声",
+        "text": "……やれやれ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-204",
+    "title": "堕天王の迷い",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #04を台本化（提案・要審査）",
+    "original_idea_no": 4,
+    "trigger_proposal": "五人の行動予定を決める場面で希望が割れている",
+    "animation_proposal": {
+      "motion": "堕天王が中央で小さく旋回してから静止。残る四人は広がり、順に彼女へ向き直る",
+      "expression": "堕天王＝珍しく考え込む→穏やかな微笑／黒翼＝きょとん／断罪＝真剣／深淵＝眠そう／堕天＝元気",
+      "afterglow": "最後は各自が希望した方向へ小さく動き、堕天王だけ少し遅れてついていく"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "全員が楽しめるようにしたいんだけど……今日は迷うね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王でも迷うんだ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "もちろん。誰かの希望を消してしまうのも違う気がして"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……全員の希望を一つにする必要はない"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……別々でよくない？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私は先に勝負を……いや、あとで合流すればいいのか！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私も後でみんなの話を聞きたい！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうだね。みんなに聞いてみてよかった"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最初からそうしろ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それは耳が痛いな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-205",
+    "title": "負けず嫌いの限界",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "元案 #5 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 5,
+    "trigger_proposal": "堕天が同じ小勝負で何度も負け、いつもならすぐ再挑戦するのに静かにしている",
+    "animation_proposal": {
+      "motion": "堕天は高度を落として動かず、途中で勢いよく飛び出しかけるが自分で止まる。深淵は距離を変えず話を聞く",
+      "expression": "堕天＝苛立ち→悔しさ→考え直す→落ち着き／深淵＝いつもの半目→小さな納得",
+      "afterglow": "堕天はすぐ再挑戦に向かわず、珍しく静かに浮く。深淵は何も催促せず、元の位置で過ごす"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……また負けた。何回目だ、もう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……まだやる？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "やるに決まって……いや。今の私は何をしても腹が立つ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、やめれば"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それでは逃げたようではないか……！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……休むのと、逃げるのは違う"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……休んでも、負けを認めたわけじゃないな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……今日は休む。明日こそ勝ってみせるぞ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……なら、今日は静かにして"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふ、ふん！ それくらいできる！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-206",
+    "title": "黒翼の真剣な顔",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "元案 #6 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 6,
+    "trigger_proposal": "黒翼と堕天の段取りが食い違い、堕天が黒翼の判断だと勘違いした直後。断罪はその場にいる",
+    "animation_proposal": {
+      "motion": "堕天が詰め寄りかけると、黒翼が明るい浮遊を止めて向き直る。断罪は割り込まず黒翼の隣へ。最後は三人の距離が戻る",
+      "expression": "黒翼＝戸惑い→真剣→安心／堕天＝勢い→困惑→素直な反省／断罪＝見守る鋭い目",
+      "afterglow": "堕天が黒翼と一緒に段取りを確認し直す。断罪は二人の後方で静かに見守る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "黒翼！ さっきの順番、勝手に変えたのか？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ？ 堕天が「後で決めよう」って言ってたから、まだ決めてないよ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……む。私は「後で確かめよう」と言ったつもりだった"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、まだ決まってないってことだね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私はもう決まったものだと……いや、聞かずに決めつけたな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "びっくりしたよ。次は先に聞いてね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……まず確かめろ。責めるのはその後でも遅い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……すまん、黒翼。私の勘違いだった"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ じゃあ今、みんなで順番を決めよ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし。今度は最後まで聞くぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-207",
+    "title": "嫉妬よりも信頼",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "元案 #7 → 第三弾監査C判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 7,
+    "trigger_proposal": "黒翼と堕天王が二人だけの昔話で楽しそうに話し、断罪が少し離れた場所を通る",
+    "animation_proposal": {
+      "motion": "断罪はいったん方向を変えそうになるが静止。二人の間に割り込まず、少し離れて浮く。黒翼の声でゆっくり向き直る",
+      "expression": "断罪＝一瞬の複雑さ→静かな納得／黒翼＝自然な笑顔／堕天王＝穏やかな表情",
+      "afterglow": "黒翼と堕天王は会話の続きを楽しむ。断罪は自分から話題を奪わず、声をかけられたときだけ近づく"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それでね、堕天王があのとき笑っちゃって！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。黒翼もずいぶん楽しそうだったよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "少し離れて",
+        "text": "……楽しそうだな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、断罪！ こっち来る？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……二人の話の途中だろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ でも、断罪にも聞いてほしくて"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら、終わるまで待つ。続けろ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ありがとう。じゃあ、あと少しだけ話してもいいかな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……好きにしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、じゃあ続きを話すね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。聞いている"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-208",
+    "title": "受け取れなかった感謝",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #08を台本化（提案・要審査）",
+    "original_idea_no": 8,
+    "trigger_proposal": "深淵が堕天の代わりに小さな用事を一つ済ませ、堕天がまだ気づいていない",
+    "animation_proposal": {
+      "motion": "深淵が短い距離だけ移動して静止。堕天が後から見つけて急接近するが、深淵の手前で減速",
+      "expression": "深淵＝無表情→少し気まずい／堕天＝疑問→目を見開く→笑顔",
+      "afterglow": "堕天は喜びすぎて揺れたあと速度を落とし、深淵が休める距離で浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "む？ さっきまで残っていた用事が終わっている……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……終わらせた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "えっ！？ 誰が？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なぜ言わなかった！ 礼も言えないではないか！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……言う方が面倒だった"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ありがとう！ 助かったぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今度は私が何か……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……その元気を少し減らして"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 静かに喜ぶ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-209",
+    "title": "二人の合作",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #11を台本化（提案・要審査）",
+    "original_idea_no": 11,
+    "trigger_proposal": "黒翼が空中に絵を描くまねをしていて、断罪が見守る",
+    "animation_proposal": {
+      "motion": "黒翼が大きな曲線の軌跡を描き、断罪が小さく正確な軌跡をつなげる",
+      "expression": "黒翼＝わくわく／断罪＝真剣→小さな満足",
+      "afterglow": "二人が完成した見えない絵を同じ方向から眺める"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ 二人で一つの絵を描いてみよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何を描く"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "まだ決めてない！ 私が先に線を引くね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……待て。それでは形が決まらない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そこを断罪が考えて！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……無茶を言う。……だが、その曲線なら、ここをつなげばいい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わあ！ 何かの地図みたい！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……地図には見えない。だが、二人で作ったのは確かだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それが一番いいところだよ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-210",
+    "title": "言い返してきた黒翼",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #12を台本化（提案・要審査）",
+    "original_idea_no": 12,
+    "trigger_proposal": "二人の行き先について断罪が先に決めようとしたとき",
+    "animation_proposal": {
+      "motion": "黒翼がその場で停止して向き直る。断罪は一歩分引いてから同じ高さへ戻る",
+      "expression": "黒翼＝真剣→笑顔／断罪＝驚き→考え込む",
+      "afterglow": "二人は折衷した進路に向けて並んで動き出す"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……危険が少ない。今日はこっちだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "待って。私、向こうも確かめてみたい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……無駄な危険を増やすな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、見ないと分からないこともあるよ。まず安全に見られる場所まで行こう？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……反対だ。だが、考えがないわけではないな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 断罪の心配も分かるよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……だったら途中まで同行する。そこから先は確認して決めろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "よし！ 二人の案を合わせよう！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-211",
+    "title": "断罪の笑いのツボ",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #13を台本化（提案・要審査）",
+    "original_idea_no": 13,
+    "trigger_proposal": "黒翼が何でもない出来事を身ぶりで再現し始めたとき",
+    "animation_proposal": {
+      "motion": "黒翼が少し大げさに上下し、断罪が一瞬だけ揺れたあと顔をそらす",
+      "expression": "黒翼＝真剣な再現→きょとん／断罪＝無表情→短い笑み→平静",
+      "afterglow": "黒翼が首をかしげて周囲を見回す。断罪は静かに横に留まる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それでね！ 私、こっちに進もうとしたら、自分の影を追いかけてたの！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……自分の影を？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 追いつけなくて不思議だった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "小さく笑って",
+        "text": "……ふっ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、今笑った？ 何が面白かったの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……影が逃げると思った、その発想だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そうかな？ 影って速いんだよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうだな。お前より速いかもしれん"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今度競争してみる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……やめておけ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-212",
+    "title": "正解のない色",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "元案 #15 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 15,
+    "trigger_proposal": "黒翼が気分を色で表す遊びを思いつき、断罪に声をかける",
+    "animation_proposal": {
+      "motion": "黒翼が身振りで色を並べるようにふわりと上下し、断罪は考えながら向き直る。実際の絵素材は不要",
+      "expression": "黒翼＝好奇心→嬉しそう／断罪＝真剣に考える→少しだけ柔らかい目",
+      "afterglow": "二人が別の色を思い浮かべたまま並んで浮遊し、どちらが正しいか決めずに終える"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪！ 今日の気分を色にしたら、何色だと思う？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何を基準に答えろと"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "基準はないよ！ 思いついた色！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら、灰色だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、私は黄色！ 同じ日なのに違うね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……灰色が悪いとは言っていない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 静かな色も好き！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか。なら、お前の黄色も悪くない"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やった！ どっちも正解だね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……正解を決める遊びではないだろう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-213",
+    "title": "断罪が聞き役になる",
+    "group": "恋愛A",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #16を台本化（提案・要審査）",
+    "original_idea_no": 16,
+    "trigger_proposal": "黒翼が何度か話しかけているが、断罪が自分から立ち去らずにいる",
+    "animation_proposal": {
+      "motion": "黒翼が小さく上下しながら話し、断罪は向きを保って静止。最後だけ少し距離を縮める",
+      "expression": "黒翼＝うれしそう／断罪＝平静→かすかな優しさ",
+      "afterglow": "黒翼が話し終わっても断罪はすぐ離れず、ひと呼吸だけ待つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それでね、朝は堕天が勝負して、そのあと深淵が……あ、話が長いかな？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……続けろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ほんと？ じゃあ、次は堕天王と見つけた小さな模様の話！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……昨日と違う形だったんだろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ！ それ、昨日話したこと覚えてるの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……耳はある"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ今日の話も覚えててね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……必要なことは覚えている"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "全部必要な話だったよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうか"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-214",
+    "title": "断罪の小さな冗談",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #17を台本化（提案・要審査）",
+    "original_idea_no": 17,
+    "trigger_proposal": "二人で休憩を取り、黒翼が断罪の真面目さを話題にしたとき",
+    "animation_proposal": {
+      "motion": "断罪があえて表情を変えずに答え、黒翼が一瞬固まってから急接近する",
+      "expression": "黒翼＝驚愕→安心→笑顔／断罪＝真顔→少し困った目",
+      "afterglow": "断罪はほんのわずかに上昇し、黒翼は後から追いかける"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪って、冗談言うことあるの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ある。今日から私は一日中寝る"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ！？ 体調悪いの！？ 堕天王を呼ぶ！？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……冗談だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そ、そっか！ よかった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前が冗談を聞いたから答えただけだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ びっくりしたけど、ちょっと面白かった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……二度とやらん"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えー！ また聞きたい！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-215",
+    "title": "失敗したのはどっち？",
+    "group": "恋愛A",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #19を台本化（提案・要審査）",
+    "original_idea_no": 19,
+    "trigger_proposal": "二人で決めた小さな手順がうまくいかなかった直後",
+    "animation_proposal": {
+      "motion": "二人が別々の方向を指すように軽く向きを変えたあと、中央で向き合う",
+      "expression": "黒翼＝申し訳なさ→考える／断罪＝硬い顔→分析",
+      "afterglow": "最後は二人とも少し後退し、同時に進むタイミングを確かめる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ごめん！ 私が早く動きすぎた！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……違う。私の指示が曖昧だった"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも私、確認しなかったよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……確認の時間を作らなかったのは私だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっと……二人とも原因があるってこと？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうだな。責任の話はもういい。次の手順を決めるぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ今度は『せーの』で始めよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……単純だが、悪くない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-216",
+    "title": "一日ずれた勝敗表",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "元案 #21 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 21,
+    "trigger_proposal": "堕天が勝敗を口頭で数え、深淵に自慢しようとしている",
+    "animation_proposal": {
+      "motion": "堕天が勝利数を指で数えて得意げに浮く。深淵は首を少し傾ける。堕天はその場でゆっくり数え直す",
+      "expression": "堕天＝得意→焦り→納得／深淵＝淡々",
+      "afterglow": "堕天が数を直してから満足げに浮く。深淵は答え合わせだけして動かない"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "見ろ深淵！ 私は今週、十勝二敗だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……昨日の分、入ってる？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "昨日？ ……あっ！ 数えたのは一昨日までだった！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……三回負けてた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むむ……十勝五敗か。勝ち越しなのは変わらん！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。最初からそう言えばいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 次は日付も一緒に覚えておくぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……記録、続くといいね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-217",
+    "title": "静かな堕天の正体",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #23を台本化（提案・要審査）",
+    "original_idea_no": 23,
+    "trigger_proposal": "いつもより堕天の移動量と発話数が少ない状態が続く",
+    "animation_proposal": {
+      "motion": "堕天が小さな円の内側をゆっくり回る。深淵は静止したまま顔だけ向ける",
+      "expression": "堕天＝真剣→慌てる／深淵＝疑問→微かに緩む",
+      "afterglow": "堕天は企画内容を一つだけ話し、深淵は同じ位置で聞く"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は静か"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "しっ！ 今、考えているのだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何を？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "お前が動かなくても楽しめる遊びを……あっ、言ってしまった！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……内緒だった？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうだ！ 完成してから驚かせるつもりだったのに！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……完成してから、聞く"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……ああ！ 期待していろ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-218",
+    "title": "共同作戦の結果",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "元案 #24 → 第三弾監査C判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 24,
+    "trigger_proposal": "堕天と深淵が前に考えた協力の手順を、部屋の小さな共同課題で初めて試すとき",
+    "animation_proposal": {
+      "motion": "堕天は合図を受けて一度だけ短く移動し、深淵は動かずタイミングを知らせる。成功後、堕天が弧を描いて深淵のもとへ戻る",
+      "expression": "堕天＝緊張→達成感／深淵＝眠そう→小さな満足",
+      "afterglow": "堕天は達成を自慢しつつも深淵と結果を振り返り、深淵は短い返答だけして同じ場所に留まる"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ さっき決めた合図、今度こそ試すぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私、ここから動かない担当"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "分かっている！ 合図が出たら私が動く。終わったら戻る！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、始める"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……まだか？ まだなのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よしっ！ ……できた！ 目印、全部そろったぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一回で終わった"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 私の速さと、お前の合図のおかげだな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……動かずに済んだし"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら、次も一緒に……いや、今日はこれで終わりにする！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。それがいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-219",
+    "title": "約束は一回だけ",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #25を台本化（提案・要審査）",
+    "original_idea_no": 25,
+    "trigger_proposal": "深淵が一回だけ遊ぶ約束をした記録があり、堕天が次を誘いそうになる",
+    "animation_proposal": {
+      "motion": "堕天が次へ跳ねかけて空中で止まり、深淵と距離を保つ",
+      "expression": "堕天＝名残惜しい→我慢→誇らしげ／深淵＝少し意外→静かに納得",
+      "afterglow": "深淵は休む姿勢になり、堕天は無理に追わず別方向へゆっくり飛ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "勝った！ よし、続けてもう一……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一回だけって約束"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そうだったな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……まだやりたい？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "もちろん！ だが、約束は約束だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "また次の機会に誘うぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……次なら、考える"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……よし！ 次を楽しみにしていよう！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-220",
+    "title": "嫌いなものが一致",
+    "group": "恋愛B",
+    "rarity": "日常",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #26を台本化（提案・要審査）",
+    "original_idea_no": 26,
+    "trigger_proposal": "休憩中に二人が偶然同じものを避けたあと",
+    "animation_proposal": {
+      "motion": "二人が同時に同じ方向から少し離れる。堕天が素早く向き直り、深淵はほぼ静止",
+      "expression": "堕天＝驚き→喜ぶ／深淵＝無関心→わずかに笑う",
+      "afterglow": "二人は避けた場所から適度な距離を保って並ぶ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "お前も長い説明が嫌いなのか！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。聞くのが面倒"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私も嫌いだ！ 早く実行したいからな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……理由は逆"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "逆？ いや、同じものが嫌いなら仲間だ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そこは、否定しない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 次の話は短くするぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今の話も、もう十分"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-222",
+    "title": "十秒の沈黙",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #29を台本化（提案・要審査）",
+    "original_idea_no": 29,
+    "trigger_proposal": "深淵が何かを説明しようとし、堕天が先に口を開きかけたとき",
+    "animation_proposal": {
+      "motion": "堕天は何度か上下しかけて自制し、深淵はゆっくり一呼吸して話す",
+      "expression": "堕天＝我慢→集中→満足／深淵＝少し戸惑う→柔らぐ",
+      "afterglow": "二人とも静かに浮き、直後に追加の誘いはしない"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……あの場所、前より落ち着かなくて"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それなら私が……！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……いや。続けてくれ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。通る音が増えたから、別の場所にしようと思う"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……なるほど。静かな場所なら私が探す……いや、手伝えるか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最後まで聞いたんだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ それくらいできる！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ありがと"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-223",
+    "title": "次は私が決める",
+    "group": "恋愛B",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #30を台本化（提案・要審査）",
+    "original_idea_no": 30,
+    "trigger_proposal": "堕天が遊びの案をいくつか出した後、深淵が近くに残っている",
+    "animation_proposal": {
+      "motion": "堕天が話しながら右左に移動。深淵は一度だけ上昇し、二人は低い位置で静止",
+      "expression": "深淵＝静かな決意／堕天＝意外→嬉しそう",
+      "afterglow": "二人とも同じ低い高さで、短い休憩の動作に入る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "次は勝負か？ それとも探検か！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……次は私が決める"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "お、お前が！？ 何をする！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……五分、何もせずにいる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……それは遊びなのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私にとっては"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 全力で何もしないぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……全力は、いらない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-224",
+    "title": "考えすぎない計画",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #31を台本化（提案・要審査）",
+    "original_idea_no": 31,
+    "trigger_proposal": "黒翼が立て続けに案を出し、深淵が近くで聞いている",
+    "animation_proposal": {
+      "motion": "黒翼は案ごとに向きを変え、深淵は最後の一案だけ短い移動で示す",
+      "expression": "黒翼＝ひらめきの連続→納得／深淵＝半目→少し満足",
+      "afterglow": "黒翼が選んだ案の方向へ移動し、深淵は元の休憩位置に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなで遊ぶなら、宝探しもいいし、競争もいいし、探検も！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……全部やるの？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ううん、まだ考えてる！ あと、かくれんぼも！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……まず、みんなに何をしたいか聞けば"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、そっか！ 私だけで決めるところだった！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……決める作業、減るし"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵と話すと、頭の中がすっきりする！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それはよかった"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-225",
+    "title": "聞きたくない質問",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #32を台本化（提案・要審査）",
+    "original_idea_no": 32,
+    "trigger_proposal": "黒翼の連続質問が一定回数に達し、深淵の返事が短くなっている",
+    "animation_proposal": {
+      "motion": "黒翼の上下運動が次第に静かになり、深淵は離れず少しだけ体の向きを変える",
+      "expression": "黒翼＝興味津々→気づき→笑顔／深淵＝困り顔→平静",
+      "afterglow": "黒翼は黙って隣に浮き、深淵の高度に合わせてゆっくり揺れる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "好きな場所は？ 好きな音は？ あと、好きな……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……質問、多い"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、ごめん！ 嫌だった？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……答えるのが面倒になった"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ちゃんと言ってくれてありがとう！ じゃあ質問はここまで！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "何も聞かずに一緒に浮いててもいい？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それなら、いい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-226",
+    "title": "同じ物語、違う感想",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #33を台本化（提案・要審査）",
+    "original_idea_no": 33,
+    "trigger_proposal": "二人が同じ短い物語を聞いた後に、近くで感想を言い合う",
+    "animation_proposal": {
+      "motion": "黒翼は少し前へ出て物語の人物を真似るように動く。深淵は低速で首を傾ける",
+      "expression": "黒翼＝感動→きょとん／深淵＝真面目→少し納得",
+      "afterglow": "二人は同じ高さに戻り、各自の方向へ離れる前に一度向き合う"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あの人が最後に助けに戻ったところ、よかったよね！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最初に道具を持っていれば、戻らずに済んだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、そこが気になったの！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。二度手間"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、戻るって決めたのは優しかったと思う！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それは、そう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "同じ話なのに、見てるところが違うね！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……まあ、そういう見方もある"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-227",
+    "title": "企画がまとまらない",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #34を台本化（提案・要審査）",
+    "original_idea_no": 34,
+    "trigger_proposal": "黒翼と堕天が同じ遊びについて連続で案を追加している",
+    "animation_proposal": {
+      "motion": "二人は中心から左右へ元気に飛び、途中で同時停止して互いに向き直る",
+      "expression": "黒翼＝楽しそう→数え直す顔／堕天＝自信満々→考え込む",
+      "afterglow": "二人は計画を一つに絞り、同じ方向へ飛び出す"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなが笑えるお祭りみたいなの、どうかな！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら勝負も必要だ！ もちろん私が優勝する！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あと、静かに休める場所も！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "さらに最後は大きな決勝戦だ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……あれ？ 何をする日だっけ？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……何でもする日、ではないか？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ最初は一つだけ決めよう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 最初は参加したい人を聞く！ 勝負はそのあとだ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-228",
+    "title": "負けても楽しい？",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #35を台本化（提案・要審査）",
+    "original_idea_no": 35,
+    "trigger_proposal": "二人が同じ遊びを終え、堕天だけ少し悔しそうにしている",
+    "animation_proposal": {
+      "motion": "黒翼は楽しそうに小さく回る。堕天は下がった高度を戻し、黒翼の方を向く",
+      "expression": "黒翼＝満足／堕天＝悔しさ→考える→闘志",
+      "afterglow": "堕天は勝負の再戦を急がず、次のやり方を相談する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "くっ、私の負けか……！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "楽しかったね！ もう一回やりたい！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "負けたのに、悔しくないのか？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "悔しいのもちょっとあるよ。でも、面白かった方が大きいかな！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……私にはまだ分からんな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天は勝ちたいんだもんね。それも分かる！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "当然だ！ だが……楽しみながら勝つ方法なら、考えてもいい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それ、いいね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-229",
+    "title": "一枚で済む予定表",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "元案 #37 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 37,
+    "trigger_proposal": "二人が共同生活の予定に同じ用事が二重に書かれていることに気づく",
+    "animation_proposal": {
+      "motion": "断罪が二か所の予定を指差すように目線を切り替える。深淵は一度だけ頷き、重複の片方を消すしぐさで済ませる",
+      "expression": "断罪＝確認→納得／深淵＝眠そう→軽い安堵",
+      "afterglow": "断罪は整理された予定を最後に一度確認。深淵は二度呼ばれる心配がなくなり、その場で休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……同じ片付けが、朝と夕方に書かれている"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……二回やるの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……一回のはずだ。担当欄も同じだ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……なら、後の方を消して"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……記入ミスかどうか、確認が必要だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私が書いた。昨日、二度書いた"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最初にそれを言え"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……聞かれなかったし"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……分かった。片方を消す"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……これで二回呼ばれない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-230",
+    "title": "一行の注意書き",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "元案 #38 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 38,
+    "trigger_proposal": "断罪が皆に向けた案内文を考え、短い説明が得意な深淵の確認を求める",
+    "animation_proposal": {
+      "motion": "断罪は考えるように静止し、深淵へ向けて文を読み上げる。意見が分かれても二人とも大きく動かない",
+      "expression": "断罪＝真剣→反論→納得／深淵＝平静→少し考える",
+      "afterglow": "断罪は最初の一文を短く直し、詳しい説明は残す。深淵はそれ以上介入せず休む"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……深淵。これを読んでくれ。長すぎないか確かめたい"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……長い。最初の三行で眠くなる"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……注意点を省けば、誤解が生まれる"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……全部消せとは言ってない"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……では、どうしろと"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最初の一行に結論。理由は、その下"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……結論だけで動く者もいる。危険だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……だから、理由も残すって言った"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なるほど。順番を変えるだけか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。読む方も楽"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……助かった。内容は私が責任を持つ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-231",
+    "title": "共通する意地",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #40を台本化（提案・要審査）",
+    "original_idea_no": 40,
+    "trigger_proposal": "互いが譲らない方針について話していて、周囲に別の会話がない",
+    "animation_proposal": {
+      "motion": "堕天は前のめりに上昇し、断罪は動かず受け止める。最後に同時に少しうなずく",
+      "expression": "堕天＝強気→意外そう／断罪＝厳しい目→わずかに緩む",
+      "afterglow": "二人は競争せず、それぞれの方向へゆっくり進む"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私は負けたまま終わるのが嫌いだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……知っている。何度も聞いた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "お前だって、一度決めたことを曲げないだろう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……曲げるべきなら曲げる。だが、責任からは逃げない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……それは、少し分かるぞ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前も負けた理由から逃げてはいない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 当然だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そこまで褒めたつもりはない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-232",
+    "title": "本気の勝負",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #41を台本化（提案・要審査）",
+    "original_idea_no": 41,
+    "trigger_proposal": "堕天王が珍しく遊びの勝負に参加する意思を示し、堕天が近くにいる",
+    "animation_proposal": {
+      "motion": "堕天が勢いよく上昇し、堕天王は低速のまま正確な位置取りで応じる",
+      "expression": "堕天王＝穏やか→集中／堕天＝驚き→闘志",
+      "afterglow": "勝負が終わると二人は互いに向き直り、次の話をしてから解散する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "堕天王！ お前も一度くらい本気で勝負しろ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。じゃあ今日は少し本気でやってみようか"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ、そんなに簡単に受けるのか！？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "せっかく誘ってくれたからね。手加減はしないよ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "望むところだ！ ……む、動きが読めん！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "急ぐと見落とすこともあるからね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "くっ……もう一度！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いいよ。ただし、次は少し休んでからにしよう"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-233",
+    "title": "堕天王も間違える",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "堕天王",
+      "黒翼",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #42を台本化（提案・要審査）",
+    "original_idea_no": 42,
+    "trigger_proposal": "三人で簡単な順番遊びをしている最中、堕天王が一度順番を取り違えたとき",
+    "animation_proposal": {
+      "motion": "堕天王が一瞬逆方向へ移動。黒翼が楽しそうに指摘し、断罪は動かず確認する",
+      "expression": "堕天王＝気づき→笑う／黒翼＝驚き→笑顔／断罪＝真顔",
+      "afterglow": "堕天王が一つ後ろの位置に戻り、三人で改めて順番を始める"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "次は私の番だね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれ？ 今のは断罪の番じゃなかった？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そうだ。二回目だぞ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "おや、本当だ。私が数え間違えていたね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王も間違えるんだ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "もちろん。間違えたら教えてくれると助かるよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……では、最初から数え直す"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "お願いするよ。今度はちゃんと覚えておくね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-234",
+    "title": "思いがけない意見",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "深淵",
+      "黒翼"
+    ],
+    "provenance": "追加100構想の元案 #43を台本化（提案・要審査）",
+    "original_idea_no": 43,
+    "trigger_proposal": "三人が部屋の小さな飾り方について話していて、堕天王の意見を聞く",
+    "animation_proposal": {
+      "motion": "黒翼が飾りを置く想定位置を巡る。堕天王は少し離れた位置を指し、深淵がそちらへゆっくり移動",
+      "expression": "堕天王＝穏やかな主張／黒翼＝驚き→興味／深淵＝眠そう→納得",
+      "afterglow": "三人は選んだ位置に向かい、飾りは実物がなければ文字表示のみとする"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ここを明るく飾ったら楽しそう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……通り道、狭くなる"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は、何も置かない場所も少し残したいかな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、堕天王は飾らない方が好き？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "全部が賑やかだと、静かな場所がなくなるからね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それ、賛成"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、飾る場所と何もない場所を作ろう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それなら私も嬉しいな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-235",
+    "title": "黒翼に教わる",
+    "group": "その他ペア",
+    "rarity": "日常",
+    "participants": [
+      "堕天王",
+      "黒翼"
+    ],
+    "provenance": "追加100構想の元案 #44を台本化（提案・要審査）",
+    "original_idea_no": 44,
+    "trigger_proposal": "黒翼が自分の考えた簡単な遊びを堕天王に紹介する",
+    "animation_proposal": {
+      "motion": "黒翼が見本として一度軽く跳ね、堕天王が同じ動きをゆっくり真似する",
+      "expression": "黒翼＝得意げ／堕天王＝興味→楽しそう",
+      "afterglow": "二人が同じテンポで一度だけ跳ね、黒翼が先生役のまま見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王！ 新しい遊びを教えてあげる！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それは楽しみだ。今日は黒翼が先生だね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "まず、言われたことと反対に動くの！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "なるほど。じゃあ『上』なら下、だね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "正解！ 『右』！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": "左へ動いて",
+        "text": "こっちかな？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "すごい！ すぐ覚えた！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "説明が上手だったからね。もう一問お願いしてもいい？"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-236",
+    "title": "小さな冗談",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #45を台本化（提案・要審査）",
+    "original_idea_no": 45,
+    "trigger_proposal": "堕天王がいつもより気軽な雑談をしていて、断罪が近くに立つ",
+    "animation_proposal": {
+      "motion": "堕天王がゆっくり一周し、断罪が真顔のまま追う",
+      "expression": "堕天王＝柔らかな笑み→小さく笑う／断罪＝困惑→少し不服",
+      "afterglow": "堕天王が断罪の速度に合わせてゆっくり移動を再開する"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日は少し歩き疲れたね。私も羽を休ませようかな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……飛んでいたが"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。言葉のあやだよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……あやで済ませるには正確ではない"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうだね。次は『飛び疲れた』にするよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それなら分かる"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……今のも、少し冗談だったんだけどね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ややこしい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-237",
+    "title": "深淵にも断られる",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #46を台本化（提案・要審査）",
+    "original_idea_no": 46,
+    "trigger_proposal": "堕天王が深淵に軽い頼み事をするが、深淵が休憩中",
+    "animation_proposal": {
+      "motion": "堕天王が一定距離で停止し、深淵は低速で一度だけ首を横に振る",
+      "expression": "堕天王＝穏やか／深淵＝平静",
+      "afterglow": "堕天王は断られた用事を自分で確認しに移動。深淵は休息を継続"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "深淵、少しだけ一緒に確かめてもらえるかな"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は、無理"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうか。休みたいんだね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "分かった。自分で確認してみるよ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それでいいの？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "断るのも、深淵が決めていいことだからね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ありがと"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-239",
+    "title": "一度だけ譲らない",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "黒翼",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #49を台本化（提案・要審査）",
+    "original_idea_no": 49,
+    "trigger_proposal": "三人で休憩場所を選び、堕天王の希望が聞かれたとき",
+    "animation_proposal": {
+      "motion": "堕天王が自分の位置を保ち、黒翼と堕天が左右に動いて候補を示す",
+      "expression": "堕天王＝穏やかな断固さ／黒翼＝驚き／堕天＝興味津々",
+      "afterglow": "三人とも堕天王の選んだ静かな場所へゆっくり移る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今日はどこで休もうか？ 堕天はあっち？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "もちろん！ 一番眺めがいい場所だ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "今日は私、ここで休みたいな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "珍しい！ 堕天王が先に決めた！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "む、何か特別な理由があるのか？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "風が静かで、落ち着くから"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "もちろん！ じゃあ今日はここにしよう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふむ！ 私も悪くないと思うぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ありがとう。二人とも"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-240",
+    "title": "謎の会議",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #51を台本化（提案・要審査）",
+    "original_idea_no": 51,
+    "trigger_proposal": "黒翼が二人を近くに集め、思いつきの会議を始める",
+    "animation_proposal": {
+      "motion": "黒翼が中心で弾み、断罪は正面に静止。深淵は一番低い位置でゆっくり回る",
+      "expression": "黒翼＝張り切る→気まずい笑顔／断罪＝真剣／深淵＝半目",
+      "afterglow": "議題が決まると三人は適度な距離に散らばり、会議は短く終了"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ただいまから大事な会議を始めます！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……議題は何だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何分で終わる？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっと……議題は、これから決めようと思って！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……会議を開く前に決めろ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、『会議を短くする方法』で"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それだ！ まず結論から話す！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら今、終了でいい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、もう終わり！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……最高の会議"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-241",
+    "title": "今日の司会",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #52を台本化（提案・要審査）",
+    "original_idea_no": 52,
+    "trigger_proposal": "三人が意見を調整し、黒翼が司会をやりたいと言い出す",
+    "animation_proposal": {
+      "motion": "黒翼は三角形の頂点へ移動し、断罪と堕天王が同じ高さで向き合う",
+      "expression": "黒翼＝張り切る→落ち着く／断罪＝真剣／堕天王＝見守る",
+      "afterglow": "話し合い後、黒翼が先に次の行動を宣言し、二人が少し遅れて移動"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "今日は私が司会やる！ まず、困ってることはある？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……話す順番を決めてくれ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、そうだった！ じゃあ断罪から！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今のままだと、全員の予定が重なる。時間を分けるべきだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "なるほど！ 堕天王はどう思う？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いいと思うよ。黒翼、今の意見を一度まとめてみようか"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 『時間を分けて、みんなに聞く』だね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……正確だ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。司会、上手にできたね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "やった！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-242",
+    "title": "一緒の意味",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #53を台本化（提案・要審査）",
+    "original_idea_no": 53,
+    "trigger_proposal": "堕天が深淵に遊びを提案中、黒翼が近くに来る",
+    "animation_proposal": {
+      "motion": "堕天は動こうとするが、黒翼が中央で止まり、深淵の高さに合わせる",
+      "expression": "黒翼＝ひらめき／深淵＝平静→安心／堕天＝戸惑い→嬉しそう",
+      "afterglow": "堕天は遠くへ飛ばず、三人が同じ範囲で思い思いに過ごす"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "三人で何かするぞ！ 何がいい！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……近くにいるだけでいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "それでは一緒に遊んだことにならんだろう！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、同じ場所にいたら『一緒』だと思うよ？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そ、そうなのか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そういう意味なら、できる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ私は小さく飛び回る！ 二人は好きにしててね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……よし！ 私はここで見守る！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ありがと"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-243",
+    "title": "三者三様の答え",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "元案 #55 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 55,
+    "trigger_proposal": "深淵が「昨日の片付けの約束を忘れた」と断罪と堕天王に自分から相談する",
+    "animation_proposal": {
+      "motion": "深淵が小さく近寄って相談を切り出す。断罪は真剣に向き直り、堕天王は二人と同じ高さに浮く",
+      "expression": "深淵＝少し気まずい→理解／断罪＝厳格→落ち着く／堕天王＝穏やか",
+      "afterglow": "深淵が自分の言葉で謝りに行こうと低速で移動。二人は同行を強要せず見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……昨日の片付け、私の番だった。忘れた"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……約束を破ったなら、まず謝れ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。でも、また忘れそう"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……なら記録しろ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……毎回見るのが面倒"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "忘れない方法も大事だけど、任せた相手がどう思ったかも聞いてみようか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……謝って、次の約束を決める"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。それなら筋が通る"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。自分で決められたね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……行ってくる。短く済むといいけど"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-244",
+    "title": "三人のお辞儀",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-244の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "original_idea_no": 56,
+    "trigger_proposal": "黒翼が丁寧なお辞儀を試し、深淵と堕天王が近くにいる",
+    "animation_proposal": {
+      "motion": "黒翼が深くお辞儀して少し回転、深淵は首だけ下げ、堕天王はそれぞれに合わせてお辞儀",
+      "expression": "黒翼＝真剣→笑顔／深淵＝眠そう→満足／堕天王＝楽しげ",
+      "afterglow": "三人が思い思いの角度で一度だけ同時にお辞儀をする"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王！ ちゃんとしたお辞儀、教えて！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "そうだね。まずは落ち着いて、頭を少し下げてみよう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": "勢いがついて少し回る",
+        "text": "こんな感じ？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……やりすぎ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ。深淵のも見せて！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "首だけ少し下げる",
+        "text": "……これ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "それだけ！？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。深淵らしい挨拶だね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ私は、中くらいにしてみる！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-245",
+    "title": "即興劇",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #57を台本化（提案・要審査）",
+    "original_idea_no": 57,
+    "trigger_proposal": "黒翼が二人に思いつきの劇を提案している",
+    "animation_proposal": {
+      "motion": "黒翼が舞台役のように中心へ、堕天は勢いよく前進。断罪は後ろで最小限の動きで演じる",
+      "expression": "黒翼＝楽しげ／堕天＝勇ましい→困惑／断罪＝真顔",
+      "afterglow": "即興劇後、三人で小さく一礼する動きだけを合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "即興劇しよう！ 私は旅人ね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私は世界一強い守護者だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私はやらん"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ断罪は『道を知る人』！ 一言だけでいいから！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "さあ旅人よ！ 私に道を尋ねるがいい！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "道を知る人、次はどっち？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……目の前の扉を開けろ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ、私の出番は！？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "すごい！ 一言でお話が終わった！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……終わらせるつもりはなかった"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-246",
+    "title": "勝負じゃなくて順番",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "元案 #58 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 58,
+    "trigger_proposal": "黒翼が共同の遊びの順番を決めようと言い、堕天が勝負だと早合点したとき",
+    "animation_proposal": {
+      "motion": "堕天は勝負の構えで少し上昇し、黒翼は首をかしげる。堕天王が間に入ると二人とも向き直る",
+      "expression": "黒翼＝驚き→笑顔／堕天＝気合→照れ／堕天王＝穏やか",
+      "afterglow": "勝負は始まらず、三人で公平に順番を決める。移動競争の演出は発生しない"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "黒翼！ 順番を賭けた勝負なら受けて立つぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、勝負？ 私は『順番を決めよう』って言ったよ？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……決めるなら、勝負だと思ったんだ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。言葉が変わったんじゃなく、受け取り方が違ったんだね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ、みんなが納得する決め方を考えよ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……むむ。勝負でないのは残念だが、分かった"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "順番を決めたら、気持ちよく始められるね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ まずは誰からか、落ち着いて決めるぞ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-247",
+    "title": "答えは本人に",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #59を台本化（提案・要審査）",
+    "original_idea_no": 59,
+    "trigger_proposal": "堕天が深淵の希望について堕天王へ相談しようとしており、深淵がすぐ隣にいる",
+    "animation_proposal": {
+      "motion": "堕天が堕天王の方向に向き、深淵がわずかに前へ出る。堕天は急停止して深淵へ向き直る",
+      "expression": "堕天＝心配→驚き→真剣／深淵＝静かな率直さ／堕天王＝柔らかな笑顔",
+      "afterglow": "堕天王はそっと距離を取り、二人だけで短い相談を続ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "堕天王、深淵は何なら楽しめると思う？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それは、私より……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私に聞けば"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……えっ？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今、ここにいる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうだな。では、お前は何がしたい？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日は、話すだけなら"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……分かった。何から話そうか"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。私は少し向こうへ行っているね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-248",
+    "title": "出番がない！？",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #60を台本化（提案・要審査）",
+    "original_idea_no": 60,
+    "trigger_proposal": "三人で困り事の解決策を考え、断罪と深淵が先に分析を進める",
+    "animation_proposal": {
+      "motion": "断罪と深淵はほぼ静止して短く話す。堕天は左右へ動き、最後に中心へ飛び込む",
+      "expression": "断罪＝真剣／深淵＝淡々／堕天＝不満→嬉しそう",
+      "afterglow": "堕天が担当する最後の作業に向かい、二人は後方で見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……問題は順番だ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……先に小さい方"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……了解。残りは二つ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ま、待て！ 二人だけで決めるな！ 私の出番は！？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……最後の確認が残っている"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……それは、堕天が一番早い"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ、最初から私の役目があったのか！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前は最後の詰めを任せられる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 任せておけ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……頼りにしてる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-249",
+    "title": "一文ずつの物語",
+    "group": "特別",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #61を台本化（提案・要審査）",
+    "original_idea_no": 61,
+    "trigger_proposal": "五人が一定距離に集まり、短い共同遊びの時間になったとき",
+    "animation_proposal": {
+      "motion": "発話するキャラだけ一度前に出る。深淵の番では全員が止まり、堕天が慌てて飛び上がる",
+      "expression": "黒翼＝楽しげ／断罪＝真剣／深淵＝平静／堕天＝大げさ／堕天王＝穏やか",
+      "afterglow": "堕天王の提案で続きは別の日に持ち越し、五人は自由に散る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "一人一文ずつ、お話を作ろう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いいね。じゃあ黒翼からどうぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ある日、小さな旅人が大きな扉を見つけました！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……扉には鍵がかかっていた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そこへ最強の戦士が現れ、扉を一撃で……！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……鍵が落ちてた。終わり"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！？ 私の見せ場がなくなったぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でも、鍵を拾った人の冒険が始まるかも！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。続きは明日に取っておく？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……誰が鍵を落としたのか、まだ説明されていない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-250",
+    "title": "部屋の名前会議",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #62を台本化（提案・要審査）",
+    "original_idea_no": 62,
+    "trigger_proposal": "五人が集まり、ルーム内の小さな休憩スペースの呼び名を考える",
+    "animation_proposal": {
+      "motion": "全員が半円状に並ぶ。提案するたびに各自の浮遊速度が少し変わる",
+      "expression": "黒翼＝目を輝かせる／断罪＝実用的／深淵＝眠そう／堕天＝得意げ／堕天王＝楽しげ",
+      "afterglow": "名前は一旦未決定のまま保留。ゲーム本体のルーム名は変更しない"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ここの休憩する場所、名前をつけたい！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "『覇者の玉座』だ！ 強そうだろう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……長い。『ここ』でいい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……場所が分かる名前にしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "『ふわふわひとやすみ広場』は？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……もっと長い"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。名前を決めるだけで、みんなの好みが分かるね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "では、次の候補は『超・覇者の……』"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……短くしろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあ次回も名前会議だね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-251",
+    "title": "誰が得意？",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #63を台本化（提案・要審査）",
+    "original_idea_no": 63,
+    "trigger_proposal": "五人が集まって互いの得意なことを一つずつ挙げる",
+    "animation_proposal": {
+      "motion": "指名されたキャラが一瞬だけ上昇し、すぐ普段の高度に戻る",
+      "expression": "黒翼＝うれしそう／断罪＝戸惑う／深淵＝淡々／堕天＝胸を張る／堕天王＝穏やか",
+      "afterglow": "五人が一度小さく向き合い、各自の好きな場所へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんなの『この人は頼れる！』を言ってみよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……堕天は、諦めずにやり直す。そこは認める"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 当然だ！ 断罪は間違いを見逃さないな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……黒翼は、誰にでも声をかけられる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ！ 深淵は大事なところだけ見つけるのが上手！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "みんな、違うところで頼りになるね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……堕天王は、意見が違っても聞く"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そうだな！ 私も困ったら頼るぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ありがとう。私も、みんなを頼りにしているよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-252",
+    "title": "動いたのは誰？",
+    "group": "特別",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "元案 #64 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 64,
+    "trigger_proposal": "5人が集まり、黒翼が「目を閉じている間に誰か一人だけ場所を変える」と宣言して始める観察ゲーム",
+    "animation_proposal": {
+      "motion": "黒翼の合図で他の4人は目を閉じ、黒翼だけ少し左へ移動。合図の後、全員が目を開けて見比べる",
+      "expression": "黒翼＝遊び心／断罪＝観察／深淵＝眠そう／堕天＝闘志／堕天王＝穏やかな笑顔",
+      "afterglow": "正解発表後は位置を元に戻す。追加の家具や小物なしでも再生できる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "みんな、目を閉じて！ 一人だけ場所を変えるから、誰が動いたか当ててね！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 私の観察眼を試すのだな！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……はい、もう開けていいよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……さっきの位置を思い出せ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "誰だ！？ 堕天王か？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は動いていないよ"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……黒翼。少し左"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "大正解！ 私でした！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！？ 出題者も参加していいのか！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "だって『誰か一人』って言ったよ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……確かに、そういう条件だったな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-253",
+    "title": "くじ引きの役割",
+    "group": "特別",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "元案 #65 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 65,
+    "trigger_proposal": "5人がくじで簡単な役割を決め、引いた結果をその場で読み上げる",
+    "animation_proposal": {
+      "motion": "5人が小さな紙片を引くしぐさをし、それぞれ役を声に出して確認。断罪と堕天が互いの位置を交換するように移動",
+      "expression": "黒翼＝わくわく／断罪＝戸惑い→納得／深淵＝面倒そう→安堵／堕天＝得意げ／堕天王＝穏やか",
+      "afterglow": "役割確定後、黒翼は記録、断罪は作戦、深淵は案内方針、堕天は盛り上げ、堕天王は全体確認という配置になる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "よーし、くじを引こう！ 全員一枚ずつね！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私は記録係！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は全体の確認係だね"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……案内係。動かない方がいい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "私は作戦係だ！ ふふん！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……盛り上げ役。……異議がある"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪が盛り上げるの、見てみたいけど……！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私と交換するか？ どちらも全力でやれるぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……作戦係なら引き受ける"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……道順は私がここで伝える。移動は任せた"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "いいね。くじで決めた後でも、相談して役を交換できる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "決まり！ 私はちゃんと記録しておくね！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-254",
+    "title": "10分の自由制作",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #66を台本化（提案・要審査）",
+    "original_idea_no": 66,
+    "trigger_proposal": "五人が同じお題を聞き、それぞれ好きな方法で何かを考えて表現する（道具未実装なら空中の動作で表現）",
+    "animation_proposal": {
+      "motion": "黒翼は曲線、断罪は直線、堕天は大きな円を飛行軌跡で描く。深淵はほぼ静止し、堕天王はゆるやかな弧を描く",
+      "expression": "黒翼＝楽しげ／断罪＝真剣／深淵＝落ち着く／堕天＝誇らしい／堕天王＝満足",
+      "afterglow": "五人が互いの軌跡を一度眺め、優劣を決めず自由に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "同じお題で、好きなものを作ってみよう！ お題は『居場所』！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私は大きな城だ！ 強い場所こそ安心だ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……私は入口と出口が明確な場所を考えた"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……何も置かない隅。落ち着く"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私はみんなが入れる、丸い場所！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "私は、誰かが帰ってきても気づける場所がいいな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……同じお題なのに、全然違うな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……違うから比較する意味がある"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "全部合わせたら、すごい部屋になりそう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……広すぎないなら"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-255",
+    "title": "説明禁止ゲーム",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #67を台本化（提案・要審査）",
+    "original_idea_no": 67,
+    "trigger_proposal": "五人が集まり、言葉を使わずお題を伝える遊びをする",
+    "animation_proposal": {
+      "motion": "黒翼は大きく羽ばたく動作、堕天は派手な旋回、断罪は小さく正確な動作、深淵は最短の頷き、堕天王は見守る",
+      "expression": "黒翼＝得意げ／断罪＝真剣／深淵＝平静／堕天＝驚愕／堕天王＝笑顔",
+      "afterglow": "遊び終了後、全員が小さく一礼し、深淵だけすぐ省エネ浮遊に戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "ルールは簡単！ 言葉を使わずに、お題を伝えるの！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 動きの大きさなら私の勝ちだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……大きければ伝わるとは限らん"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "じゃあ、まず深淵からお願いしようか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "無言で目を閉じ、ほとんど動かない",
+        "text": "…………"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……あっ！ 『お昼寝』！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……正解"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！？ ほとんど何もしていないではないか！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……だが、伝わった"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。一番小さな動きが、一番分かりやすかったね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-256",
+    "title": "伝言が短くなる日",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "最終監査により旧CR-256の重複気味の台本を差し替え（同梱バックアップJSONに保存）",
+    "original_idea_no": 68,
+    "trigger_proposal": "五人が集まって、黒翼が伝言遊びを提案する。小声は吹き出し演出で代用",
+    "animation_proposal": {
+      "motion": "黒翼から断罪、堕天、深淵、堕天王へ順に向く。最後は五人が一斉に右を見てきょとんとする",
+      "expression": "黒翼＝わくわく→きょとん／断罪＝真剣／堕天＝勢い／深淵＝省エネ／堕天王＝面白がる",
+      "afterglow": "遊びを終えると黒翼が笑い、ほかの四人も自然に持ち場へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "伝言遊びしよう！ 最初は「羽を一回振って、右を見る」ね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "堕天へ小声で伝える",
+        "text": "……右を見る前に、羽を一回だな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "深淵へ伝える",
+        "text": "右を向いて、勢いよく羽ばたけ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": "堕天王へ伝える",
+        "text": "……右を見て"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "右を見る、でいいのかな？"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あれっ！？ 羽が消えちゃった！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なぜだ！ 私はちゃんと羽の話をしたぞ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……勢いよく、が余計だった"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……短くしたら、楽だった"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。伝言の途中も、それぞれらしいね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-258",
+    "title": "深淵の省エネ発明",
+    "group": "特別",
+    "rarity": "珍しい",
+    "participants": [
+      "深淵",
+      "黒翼",
+      "断罪",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #71を台本化（提案・要審査）",
+    "original_idea_no": 71,
+    "trigger_proposal": "深淵が同じ質問を何人からもされ、何度も答えるのを面倒に感じたとき",
+    "animation_proposal": {
+      "motion": "深淵が中央で一度だけ上昇して全員を呼び止める。四人は近くに集まる",
+      "expression": "深淵＝だるそう→少し満足／黒翼＝感心／断罪＝納得／堕天＝驚き／堕天王＝穏やか",
+      "afterglow": "全員がその日の予定を短く共有し、深淵は真っ先に休憩へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……同じ質問、今日もう五回聞かれた"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "何をする予定かってこと？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。最初に全員、一言ずつ言えばいい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……二度手間が減るな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なら私は『次の勝負に勝つ』だ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。予定と目標は少し違うかな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "私は『今日はみんなの話を聞く』！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……私は、休む"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それは全員知っている"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……じゃあ、もう聞かれない"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-259",
+    "title": "堕天の早口言葉",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "堕天",
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #72を台本化（提案・要審査）",
+    "original_idea_no": 72,
+    "trigger_proposal": "堕天が言葉の勝負を始めたとき、黒翼と深淵が近くにいる",
+    "animation_proposal": {
+      "motion": "堕天が一音ごとに上下し、噛むたびに勢い余って小さく傾く。黒翼は楽しそうに拍子を取る",
+      "expression": "堕天＝自信→悔しさ→闘志／黒翼＝笑顔／深淵＝無表情→少し呆れる",
+      "afterglow": "深淵は休憩へ戻り、堕天は小声で練習を続ける"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "早口勝負だ！ 『赤い羽、青い羽、赤い青い羽』！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わあ、難しそう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん、簡単だ！ 赤い羽、あおいは、あれ？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……噛んだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今のは準備運動だ！ もう一度！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "じゃあゆっくりからやってみようよ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……赤い羽、青い羽……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ゆっくりなら、言えてる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 次こそ速く言うぞ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "終わらないね、これ！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-260",
+    "title": "断罪の真顔の一言",
+    "group": "三人以上",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪",
+      "堕天",
+      "黒翼"
+    ],
+    "provenance": "追加100構想の元案 #73を台本化（提案・要審査）",
+    "original_idea_no": 73,
+    "trigger_proposal": "堕天が派手な名乗りを披露していて、黒翼が感想を聞いたとき",
+    "animation_proposal": {
+      "motion": "堕天が大げさに一回転。断罪は微動だにせず一言だけ返す。黒翼が小さく跳ねる",
+      "expression": "堕天＝自信→硬直／断罪＝真顔／黒翼＝こらえきれない笑顔",
+      "afterglow": "断罪は何が面白かったのか分からないままその場に残る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "聞け！ 『天を揺るがす無敵の勝者、堕天！』どうだ！"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "かっこいい！ 断罪はどう思う？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……名乗りの間に勝負が終わる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……ふふっ！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "なっ！ そこまで長くはないだろう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……では、相手が待ってくれるといいな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あはは！ 断罪、真顔で言うから面白い！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……事実を述べただけだ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "くっ……次は短くしてやる！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-261",
+    "title": "黒翼の大発見",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #74を台本化（提案・要審査）",
+    "original_idea_no": 74,
+    "trigger_proposal": "黒翼が何かを発見したと興奮して二人の近くへ来る",
+    "animation_proposal": {
+      "motion": "黒翼が急接近して停止し、断罪が姿勢を正し、深淵は半分目を開く",
+      "expression": "黒翼＝大興奮／断罪＝身構える→脱力／深淵＝淡々",
+      "afterglow": "黒翼は発見を試すため、ゆっくり同じ位置へ戻る"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "大発見だよ！ 高く飛ぶと、下の景色が小さくなる！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……当たり前だ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でもね！ 小さく見えるから、いつも気づかない形に気づけるんだよ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……遠くから見た方が分かることもある"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それは、確かにそうだな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "でしょ！ 当たり前でも、新しい発見があるんだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……次は、もう少し静かに発表して"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "了解！ 小声で大発見する！"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-262",
+    "title": "深淵の言葉を深読み",
+    "group": "三人以上",
+    "rarity": "日常",
+    "participants": [
+      "深淵",
+      "黒翼",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #80を台本化（提案・要審査）",
+    "original_idea_no": 80,
+    "trigger_proposal": "深淵が「好きにして」と答えた直後、ほかの三人がその意味を相談し始める",
+    "animation_proposal": {
+      "motion": "黒翼と堕天が深淵の左右で小さく動き、堕天王は距離を置いて見守る。深淵はその場で停止",
+      "expression": "深淵＝半目→呆れ／黒翼＝考え込む／堕天＝真剣／堕天王＝微笑",
+      "afterglow": "三人が別々の方向へ移動して、深淵はようやく休める"
+    },
+    "dialogue": [
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……好きにして"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ、それって一緒に選んでほしいってことかな？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いや！ 遠慮しているのだろう！ 私が決めてやる！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "深淵、どんな意味で言ったの？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……本当に、好きにしてほしい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、そのままだった！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なんだ！ てっきり試されているのかと！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……考えすぎ。疲れる"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。たまには、そのまま受け取るのも大切だね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-263",
+    "title": "断罪・一つ多い準備",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "断罪"
+    ],
+    "provenance": "追加100構想の元案 #84を台本化（提案・要審査）",
+    "original_idea_no": 84,
+    "trigger_proposal": "断罪が出発前に準備を確認していて、黒翼は周辺にいない",
+    "animation_proposal": {
+      "motion": "断罪が一つずつ確認するように短く位置を変え、最後に空いた場所を見て止まる",
+      "expression": "断罪＝真剣→自分の行動に気づいて目をそらす",
+      "afterglow": "黒翼に声をかけず、余分に確保した安全な道だけ残して別の方向へ動く"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……確認は終わった"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……こちらの通りも空けておくか"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……二人で通るなら、狭い"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……いつから、二人分を考えるようになった"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……別に。備えは多い方がいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-265",
+    "title": "堕天・我慢の練習",
+    "group": "単独",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #88を台本化（提案・要審査）",
+    "original_idea_no": 88,
+    "trigger_proposal": "堕天が深淵の休憩を邪魔しないと決め、声をかけたい衝動を抑えている",
+    "animation_proposal": {
+      "motion": "堕天が深淵のいる方角へ飛びかけて止まり、少し離れた位置で小さな円を描く",
+      "expression": "堕天＝そわそわ→苦戦→少し得意げ",
+      "afterglow": "深淵を呼ばず、別の遊びを一人で探しに行く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "今なら深淵に新しい勝負を……"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……いや。さっき休むと言っていた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "一回くらい誘っても……いや、今日はやめておく"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……待つだけなのに、こんなに難しいとはな"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん！ 私だって、約束くらい守れるぞ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-266",
+    "title": "堕天王・今日は参加者",
+    "group": "その他ペア",
+    "rarity": "珍しい",
+    "participants": [
+      "堕天王",
+      "黒翼"
+    ],
+    "provenance": "元案 #89 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 89,
+    "trigger_proposal": "黒翼が堕天王に小さな遊びの司会を頼み、堕天王が自分も参加したいと考えている",
+    "animation_proposal": {
+      "motion": "黒翼が堕天王へ軽快に近づき、堕天王は穏やかに首を横に振る。黒翼が前へ移り、堕天王は他の参加者と同じ位置へ",
+      "expression": "堕天王＝少し迷う→はっきり希望を伝える→楽しそう／黒翼＝驚き→張り切る",
+      "afterglow": "黒翼が司会を務め、堕天王は進行役に戻らず、参加者として待機する"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "堕天王！ 今日も司会をお願いしていい？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "誘ってくれてありがとう。でも、今日は引き受けないよ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えっ！ 何か予定があるの？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ううん。今日は私も、みんなと一緒に答える側になりたいんだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ じゃあ私が司会をやる！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。お願いしてもいいかな"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "もちろん！ 堕天王にも難しい質問を出しちゃうよ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "それは楽しみだね。手加減は要らないよ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-267",
+    "title": "初めての「助けて」",
+    "group": "恋愛A",
+    "rarity": "超レア",
+    "participants": [
+      "断罪",
+      "黒翼"
+    ],
+    "provenance": "追加100構想の元案 #91を台本化（提案・要審査）",
+    "original_idea_no": 91,
+    "trigger_proposal": "断罪が一人で作業を続けて行き詰まり、黒翼が偶然通りかかったとき",
+    "animation_proposal": {
+      "motion": "断罪が黒翼を呼ぶ前に一度止まる。黒翼は勢いを抑えて隣に移動する",
+      "expression": "断罪＝迷い→決心／黒翼＝自然な笑顔",
+      "afterglow": "二人は同じ作業を分担して少し離れ、終わったあとだけ短く視線を合わせる"
+    },
+    "dialogue": [
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "どうしたの？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……少し、手を貸せ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "いいよ！ どっちをやればいい？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……そちらを確認してくれ。私一人だと時間がかかる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "了解！ じゃあ終わったら教えるね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。……助かる"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ こういうときはお互いさま！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "小声",
+        "text": "……お互いさま、か"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-268",
+    "title": "思い出したくない日",
+    "group": "その他ペア",
+    "rarity": "超レア",
+    "participants": [
+      "断罪",
+      "堕天王"
+    ],
+    "provenance": "追加100構想の元案 #92を台本化（提案・要審査）",
+    "original_idea_no": 92,
+    "trigger_proposal": "断罪が過去を思い出して一人で離れており、堕天王だけが近くに来る",
+    "animation_proposal": {
+      "motion": "断罪は壁際相当の静かな場所で移動せず、堕天王は近づきすぎない位置で停止",
+      "expression": "断罪＝暗い目→落ち着く／堕天王＝静かな気遣い",
+      "afterglow": "堕天王は事情を聞かず距離を保ち、断罪が自分から戻るまで待つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……ここにいたんだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……今は、誰とも話したくない"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "分かった。少し離れているよ"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……昔のことを、思い出しただけだ"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "無理に話さなくていい"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……黒翼には、何も言うな"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。断罪の話は、断罪のものだからね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………助かる"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-269",
+    "title": "声に出さない笑顔",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "断罪",
+      "黒翼",
+      "深淵"
+    ],
+    "provenance": "追加100構想の元案 #93を台本化（提案・要審査）",
+    "original_idea_no": 93,
+    "trigger_proposal": "黒翼が深淵のために無理をせず小さな助けを提案している場面を、断罪が少し離れて見ている",
+    "animation_proposal": {
+      "motion": "黒翼と深淵が短く話し、断罪は後方で静止。黒翼が振り返る直前に断罪が向きを変える",
+      "expression": "断罪＝無意識の微笑→普段の顔／黒翼＝明るい／深淵＝平静",
+      "afterglow": "黒翼は断罪に普通に挨拶し、断罪は離れずその場に留まる"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵、今は休みたいんだよね。必要ならあとで声かけて！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。それがいい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "了解！ じゃあ私はあっちにいるね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "心の声",
+        "text": "……誰に対しても、変わらないな"
+      },
+      {
+        "speaker": "断罪",
+        "cue": "小さく微笑んで",
+        "text": "…………"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "あっ、断罪！ そこにいたんだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……ああ。通りかかっただけだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "そっか！ 一緒に戻る？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……急がないならな"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-270",
+    "title": "忘れた約束",
+    "group": "恋愛B",
+    "rarity": "超レア",
+    "participants": [
+      "深淵",
+      "堕天"
+    ],
+    "provenance": "追加100構想の元案 #94を台本化（提案・要審査）",
+    "original_idea_no": 94,
+    "trigger_proposal": "以前深淵が了承した小さな約束があり、堕天が当日確認に来る",
+    "animation_proposal": {
+      "motion": "堕天は約束の位置で待機。深淵は一拍遅れてゆっくり近づく",
+      "expression": "深淵＝困惑→素直な謝罪／堕天＝期待→落胆→落ち着く",
+      "afterglow": "二人で無理のない新しい約束を決め、堕天はその場から追い立てず静かに浮く"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "深淵！ 今日は一緒に遊ぶ約束だったな！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……え。……忘れてた"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、何！？ お前が決めた日だったのに！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……うん。ごめん。言い訳はしない"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……そ、そうか。では今日が無理なら……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今から少しなら。無理なら、別の日に決め直す"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……今日は短くでいい！ そのあと、ちゃんと次を決めよう！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……分かった"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-271",
+    "title": "勝負はあとに",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "堕天",
+      "深淵",
+      "堕天王"
+    ],
+    "provenance": "元案 #95 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 95,
+    "trigger_proposal": "深淵と堕天王が静かな言葉遊びを楽しんでいるところへ堕天が来て、少し複雑な気持ちになる",
+    "animation_proposal": {
+      "motion": "堕天は勢いよく近づきかけて少し減速。その場から二人の遊びを見守り、終わるまで割り込まない",
+      "expression": "堕天＝小さな嫉妬→勝負心→我慢→嬉しさ／深淵＝平静→わずかに柔らかい／堕天王＝穏やか",
+      "afterglow": "深淵と堕天王は遊びを終える。堕天は新しい勝負を始める前に深淵の返事を待つ"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "むっ……深淵、堕天王と勝負していたのか！？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "うん。言葉を短くする遊びだよ。深淵の方が上手でね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "……私とも勝負してほしいところだが……"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今、まだ途中"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "分かっている！ 勝負の最中に割り込むのはずるいからな！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。じゃあ、この一問を終えようか"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……終わり。私の勝ち"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "ふふん、なら次は私の番だ！ ……いいか？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……一問だけ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし！ 一問で勝ってやるぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "二人とも、楽しんでおいで"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-272",
+    "title": "優しさだけでは解決しない",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵"
+    ],
+    "provenance": "元案 #96 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 96,
+    "trigger_proposal": "黒翼が深淵の用事を手伝おうと声をかけるが、深淵が自分でやりたいと答える",
+    "animation_proposal": {
+      "motion": "黒翼は近づきかけるが拒否を聞いてすぐに止まり、一歩だけ下がる。断罪は少し離れて見守る",
+      "expression": "黒翼＝明るい→小さな驚き→理解／深淵＝平静／断罪＝鋭い目→納得",
+      "afterglow": "深淵は自分の用事へ進み、黒翼は断罪と少しだけ話してから別方向へ向かう"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "深淵！ それ、私も手伝うよ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……ありがとう。でも、一人でやりたい"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "……そっか！ 私、手を出さない方がいいんだね"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……本人が決めたなら、任せろ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん。でも、何かあったら呼んでね！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そうする。ありがとう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、私も自分の用事を済ませてこよう！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……それでいい"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-273",
+    "title": "堕天王の厳しい声",
+    "group": "三人以上",
+    "rarity": "超レア",
+    "participants": [
+      "堕天王",
+      "堕天",
+      "黒翼"
+    ],
+    "provenance": "元案 #97 → 第三弾監査B判定に基づく改稿（再審査待ち）",
+    "original_idea_no": 97,
+    "trigger_proposal": "堕天が急いで遊びの位置を替えようとした先に、立ち止まっている黒翼がいる。堕天王だけが両者の位置を見ている",
+    "animation_proposal": {
+      "motion": "堕天が加速しかけたところで堕天王が短く制止し、堕天は動きを止める。黒翼が自分の位置に気づいて端へ少し寄る",
+      "expression": "堕天王＝真剣→穏やか／堕天＝驚き→理解／黒翼＝驚き→安心",
+      "afterglow": "堕天は黒翼が離れたのを確認し、速度を落として遊びに戻る。堕天王も静かに見送る"
+    },
+    "dialogue": [
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "よし、次の場所へ一気に行くぞ！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "堕天。止まりなさい"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "っ！？ ……どうした！？"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "その先に黒翼がいるよ。今は二人とも気づいていなかったね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "わっ、私ここにいた！ ごめん、堕天！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "いや、私も前を見ていなかった。すまん！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "気づけてよかった。続けるなら、お互いの位置だけ確かめてね"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "分かった。……今度は落ち着いて行くぞ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ 私も気をつける！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "ふふ。それなら大丈夫だね"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  },
+  {
+    "id": "CR-274",
+    "title": "いつも通りの二組",
+    "group": "特別",
+    "rarity": "超レア",
+    "participants": [
+      "黒翼",
+      "断罪",
+      "深淵",
+      "堕天",
+      "堕天王"
+    ],
+    "provenance": "ユーザー提示のCR-274原案と、会話で合意した①黒翼の天然な安心感・②深淵の短い本音・④余韻の強化を反映した特別イベント",
+    "trigger_proposal": "5人全員がルームに表示され、黒翼と断罪が近くで同じ方向へ飛び、深淵と堕天も近距離で低速浮遊している。堕天王が二組を少し離れて見守る位置にいるとき、低確率で自然発生する。初回限定ではない。",
+    "animation_proposal": {
+      "motion": "前半、黒翼が方向転換すると断罪も自然に向きを合わせ、飛行速度と停止タイミングが徐々に揃う。中盤、堕天は普段よりゆっくり飛び深淵の隣を保つ。「一緒だと楽」の直後だけ翼が一瞬速く動くが、離れない。深淵は小さく堕天側に寄る。終盤、堕天王は少し離れて二組を見比べ、近づきすぎず微笑む。",
+      "expression": "黒翼＝無邪気な笑顔／断罪＝平静→一瞬動揺して目を逸らす→普段の無表情／堕天＝得意げ→動揺→照れ隠し／深淵＝いつもの眠たげな目→ほんの少し穏やか／堕天王＝穏やかな微笑み。",
+      "afterglow": "会話後5〜8秒、黒翼と断罪は向きと速度が自然に揃ったまま並んで浮遊。深淵と堕天も低速で並び、深淵が少し寄った距離を保つ。堕天王は静かに二組を見送り、ゆっくり離れる。余韻後は各自の通常移動へ戻る。"
+    },
+    "dialogue": [
+      {
+        "speaker": "黒翼",
+        "cue": "黒翼は無意識に右の方をちらりと確認してから、断罪の横へ近づく。断罪はその視線を見逃さない",
+        "text": "断罪！ 次、どっちに行くと思う？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……右だろう"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "正解！ なんで分かったの！？"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……お前は右へ行く前、必ずそちらを見る"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、そんなところまで見てくれてるんだ！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……たまたまだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "断罪と一緒にいると、なんだか安心するんだよね！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "…………"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "いつも私のこと、ちゃんと見てくれてるから！"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……危なっかしいからだ"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "えへへ、ありがとう！"
+      },
+      {
+        "speaker": "堕天",
+        "cue": "別の場所で、堕天が深淵とゆっくり並走している",
+        "text": "深淵！ 今日は私の速さについてこられるか！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……今日はゆっくりでしょ"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なぜ分かった！？"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……さっきから、私の速さに合わせてる"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "べ、別にお前のために速度を落としたわけではないぞ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……そう"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうだ！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……でも、一緒だと楽"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "…………！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……どうしたの？"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "な、なんでもない！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": "少し離れたところから二組を見比べて",
+        "text": "……ふふ。本当に仲がいいね"
+      },
+      {
+        "speaker": "黒翼",
+        "cue": null,
+        "text": "うん！ みんな仲良しだもん！"
+      },
+      {
+        "speaker": "深淵",
+        "cue": null,
+        "text": "……いつも通り"
+      },
+      {
+        "speaker": "断罪",
+        "cue": null,
+        "text": "……何か問題でもあるのか"
+      },
+      {
+        "speaker": "堕天",
+        "cue": null,
+        "text": "そ、そうだ！ 普通だろう！"
+      },
+      {
+        "speaker": "堕天王",
+        "cue": null,
+        "text": "……そうだね。ふふ"
+      }
+    ],
+    "status": "台本正式採用・未実装"
+  }
+];

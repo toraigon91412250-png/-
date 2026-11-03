@@ -2,107 +2,133 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {CHIBINA_EVENTS} from '../web/src/data/chibinaEvents.js';
+import {advanceChibinaDialogue,chooseChibinaEvent,chibinaDialogueLine,chibinaEventPickerView,chibinaRoomView,chibinaTriggerTags,validateChibinaEvents} from '../web/src/components/chibinaRoom.js';
 
 const app=fs.readFileSync('web/src/components/App.js','utf8');
 const css=fs.readFileSync('web/src/components/game.css','utf8');
 const build=fs.readFileSync('tools/build.mjs','utf8');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-const assets={
- 'assets/home-ui/blackwing-chibi.png':['3bf724dc793224f5b032e32dca5e83633a582b4aa11958ae7ae47d38281e8bd4',1217,1293],
- 'assets/home-ui/chibi-danzai.png':['10c393bfe4d78eb1a5aaf498bebea0f91aeace1a8107c4e2a70d851907120bc5',1254,1254],
- 'assets/home-ui/chibi-daten.png':['3be0ebd8349f1e09fe2c188b48d42a4c9a28e7cb1a7274d13f63c8dc002fe9e3',1312,1199],
- 'assets/home-ui/chibi-datenou.png':['c9a7a7238cdc839e23432bdd5b28a1994feeec2b017b5df73f7c1538904521ee',1199,1312],
- 'assets/home-ui/chibi-shinen.png':['cdae2ff342c6a82b956b48e38e086c603eb3026f1d1973c447b7c3c550a3dc25',1199,1312],
- 'assets/home-ui/chibina-room-banner.png':['c246d9256bdd0cd50ccda9dfaab954c8fe180a8c2f927c277694b142286a9624',1672,941]
-};
-const optimizedAssets={
- 'assets/home-ui/optimized/chibi-wing.webp':[435,462,300000],
- 'assets/home-ui/optimized/chibi-judge.webp':[435,435,300000],
- 'assets/home-ui/optimized/chibi-fallen.webp':[435,398,300000],
- 'assets/home-ui/optimized/chibi-king.webp':[435,476,300000],
- 'assets/home-ui/optimized/chibi-abyss.webp':[435,476,300000]
-};
+const originalEvents=JSON.parse(fs.readFileSync('assets/chibina-room/events_220.json','utf8'));
+const eventById=new Map(CHIBINA_EVENTS.map(event=>[event.id,event]));
+const personas=[
+ {id:'wing',name:'黒翼',character:'明るい',art:'wing.webp',width:435,height:462},
+ {id:'judge',name:'断罪',character:'静か',art:'judge.webp',width:435,height:435},
+ {id:'fallen',name:'堕天',character:'強気',art:'fallen.webp',width:435,height:398},
+ {id:'abyss',name:'深淵',character:'寡黙',art:'abyss.webp',width:435,height:476},
+ {id:'king',name:'堕天王',character:'穏やか',art:'king.webp',width:435,height:476}
+];
 
-test('room artwork retains all six approved source files byte-for-byte',()=>{
- for(const [asset,[expected,width,height]] of Object.entries(assets)){
+test('採用済みの220イベントを原本どおり読み込む',()=>{
+ assert.deepEqual(CHIBINA_EVENTS,originalEvents);
+ const result=validateChibinaEvents();
+ assert.equal(result.count,220);
+ assert.equal(result.ids.size,220);
+ assert.equal(new Set(CHIBINA_EVENTS.map(event=>event.id)).size,220);
+ assert.deepEqual(CHIBINA_EVENTS.map(event=>event.id),originalEvents.map(event=>event.id));
+ assert.equal(eventById.get('CR-095').rarity,null);
+ assert.equal(eventById.get('CR-201').id,'CR-201');
+ assert.equal(eventById.get('CR-274').id,'CR-274');
+ assert.equal(CHIBINA_EVENTS.reduce((sum,event)=>sum+event.dialogue.length,0),1579);
+});
+
+test('speaker, text, cue and event proposals stay unchanged and dialogue advances one line at a time',()=>{
+ for(const source of originalEvents){
+  const event=eventById.get(source.id);
+  assert.deepEqual(event,source,source.id+' exact source fields');
+  for(let index=0;index<event.dialogue.length;index++){
+   assert.deepEqual(chibinaDialogueLine(event,index),{...event.dialogue[index],index,total:event.dialogue.length});
+   assert.equal(advanceChibinaDialogue(event,index),index+1);
+  }
+  assert.equal(chibinaDialogueLine(event,event.dialogue.length),null);
+ }
+ assert.throws(()=>advanceChibinaDialogue(eventById.get('CR-001'),-1),/範囲外/);
+ assert.equal(CHIBINA_EVENTS.flatMap(event=>event.dialogue).filter(line=>line.cue!==null).length,38);
+});
+
+test('natural event selection excludes reserved events and uses 70/25/5 rarity bands',()=>{
+ const byRarity=rarity=>CHIBINA_EVENTS.find(event=>event.rarity===rarity);
+ for(const [roll,rarity] of [[.1,'日常'],[.8,'珍しい'],[.95,'超レア']]){
+  const values=[roll,0];
+  const event=chooseChibinaEvent(CHIBINA_EVENTS,{random:()=>values.shift()});
+  assert.equal(event.rarity,rarity);
+  assert.notEqual(event.id,'CR-095');
+  assert.notEqual(event.id,'CR-201');
+  assert.notEqual(event.id,'CR-274');
+ }
+ assert.equal(chooseChibinaEvent([eventById.get('CR-095')]),null);
+ assert.ok(byRarity('日常'));
+});
+
+test('context tags favor an eligible event matching proximity, rest and recency',()=>{
+ const base=eventById.get('CR-001');
+ const near={...base,id:'TEST-NEAR',trigger_proposal:'二人が近くを並んで飛ぶ'};
+ const unrelated={...base,id:'TEST-OTHER',trigger_proposal:'二人が空を飛ぶ'};
+ assert.deepEqual(chibinaTriggerTags(near),['proximity']);
+ const selected=chooseChibinaEvent([unrelated,near],{random:()=>0,context:{nearPairs:new Set([near.id]),restingParticipants:[],lastParticipants:[],motionParticipants:[]}});
+ assert.equal(selected.id,near.id);
+ const resting={...base,id:'TEST-REST',trigger_proposal:'一息ついて静かに休む'};
+ assert.deepEqual(chibinaTriggerTags(resting),['rest']);
+ const recent={...base,id:'TEST-RECENT',trigger_proposal:'前回の会話の直後に続けて話す'};
+ assert.deepEqual(chibinaTriggerTags(recent),['recency']);
+});
+
+test('condition-tagged events wait for a matching proximity, rest, recency, motion or isolation context',()=>{
+ const base=eventById.get('CR-001');
+ const isolated={...base,id:'TEST-ISOLATED',participants:['深淵'],trigger_proposal:'深淵が一人になって、周囲にほかの4人がいない'};
+ const readyContext={nearPairs:new Set(),restingParticipants:[],lastParticipants:[],motionParticipants:[],isolatedParticipants:[]};
+ assert.ok(chibinaTriggerTags(isolated).includes('isolation'));
+ assert.equal(chooseChibinaEvent([isolated],{random:()=>0,context:readyContext}),null);
+ assert.equal(chooseChibinaEvent([isolated],{random:()=>0,context:{...readyContext,isolatedParticipants:['深淵']}}).id,isolated.id);
+});
+
+test('room view uses official Blackwing layers, existing portraits, and manual bubble controls',()=>{
+ const html=chibinaRoomView(personas,'wing','CR-201');
+ for(const asset of ['wing-back.webp','wing-front.webp','body.webp'])assert.ok(html.includes(asset),asset+' layer');
+ for(const id of personas.map(persona=>persona.id))assert.ok(html.includes(`data-persona="${id}"`),id+' flyer');
+ assert.match(html,/data-initial-event="CR-201"/);
+ assert.match(fs.readFileSync('web/src/components/chibinaRoom.js','utf8'),/next\.dataset\.roomNext=''/); // next button is created for each displayed line
+ assert.match(html,/data-room-home-set/);
+ assert.match(html,/data-bubble-layer/);
+ assert.doesNotMatch(html,/data-chibina-react/);
+ const picker=chibinaEventPickerView((label,action,id)=>`<button data-action="${action}" data-id="${id}">${label}</button>`);
+ assert.equal((picker.match(/<option /g)||[]).length,220);
+ assert.match(picker,/CR-095/);
+ assert.match(picker,/CR-274/);
+});
+
+test('Blackwing flight assets stay compact and the CSS separates movement and flap transforms',()=>{
+ const layers={
+  'assets/home-ui/chibina-flight/wing-back.webp':51114,
+  'assets/home-ui/chibina-flight/wing-front.webp':73794,
+  'assets/home-ui/chibina-flight/body.webp':184562
+ };
+ for(const [asset,size] of Object.entries(layers)){
   const bytes=fs.readFileSync(asset);
-  assert.equal(hash(bytes),expected,asset+' checksum');
-  assert.equal(bytes.toString('hex',0,8),'89504e470d0a1a0a',asset+' PNG signature');
-  assert.equal(bytes.readUInt32BE(16),width,asset+' width');
-  assert.equal(bytes.readUInt32BE(20),height,asset+' height');
-  if(asset!=='assets/home-ui/chibina-room-banner.png')assert.equal(bytes[25],6,asset+' retains transparency');
+  assert.equal(bytes.length,size,asset+' expected optimized bytes');
+  assert.equal(bytes.toString('ascii',0,4),'RIFF',asset+' WebP');
+  assert.equal(bytes.toString('ascii',8,12),'WEBP',asset+' WebP');
  }
+ assert.match(css,/\.chibina-flyer\{[^}]*will-change:transform/);
+ assert.match(css,/\.chibina-wing-back[^}]*animation:chibina-wing-strokes/);
+ assert.match(css,/\.chibina-wing-front[^}]*animation:chibina-wing-strokes/);
+ assert.match(css,/@keyframes chibina-wing-strokes\{0%,20%,40%,60%/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{\.chibina-room-live/);
+ assert.match(css,/\.chibina-bubble-text\{[^}]*font-size:16px/);
+ assert.match(css,/\.chibina-room-close\{[^}]*min-height:44px/);
+ assert.match(css,/\.chibina-room-home \.chibina-home-set\{[^}]*width:auto/);
+ assert.match(fs.readFileSync('web/src/components/chibinaRoom.js','utf8'),/5:\[\[\.22,\.45\],\[\.52,\.45\],\[\.82,\.45\]/);
 });
 
-test('five display assets are 435px lossless alpha WebP while source PNGs remain intact',()=>{
- for(const [asset,[width,height,maxBytes]] of Object.entries(optimizedAssets)){
-  const bytes=fs.readFileSync(asset);
-  assert.equal(bytes.toString('ascii',0,4),'RIFF',asset+' RIFF container');
-  assert.equal(bytes.toString('ascii',8,12),'WEBP',asset+' WebP signature');
-  assert.equal(bytes.toString('ascii',12,16),'VP8L',asset+' lossless WebP bitstream');
-  assert.ok(bytes.length<maxBytes,asset+' optimized size');
-  assert.ok(app.includes(`'${asset}'`),asset+' runtime reference');
- }
-});
-
-test('room entry is the right-hand image card beside the final battle card',()=>{
- const home=app.slice(app.indexOf('function home(a){'),app.indexOf('function selectFinaleDifficulty('));
- assert.match(home,/id:'finale'/);
- assert.match(home,/class="chibina-room-entry" data-action="nav" data-id="chibina" aria-label="ちびーなルームを開く"><span class="chibina-room-entry-backdrop" style="background-image:url\('\$\{CHIBINA_ROOM_BANNER\}'\)" aria-hidden="true"><\/span><img class="chibina-room-entry-art" src="\$\{CHIBINA_ROOM_BANNER\}" alt=""/);
- assert.match(app,/const CHIBINA_ROOM_BANNER='assets\/home-ui\/chibina-room-banner\.png'/);
- assert.match(css,/\.chibina-room-entry\{[^}]*align-self:stretch/);
- assert.doesNotMatch(css,/\.chibina-room-entry\{[^}]*aspect-ratio:/);
- assert.match(css,/\.chibina-room-entry-backdrop\{[^}]*background-size:auto 190%[^}]*filter:blur\(/);
- assert.match(css,/\.chibina-room-entry-art\{[^}]*object-fit:contain/);
- assert.ok(css.includes('@media(max-width:700px)')&&css.includes('.chibina-room-entry-art{clip-path:inset(23% 0)}'));
- assert.ok(css.includes('@media(min-width:701px)')&&css.includes('.chibina-room-entry-art{clip-path:inset(14% 0)}'));
-});
-
-test('the room maps all five personas and keeps image reactions separate from home selection',()=>{
- const rows=[
-  ['wing','黒翼','assets/home-ui/optimized/chibi-wing.webp','600ms'],
-  ['judge','断罪','assets/home-ui/optimized/chibi-judge.webp','500ms'],
-  ['fallen','堕天','assets/home-ui/optimized/chibi-fallen.webp','650ms'],
-  ['king','堕天王','assets/home-ui/optimized/chibi-king.webp','600ms'],
-  ['abyss','深淵','assets/home-ui/optimized/chibi-abyss.webp','700ms']
- ];
- for(const [id,name,asset,duration] of rows){
-  assert.ok(app.includes(`id:'${id}',name:'${name}'`));
- assert.ok(app.includes(`art:'${asset}'`)||app.includes(`HOME_MASCOT_ART='${asset}'`));
-  assert.ok(css.includes(`chibina-${id}-react ${duration}`),id+' room reaction');
- }
- const view=app.slice(app.indexOf('function chibinaRoomView()'),app.indexOf('function homeCard('));
- assert.match(view,/data-chibina-react="\$\{persona.id\}"/);
- assert.match(view,/data-action="chibinaSet"/);
- assert.match(view,/ホームに設定/);
- assert.match(view,/aria-pressed="\$\{persona\.id===chibinaHomeId\}"/);
- assert.doesNotMatch(view,/chibinaPendingId|chibinaApply|chibinaSelect/);
- const select=app.slice(app.indexOf("case 'chibinaSet':"),app.indexOf("case 'nav':"));
- assert.match(select,/chibinaHomeId=persona\.id/);
- assert.match(select,/localStorage\.setItem\(CHIBINA_PREFERENCE_KEY,persona\.id\)/);
- assert.doesNotMatch(select,/persist\(\)/,'persona preference stays separate from the game save');
- assert.doesNotMatch(app,/chibinaPendingId|chibinaApply|chibinaSelect/,'selection has one direct apply action');
-});
-
-test('persona idle movement differs, reacts once, and respects reduced motion',()=>{
- for(const [id,duration,keyframe] of [
-  ['wing','3s','chibina-wing-float'],['judge','4.2s','chibina-judge-float'],['fallen','2.4s','chibina-fallen-float'],['king','5s','chibina-king-float'],['abyss','6s','chibina-abyss-float']
- ]){
-  assert.ok(css.includes(`data-persona="${id}"] .chibina-character-art{animation-name:${keyframe};animation-duration:${duration}}`),id+' idle animation');
- }
- assert.match(app,/character\.classList\.contains\('reacting'\)/,'repeated taps are ignored during a reaction');
- assert.match(app,/setTimeout\(\(\)=>character\.classList\.remove\('reacting'\),chibinaPersona\(character\.dataset\.chibinaReact\)\.reactionMs\)/);
- assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{[^}]*\.chibina-character-art\{animation:none!important/);
-});
-
-test('home preference is independently stored and the room is routed outside home and battle',()=>{
- assert.equal((app.match(/class="home-mascot"/g)||[]).length,1);
- assert.match(app,/const CHIBINA_PREFERENCE_KEY='irena-reborn-chibina-room-v1'/);
- assert.match(app,/function readChibinaHome\(\).*?return 'wing'/);
- assert.match(app,/data-persona="\$\{selectedChibina\.id\}"/);
- assert.match(app,/page==='chibina'\?chibinaRoomView\(\)/);
- assert.match(app,/page==='chibina'\?'chibina-page'/);
- for(const asset of Object.keys(optimizedAssets))assert.ok(build.includes(`'${asset}'`),asset+' is externalized for Pages');
- for(const asset of Object.keys(assets).filter(asset=>asset.includes('chibina-room-banner')))assert.ok(build.includes(`'${asset}'`),asset+' remains externalized for Pages');
- assert.match(build,/Buffer\.byteLength\(html\)>=50\*1000\*1000/,'standalone build enforces the requested 50 MB ceiling');
+test('room routes from home, mounts and destroys one runtime, and the build includes its data and assets',()=>{
+ assert.match(app,/class="chibina-room-entry" data-action="nav" data-id="chibina"/);
+ assert.match(app,/page==='chibina'\?buildChibinaRoomMarkup\(\)/);
+ assert.match(app,/chibinaRoomRuntime\.destroy\(\)/);
+ assert.match(app,/mountChibinaRoom\(\$\('#app \[data-chibina-room\]'\)/);
+ assert.match(app,/case 'chibinaEventTest'/);
+ assert.match(app,/localStorage\.setItem\(CHIBINA_PREFERENCE_KEY,id\)/);
+ assert.match(build,/web\/src\/data\/chibinaEvents\.js/);
+ assert.match(build,/web\/src\/components\/chibinaRoom\.js/);
+ for(const asset of ['wing-back.webp','wing-front.webp','body.webp'])assert.ok(build.includes(asset),asset+' is externalized for hosted build');
+ assert.match(build,/Buffer\.byteLength\(html\)>=50\*1000\*1000/);
 });
