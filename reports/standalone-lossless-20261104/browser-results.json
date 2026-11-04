@@ -1,0 +1,76 @@
+{
+  "engine": "Chromium",
+  "standaloneOffline": true,
+  "documentServedFromMemory": true,
+  "fileProtocolTested": false,
+  "imageCount": 89,
+  "browserPixelComparisons": [
+    {
+      "image": 11,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 12,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 13,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 14,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 15,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 34,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "image": 35,
+      "different": 0,
+      "width": 941,
+      "height": 1672
+    },
+    {
+      "image": 36,
+      "different": 0,
+      "width": 941,
+      "height": 1672
+    },
+    {
+      "image": 37,
+      "different": 0,
+      "width": 941,
+      "height": 1671
+    },
+    {
+      "image": 53,
+      "different": 0,
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "runtimeAndCssUnchanged": true,
+  "slashAndGuard": true,
+  "saveReload": true,
+  "roomImagesDecoded": true,
+  "network": [],
+  "errors": [],
+  "realIPhoneTested": false
+}

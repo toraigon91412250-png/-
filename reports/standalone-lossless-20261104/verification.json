@@ -1,0 +1,16 @@
+{
+  "baselineCommit": "e3f39f421abc2cb59eb7131dfdde3c6643839c18",
+  "beforeSHA256": "3cc9937f285c0d768c6206de6b7fbb6d3ff9e44155434bf59d041b8922ba1f84",
+  "afterSHA256": "dadc9699969d1d4f85fe52faf0e5540c1a7e9ff8e2bca7f47815a7383589fa82",
+  "hostedSHA256": "0ac117298bd36932f6a964cf300b94c619c87c91b5d39a954838d285c2d152a8",
+  "hostedFilesIdenticalExceptBuildTimestamp": true,
+  "gameSourceAndOriginalAssetsUnchanged": true,
+  "testsPassed": 742,
+  "testsFailed": 0,
+  "syntaxFiles": 132,
+  "zipIntegrity": "3/3 passed",
+  "generatedOutputsIgnored": true,
+  "sourceZipClean": true,
+  "backupVerified": true,
+  "backupBundle": "/workspace/scratch/irena-before-standalone-optimization.bundle"
+}
