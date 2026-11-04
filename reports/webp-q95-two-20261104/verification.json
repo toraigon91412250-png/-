@@ -48,8 +48,10 @@
   "hosted": {
     "bannerFile": "dist/assets/home-ui/chibina-room-banner.webp",
     "bytes": 288830,
-    "htmlBytes": 19039362,
-    "oldBannerBytes": 1910651
+    "htmlBytes": 16435687,
+    "oldBannerBytes": 1910651,
+    "previousHtmlBytes": 19039361,
+    "htmlBytesSaved": 2603674
   },
   "browser": {
     "hostedBanner": {
@@ -62,7 +64,8 @@
       "width": 1024,
       "height": 1536
     },
-    "pageErrors": 0
+    "pageErrors": 0,
+    "hostedKaiserEmbedded": true
   },
   "tests": {
     "npmTest": {
