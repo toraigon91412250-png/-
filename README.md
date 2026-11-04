@@ -115,7 +115,7 @@ npm run package
 
 `irena-play.html` はCSS・JavaScript・使用画像を統合した単体HTMLです。`irena-deploy.zip` は静的ホスティング用の `index.html` と必要な画像を含みます。
 
-単体HTMLは `npm ci` → `npm run build` で生成します。ビルド時にPNGを可逆圧縮し、表示される色・透明度・寸法が同じで小さくなったものだけを採用します。透過PNGはPNG形式を保ち、原画像は上書きしません。公開用の画像・HTMLは従来の内容を保ちます。50,000,000バイトは単体HTMLの目安として警告のみを出し、公開用HTMLの容量チェックは別に維持します。結果は `artifacts/build-size-report.json` に出力します。生成物はGitとソースZIPには含めません。[詳細報告](reports/standalone-lossless-20261104/REPORT.md)。
+単体HTMLは `npm ci` → `npm run build` で生成します。通常の画像はビルド時に可逆圧縮し、表示ピクセル・透明度・寸法が同じで小さくなったものだけを採用します。容量削減幅が大きいカイザーEX絵とちびーなルームバナーの2枚だけは、透明度と寸法を保つ品質95のWebPに変換します。元PNGは残し、公開版ではバナーをWebPとして配信します。50,000,000バイトは単体HTMLの目安として警告のみを出し、公開用HTMLの容量チェックは別に維持します。結果は `artifacts/build-size-report.json` に出力します。生成物はGitとソースZIPには含めません。[今回の変換と検証結果](reports/webp-q95-two-20261104/REPORT.md)。
 
 iPhoneではSafariでHTTP/HTTPS配信したHTMLを開く方法を推奨します。ファイルアプリのプレビューがJavaScriptを許可するかは端末環境に依存します。iPhone実機での確認は行っていません。
 

@@ -22,8 +22,10 @@ const combatScreenDensityManifest=JSON.parse(fs.readFileSync(new URL('../reports
 const gitBlobSha=bytes=>createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
 const chibinaFlyingRoomManifest=JSON.parse(fs.readFileSync(new URL('../reports/chibina-room-flying-v1/authorized-changes.json',import.meta.url),'utf8'));
 const standaloneLosslessManifest=JSON.parse(fs.readFileSync(new URL('../reports/standalone-lossless-20261104/authorized-changes.json',import.meta.url),'utf8'));
+const q95TwoImageManifest=JSON.parse(fs.readFileSync(new URL('../reports/webp-q95-two-20261104/authorized-changes.json',import.meta.url),'utf8'));
 export function presentationBaselineRead(file,encoding){
  const key=path.relative(root,file instanceof URL?fileURLToPath(file):path.resolve(file));let bytes=fs.readFileSync(file);
+ const q95TwoImage=q95TwoImageManifest[key];if(q95TwoImage){assert.equal(sha(bytes),q95TwoImage.afterSHA256,key+' approved q95 two-image build');assert.equal(sha(q95TwoImage.before),q95TwoImage.beforeSHA256,key+' preserved prior build source');bytes=Buffer.from(q95TwoImage.before);}
  const standalone=standaloneLosslessManifest[key];if(standalone){assert.equal(sha(bytes),standalone.afterSHA256,key+' approved standalone build-only optimization');assert.equal(sha(standalone.before),standalone.beforeSHA256,key+' preserved preceding build source');bytes=Buffer.from(standalone.before);}
  const flying=chibinaFlyingRoomManifest[key];if(flying){assert.equal(sha(bytes),flying.afterSHA256,key+' approved chibina flying room');assert.equal(sha(flying.before),flying.beforeSHA256,key+' preserved pre-room source');bytes=Buffer.from(flying.before);}
  // Verify and reverse the latest one-line command-title and card-frame polish.
