@@ -34,12 +34,12 @@ jobs:
           cp -R migration-inputs/assets-to-integrate ../assets-to-integrate
           cp -R migration-inputs/combat-ui-user-input ../combat-ui-user-input
           cp -R migration-inputs/supplied-raid ../supplied-raid
+      - name: Build game
+        run: npm run build
       - name: Run tests
         run: npm test
       - name: Check JavaScript syntax
         run: npm run check
-      - name: Build game
-        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload Pages artifact

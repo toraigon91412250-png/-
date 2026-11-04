@@ -15,7 +15,12 @@ with ZipFile(out/'irena-source.zip','w',ZIP_DEFLATED) as z:
     for p in sorted(root.rglob('*')):
         rel=p.relative_to(root)
         review_image=(rel.parts[0]=='reports' and p.suffix.lower() in {'.png','.jpg','.jpeg'})
-        if p.is_file() and not review_image and not any(x in {'node_modules','.git','artifacts','__pycache__'} for x in rel.parts):
+        generated_output = rel == Path('irena-play.html') or any(
+            part in {'dist','artifacts'} for part in rel.parts
+        )
+        if p.is_file() and not review_image and not generated_output and not any(
+            x in {'node_modules','.git','__pycache__'} for x in rel.parts
+        ):
             z.write(p,Path('irena-reborn')/rel)
 # Full-size audit evidence is delivered separately to keep the editable project practical on phones.
 with ZipFile(out/'irena-review.zip','w',ZIP_DEFLATED) as z:
@@ -30,8 +35,11 @@ for name in ['irena-source.zip','irena-deploy.zip','irena-review.zip']:
             assert 'index.html' in z.namelist()
             assert z.read('index.html')==(root/'dist'/'index.html').read_bytes()
         elif name=='irena-source.zip':
+            names=z.namelist()
+            assert 'irena-reborn/irena-play.html' not in names
+            assert not any(name.startswith('irena-reborn/dist/') for name in names)
             for required in ['package.json','README.md','tools/build.mjs','web/src/utils/gameCore.js','tests/core.test.js']:
-                assert 'irena-reborn/'+required in z.namelist()
+                assert 'irena-reborn/'+required in names
 manifest={p.name:{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(out.iterdir()) if p.name in {'irena-play.html','irena-source.zip','irena-deploy.zip','irena-review.zip'}}
 (out/'SHA256.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'zip_integrity':'3/3 passed','files':manifest},indent=2))
