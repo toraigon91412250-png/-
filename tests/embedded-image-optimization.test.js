@@ -30,6 +30,26 @@ test('opaque PNG can use smaller lossless WebP without changing decoded pixels',
   assert.deepEqual(await sharp(input).raw().toBuffer(), await sharp(result.bytes).raw().toBuffer());
 });
 
+test('explicit q95 WebP mode preserves dimensions and alpha for approved art', async () => {
+  for (const file of ['assets/overnight-lab/kaiser-ex.png', 'assets/home-ui/chibina-room-banner.png']) {
+    const input = await import('node:fs').then(fs => fs.readFileSync(file));
+    const before = await sharp(input).toColourspace('srgb').ensureAlpha().raw().toBuffer({resolveWithObject: true});
+    const result = await optimizeEmbeddedImage(input, 'image/png', {highQualityWebp: true});
+    assert.equal(result.type, 'image/webp', file);
+    assert.equal(result.quality, 95, file);
+    assert.equal(result.optimized, true, file);
+    assert.ok(result.bytes.length < input.length * 0.4, file);
+    const after = await sharp(result.bytes).toColourspace('srgb').ensureAlpha().raw().toBuffer({resolveWithObject: true});
+    assert.equal(after.info.width, before.info.width, file);
+    assert.equal(after.info.height, before.info.height, file);
+    assert.deepEqual(
+      Array.from({length: before.info.width * before.info.height}, (_, i) => before.data[i * 4 + 3]),
+      Array.from({length: after.info.width * after.info.height}, (_, i) => after.data[i * 4 + 3]),
+      `${file} alpha channel`,
+    );
+  }
+});
+
 test('already encoded JPEG, WebP and SVG pass through byte-for-byte', async () => {
   for (const type of ['image/jpeg', 'image/webp', 'image/svg+xml']) {
     const input = Buffer.from('opaque input preserved without decoding');

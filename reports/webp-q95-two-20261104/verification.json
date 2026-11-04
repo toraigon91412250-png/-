@@ -1,0 +1,75 @@
+{
+  "baselineCommit": "012fd6c14005502a546745a90598390198536253",
+  "allowlist": [
+    "assets/overnight-lab/kaiser-ex.png",
+    "assets/home-ui/chibina-room-banner.png"
+  ],
+  "sourceImages": [
+    {
+      "file": "assets/overnight-lab/kaiser-ex.png",
+      "bytes": 2514669,
+      "sha256": "147f9d2f80332510b3aec52448d4e9c45a47e76839a6bc007efcd9912cef06ea"
+    },
+    {
+      "file": "assets/home-ui/chibina-room-banner.png",
+      "bytes": 1910651,
+      "sha256": "c246d9256bdd0cd50ccda9dfaab954c8fe180a8c2f927c277694b142286a9624"
+    }
+  ],
+  "images": [
+    {
+      "assets": [
+        "assets/overnight-lab/kaiser-ex.png"
+      ],
+      "beforeBytes": 2514669,
+      "afterBytes": 561912,
+      "optimized": true,
+      "codec": "image/webp",
+      "quality": 95,
+      "reason": "q95-alpha-verified"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-room-banner.png"
+      ],
+      "beforeBytes": 1910651,
+      "afterBytes": 288830,
+      "optimized": true,
+      "codec": "image/webp",
+      "quality": 95,
+      "reason": "q95-alpha-verified"
+    }
+  ],
+  "standalone": {
+    "previousBytes": 47109320,
+    "finalBytes": 43113257,
+    "savedBytes": 3996063
+  },
+  "hosted": {
+    "bannerFile": "dist/assets/home-ui/chibina-room-banner.webp",
+    "bytes": 288830,
+    "htmlBytes": 19039362,
+    "oldBannerBytes": 1910651
+  },
+  "browser": {
+    "hostedBanner": {
+      "status": 200,
+      "contentType": "image/webp",
+      "width": 1672,
+      "height": 941
+    },
+    "standaloneKaiser": {
+      "width": 1024,
+      "height": 1536
+    },
+    "pageErrors": 0
+  },
+  "tests": {
+    "npmTest": {
+      "passed": 744,
+      "failed": 0
+    },
+    "syntaxFiles": 133,
+    "build": "passed"
+  }
+}

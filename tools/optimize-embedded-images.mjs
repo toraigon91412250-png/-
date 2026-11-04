@@ -10,7 +10,7 @@ function isAnimatedPng(bytes) {
   return false;
 }
 
-export async function optimizeEmbeddedImage(bytes, type) {
+export async function optimizeEmbeddedImage(bytes, type, {highQualityWebp = false} = {}) {
   const original = reason => ({bytes, type, optimized: false, reason});
   if (type !== 'image/png') return original('format-preserved');
   if (isAnimatedPng(bytes)) return original('animation-preserved');
@@ -20,9 +20,11 @@ export async function optimizeEmbeddedImage(bytes, type) {
   }
   // PNG and WebP alpha decoders can round premultiplication differently in a
   // browser. Preserve PNG for alpha images, using only lossless PNG compression.
-  const candidate = await (metadata.hasAlpha
-    ? sharp(bytes).keepMetadata().png({compressionLevel: 9, adaptiveFiltering: true})
-    : sharp(bytes).keepMetadata().webp({lossless: true, effort: 6})).toBuffer();
+  const candidate = await (highQualityWebp
+    ? sharp(bytes).keepMetadata().webp({quality: 95, effort: 2, alphaQuality: 100})
+    : metadata.hasAlpha
+      ? sharp(bytes).keepMetadata().png({compressionLevel: 9, adaptiveFiltering: true})
+      : sharp(bytes).keepMetadata().webp({lossless: true, effort: 6})).toBuffer();
   if (candidate.length >= bytes.length) return original('no-size-benefit');
   const decode = input => sharp(input).toColourspace('srgb').ensureAlpha().raw().toBuffer({resolveWithObject: true});
   const before = await decode(bytes), after = await decode(candidate);
@@ -33,10 +35,10 @@ export async function optimizeEmbeddedImage(bytes, type) {
   for (let i = 0; i < before.data.length; i += 4) {
     if (before.data[i + 3] !== after.data[i + 3]) return original('alpha-not-identical');
     // RGB under alpha=0 is invisible; its normalization cannot affect compositing.
-    if (before.data[i + 3] && (before.data[i] !== after.data[i] ||
+    if (!highQualityWebp && before.data[i + 3] && (before.data[i] !== after.data[i] ||
         before.data[i + 1] !== after.data[i + 1] || before.data[i + 2] !== after.data[i + 2])) {
       return original('visible-pixels-not-identical');
     }
   }
-  return {bytes: candidate, type: metadata.hasAlpha ? 'image/png' : 'image/webp', optimized: true, reason: 'lossless-pixels-verified'};
+  return {bytes: candidate, type: metadata.hasAlpha && !highQualityWebp ? 'image/png' : 'image/webp', optimized: true, reason: highQualityWebp ? 'q95-alpha-verified' : 'lossless-pixels-verified', quality: highQualityWebp ? 95 : 'lossless'};
 }
