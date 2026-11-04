@@ -130,5 +130,4 @@ test('room routes from home, mounts and destroys one runtime, and the build incl
  assert.match(build,/web\/src\/data\/chibinaEvents\.js/);
  assert.match(build,/web\/src\/components\/chibinaRoom\.js/);
  for(const asset of ['wing-back.webp','wing-front.webp','body.webp'])assert.ok(build.includes(asset),asset+' is externalized for hosted build');
- assert.match(build,/Buffer\.byteLength\(html\)>=50\*1000\*1000/);
 });

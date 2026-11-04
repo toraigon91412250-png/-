@@ -1,0 +1,816 @@
+{
+  "beforeBytes": 48982482,
+  "standaloneBytes": 47109320,
+  "savedBytes": 1873162,
+  "hostedBytes": 19039361,
+  "standaloneWarningBytes": 50000000,
+  "overAdvisoryTarget": false,
+  "images": [
+    {
+      "assets": [
+        "assets/divinity/personas/wing_黒翼.webp"
+      ],
+      "beforeBytes": 346434,
+      "afterBytes": 346434,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/personas/abyss_深淵.webp"
+      ],
+      "beforeBytes": 353742,
+      "afterBytes": 353742,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/personas/fallen_堕天.webp"
+      ],
+      "beforeBytes": 321390,
+      "afterBytes": 321390,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/personas/judge_断罪.webp"
+      ],
+      "beforeBytes": 362252,
+      "afterBytes": 362252,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/personas/king_堕天王.webp"
+      ],
+      "beforeBytes": 263452,
+      "afterBytes": 263452,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/stage-1.webp"
+      ],
+      "beforeBytes": 199672,
+      "afterBytes": 199672,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/stage-2.webp"
+      ],
+      "beforeBytes": 260788,
+      "afterBytes": 260788,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/stage-3.webp"
+      ],
+      "beforeBytes": 216658,
+      "afterBytes": 216658,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/stage-4.webp"
+      ],
+      "beforeBytes": 259978,
+      "afterBytes": 259978,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/stage-5.webp"
+      ],
+      "beforeBytes": 260678,
+      "afterBytes": 260678,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/divinity/combat-obsidian.webp"
+      ],
+      "beforeBytes": 40740,
+      "afterBytes": 40740,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/authority-v1/wing.png",
+        "assets/upgrade-ui/authority-unlock/wing.png"
+      ],
+      "beforeBytes": 709063,
+      "afterBytes": 611094,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/authority-v1/judge.png",
+        "assets/upgrade-ui/authority-unlock/judge.png"
+      ],
+      "beforeBytes": 806769,
+      "afterBytes": 737448,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/authority-v1/abyss.png",
+        "assets/upgrade-ui/authority-unlock/abyss.png"
+      ],
+      "beforeBytes": 842422,
+      "afterBytes": 740330,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/authority-v1/fallen.png",
+        "assets/upgrade-ui/authority-unlock/fallen.png"
+      ],
+      "beforeBytes": 854511,
+      "afterBytes": 747022,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/authority-v1/king.png",
+        "assets/upgrade-ui/authority-unlock/king.png"
+      ],
+      "beforeBytes": 798814,
+      "afterBytes": 698546,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/mirror/phase3.webp"
+      ],
+      "beforeBytes": 1200520,
+      "afterBytes": 1200520,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/red.webp"
+      ],
+      "beforeBytes": 619390,
+      "afterBytes": 619390,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/gold.webp"
+      ],
+      "beforeBytes": 569920,
+      "afterBytes": 569920,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/cutin.webp"
+      ],
+      "beforeBytes": 503792,
+      "afterBytes": 503792,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/beyond.webp"
+      ],
+      "beforeBytes": 699546,
+      "afterBytes": 699546,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/cathedral.webp"
+      ],
+      "beforeBytes": 476022,
+      "afterBytes": 476022,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/phase2.webp"
+      ],
+      "beforeBytes": 763684,
+      "afterBytes": 763684,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/phase2-cutin.webp"
+      ],
+      "beforeBytes": 621522,
+      "afterBytes": 621522,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/release.webp"
+      ],
+      "beforeBytes": 685018,
+      "afterBytes": 685018,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/release-sprite.webp"
+      ],
+      "beforeBytes": 757794,
+      "afterBytes": 757794,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/mirror/collision.webp"
+      ],
+      "beforeBytes": 834776,
+      "afterBytes": 834776,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/flow-v2/feather-lance.webp"
+      ],
+      "beforeBytes": 400142,
+      "afterBytes": 400142,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/crystal-break.webp"
+      ],
+      "beforeBytes": 67370,
+      "afterBytes": 67370,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/flow-v2/irena-cutin.webp"
+      ],
+      "beforeBytes": 563704,
+      "afterBytes": 563704,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/crest-fallen.webp"
+      ],
+      "beforeBytes": 214692,
+      "afterBytes": 214692,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/ultimate-v1/hero.webp"
+      ],
+      "beforeBytes": 334226,
+      "afterBytes": 334226,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/ultimate-v1/eclipse.webp"
+      ],
+      "beforeBytes": 163938,
+      "afterBytes": 163938,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-vfx/ultimate-v1/impact.webp"
+      ],
+      "beforeBytes": 232852,
+      "afterBytes": 232852,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/sortie/sortie-normal-final.png"
+      ],
+      "beforeBytes": 591206,
+      "afterBytes": 511014,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/sortie/sortie-ex-kaiser.png"
+      ],
+      "beforeBytes": 663421,
+      "afterBytes": 576410,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/sortie/sortie-stella.png"
+      ],
+      "beforeBytes": 768847,
+      "afterBytes": 669992,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/sortie/sortie-final-irena.png"
+      ],
+      "beforeBytes": 767770,
+      "afterBytes": 683624,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/finale/confrontation.webp"
+      ],
+      "beforeBytes": 586596,
+      "afterBytes": 586596,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/overnight-lab/kaiser-normal.webp"
+      ],
+      "beforeBytes": 2032186,
+      "afterBytes": 2032186,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/overnight-lab/kaiser-ex.png"
+      ],
+      "beforeBytes": 2514669,
+      "afterBytes": 2514669,
+      "optimized": false,
+      "reason": "no-size-benefit"
+    },
+    {
+      "assets": [
+        "assets/overnight-lab/moon-temple.jpg"
+      ],
+      "beforeBytes": 288937,
+      "afterBytes": 288937,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/wing-back.webp"
+      ],
+      "beforeBytes": 51114,
+      "afterBytes": 51114,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/wing-front.webp"
+      ],
+      "beforeBytes": 73794,
+      "afterBytes": 73794,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/body.webp"
+      ],
+      "beforeBytes": 184562,
+      "afterBytes": 184562,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/daten-left.webp"
+      ],
+      "beforeBytes": 90500,
+      "afterBytes": 90500,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/daten-right.webp"
+      ],
+      "beforeBytes": 53240,
+      "afterBytes": 53240,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/daten-body.webp"
+      ],
+      "beforeBytes": 158184,
+      "afterBytes": 158184,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/irena-placeholder.svg"
+      ],
+      "beforeBytes": 4187,
+      "afterBytes": 4187,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/irena-hero.jpeg"
+      ],
+      "beforeBytes": 339093,
+      "afterBytes": 339093,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/stella.jpeg"
+      ],
+      "beforeBytes": 206435,
+      "afterBytes": 206435,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/kaiser.jpeg"
+      ],
+      "beforeBytes": 594497,
+      "afterBytes": 594497,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/optimized/chibi-wing.webp"
+      ],
+      "beforeBytes": 238480,
+      "afterBytes": 238480,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-room-banner.png"
+      ],
+      "beforeBytes": 1910651,
+      "afterBytes": 1333122,
+      "optimized": true,
+      "reason": "lossless-pixels-verified"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-loading.webp"
+      ],
+      "beforeBytes": 151472,
+      "afterBytes": 151472,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/optimized/chibi-judge.webp"
+      ],
+      "beforeBytes": 187994,
+      "afterBytes": 187994,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/optimized/chibi-fallen.webp"
+      ],
+      "beforeBytes": 201100,
+      "afterBytes": 201100,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/throne.webp"
+      ],
+      "beforeBytes": 388230,
+      "afterBytes": 388230,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/chibina-flight/shinen-cushion.webp"
+      ],
+      "beforeBytes": 467730,
+      "afterBytes": 467730,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/02_engraving_equipment.jpg"
+      ],
+      "beforeBytes": 410026,
+      "afterBytes": 410026,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/home-ui/04_upgrade_equipment.jpg"
+      ],
+      "beforeBytes": 369408,
+      "afterBytes": 369408,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/irena-hero.webp"
+      ],
+      "beforeBytes": 140214,
+      "afterBytes": 140214,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/powers-icon.webp"
+      ],
+      "beforeBytes": 7936,
+      "afterBytes": 7936,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/marks-icon.webp"
+      ],
+      "beforeBytes": 7286,
+      "afterBytes": 7286,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/resonance-icon.webp"
+      ],
+      "beforeBytes": 8366,
+      "afterBytes": 8366,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/training-icon.webp"
+      ],
+      "beforeBytes": 6468,
+      "afterBytes": 6468,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/summon-icon.webp"
+      ],
+      "beforeBytes": 6032,
+      "afterBytes": 6032,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/upgrade-ui/star-power.webp"
+      ],
+      "beforeBytes": 15942,
+      "afterBytes": 15942,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/irena-normal.webp"
+      ],
+      "beforeBytes": 386726,
+      "afterBytes": 386726,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/irena-final-fallen.webp"
+      ],
+      "beforeBytes": 221486,
+      "afterBytes": 221486,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/irena-final-divine.webp"
+      ],
+      "beforeBytes": 179616,
+      "afterBytes": 179616,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/irena-final-neutral.webp"
+      ],
+      "beforeBytes": 264148,
+      "afterBytes": 264148,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/stella-standing.webp"
+      ],
+      "beforeBytes": 162834,
+      "afterBytes": 162834,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/raid/dragon-embers.png"
+      ],
+      "beforeBytes": 852887,
+      "afterBytes": 852887,
+      "optimized": false,
+      "reason": "no-size-benefit"
+    },
+    {
+      "assets": [
+        "assets/supplied-20261020/genesis-cutin.jpg"
+      ],
+      "beforeBytes": 295587,
+      "afterBytes": 295587,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/irena-victory.webp"
+      ],
+      "beforeBytes": 139582,
+      "afterBytes": 139582,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/hadan-cutin.webp"
+      ],
+      "beforeBytes": 124078,
+      "afterBytes": 124078,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/stella-cutin.webp"
+      ],
+      "beforeBytes": 149376,
+      "afterBytes": 149376,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/runtime/crest-divine.webp"
+      ],
+      "beforeBytes": 376736,
+      "afterBytes": 376736,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/irena-key-art.webp"
+      ],
+      "beforeBytes": 255042,
+      "afterBytes": 255042,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/icons/fallen-skill-1.webp"
+      ],
+      "beforeBytes": 74356,
+      "afterBytes": 74356,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/icons/fallen-skill-2.webp"
+      ],
+      "beforeBytes": 71046,
+      "afterBytes": 71046,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/icons/fallen-skill-3.webp"
+      ],
+      "beforeBytes": 70964,
+      "afterBytes": 70964,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/icons/fallen-ultimate.webp"
+      ],
+      "beforeBytes": 95546,
+      "afterBytes": 95546,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-ui-audit9/action-zangeki.webp"
+      ],
+      "beforeBytes": 184942,
+      "afterBytes": 184942,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-ui-audit9/action-kokuyoku-hadan.webp"
+      ],
+      "beforeBytes": 206774,
+      "afterBytes": 206774,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-ui-audit9/action-hakai-no-kennou.webp"
+      ],
+      "beforeBytes": 231156,
+      "afterBytes": 231156,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-ui-audit9/action-bougyo.webp"
+      ],
+      "beforeBytes": 176594,
+      "afterBytes": 176594,
+      "optimized": false,
+      "reason": "format-preserved"
+    },
+    {
+      "assets": [
+        "assets/combat-ui-audit9/action-chou-datengeki-wide.webp"
+      ],
+      "beforeBytes": 300500,
+      "afterBytes": 300500,
+      "optimized": false,
+      "reason": "format-preserved"
+    }
+  ]
+}
