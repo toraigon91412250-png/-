@@ -122,12 +122,16 @@ test('Blackwing flight assets stay compact and the CSS separates movement and fl
 
 test('room routes from home, mounts and destroys one runtime, and the build includes its data and assets',()=>{
  assert.match(app,/class="chibina-room-entry" data-action="nav" data-id="chibina"/);
- assert.match(app,/page==='chibina'\?buildChibinaRoomMarkup\(\)/);
+ assert.match(app,/page==='chibina'\?renderChibinaCityView\(chibinaHomeId\)/);
+ assert.match(app,/page==='chibina-room'\?buildChibinaRoomMarkup\(\)/);
  assert.match(app,/chibinaRoomRuntime\.destroy\(\)/);
+ assert.match(app,/mountChibinaCity\(\$\('#app \[data-chibina-city\]'\)/);
  assert.match(app,/mountChibinaRoom\(\$\('#app \[data-chibina-room\]'\)/);
  assert.match(app,/case 'chibinaEventTest'/);
  assert.match(app,/localStorage\.setItem\(CHIBINA_PREFERENCE_KEY,id\)/);
  assert.match(build,/web\/src\/data\/chibinaEvents\.js/);
  assert.match(build,/web\/src\/components\/chibinaRoom\.js/);
+ assert.match(build,/web\/src\/components\/chibinaCity\.js/);
+ assert.match(build,/chibinaCity\.css/);
  for(const asset of ['wing-back.webp','wing-front.webp','body.webp'])assert.ok(build.includes(asset),asset+' is externalized for hosted build');
 });
