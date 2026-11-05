@@ -40,5 +40,21 @@ test('city runtime preserves drag, pinch, reduced-motion and teardown behavior',
  assert.match(css,/\.chibina-city \.island\.plaza/);
  assert.match(css,/\.chibina-city \.actor\.daten/);
  assert.match(css,/prefers-reduced-motion:reduce/);
+ for(const name of ['city-kuroBack','city-kuroFront','city-datenLeft','city-datenRight']){
+  assert.ok(css.includes(`animation-name:${name}`),`${name} is assigned`);
+  assert.ok(css.includes(`@keyframes ${name}{`),`${name} has matching keyframes`);
+ }
+ assert.match(css,/\/\* Copy the distinctive wingbeat rhythms from the shipped flight-room prototype\. \*\/\s*@keyframes city-kuroBack\{/);
  assert.doesNotMatch(css,/(^|})body\{|(^|})\.app\{/);
+});
+
+test('pausing the city freezes simulated actors and decorative CSS motion',()=>{
+ const source=fs.readFileSync('web/src/components/chibinaCity.js','utf8');
+ const css=fs.readFileSync('web/src/components/chibinaCity.css','utf8');
+ assert.match(source,/if\(!paused\)\{elapsed\+=dt;tickFlyers\(dt\);\}/);
+ assert.match(source,/root\.classList\.toggle\('paused',paused\)/);
+ for(const selector of ['.starfield','.aurora','.sky-routes path','.actor .sprite','.actor .wing','.actor .cross']){
+  assert.ok(css.includes(`.chibina-city.paused ${selector}`),`${selector} stops while paused`);
+ }
+ assert.ok(css.includes('animation-play-state:paused!important'));
 });
