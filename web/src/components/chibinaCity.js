@@ -9,13 +9,19 @@ const CHIBINA_CITY_ISLANDS=[
 ];
 
 const CHIBINA_CITY_ART={'island-central-plaza':'assets/home-ui/chibina-city/island-central-plaza.webp','island-flight':'assets/home-ui/chibina-city/island-flight.webp','island-royal-palace':'assets/home-ui/chibina-city/island-royal-palace.webp','island-rest':'assets/home-ui/chibina-city/island-rest.webp','island-judgment':'assets/home-ui/chibina-city/island-judgment.webp','island-fallen':'assets/home-ui/chibina-city/island-fallen.webp'};
+const CHIBINA_CITY_CHARACTER_ART={
+ kuroBack:'assets/home-ui/chibina-city/characters/kuro-0.webp',kuroFront:'assets/home-ui/chibina-city/characters/kuro-1.webp',kuroBody:'assets/home-ui/chibina-city/characters/kuro-2.webp',
+ datenBack:'assets/home-ui/chibina-city/characters/daten-0.webp',datenFront:'assets/home-ui/chibina-city/characters/daten-1.webp',datenBody:'assets/home-ui/chibina-city/characters/daten-2.webp',
+ judgmentCrest:'assets/home-ui/chibina-city/characters/cross.webp',judgmentBody:'assets/home-ui/chibina-city/characters/body.webp',
+ king:'assets/home-ui/chibina-flight/throne.webp',abyss:'assets/home-ui/chibina-flight/shinen-cushion.webp'
+};
 export function renderChibinaCityView(selectedId='wing'){
  const actors=[
-  ['kuro','黒翼','wing',`<div class="facing"><div class="sprite"><img class="wing back" src="assets/home-ui/chibina-city/characters/kuro-0.webp" alt=""><img class="wing front" src="assets/home-ui/chibina-city/characters/kuro-1.webp" alt=""><img class="body" src="assets/home-ui/chibina-city/characters/kuro-2.webp" alt=""></div></div>`],
-  ['daten','堕天','fallen',`<div class="facing"><div class="sprite"><img class="wing left" src="assets/home-ui/chibina-city/characters/daten-0.webp" alt=""><img class="wing right" src="assets/home-ui/chibina-city/characters/daten-1.webp" alt=""><img class="body" src="assets/home-ui/chibina-city/characters/daten-2.webp" alt=""></div></div>`],
-  ['judgment','断罪','judge',`<div class="sprite"><img class="cross" src="assets/home-ui/chibina-city/characters/cross.webp" alt=""><img class="body" src="assets/home-ui/chibina-city/characters/body.webp" alt=""></div>`],
-  ['king','堕天王','king',`<div class="sprite"><img src="assets/home-ui/chibina-flight/throne.webp" alt=""></div>`],
-  ['abyss','深淵','abyss',`<div class="sprite"><img src="assets/home-ui/chibina-flight/shinen-cushion.webp" alt=""></div>`]
+  ['kuro','黒翼','wing',`<div class="facing"><div class="sprite"><img class="wing back" src="${CHIBINA_CITY_CHARACTER_ART.kuroBack}" alt=""><img class="wing front" src="${CHIBINA_CITY_CHARACTER_ART.kuroFront}" alt=""><img class="body" src="${CHIBINA_CITY_CHARACTER_ART.kuroBody}" alt=""></div></div>`],
+  ['daten','堕天','fallen',`<div class="facing"><div class="sprite"><img class="wing left" src="${CHIBINA_CITY_CHARACTER_ART.datenBack}" alt=""><img class="wing right" src="${CHIBINA_CITY_CHARACTER_ART.datenFront}" alt=""><img class="body" src="${CHIBINA_CITY_CHARACTER_ART.datenBody}" alt=""></div></div>`],
+  ['judgment','断罪','judge',`<div class="sprite"><img class="cross" src="${CHIBINA_CITY_CHARACTER_ART.judgmentCrest}" alt=""><img class="body" src="${CHIBINA_CITY_CHARACTER_ART.judgmentBody}" alt=""></div>`],
+  ['king','堕天王','king',`<div class="sprite"><img src="${CHIBINA_CITY_CHARACTER_ART.king}" alt=""></div>`],
+  ['abyss','深淵','abyss',`<div class="sprite"><img src="${CHIBINA_CITY_CHARACTER_ART.abyss}" alt=""></div>`]
  ];
  const islands=[
   ['plaza','天空広場','island-central-plaza'],['flight','飛行島','island-flight'],['royal','王宮島','island-royal-palace'],
