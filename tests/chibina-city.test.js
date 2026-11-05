@@ -14,6 +14,13 @@ test('city screen has all six original islands, five animated actors and working
  assert.match(html,/堕天王/);
 });
 
+test('each city actor uses its actual local art layers, not a generic embedded fallback',()=>{
+ for(const path of ['kuro-0.webp','kuro-1.webp','kuro-2.webp','daten-0.webp','daten-1.webp','daten-2.webp','cross.webp','body.webp','throne.webp','shinen-cushion.webp']){
+  assert.ok(html.includes(path),path+' is referenced in the rendered actor markup');
+ }
+ assert.doesNotMatch(html,/__IRENA_EMBEDDED_ASSETS__/);
+});
+
 test('city image references are local WebP assets, retained in both build targets and compact',()=>{
  const source=fs.readFileSync('web/src/components/chibinaCity.js','utf8');
  const paths=[...new Set(source.match(/assets\/home-ui\/chibina-city\/[\w/-]+\.webp/g)||[])];
